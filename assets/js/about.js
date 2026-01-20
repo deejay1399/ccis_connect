@@ -99,12 +99,16 @@ document.addEventListener('DOMContentLoaded', function() {
         sections.forEach(section => {
             section.classList.remove('active-section');
             section.style.display = 'none';
+            section.style.visibility = 'hidden';
+            section.style.opacity = '0';
         });
         
         const targetSection = document.getElementById(sectionId);
         if (targetSection) {
             targetSection.classList.add('active-section');
             targetSection.style.display = 'block';
+            targetSection.style.visibility = 'visible';
+            targetSection.style.opacity = '1';
             
             // Scroll to section with offset for header
             const universityHeader = document.querySelector('.university-header');
@@ -219,6 +223,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle hash on page load - FIXED VERSION
     function handleHashOnLoad() {
+        // Only run this on the About page - check if about content sections exist
+        const aboutPageSections = document.querySelectorAll('.content-section');
+        if (aboutPageSections.length === 0) {
+            // Not on the about page, don't modify the URL
+            return;
+        }
+        
         let hash = window.location.hash.substring(1);
         const validSections = ['history-section', 'vmgo-section', 'hymn-section'];
         
@@ -232,13 +243,15 @@ document.addEventListener('DOMContentLoaded', function() {
         let targetSection;
         if (hash && validSections.includes(hash)) {
             targetSection = hash;
-        } else {
-            // Default to history section when no valid hash or coming from external page
+        } else if (hash) {
+            // If there's a hash but it's not valid, show history section
             targetSection = 'history-section';
-            // Update URL to reflect the correct section
-            if (window.history.replaceState) {
-                window.history.replaceState(null, null, `#${targetSection}`);
-            }
+        } else {
+            // No hash at all - just show history section without modifying URL
+            targetSection = 'history-section';
+            // Don't add hash to URL when coming from other pages
+            showSection(targetSection);
+            return;
         }
         
         showSection(targetSection);
@@ -422,23 +435,6 @@ document.addEventListener('DOMContentLoaded', function() {
             window.filterContentByRole(); 
             console.log('✅ Role-based blocking re-applied.');
         }
-        
-        // Double-check that only the correct section is visible
-        setTimeout(() => {
-            const currentHash = window.location.hash.substring(1);
-            const targetSection = hashMapping[currentHash] || currentHash;
-            const validSections = ['history-section', 'vmgo-section', 'hymn-section'];
-            
-            if (targetSection && validSections.includes(targetSection)) {
-                // Hide all other sections
-                document.querySelectorAll('.content-section').forEach(section => {
-                    if (section.id !== targetSection) {
-                        section.style.display = 'none';
-                        section.classList.remove('active-section');
-                    }
-                });
-            }
-        }, 100);
         
         console.log('✅ About Page Loaded Successfully');
         console.log('📖 History, VMGO, and Hymn sections initialized');

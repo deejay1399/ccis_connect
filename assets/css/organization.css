@@ -1,0 +1,1605 @@
+/* ORGANIZATION PAGE STYLES - Matching Updates Page with Floating Button */
+:root {
+    --primary-purple: #4b0082;
+    --secondary-purple: #6a0dad;
+    --light-purple: #e6e6fa;
+    --accent: #ffd700;
+    --dark-gray: #2d3e50;
+    --light-gray: #f8f9fa;
+    --medium-gray: #6c757d;
+    --gold: #ffd700;
+    --logout-color: #dc3545;
+}
+
+/* UNIVERSITY HEADER - Exact same as Updates */
+.university-header {
+    background: 
+        linear-gradient(135deg, rgba(75, 0, 130, 0.85) 0%, rgba(106, 13, 173, 0.85) 100%),
+        url('Building.jpg') center/cover no-repeat;
+    color: white;
+    padding: 1rem 0;
+    border-bottom: 5px solid var(--gold);
+    position: relative;
+    overflow: hidden;
+}
+
+.university-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.university-logo,
+.college-logo {
+    height: 70px;
+    width: 70px;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+    background-color: white;
+    border-radius: 50%;
+    object-fit: contain;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+    position: relative;
+    z-index: 2;
+}
+
+.college-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: white;
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    line-height: 1.2;
+    word-wrap: break-word;
+    text-align: left;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 2;
+}
+
+.college-subtitle {
+    font-size: 1rem;
+    color: var(--accent);
+    font-weight: 500;
+    margin: 0;
+    text-align: left;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 2;
+}
+
+/* Enhanced Auth Icon Styles */
+.header-auth-icon {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: auto;
+    position: relative;
+    z-index: 2;
+}
+
+.auth-icon-link {
+    color: white;
+    font-size: 1.8rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    text-decoration: none;
+    border: none;
+    outline: none;
+}
+
+.auth-icon-link:hover {
+    color: var(--accent);
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+#logout-icon-link {
+    color: white !important;
+    background-color: rgba(106, 13, 173, 0.2) !important;
+}
+
+#logout-icon-link:hover {
+    background-color: rgba(106, 13, 173, 0.3) !important;
+    color: var(--accent) !important;
+}
+
+/* ========================================
+   NAVIGATION BAR - UPDATED TO MATCH FORMS PAGE SIZE
+   ======================================== */
+
+.navbar-main {
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+    border-top: 1px solid var(--light-purple);
+    margin-bottom: 1rem;
+}
+
+.navbar-main .navbar-collapse {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navbar-main .navbar-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+/* UPDATED: Navigation links - larger size to match forms page */
+.navbar-main .nav-link {
+    font-weight: 500;
+    color: var(--dark-gray);
+    padding: 0.8rem 1.8rem;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    margin: 0 0.3rem;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.navbar-main .nav-link:hover,
+.navbar-main .nav-link.active {
+    color: var(--primary-purple);
+    background-color: var(--light-purple);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(106, 13, 173, 0.2);
+}
+
+/* Enhanced Dropdown Hover Styles - SAME AS UPDATES */
+@media (min-width: 992px) {
+    .navbar-main .dropdown:hover > .dropdown-menu {
+        display: block;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
+    .navbar-main .dropdown-menu {
+        display: block;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+    }
+    
+    .navbar-main .dropdown-menu.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+}
+
+/* Dropdown Styles - SAME AS UPDATES */
+.navbar-main .dropdown-menu {
+    border: none;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 0.8rem;
+    min-width: 220px;
+    border: 2px solid var(--light-purple);
+    margin-top: 0.5rem;
+}
+
+.navbar-main .dropdown-item {
+    padding: 0.7rem 1rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    color: var(--dark-gray);
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin: 0.1rem 0;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.navbar-main .dropdown-item i {
+    width: 20px;
+    margin-right: 0.5rem;
+    color: var(--primary-purple);
+}
+
+.navbar-main .dropdown-item:hover {
+    background-color: var(--light-purple);
+    color: var(--primary-purple);
+    transform: translateX(5px);
+}
+
+.navbar-main .dropdown-item:active {
+    background-color: var(--primary-purple);
+    color: white;
+}
+
+.navbar-main .dropdown-toggle::after {
+    margin-left: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.navbar-main .show > .dropdown-toggle::after {
+    transform: rotate(180deg);
+}
+
+/* Organization Section */
+.organization-section {
+    padding: 3rem 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 80vh;
+}
+
+/* Content Sections - SECTION SWITCHING */
+.content-section {
+    display: none;
+}
+
+.content-section.active-section {
+    display: block;
+}
+
+.content-card {
+    background: white;
+    padding: 3rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    transition: box-shadow 0.3s ease;
+}
+
+.content-card:hover {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Organization Header */
+.organization-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 3px solid var(--accent);
+}
+
+.org-logo-container {
+    flex-shrink: 0;
+}
+
+.org-logo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid var(--light-purple);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    object-fit: cover;
+}
+
+.org-logo:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.org-title-container h3 {
+    color: var(--primary-purple);
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.8rem;
+}
+
+.org-title-container h3 i {
+    color: var(--primary-purple);
+    margin-right: 1rem;
+}
+
+/* Organization Content */
+.organization-content {
+    padding: 1rem 0;
+}
+
+/* Organization Description */
+.org-description {
+    margin-bottom: 2rem;
+}
+
+.org-description h4 {
+    color: var(--primary-purple);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.org-description p {
+    color: var(--dark-gray);
+    line-height: 1.7;
+    font-size: 1.1rem;
+    text-align: justify;
+}
+
+/* Organization Adviser */
+.org-adviser {
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: var(--light-gray);
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-purple);
+}
+
+.org-adviser h4 {
+    color: var(--primary-purple);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.adviser-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.adviser-card:hover {
+    transform: translateX(10px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.adviser-image {
+    flex-shrink: 0;
+}
+
+.adviser-image img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--light-purple);
+    transition: all 0.3s ease;
+}
+
+.adviser-card:hover .adviser-image img {
+    transform: scale(1.1);
+}
+
+.adviser-info h5 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--primary-purple);
+}
+
+.adviser-position {
+    color: var(--medium-gray);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.adviser-contact {
+    color: var(--primary-purple);
+    font-weight: 500;
+}
+
+/* Organization Officers */
+.org-officers h4 {
+    color: var(--primary-purple);
+    font-weight: 600;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+}
+
+.officers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.officer-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    text-align: center;
+    border: 1px solid #e9ecef;
+}
+
+.officer-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.officer-image {
+    padding: 1.5rem 1.5rem 0;
+}
+
+.officer-image img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--light-gray);
+    transition: all 0.3s ease;
+}
+
+.officer-card:hover .officer-image img {
+    transform: scale(1.05);
+    border-color: var(--light-purple);
+}
+
+.officer-info {
+    padding: 1.5rem;
+}
+
+.officer-info h5 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--primary-purple);
+}
+
+.officer-position {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    color: var(--secondary-purple);
+}
+
+/* Organization Announcements & Happenings */
+.org-announcements,
+.org-happenings {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: var(--light-gray);
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+}
+
+.org-announcements h4,
+.org-happenings h4 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    color: var(--primary-purple);
+}
+
+.org-announcements h4 i,
+.org-happenings h4 i {
+    color: var(--secondary-purple);
+    margin-right: 0.5rem;
+}
+
+/* Content Controls */
+.content-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.items-count {
+    color: var(--medium-gray);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.view-options {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* ========================================
+   VIEW BUTTONS STYLING - LIGHT GRAY DEFAULT, PURPLE ON HOVER/ACTIVE
+   ======================================== */
+
+.view-btn {
+    /* DEFAULT STATE: LIGHT GRAY */
+    background: #f8f9fa !important;
+    color: var(--medium-gray) !important;
+    border: 2px solid #dee2e6 !important;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+/* HOVER STATE: BECOMES PURPLE */
+.view-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%) !important;
+    color: white !important;
+    border-color: var(--primary-purple) !important;
+    transform: translateY(-2px);
+}
+
+/* ACTIVE/CLICKED STATE: STAY PURPLE */
+.view-btn.active {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%) !important;
+    color: white !important;
+    border-color: var(--primary-purple) !important;
+}
+
+/* Announcement Cards */
+.legion-announcement-card,
+.csguild-announcement-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--accent);
+}
+
+.legion-announcement-card:hover,
+.csguild-announcement-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.legion-announcement-header,
+.csguild-announcement-header {
+    background: linear-gradient(135deg, var(--light-gray), white);
+    padding: 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.legion-announcement-title,
+.csguild-announcement-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--primary-purple);
+}
+
+.legion-announcement-meta,
+.csguild-announcement-meta {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.legion-announcement-meta span,
+.csguild-announcement-meta span {
+    color: var(--medium-gray);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+.legion-announcement-meta i,
+.csguild-announcement-meta i {
+    margin-right: 0.3rem;
+    color: var(--secondary-purple);
+}
+
+.legion-announcement-body,
+.csguild-announcement-body {
+    padding: 1.5rem;
+}
+
+.legion-announcement-description,
+.csguild-announcement-description {
+    color: var(--dark-gray);
+    line-height: 1.7;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Happening Cards */
+.legion-happening-card,
+.csguild-happening-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--secondary-purple);
+}
+
+.legion-happening-card:hover,
+.csguild-happening-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.legion-happening-header,
+.csguild-happening-header {
+    background: linear-gradient(135deg, var(--light-gray), white);
+    padding: 1.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.legion-happening-title,
+.csguild-happening-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--secondary-purple);
+}
+
+.legion-happening-meta,
+.csguild-happening-meta {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.legion-happening-meta span,
+.csguild-happening-meta span {
+    color: var(--medium-gray);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+.legion-happening-meta i,
+.csguild-happening-meta i {
+    margin-right: 0.3rem;
+    color: var(--primary-purple);
+}
+
+.legion-happening-body,
+.csguild-happening-body {
+    padding: 1.5rem;
+}
+
+.legion-happening-description,
+.csguild-happening-description {
+    color: var(--dark-gray);
+    line-height: 1.7;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Image Galleries */
+.legion-happening-images,
+.csguild-happening-images {
+    margin-top: 1.5rem;
+}
+
+.legion-image-gallery,
+.csguild-image-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.legion-image-item,
+.csguild-image-item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    aspect-ratio: 1;
+}
+
+.legion-image-item:hover,
+.csguild-image-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.legion-image-item img,
+.csguild-image-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.legion-image-item:hover img,
+.csguild-image-item:hover img {
+    transform: scale(1.1);
+}
+
+.legion-image-count-badge,
+.csguild-image-count-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.legion-image-count-badge:hover,
+.csguild-image-count-badge:hover {
+    background: rgba(0, 0, 0, 0.8);
+    font-size: 1.6rem;
+}
+
+/* Empty States */
+.legion-empty-state,
+.csguild-empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--medium-gray);
+}
+
+.legion-empty-state i,
+.csguild-empty-state i {
+    font-size: 3rem;
+    color: #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.legion-empty-state h5,
+.csguild-empty-state h5 {
+    color: var(--medium-gray);
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.legion-empty-state p,
+.csguild-empty-state p {
+    color: var(--medium-gray);
+    font-size: 1rem;
+}
+
+/* ========================================
+   FLOATING RETURN TO DASHBOARD BUTTON - SAME AS UPDATES PAGE
+   ======================================== */
+
+.floating-return-btn {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    box-shadow: 0 4px 15px rgba(106, 13, 173, 0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+.floating-return-btn.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.floating-return-btn:hover {
+    transform: translateY(-3px) translateX(0);
+    box-shadow: 0 6px 20px rgba(106, 13, 173, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+/* Responsive styles for floating button */
+@media (max-width: 768px) {
+    .floating-return-btn {
+        bottom: 20px;
+        left: 20px;
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .floating-return-btn {
+        bottom: 15px;
+        left: 15px;
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+    
+    .floating-return-btn i {
+        font-size: 0.9rem;
+    }
+}
+
+/* ========================================
+   FOOTER - EXACT SAME AS UPDATES PAGE
+   ======================================== */
+
+.main-footer {
+    background: 
+        linear-gradient(135deg, rgba(75, 0, 130, 0.9) 0%, rgba(106, 13, 173, 0.9) 100%),
+        url('building.jpg') center/cover no-repeat;
+    color: white;
+    padding: 1rem 0 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.footer-section {
+    padding: 0.8rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* FIXED FOOTER ALIGNMENT - COMPLETE SOLUTION */
+.footer-content-wrapper-left {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.footer-logo-text-tapad {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    text-align: left;
+    width: 100%;
+    max-width: 100%;
+}
+
+.footer-logo {
+    height: 50px;
+    width: 50px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    flex-shrink: 0;
+    background-color: white;
+    border-radius: 50%;
+    object-fit: contain;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.3);
+}
+
+.footer-text-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+}
+
+/* FIXED: University name - proper alignment */
+.footer-university-name {
+    color: white;
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.3;
+    text-align: left;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: normal;
+    overflow-wrap: break-word;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    font-family: 'Inter', sans-serif;
+}
+
+/* FIXED: Core values - proper alignment */
+.core-values-footer {
+    font-size: 0.75rem;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.4;
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    flex-wrap: wrap;
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+}
+
+.value-item {
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    margin: 0;
+    display: inline-block;
+    white-space: nowrap;
+    font-size: 0.65rem;
+    line-height: 1.2;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.value-separator {
+    margin: 0;
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 0.65rem;
+    display: inline-block;
+}
+
+/* UPDATED FOOTER STYLES - Contact on left, Follow Us moved slightly to the left */
+.footer-contact-social-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    padding-left: 0;
+}
+
+.contact-info-left {
+    text-align: left;
+    flex: 0 1 auto;
+}
+
+.social-info-left {
+    text-align: right;
+    flex: 0 1 auto;
+    margin-left: 0;
+    margin-right: 2rem;
+}
+
+.contact-info-left {
+    min-width: 200px;
+}
+
+.social-info-left {
+    min-width: 150px;
+}
+
+.contact-info-left .contact-title {
+    text-align: left;
+    justify-content: flex-start;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+    position: relative;
+    display: inline-block;
+}
+
+.social-info-left .social-title {
+    text-align: right;
+    justify-content: flex-end;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+    position: relative;
+    display: inline-block;
+}
+
+.contact-info-left .contact-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 35px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+}
+
+.social-info-left .social-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: 0;
+    width: 35px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+}
+
+.contact-info-left .contact-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 0.6rem;
+    gap: 6px;
+    transition: transform 0.3s ease;
+    padding: 0.2rem;
+    border-radius: 6px;
+}
+
+.contact-info-left .contact-item:hover {
+    transform: translateX(3px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.contact-info-left .contact-item i {
+    color: var(--accent);
+    font-size: 0.9rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+.contact-info-left .contact-item span {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: left;
+}
+
+.social-info-left .social-links {
+    margin-top: 0.8rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+}
+
+.social-link {
+    color: white;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+}
+
+.social-link:hover {
+    color: white;
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background: #1877f2;
+}
+
+.copyright {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.75rem;
+    margin-bottom: 0.3rem;
+    text-align: center;
+}
+
+.main-footer hr {
+    border-color: rgba(255, 255, 255, 0.2);
+    margin: 1rem 0 0.8rem;
+    opacity: 0.5;
+}
+
+/* ========================================
+   BACK TO TOP BUTTON - SAME AS UPDATES PAGE
+   ======================================== */
+
+.back-to-top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: var(--primary-purple);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.back-to-top-btn:hover {
+    background: var(--accent);
+    color: var(--primary-purple);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Image Modal Navigation */
+.image-modal-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.image-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(75, 0, 130, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.image-nav-btn:hover {
+    background: rgba(75, 0, 130, 0.9);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.prev-btn {
+    left: 20px;
+}
+
+.next-btn {
+    right: 20px;
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 1200px) {
+    .college-title {
+        font-size: 1.6rem;
+    }
+    
+    .navbar-main .nav-link {
+        padding: 0.7rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .footer-university-name {
+        font-size: 0.8rem;
+    }
+    
+    .university-logo,
+    .college-logo {
+        height: 60px;
+        width: 60px;
+    }
+}
+
+@media (max-width: 992px) {
+    .navbar-main .nav-link {
+        padding: 0.6rem 1.2rem;
+        margin: 0.1rem 0;
+        font-size: 0.95rem;
+    }
+    
+    .college-title {
+        font-size: 1.4rem;
+    }
+    
+    .college-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .footer-section {
+        margin-bottom: 1.2rem;
+    }
+    
+    .university-logo,
+    .college-logo {
+        height: 55px;
+        width: 55px;
+    }
+    
+    .organization-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .org-logo {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .org-title-container h3 {
+        font-size: 1.5rem;
+    }
+    
+    .content-controls {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .officers-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .organization-section {
+        padding: 2rem 0;
+    }
+    
+    .content-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .university-logo,
+    .college-logo {
+        height: 50px;
+        width: 50px;
+    }
+    
+    .college-title {
+        font-size: 1.1rem;
+        text-align: center;
+        margin-top: 0.8rem;
+    }
+    
+    .college-subtitle {
+        text-align: center;
+        font-size: 0.8rem;
+    }
+    
+    .adviser-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .adviser-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .officers-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .legion-announcement-meta,
+    .csguild-announcement-meta,
+    .legion-happening-meta,
+    .csguild-happening-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .legion-image-gallery,
+    .csguild-image-gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .main-footer {
+        padding: 1rem 0 0.5rem;
+    }
+    
+    .contact-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .copyright {
+        font-size: 0.75rem;
+    }
+    
+    /* Mobile responsiveness for dropdowns - UPDATED FOR LEFT ALIGNMENT */
+    .navbar-main .navbar-nav {
+        gap: 0.3rem;
+        width: 100%;
+        text-align: left;
+    }
+    
+    .navbar-main .nav-link {
+        padding: 0.6rem 1rem;
+        margin: 0.1rem 0;
+        text-align: left;
+        font-size: 0.95rem;
+        width: 100%;
+    }
+    
+    /* DROPDOWN MENU POSITION FIX - APPEAR ON LEFT SIDE */
+    .navbar-main .dropdown-menu {
+        position: static !important;
+        float: none !important;
+        box-shadow: none;
+        border: none;
+        padding-left: 2rem;
+        background-color: rgba(230, 230, 250, 0.2);
+        min-width: auto;
+        width: 100%;
+        margin-top: 0.5rem;
+        transform: none !important;
+    }
+    
+    .navbar-main .dropdown-item {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+        text-align: left;
+        width: 100%;
+    }
+    
+    /* Ensure dropdown toggle aligns left */
+    .navbar-main .dropdown-toggle {
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .navbar-main .dropdown-toggle::after {
+        margin-left: auto;
+    }
+    
+    /* Remove any transform that might center the dropdown */
+    .navbar-main .dropdown-menu[data-bs-popper] {
+        left: 0;
+        right: auto;
+        margin-top: 0;
+    }
+
+    .header-auth-icon {
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+    
+    /* Footer Alignment Fixes for Mobile */
+    .footer-content-wrapper-left {
+        align-items: center; 
+        gap: 0.1rem;
+    }
+    
+    .footer-logo-text-tapad {
+        flex-direction: column; 
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        white-space: normal; 
+        margin-bottom: 0;
+        gap: 0.1rem; 
+    }
+    
+    .footer-text-group {
+        display: block; 
+        text-align: center;
+    }
+
+    .footer-logo {
+        margin-bottom: 0.5rem;
+    }
+    
+    .footer-university-name {
+        text-align: center;
+        white-space: normal;
+        max-width: 250px; 
+        margin-top: 0;
+        display: block; 
+        font-size: 0.7rem; 
+    }
+    
+    .core-values-footer {
+        display: flex; 
+        justify-content: center;
+        text-align: center;
+        margin-top: 0.5rem; 
+        margin-left: 0rem; 
+        flex-wrap: wrap; 
+        gap: 0.3rem;
+    }
+    
+    .value-item, .value-separator {
+        font-size: 0.6rem;
+        line-height: 1.1;
+    }
+}
+
+@media (max-width: 576px) {
+    .content-card {
+        padding: 1.5rem 1rem;
+    }
+    
+    .content-card h3 {
+        font-size: 1.5rem;
+    }
+    
+    .university-logo,
+    .college-logo {
+        height: 40px;
+        width: 40px;
+    }
+    
+    .college-title {
+        font-size: 0.9rem;
+    }
+    
+    .college-subtitle {
+        font-size: 0.7rem;
+    }
+    
+    .legion-image-gallery,
+    .csguild-image-gallery {
+        grid-template-columns: 1fr;
+    }
+    
+    .main-footer {
+        padding: 0.8rem 0 0.3rem;
+    }
+    
+    .contact-title {
+        font-size: 1rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .copyright {
+        font-size: 0.7rem;
+    }
+    
+    .footer-logo {
+        height: 35px;
+        width: 35px;
+    }
+    
+    .footer-university-name {
+        font-size: 0.6rem;
+        max-width: 150px;
+    }
+    
+    .core-values-footer {
+        font-size: 0.5rem;
+        margin-top: 0.5rem; 
+    }
+    
+    .value-item {
+        font-size: 0.48rem;
+        padding: 0.04rem 0.15rem;
+        margin: 0.01rem;
+        line-height: 1.1;
+    }
+    
+    .value-separator {
+        font-size: 0.48rem;
+    }
+    
+    .contact-title, .social-title {
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .contact-item {
+        font-size: 0.7rem;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .copyright {
+        font-size: 0.6rem;
+    }
+    
+    .social-link {
+        width: 30px;
+        height: 30px;
+    }
+    
+    /* Ensure dropdown items stay left-aligned on extra small screens */
+    .navbar-main .dropdown-menu {
+        padding-left: 1.5rem;
+    }
+    
+    .navbar-main .dropdown-item {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .college-title {
+        font-size: 0.8rem;
+    }
+    
+    .college-subtitle {
+        font-size: 0.65rem;
+    }
+    
+    .footer-logo {
+        height: 30px;
+        width: 30px;
+    }
+    
+    .footer-university-name {
+        font-size: 0.55rem;
+        max-width: 120px;
+    }
+    
+    .core-values-footer {
+        font-size: 0.45rem;
+        margin-top: 0.6rem; 
+    }
+    
+    .value-item {
+        font-size: 0.42rem;
+        padding: 0.03rem 0.1rem;
+        line-height: 1.1;
+    }
+
+    .value-separator {
+        font-size: 0.42rem;
+    }
+}
+
+
+
+/* Chatbot Notification Badge */
+.chatbot-toggle .chatbot-notification {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4757;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}

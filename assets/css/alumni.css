@@ -1,0 +1,1573 @@
+/* ALUMNI PAGE SPECIFIC STYLES */
+:root {
+    --primary-purple: #4b0082;
+    --secondary-purple: #6a0dad;
+    --accent: #ffcc00;
+    --light-purple: #f3e6ff;
+    --dark-gray: #333;
+    --medium-gray: #666;
+    --light-gray: #f8f9fa;
+    --success-green: #28a745;
+    --error-red: #dc3545;
+    --warning-yellow: #ffc107;
+    --info-blue: #17a2b8;
+    --button-gray: #f8f9fa;
+    --button-border: #dee2e6;
+    --button-text: #495057;
+}
+
+.alumni-main {
+    padding: 0;
+    background: #f8f9fa;
+    min-height: 70vh;
+    position: relative;
+}
+
+/* Content Area - where sections will be loaded */
+.alumni-content-area {
+    position: relative;
+    min-height: 500px;
+}
+
+/* Content Animation */
+.alumni-content-enter {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.alumni-content-exit {
+    animation: fadeOutDown 0.3s ease forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOutDown {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+/* Section Titles */
+.section-title {
+    font-family: 'Poppins', sans-serif;
+    color: var(--primary-purple);
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 2.2rem;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 2px;
+}
+
+.section-subtitle {
+    text-align: center;
+    color: var(--dark-gray);
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+/* Featured Alumni */
+.featured-alumni-section {
+    padding: 5rem 0;
+    background: white;
+}
+
+.featured-alumni-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2.5rem;
+    margin-top: 2rem;
+}
+
+.featured-alumni-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid #eaeaea;
+}
+
+.featured-alumni-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(106, 13, 173, 0.15);
+}
+
+.alumni-image {
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+    position: relative;
+}
+
+.alumni-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.featured-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--accent);
+    color: var(--primary-purple);
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    z-index: 2;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.featured-alumni-card:hover .alumni-image img {
+    transform: scale(1.05);
+}
+
+.alumni-info {
+    padding: 2rem;
+}
+
+.alumni-info h3 {
+    color: var(--primary-purple);
+    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.alumni-batch {
+    color: var(--secondary-purple);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.alumni-position {
+    color: var(--dark-gray);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.alumni-achievement {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    font-style: italic;
+}
+
+.alumni-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+
+/* ===== ALL BUTTONS - LIGHT GRAY DEFAULT, PURPLE ON HOVER/CLICK ===== */
+
+/* 1. Alumni View Details Button */
+.alumni-view-details {
+    background: var(--button-gray) !important;
+    color: var(--button-text) !important;
+    border: 2px solid var(--button-border) !important;
+    padding: 0.6rem 1.5rem;
+    border-radius: 30px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.alumni-view-details:hover {
+    background: var(--primary-purple) !important;
+    color: white !important;
+    border-color: var(--primary-purple) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(106, 13, 173, 0.3);
+}
+
+.alumni-view-details:active,
+.alumni-view-details:focus {
+    background: var(--secondary-purple) !important;
+    border-color: var(--secondary-purple) !important;
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(106, 13, 173, 0.3) !important;
+}
+
+/* 2. Giveback Button */
+.giveback-btn {
+    background: var(--button-gray) !important;
+    color: var(--button-text) !important;
+    border: 2px solid var(--button-border) !important;
+    padding: 0.8rem 1.5rem;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-size: 0.95rem;
+    margin-top: auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.giveback-btn:hover {
+    background: var(--primary-purple) !important;
+    color: white !important;
+    border-color: var(--primary-purple) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(106, 13, 173, 0.3);
+}
+
+.giveback-btn:active,
+.giveback-btn:focus {
+    background: var(--secondary-purple) !important;
+    border-color: var(--secondary-purple) !important;
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(106, 13, 173, 0.3) !important;
+}
+
+/* 3. Submit Update Button */
+.submit-update-btn {
+    background: var(--button-gray) !important;
+    color: var(--button-text) !important;
+    border: 2px solid var(--button-border) !important;
+    padding: 1rem 2rem;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem auto 0;
+    min-width: 200px;
+    position: relative;
+    overflow: hidden;
+}
+
+.submit-update-btn:hover {
+    background: var(--primary-purple) !important;
+    color: white !important;
+    border-color: var(--primary-purple) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(106, 13, 173, 0.3);
+}
+
+.submit-update-btn:active,
+.submit-update-btn:focus {
+    background: var(--secondary-purple) !important;
+    border-color: var(--secondary-purple) !important;
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(106, 13, 173, 0.3) !important;
+}
+
+/* 4. Clear Filters Button */
+#clear-filters {
+    background: var(--button-gray) !important;
+    color: var(--button-text) !important;
+    border: 2px solid var(--button-border) !important;
+    transition: all 0.3s ease;
+}
+
+#clear-filters:hover {
+    background: var(--primary-purple) !important;
+    color: white !important;
+    border-color: var(--primary-purple) !important;
+}
+
+#clear-filters:active,
+#clear-filters:focus {
+    background: var(--secondary-purple) !important;
+    border-color: var(--secondary-purple) !important;
+}
+
+/* 5. MODAL BUTTONS - All modal buttons light gray default */
+/* Primary buttons in modals (Submit, Connect with Alumni, Understood, Cancel, Close) */
+.modal .btn-primary,
+.modal .btn-secondary {
+    background: var(--button-gray) !important;
+    color: var(--button-text) !important;
+    border: 2px solid var(--button-border) !important;
+    transition: all 0.3s ease;
+}
+
+/* ALL MODAL BUTTONS TURN PURPLE ON HOVER - INCLUDING CANCEL & CLOSE */
+.modal .btn-primary:hover,
+.modal .btn-secondary:hover {
+    background: var(--primary-purple) !important;
+    color: white !important;
+    border-color: var(--primary-purple) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(106, 13, 173, 0.3);
+}
+
+.modal .btn-primary:active,
+.modal .btn-primary:focus,
+.modal .btn-secondary:active,
+.modal .btn-secondary:focus {
+    background: var(--secondary-purple) !important;
+    border-color: var(--secondary-purple) !important;
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(106, 13, 173, 0.3) !important;
+}
+
+/* Specific modal button IDs for extra targeting */
+#connectAlumniBtn,
+#givebackFormModal .btn-primary,
+#givebackFormModal .btn-secondary,
+#connectionModal .btn-primary,
+#connectionModal .btn-secondary,
+#alumniDetailsModal .btn-primary,
+#alumniDetailsModal .btn-secondary,
+#donationModal .btn-primary {
+    background: var(--button-gray) !important;
+    color: var(--button-text) !important;
+    border: 2px solid var(--button-border) !important;
+}
+
+#connectAlumniBtn:hover,
+#givebackFormModal .btn-primary:hover,
+#givebackFormModal .btn-secondary:hover,
+#connectionModal .btn-primary:hover,
+#connectionModal .btn-secondary:hover,
+#alumniDetailsModal .btn-primary:hover,
+#alumniDetailsModal .btn-secondary:hover,
+#donationModal .btn-primary:hover {
+    background: var(--primary-purple) !important;
+    color: white !important;
+    border-color: var(--primary-purple) !important;
+}
+
+/* 6. Quick Questions in Chatbot */
+.quick-question {
+    background: var(--button-gray) !important;
+    color: var(--button-text) !important;
+    border: 2px solid var(--button-border) !important;
+    transition: all 0.3s ease;
+}
+
+.quick-question:hover {
+    background: var(--primary-purple) !important;
+    color: white !important;
+    border-color: var(--primary-purple) !important;
+}
+
+.quick-question:active,
+.quick-question:focus {
+    background: var(--secondary-purple) !important;
+    border-color: var(--secondary-purple) !important;
+}
+
+/* Directory Section */
+.directory-section {
+    padding: 5rem 0;
+    background: var(--light-purple);
+}
+
+.directory-filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.search-box {
+    position: relative;
+    min-width: 300px;
+    flex: 1;
+}
+
+.search-box i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    z-index: 1;
+}
+
+.directory-filters input {
+    padding: 0.8rem 1.2rem 0.8rem 40px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.directory-filters select {
+    padding: 0.8rem 1.2rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    min-width: 180px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.directory-filters input:focus,
+.directory-filters select:focus {
+    outline: none;
+    border-color: var(--primary-purple);
+    box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.1);
+}
+
+.alumni-directory {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.directory-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid var(--accent);
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+}
+
+.directory-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(106, 13, 173, 0.15);
+    border-left-color: var(--primary-purple);
+}
+
+.directory-card h4 {
+    color: var(--primary-purple);
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.directory-program {
+    color: var(--secondary-purple);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.directory-company {
+    color: var(--dark-gray);
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+}
+
+.directory-position {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.directory-batch {
+    color: #888;
+    font-size: 0.85rem;
+    font-style: italic;
+    margin-top: 0.5rem;
+}
+
+/* Success Stories */
+.success-stories-section {
+    padding: 5rem 0;
+    background: white;
+}
+
+.success-stories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2.5rem;
+}
+
+.story-card {
+    background: var(--light-purple);
+    padding: 2rem;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    border: 1px solid transparent;
+}
+
+.story-card:hover {
+    background: var(--primary-purple);
+    transform: translateY(-5px);
+    border-color: var(--secondary-purple);
+}
+
+.story-card:hover .story-image img {
+    border-color: white;
+}
+
+.story-card:hover h3,
+.story-card:hover .story-text,
+.story-card:hover .story-author,
+.story-card:hover .story-author-details {
+    color: white;
+}
+
+.story-image {
+    flex-shrink: 0;
+}
+
+.story-image img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid var(--primary-purple);
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.story-content {
+    flex: 1;
+}
+
+.story-card h3 {
+    color: var(--primary-purple);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    transition: color 0.3s ease;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.story-text {
+    color: var(--dark-gray);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+    transition: color 0.3s ease;
+}
+
+.story-author-info {
+    border-top: 1px solid rgba(106, 13, 173, 0.1);
+    padding-top: 1rem;
+}
+
+.story-author {
+    color: var(--secondary-purple);
+    font-weight: 600;
+    transition: color 0.3s ease;
+    margin-bottom: 0.2rem;
+    font-size: 1.1rem;
+}
+
+.story-author-details {
+    color: #666;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+/* Events */
+.events-section {
+    padding: 5rem 0;
+    background: var(--light-purple);
+}
+
+.events-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.event-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    display: flex;
+    transition: all 0.3s ease;
+    border: 1px solid #eaeaea;
+    cursor: pointer;
+}
+
+.event-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px rgba(106, 13, 173, 0.2);
+}
+
+.event-date {
+    background: var(--primary-purple);
+    color: white;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+}
+
+.event-month {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.event-day {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.event-year {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    opacity: 0.9;
+}
+
+.event-details {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+.event-details h3 {
+    color: var(--primary-purple);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.event-time,
+.event-location {
+    color: var(--dark-gray);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.event-description {
+    color: #666;
+    line-height: 1.6;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+}
+
+/* Give Back */
+.giveback-section {
+    padding: 5rem 0;
+    background: white;
+}
+
+.giveback-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.giveback-card {
+    background: var(--light-purple);
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.giveback-card:hover {
+    border-color: var(--primary-purple);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(106, 13, 173, 0.15);
+}
+
+.giveback-icon {
+    font-size: 3rem;
+    color: var(--accent) !important;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.giveback-card:hover .giveback-icon {
+    color: var(--primary-purple) !important;
+    transform: scale(1.1);
+}
+
+.giveback-card h3 {
+    color: var(--primary-purple);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.giveback-card p {
+    color: var(--dark-gray);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    flex: 1;
+}
+
+/* Update Form */
+.update-form-section {
+    padding: 5rem 0;
+    background: var(--light-purple);
+}
+
+.update-form-container {
+    background: white;
+    padding: 3rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    color: var(--dark-gray);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-purple);
+    box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.1);
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: background 0.3s ease;
+}
+
+.checkbox-label:hover {
+    background: var(--light-purple);
+}
+
+.checkbox-label input {
+    width: auto;
+    margin: 0;
+}
+
+.checkbox-label span {
+    color: var(--dark-gray);
+    font-size: 0.95rem;
+}
+
+/* No Results */
+.no-results {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+    grid-column: 1 / -1;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.no-results i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #ccc;
+}
+
+.no-results p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== MODAL STYLES - UPDATED TO PREVENT GRAY SCREEN ===== */
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    background: var(--primary-purple);
+    color: white;
+    border-radius: 15px 15px 0 0;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1056;
+}
+
+.modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+.modal-body {
+    padding: 2rem;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* MODAL BACKDROP FIXES - IMPORTANT FOR NO GRAY SCREEN */
+.modal-backdrop {
+    z-index: 1040 !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.modal-backdrop.fade {
+    opacity: 0.5 !important;
+}
+
+.modal-backdrop.show {
+    opacity: 0.5 !important;
+}
+
+body.modal-open {
+    overflow: hidden;
+    padding-right: 0 !important;
+}
+
+/* Remove modal-open class when no modal is shown */
+body:not(.modal-open) {
+    overflow: auto !important;
+}
+
+/* Smooth modal transitions */
+.modal.fade .modal-dialog {
+    transform: translate(0, -50px);
+    transition: transform 0.3s ease-out;
+}
+
+.modal.show .modal-dialog {
+    transform: translate(0, 0);
+}
+
+/* Ensure modals have proper z-index */
+.modal {
+    z-index: 1055 !important;
+}
+
+/* Fix for multiple modals */
+.modal-backdrop + .modal-backdrop {
+    z-index: 1041 !important;
+}
+
+.modal + .modal .modal-backdrop {
+    z-index: 1042 !important;
+}
+
+/* Alumni Modal Content */
+.alumni-modal-content {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    padding: 0.5rem;
+}
+
+.alumni-modal-image img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.alumni-modal-header h2 {
+    color: var(--primary-purple);
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+}
+
+.alumni-modal-batch {
+    color: var(--secondary-purple);
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.alumni-modal-position h4 {
+    color: var(--dark-gray);
+    margin-bottom: 0.3rem;
+    font-size: 1.3rem;
+}
+
+.alumni-modal-company {
+    color: var(--medium-gray);
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+}
+
+.alumni-modal-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.alumni-modal-section:last-child {
+    border-bottom: none;
+}
+
+.alumni-modal-section h4 {
+    color: var(--primary-purple);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+}
+
+.alumni-modal-section p {
+    color: var(--dark-gray);
+    line-height: 1.7;
+}
+
+.alumni-modal-achievements ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.alumni-modal-achievements li {
+    margin-bottom: 0.7rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+    color: var(--dark-gray);
+}
+
+.alumni-modal-achievements i {
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 5px;
+}
+
+/* Donation Modal */
+.bank-details, .digital-payment, .important-notes {
+    padding: 1rem;
+    background: var(--light-purple);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.bank-details p, .digital-payment p {
+    margin-bottom: 0.5rem;
+}
+
+.important-notes ul {
+    margin-bottom: 0;
+    padding-left: 1.2rem;
+}
+
+.important-notes li {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+/* Connection Form */
+#connectionForm .form-label {
+    font-weight: 500;
+    color: var(--dark-gray);
+    margin-bottom: 0.5rem;
+}
+
+#connectionForm .form-control,
+#connectionForm .form-select {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+#connectionForm .form-control:focus,
+#connectionForm .form-select:focus {
+    border-color: var(--primary-purple);
+    box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.1);
+}
+
+/* Giveback Form */
+#givebackForm .row {
+    margin-bottom: 1rem;
+}
+
+#givebackForm .form-label {
+    font-weight: 500;
+    color: var(--dark-gray);
+    margin-bottom: 0.5rem;
+}
+
+#givebackForm .form-control {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+#givebackForm .form-control:focus {
+    border-color: var(--primary-purple);
+    box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.1);
+}
+
+/* Animation for notifications */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.custom-notification {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 9999;
+    max-width: 400px;
+    animation: slideIn 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.custom-notification.slide-out {
+    animation: slideOut 0.3s ease forwards;
+}
+
+.custom-notification.success {
+    background: var(--success-green);
+    color: white;
+}
+
+.custom-notification.error {
+    background: var(--error-red);
+    color: white;
+}
+
+.custom-notification.warning {
+    background: var(--warning-yellow);
+    color: #212529;
+}
+
+.custom-notification.info {
+    background: var(--info-blue);
+    color: white;
+}
+
+.custom-notification .notification-close {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+    margin-left: auto;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-notification .notification-close:hover {
+    opacity: 1;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+/* Disabled button styles */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Success state for forms */
+.form-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    border: 2px solid var(--success-green);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+/* Transition for form states */
+.submit-update-btn, .giveback-btn, .alumni-view-details {
+    transition: all 0.3s ease !important;
+}
+
+.submit-update-btn:disabled,
+.giveback-btn:disabled,
+.alumni-view-details:disabled {
+    background: #6c757d !important;
+    cursor: not-allowed !important;
+}
+
+/* Form success message */
+.success-message {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(40, 167, 69, 0.1);
+    border-radius: 10px;
+    margin: 2rem 0;
+    border-left: 4px solid var(--success-green);
+}
+
+.success-message i {
+    color: var(--success-green);
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.success-message h4 {
+    color: var(--success-green);
+    margin-bottom: 1rem;
+}
+
+/* Confirmation Modal Styles */
+.confirmation-modal .modal-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.confirmation-modal .modal-body {
+    text-align: center;
+    padding: 2rem;
+}
+
+.confirmation-icon {
+    font-size: 4rem;
+    color: var(--primary-purple);
+    margin-bottom: 1.5rem;
+}
+
+.confirmation-modal .modal-footer {
+    justify-content: center;
+    padding: 1rem 2rem;
+    border-top: 1px solid #eee;
+}
+
+/* Form validation styles */
+.is-invalid {
+    border-color: var(--error-red) !important;
+}
+
+.is-valid {
+    border-color: var(--success-green) !important;
+}
+
+.invalid-feedback {
+    color: var(--error-red);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: none;
+}
+
+.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+/* ===== BUTTON EFFECTS ===== */
+
+/* Ripple effect */
+.button-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    width: 100px;
+    height: 100px;
+    margin-top: -50px;
+    margin-left: -50px;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+}
+
+/* Button pressed effect */
+.button-pressed {
+    transform: scale(0.98) !important;
+    transition: transform 0.1s ease !important;
+}
+
+/* Card pressed effect */
+.card-pressed {
+    transform: translateY(0) !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Smooth transitions for all buttons */
+.alumni-view-details,
+.giveback-btn,
+.submit-update-btn,
+.modal .btn-primary,
+.modal .btn-secondary,
+.quick-question,
+#clear-filters {
+    transition: all 0.2s ease !important;
+}
+
+/* Focus states */
+button:focus,
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+    outline: none !important;
+}
+
+/* Accessibility focus ring */
+button:focus-visible,
+.btn:focus-visible {
+    outline: 2px solid var(--accent) !important;
+    outline-offset: 2px !important;
+}
+
+/* GIVEBACK ICONS - GOLD COLOR */
+.giveback-card .fa-handshake,
+.giveback-card .fa-chalkboard-teacher,
+.giveback-card .fa-donate,
+.giveback-card .fa-briefcase,
+.giveback-card i {
+    color: var(--accent) !important;
+}
+
+.giveback-icon i {
+    text-shadow: 0 2px 4px rgba(255, 204, 0, 0.3);
+}
+
+/* Gold color utility */
+.text-gold {
+    color: var(--accent) !important;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .alumni-modal-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .alumni-modal-image {
+        text-align: center;
+    }
+    
+    .alumni-modal-image img {
+        max-width: 250px;
+        height: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+    
+    .featured-alumni-container,
+    .success-stories,
+    .giveback-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .events-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .event-card {
+        flex-direction: column;
+    }
+    
+    .event-date {
+        flex-direction: row;
+        justify-content: center;
+        gap: 1rem;
+        padding: 1rem;
+        min-width: auto;
+    }
+    
+    .directory-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .directory-filters input,
+    .directory-filters select {
+        width: 100%;
+        max-width: none;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .alumni-actions {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .story-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .story-image {
+        margin: 0 auto;
+    }
+    
+    .update-form-container {
+        padding: 2rem;
+        margin: 0 1rem;
+    }
+    
+    .alumni-modal-content {
+        padding: 0;
+    }
+    
+    .modal-dialog {
+        margin: 1rem;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .bank-details, .digital-payment, .important-notes {
+        padding: 0.75rem;
+    }
+    
+    .custom-notification {
+        max-width: calc(100% - 40px);
+        right: 20px;
+        left: 20px;
+        top: 80px;
+    }
+    
+    /* Mobile press effects */
+    .featured-alumni-card:active,
+    .directory-card:active,
+    .story-card:active,
+    .event-card:active,
+    .giveback-card:active {
+        transform: scale(0.98) !important;
+    }
+    
+    /* Larger touch targets for mobile */
+    .alumni-view-details,
+    .giveback-btn,
+    .submit-update-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+@media (max-width: 576px) {
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .section-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    .featured-alumni-card,
+    .story-card,
+    .directory-card,
+    .giveback-card {
+        padding: 1.5rem;
+    }
+    
+    .alumni-info h3 {
+        font-size: 1.2rem;
+    }
+    
+    .update-form-container {
+        padding: 1.5rem;
+    }
+    
+    .directory-filters {
+        padding: 1rem;
+    }
+    
+    .custom-notification {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Hover effects for clickable elements */
+.featured-alumni-card:hover .alumni-view-details,
+.directory-card:hover,
+.story-card:hover,
+.event-card:hover,
+.giveback-card:hover {
+    cursor: pointer;
+}
+
+/* Loading state */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Print styles */
+@media print {
+    .alumni-main {
+        background: white;
+    }
+    
+    .alumni-content-area {
+        min-height: auto;
+    }
+    
+    .featured-alumni-card,
+    .directory-card,
+    .story-card,
+    .event-card,
+    .giveback-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+    
+    .no-print {
+        display: none;
+    }
+}

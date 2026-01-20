@@ -1,0 +1,1742 @@
+/* academics.css - Complete Styles for Academics Page */
+:root {
+    --primary-purple: #4b0082;
+    --secondary-purple: #6a0dad;
+    --light-purple: #e6e6fa;
+    --accent: #ffd700;
+    --dark-gray: #2d3e50;
+    --light-gray: #f8f9fa;
+    --medium-gray: #6c757d;
+    --gold: #ffd700;
+    --logout-color: #dc3545;
+}
+
+/* Common Body Styles */
+body {
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    background-color: #ffffff;
+    padding-top: 0;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    touch-action: pan-y;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Visually hidden but accessible to screen readers */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* UNIVERSITY HEADER */
+.university-header {
+    background: 
+        linear-gradient(135deg, rgba(75, 0, 130, 0.85) 0%, rgba(106, 13, 173, 0.85) 100%),
+        url('Building.jpg') center/cover no-repeat;
+    color: white;
+    padding: 1rem 0;
+    border-bottom: 5px solid var(--gold);
+    position: relative;
+    overflow: hidden;
+}
+
+.university-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.university-logo,
+.college-logo {
+    height: 70px;
+    width: 70px;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+    background-color: white;
+    border-radius: 50%;
+    object-fit: contain;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+    position: relative;
+    z-index: 2;
+}
+
+.university-logo {
+    margin-right: 0;
+}
+
+.college-logo {
+    margin-left: -5px;
+}
+
+.college-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: white;
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    line-height: 1.2;
+    word-wrap: break-word;
+    text-align: left;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 2;
+}
+
+.college-subtitle {
+    font-size: 1rem;
+    color: var(--accent);
+    font-weight: 500;
+    margin: 0;
+    text-align: left;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 2;
+}
+
+/* Enhanced Auth Icon Styles */
+.header-auth-icon {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: auto;
+    position: relative;
+    z-index: 2;
+}
+
+.auth-icon-link {
+    color: white;
+    font-size: 1.8rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    text-decoration: none;
+    border: none;
+    outline: none;
+}
+
+.auth-icon-link:hover {
+    color: var(--accent);
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+#logout-icon-link {
+    color: white !important;
+    background-color: rgba(106, 13, 173, 0.2) !important;
+}
+
+#logout-icon-link:hover {
+    background-color: rgba(106, 13, 173, 0.3) !important;
+    color: var(--accent) !important;
+}
+
+/* NAVIGATION BAR */
+.navbar-main {
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+    border-top: 1px solid var(--light-purple);
+    margin-bottom: 1rem;
+}
+
+.navbar-main .navbar-collapse {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navbar-main .navbar-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.navbar-main .nav-link {
+    font-weight: 500;
+    color: var(--dark-gray);
+    padding: 0.7rem 1.5rem;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin: 0 0.3rem;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.navbar-main .nav-link:hover,
+.navbar-main .nav-link.active {
+    color: var(--primary-purple);
+    background-color: var(--light-purple);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(106, 13, 173, 0.2);
+}
+
+/* Enhanced Dropdown Hover Styles - ADDED FOR ACADEMICS PAGE */
+@media (min-width: 992px) {
+    .navbar-main .dropdown:hover > .dropdown-menu {
+        display: block;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
+    .navbar-main .dropdown-menu {
+        display: block;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+    }
+    
+    .navbar-main .dropdown-menu.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+}
+
+/* Dropdown Styles */
+.navbar-main .dropdown-menu {
+    border: none;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 0.8rem;
+    min-width: 220px;
+    border: 2px solid var(--light-purple);
+    margin-top: 0.5rem;
+}
+
+.navbar-main .dropdown-item {
+    padding: 0.7rem 1rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    color: var(--dark-gray);
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin: 0.1rem 0;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.navbar-main .dropdown-item i {
+    width: 20px;
+    margin-right: 0.5rem;
+    color: var(--primary-purple);
+}
+
+.navbar-main .dropdown-item:hover {
+    background-color: var(--light-purple);
+    color: var(--primary-purple);
+    transform: translateX(5px);
+}
+
+.navbar-main .dropdown-item:active {
+    background-color: var(--primary-purple);
+    color: white;
+}
+
+.navbar-main .dropdown-toggle::after {
+    margin-left: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.navbar-main .show > .dropdown-toggle::after {
+    transform: rotate(180deg);
+}
+
+/* ACADEMICS PAGE SPECIFIC STYLES */
+.academics-section {
+    padding: 3rem 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 80vh;
+}
+
+.content-section {
+    display: none;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.content-section.active-section {
+    display: block;
+}
+
+.content-card {
+    background: white;
+    padding: 3rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    transition: box-shadow 0.3s ease;
+}
+
+.content-card:hover {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* UPDATED: Changed heading color to purple */
+.content-card h3 {
+    color: var(--primary-purple); /* Changed from #000000 to purple */
+    font-weight: 700;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 1rem;
+}
+
+.content-card h3 i {
+    color: var(--primary-purple);
+    margin-right: 1rem;
+}
+
+/* Programs Grid - FIXED VERSION */
+.programs-grid {
+    display: grid;
+    gap: 2rem;
+    margin-top: 2rem;
+    transition: all 0.3s ease;
+}
+
+.programs-single {
+    grid-template-columns: 1fr;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.programs-double {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.programs-triple {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.programs-quad {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.programs-multiple {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+}
+
+/* Program Card Styles - ENHANCED */
+.program-card.detailed {
+    background: var(--light-purple);
+    padding: 2rem;
+    border-radius: 15px;
+    border-left: 5px solid var(--accent);
+    transition: box-shadow 0.3s ease, border-left-color 0.3s ease, transform 0.3s ease;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.program-card.detailed:hover {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    border-left-color: var(--secondary-purple);
+    transform: translateY(-5px);
+}
+
+.admin-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, var(--accent) 0%, #ffed4e 100%);
+    color: var(--dark-gray);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+    z-index: 2;
+}
+
+.program-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.program-header i {
+    font-size: 2.5rem;
+    color: var(--primary-purple);
+    flex-shrink: 0;
+}
+
+.program-header h4 {
+    color: var(--primary-purple);
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.4rem;
+    line-height: 1.3;
+}
+
+.program-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.program-details p {
+    color: var(--dark-gray);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.program-features {
+    margin-top: auto;
+}
+
+.program-features h5 {
+    color: var(--primary-purple);
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.program-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* FIXED: Removed arrow bullets from career opportunities */
+.program-features ul li {
+    padding: 0.5rem 0;
+    color: var(--dark-gray);
+    border-bottom: 1px solid rgba(106, 13, 173, 0.1);
+    transition: all 0.3s ease;
+    padding-left: 0 !important;
+}
+
+.program-features ul li:last-child {
+    border-bottom: none;
+}
+
+.program-features ul li:hover {
+    color: var(--primary-purple);
+    padding-left: 5px !important;
+}
+
+/* Tabs Navigation */
+.program-tabs {
+    margin-top: 2rem;
+}
+
+.tab-nav {
+    display: flex;
+    background: var(--light-purple);
+    border-radius: 10px;
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+    gap: 0.5rem;
+}
+
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--dark-gray);
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.tab-btn:hover {
+    background: rgba(75, 0, 130, 0.1);
+    color: var(--primary-purple);
+}
+
+.tab-btn.active {
+    background: var(--primary-purple);
+    color: white;
+    box-shadow: 0 4px 15px rgba(75, 0, 130, 0.3);
+}
+
+.tab-pane {
+    display: none;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+/* PDF Viewer Styles */
+.pdf-viewer-container {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    border: 2px solid var(--light-purple);
+}
+
+.pdf-preview-placeholder {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed #ced4da;
+    border-radius: 10px;
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.preview-content .preview-icon {
+    font-size: 4rem;
+    color: #dc3545;
+    margin-bottom: 1rem;
+}
+
+.preview-content h5 {
+    color: var(--dark-gray);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+/* Button Group for Side by Side Buttons - Tapad Style */
+.button-group-tapad {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+/* FIXED: Buttons start as LIGHT GRAY, become PURPLE on hover */
+.btn-view-pdf, .btn-download-pdf {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-width: 140px;
+    flex: 0 0 auto;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    
+    /* DEFAULT STATE: LIGHT GRAY */
+    background: #f8f9fa;
+    color: var(--medium-gray);
+    border: 2px solid #dee2e6;
+}
+
+/* HOVER STATE: BECOMES PURPLE */
+.btn-view-pdf:hover:not(:disabled), 
+.btn-download-pdf:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(75, 0, 130, 0.3);
+    border-color: var(--primary-purple);
+}
+
+/* ACTIVE/CLICKED STATE: STAY PURPLE */
+.btn-view-pdf:active:not(:disabled),
+.btn-download-pdf:active:not(:disabled) {
+    background: linear-gradient(135deg, var(--secondary-purple) 0%, var(--primary-purple) 100%);
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(75, 0, 130, 0.4);
+}
+
+/* DISABLED STATE */
+.btn-view-pdf:disabled, .btn-download-pdf:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    background: #f8f9fa;
+    color: var(--medium-gray);
+    border: 2px solid #dee2e6;
+}
+
+.schedule-notes .alert {
+    border-radius: 10px;
+    border-left: 4px solid var(--accent);
+}
+
+/* PDF Calendar Viewer Styles */
+.pdf-placeholder {
+    text-align: center;
+    padding: 2rem;
+}
+
+.pdf-placeholder .pdf-icon {
+    font-size: 4rem;
+    color: #dc3545;
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.pdf-viewer-container:hover .pdf-icon {
+    transform: scale(1.1);
+}
+
+.pdf-placeholder h4 {
+    color: var(--primary-purple);
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.pdf-placeholder p {
+    color: var(--dark-gray);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.view-pdf-btn {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%);
+    border: none;
+    padding: 1rem 2.5rem;
+    font-weight: 600;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(75, 0, 130, 0.3);
+    color: white;
+}
+
+.view-pdf-btn:hover {
+    background: linear-gradient(135deg, var(--secondary-purple) 0%, var(--primary-purple) 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(75, 0, 130, 0.4);
+    color: white;
+}
+
+/* PDF Embed Container */
+.pdf-embed-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    border: 1px solid #e9ecef;
+}
+
+.pdf-header {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%);
+    color: white;
+    padding: 1.2rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid var(--accent);
+}
+
+.pdf-header h5 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.close-pdf {
+    color: white;
+    border-color: white;
+    border-radius: 25px;
+    padding: 0.4rem 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.close-pdf:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    transform: scale(1.05);
+}
+
+.pdf-frame-container {
+    padding: 0;
+}
+
+.pdf-frame-container iframe {
+    border: none;
+    display: block;
+}
+
+/* PDF Info Section */
+.pdf-info {
+    background: var(--light-purple);
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    border-left: 4px solid var(--accent);
+}
+
+.pdf-info p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.pdf-info a {
+    color: var(--primary-purple);
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.pdf-info a:hover {
+    color: var(--secondary-purple);
+    text-decoration: underline;
+}
+
+/* Enhanced Notification Styles - SA TOP NA POSITION */
+.notification {
+    position: fixed;
+    top: 100px; /* Adjusted to appear below the header */
+    right: 20px;
+    z-index: 9999;
+    min-width: 280px;
+    max-width: 350px;
+    padding: 12px 15px;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideInTop 0.3s ease-out;
+    border-left: 4px solid;
+}
+
+.notification.alert-info {
+    border-left-color: #0dcaf0;
+    background: #d1ecf1;
+    color: #055160;
+}
+
+.notification.alert-warning {
+    border-left-color: #ffc107;
+    background: #fff3cd;
+    color: #664d03;
+}
+
+.notification.alert-danger, .notification.alert-error {
+    border-left-color: #dc3545;
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.notification.alert-success {
+    border-left-color: #198754;
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.notification .btn-close {
+    padding: 0.75rem;
+    font-size: 0.7rem;
+}
+
+/* Animation gikan sa taas */
+@keyframes slideInTop {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ======================================== */
+/* FLOATING RETURN TO DASHBOARD BUTTON */
+/* ======================================== */
+
+.floating-return-btn {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    box-shadow: 0 4px 15px rgba(106, 13, 173, 0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+.floating-return-btn.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.floating-return-btn:hover {
+    transform: translateY(-3px) translateX(0);
+    box-shadow: 0 6px 20px rgba(106, 13, 173, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+/* Back to Top Button */
+.back-to-top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: var(--primary-purple);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.back-to-top-btn:hover {
+    background: var(--accent);
+    color: var(--primary-purple);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* FOOTER - SAME AS HOMEPAGE */
+.main-footer {
+    background: 
+        linear-gradient(135deg, rgba(75, 0, 130, 0.9) 0%, rgba(106, 13, 173, 0.9) 100%),
+        url('building.jpg') center/cover no-repeat;
+    color: white;
+    padding: 1rem 0 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.footer-section {
+    padding: 0.8rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* FIXED FOOTER ALIGNMENT - COMPLETE SOLUTION */
+.footer-content-wrapper-left {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.footer-logo-text-tapad {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    text-align: left;
+    width: 100%;
+    max-width: 100%;
+}
+
+.footer-logo {
+    height: 50px;
+    width: 50px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    flex-shrink: 0;
+    background-color: white;
+    border-radius: 50%;
+    object-fit: contain;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.3);
+}
+
+.footer-text-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+}
+
+/* FIXED: University name - proper alignment */
+.footer-university-name {
+    color: white;
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.3;
+    text-align: left;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: normal;
+    overflow-wrap: break-word;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    font-family: 'Inter', sans-serif;
+}
+
+/* FIXED: Core values - proper alignment */
+.core-values-footer {
+    font-size: 0.75rem;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.4;
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    flex-wrap: wrap;
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+}
+
+.value-item {
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    margin: 0;
+    display: inline-block;
+    white-space: nowrap;
+    font-size: 0.65rem;
+    line-height: 1.2;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.value-separator {
+    margin: 0;
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 0.65rem;
+    display: inline-block;
+}
+
+/* UPDATED FOOTER STYLES - Contact on left, Follow Us moved slightly to the left */
+.footer-contact-social-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* This will push items to opposite ends */
+    align-items: flex-start;
+    width: 100%;
+    padding-left: 0;
+}
+
+.contact-info-left {
+    text-align: left;
+    flex: 0 1 auto;
+}
+
+.social-info-left {
+    text-align: right; /* Align to the right */
+    flex: 0 1 auto;
+    margin-left: 0; /* Remove auto margin to bring it closer */
+    margin-right: 2rem; /* Add some space from the right edge */
+}
+
+.contact-info-left {
+    min-width: 200px;
+}
+
+.social-info-left {
+    min-width: 150px;
+}
+
+.contact-info-left .contact-title {
+    text-align: left;
+    justify-content: flex-start;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+    position: relative;
+    display: inline-block;
+}
+
+.social-info-left .social-title {
+    text-align: right; /* Align title to right */
+    justify-content: flex-end;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+    position: relative;
+    display: inline-block;
+}
+
+.contact-info-left .contact-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 35px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+}
+
+.social-info-left .social-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: 0; /* Align to right instead of left */
+    width: 35px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+}
+
+.contact-info-left .contact-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 0.6rem;
+    gap: 6px;
+    transition: transform 0.3s ease;
+    padding: 0.2rem;
+    border-radius: 6px;
+}
+
+.contact-info-left .contact-item:hover {
+    transform: translateX(3px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.contact-info-left .contact-item i {
+    color: var(--accent);
+    font-size: 0.9rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+.contact-info-left .contact-item span {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: left;
+}
+
+.social-info-left .social-links {
+    margin-top: 0.8rem;
+    display: flex;
+    justify-content: flex-end; /* Align social links to right */
+    gap: 0.6rem;
+}
+
+.social-link {
+    color: white;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+}
+
+.social-link:hover {
+    color: white;
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background: #1877f2;
+}
+
+.copyright {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.75rem;
+    margin-bottom: 0.3rem;
+    text-align: center;
+}
+
+.main-footer hr {
+    border-color: rgba(255, 255, 255, 0.2);
+    margin: 1rem 0 0.8rem;
+    opacity: 0.5;
+}
+
+.quick-links {
+    display: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.program-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+    .programs-triple {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .programs-multiple {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+    
+    .college-title {
+        font-size: 1.6rem;
+    }
+    
+    .navbar-main .nav-link {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.95rem;
+    }
+    
+    .footer-university-name {
+        font-size: 0.55rem;
+    }
+    
+    .university-logo,
+    .college-logo {
+        height: 60px;
+        width: 60px;
+    }
+}
+
+@media (max-width: 992px) {
+    .programs-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .programs-double,
+    .programs-triple,
+    .programs-quad,
+    .programs-multiple {
+        grid-template-columns: 1fr;
+    }
+    
+    .navbar-main .nav-link {
+        padding: 0.6rem 1rem;
+        margin: 0.1rem 0;
+        font-size: 0.9rem;
+    }
+    
+    .college-title {
+        font-size: 1.4rem;
+    }
+    
+    .college-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .footer-section {
+        margin-bottom: 1.2rem;
+    }
+    
+    .university-logo,
+    .college-logo {
+        height: 55px;
+        width: 55px;
+    }
+    
+    .program-card.detailed {
+        padding: 1.5rem;
+    }
+    
+    .program-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .program-header i {
+        font-size: 2rem;
+    }
+    
+    .program-header h4 {
+        font-size: 1.2rem;
+    }
+}
+
+/* MOBILE RESPONSIVE - UPDATED DROPDOWN POSITIONING */
+@media (max-width: 768px) {
+    .academics-section {
+        padding: 2rem 0;
+    }
+    
+    .content-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .university-logo,
+    .college-logo {
+        height: 50px;
+        width: 50px;
+    }
+    
+    .college-title {
+        font-size: 1.1rem;
+        text-align: center;
+        margin-top: 0.8rem;
+    }
+    
+    .college-subtitle {
+        text-align: center;
+        font-size: 0.8rem;
+    }
+    
+    .program-card.detailed {
+        padding: 1.2rem;
+        margin: 0 0.5rem;
+    }
+    
+    .program-header {
+        gap: 0.8rem;
+    }
+    
+    .program-header i {
+        font-size: 1.8rem;
+    }
+    
+    .program-header h4 {
+        font-size: 1.1rem;
+    }
+    
+    .program-features h5 {
+        font-size: 1rem;
+    }
+    
+    .tab-nav, .year-navigation {
+        flex-direction: column;
+    }
+    
+    .tab-btn, .year-btn {
+        min-width: auto;
+    }
+    
+    .button-group-tapad {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .btn-view-pdf, .btn-download-pdf {
+        min-width: 120px;
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    
+    .pdf-viewer-container {
+        padding: 1.5rem;
+    }
+    
+    .pdf-preview-placeholder {
+        padding: 2rem 1rem;
+    }
+    
+    .preview-content .preview-icon {
+        font-size: 3rem;
+    }
+    
+    .pdf-placeholder .pdf-icon {
+        font-size: 3rem;
+    }
+    
+    .pdf-placeholder h4 {
+        font-size: 1.3rem;
+    }
+    
+    .pdf-placeholder p {
+        font-size: 1rem;
+    }
+    
+    .view-pdf-btn {
+        padding: 0.8rem 2rem;
+        font-size: 1rem;
+    }
+    
+    .pdf-header {
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .pdf-header h5 {
+        font-size: 1.1rem;
+    }
+    
+    .pdf-frame-container iframe {
+        height: 500px;
+    }
+    
+    .pdf-info p {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .main-footer {
+        padding: 1rem 0 0.5rem;
+    }
+    
+    .contact-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .copyright {
+        font-size: 0.75rem;
+    }
+    
+    /* Mobile responsiveness for dropdowns - UPDATED FOR LEFT ALIGNMENT */
+    .navbar-main .navbar-nav {
+        gap: 0.3rem;
+        width: 100%;
+        text-align: left;
+    }
+    
+    .navbar-main .nav-link {
+        padding: 0.6rem 1rem;
+        margin: 0.1rem 0;
+        text-align: left;
+        font-size: 0.95rem;
+        width: 100%;
+    }
+    
+    /* DROPDOWN MENU POSITION FIX - APPEAR ON LEFT SIDE */
+    .navbar-main .dropdown-menu {
+        position: static !important;
+        float: none !important;
+        box-shadow: none;
+        border: none;
+        padding-left: 2rem;
+        background-color: rgba(230, 230, 250, 0.2);
+        min-width: auto;
+        width: 100%;
+        margin-top: 0.5rem;
+        transform: none !important;
+    }
+    
+    .navbar-main .dropdown-item {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+        text-align: left;
+        width: 100%;
+    }
+    
+    /* Ensure dropdown toggle aligns left */
+    .navbar-main .dropdown-toggle {
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .navbar-main .dropdown-toggle::after {
+        margin-left: auto;
+    }
+    
+    /* Remove any transform that might center the dropdown */
+    .navbar-main .dropdown-menu[data-bs-popper] {
+        left: 0;
+        right: auto;
+        margin-top: 0;
+    }
+
+    .header-auth-icon {
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+    
+    /* Footer Alignment Fixes for Mobile */
+    .footer-content-wrapper-left {
+        align-items: center; 
+        gap: 0.1rem;
+    }
+    
+    .footer-logo-text-tapad {
+        flex-direction: column; 
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        white-space: normal; 
+        margin-bottom: 0;
+        gap: 0.1rem; 
+    }
+    
+    .footer-text-group {
+        display: block; 
+        text-align: center;
+    }
+
+    .footer-logo {
+        margin-bottom: 0.5rem;
+    }
+    
+    .footer-university-name {
+        text-align: center;
+        white-space: normal;
+        max-width: 250px; 
+        margin-top: 0;
+        display: block; 
+        font-size: 0.7rem; 
+    }
+    
+    .core-values-footer {
+        display: flex; 
+        justify-content: center;
+        text-align: center;
+        margin-top: 0.5rem; 
+        margin-left: 0rem; 
+        flex-wrap: wrap; 
+        gap: 0.3rem;
+    }
+    
+    .value-item, .value-separator {
+        font-size: 0.6rem;
+        line-height: 1.1;
+    }
+    
+    /* Mobile notification adjustment */
+    .notification {
+        top: 80px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    /* Floating button mobile adjustment */
+    .floating-return-btn {
+        bottom: 20px;
+        left: 20px;
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .content-card {
+        padding: 1.5rem 1rem;
+    }
+    
+    .content-card h3 {
+        font-size: 1.5rem;
+    }
+    
+    .university-logo,
+    .college-logo {
+        height: 40px;
+        width: 40px;
+    }
+    
+    .college-title {
+        font-size: 0.9rem;
+    }
+    
+    .college-subtitle {
+        font-size: 0.7rem;
+    }
+    
+    .program-card.detailed {
+        padding: 1rem;
+        margin: 0 0.2rem;
+    }
+    
+    .program-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+    
+    .program-header i {
+        font-size: 1.6rem;
+    }
+    
+    .program-header h4 {
+        font-size: 1rem;
+    }
+    
+    .program-features ul li {
+        padding: 0.4rem 0;
+        padding-left: 1.2rem;
+        font-size: 0.9rem;
+    }
+    
+    .pdf-viewer-container {
+        padding: 1.5rem;
+    }
+    
+    .pdf-frame-container iframe {
+        height: 400px;
+    }
+    
+    .pdf-viewer-container {
+        padding: 1.5rem 1rem;
+    }
+    
+    .button-group-tapad {
+        flex-direction: row;
+        gap: 0.8rem;
+    }
+    
+    .btn-view-pdf, .btn-download-pdf {
+        min-width: 110px;
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .main-footer {
+        padding: 0.8rem 0 0.3rem;
+    }
+    
+    .contact-title {
+        font-size: 1rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .copyright {
+        font-size: 0.7rem;
+    }
+    
+    .footer-logo {
+        height: 35px;
+        width: 35px;
+    }
+    
+    .footer-university-name {
+        font-size: 0.6rem;
+        max-width: 150px;
+    }
+    
+    .core-values-footer {
+        font-size: 0.5rem;
+        margin-top: 0.5rem; 
+    }
+    
+    .value-item {
+        font-size: 0.48rem;
+        padding: 0.04rem 0.15rem;
+        margin: 0.01rem;
+        line-height: 1.1;
+    }
+    
+    .value-separator {
+        font-size: 0.48rem;
+    }
+    
+    .contact-title, .social-title {
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .contact-item {
+        font-size: 0.7rem;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .copyright {
+        font-size: 0.6rem;
+    }
+    
+    .social-link {
+        width: 30px;
+        height: 30px;
+    }
+    
+    /* Ensure dropdown items stay left-aligned on extra small screens */
+    .navbar-main .dropdown-menu {
+        padding-left: 1.5rem;
+    }
+    
+    .navbar-main .dropdown-item {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Floating button small screen adjustment */
+    .floating-return-btn {
+        bottom: 15px;
+        left: 15px;
+        padding: 8px 14px;
+        font-size: 0.8rem;
+    }
+    
+    .floating-return-btn i {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .college-title {
+        font-size: 0.8rem;
+    }
+    
+    .college-subtitle {
+        font-size: 0.65rem;
+    }
+    
+    .button-group-tapad {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+    
+    .btn-view-pdf, .btn-download-pdf {
+        min-width: 100px;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+    }
+    
+    .footer-logo {
+        height: 30px;
+        width: 30px;
+    }
+    
+    .footer-university-name {
+        font-size: 0.55rem;
+        max-width: 120px;
+    }
+    
+    .core-values-footer {
+        font-size: 0.45rem;
+        margin-top: 0.6rem; 
+    }
+    
+    .value-item {
+        font-size: 0.42rem;
+        padding: 0.03rem 0.1rem;
+        line-height: 1.1;
+    }
+
+    .value-separator {
+        font-size: 0.42rem;
+    }
+    
+    /* Floating button extra small screen */
+    .floating-return-btn {
+        bottom: 10px;
+        left: 10px;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+    }
+    
+    .floating-return-btn i {
+        font-size: 0.8rem;
+    }
+}
+
+/* Touch-friendly for mobile */
+@media (hover: none) and (pointer: coarse) {
+    .navbar-main .dropdown-item:hover {
+        transform: none;
+    }
+    
+    .floating-return-btn:hover {
+        transform: none;
+    }
+}
+
+/* PREVENT LANDSCAPE ROTATION ISSUES */
+@media screen and (orientation: landscape) and (max-width: 768px) {
+    .container {
+        max-width: 100% !important;
+    }
+    
+    .navbar-main .nav-link {
+        padding: 0.5rem 0.8rem !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .floating-return-btn {
+        bottom: 15px;
+        left: 15px;
+    }
+}
+
+/* Chatbot Notification Badge */
+.chatbot-toggle .chatbot-notification {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4757;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}

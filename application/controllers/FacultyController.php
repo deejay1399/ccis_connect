@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class LandingController extends CI_Controller {
+class FacultyController extends CI_Controller {
 
 	public function __construct()
 	{
@@ -9,12 +9,12 @@ class LandingController extends CI_Controller {
 		$this->load->helper('url');
 	}
 
-	public function homepage()
+	public function faculty()
 	{
-		$data['page_type'] = 'homepage';
+		$data['page_type'] = 'faculty';
 		$this->load->view('layouts/header', $data);
         $this->load->view('layouts/navigation');
-        $this->load->view('homepage');
+        $this->load->view('pages/faculty');
         $this->load->view('layouts/footer');
 	}
 

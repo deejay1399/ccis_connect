@@ -123,9 +123,30 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="<?php echo base_url('assets/js/homepage.js'); ?>"></script>
-    <script src="<?php echo base_url('assets/js/session-management.js'); ?>"></script>
-    <script src="<?php echo base_url('assets/js/about.js'); ?>"></script>
+    <!-- <script src="<?php echo base_url('assets/js/session-management.js'); ?>"></script> -->
     <script src="<?php echo base_url('assets/js/chatbot.js'); ?>"></script>
+    <?php if (!empty($page_type)): ?>
+        <?php if ($page_type === 'homepage'): ?>
+            <script src="<?php echo base_url('assets/js/homepage.js'); ?>"></script>
+        <?php elseif ($page_type === 'about'): ?>
+            <script src="<?php echo base_url('assets/js/about.js'); ?>"></script>
+        <?php elseif ($page_type === 'faculty'): ?>
+            <script src="<?php echo base_url('assets/js/faculty.js'); ?>"></script>
+        <?php elseif ($page_type === 'academics'): ?>
+            <script src="<?php echo base_url('assets/js/academics.js'); ?>"></script>
+        <?php elseif ($page_type === 'updates'): ?>
+            <script src="<?php echo base_url('assets/js/updates.js'); ?>"></script>
+            <script src="<?php echo base_url('assets/js/updates-pagination.js'); ?>"></script>
+            <script src="<?php echo base_url('assets/js/deanslist.js'); ?>"></script>
+        <?php elseif ($page_type === 'forms'): ?>
+            <script src="<?php echo base_url('assets/js/forms.js'); ?>"></script>
+        <?php elseif ($page_type === 'login'): ?>
+            <script src="<?php echo base_url('assets/js/login.js'); ?>"></script>
+        <?php elseif ($page_type === 'alumni'): ?>
+            <script src="<?php echo base_url('assets/js/alumni.js'); ?>"></script>
+        <?php elseif ($page_type === 'organization'): ?>
+            <script src="<?php echo base_url('assets/js/organization.js'); ?>"></script>
+        <?php endif; ?>
+    <?php endif; ?>
 </body>
 </html>

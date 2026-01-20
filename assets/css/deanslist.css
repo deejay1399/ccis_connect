@@ -1,0 +1,523 @@
+/* DEAN'S LIST SPECIFIC STYLES - ACADEMIC YEAR ONLY */
+
+/* Combined Dropdown Filters Container */
+.deanslist-filters-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.filter-group-dropdown {
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.filter-group-dropdown .filter-label {
+    color: var(--primary-purple);
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    display: block;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.filter-select {
+    min-width: 200px;
+    border: 2px solid var(--primary-purple);
+    border-radius: 8px;
+    padding: 0.8rem 1.2rem;
+    font-weight: 500;
+    color: var(--primary-purple);
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+}
+
+.filter-select:focus {
+    border-color: var(--secondary-purple);
+    box-shadow: 0 0 0 0.2rem rgba(106, 13, 173, 0.25);
+    outline: none;
+}
+
+.filter-select:hover {
+    border-color: var(--secondary-purple);
+    background-color: var(--light-purple);
+}
+
+/* Dean's List Header - UPDATED: Remove active filters display */
+.deanslist-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding: 2.5rem;
+    background: linear-gradient(135deg, var(--light-purple) 0%, #f0f0f5 100%);
+    border-radius: 15px;
+    border: 2px solid var(--primary-purple);
+}
+
+.deanslist-header h4 {
+    color: var(--primary-purple);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.deanslist-header .academic-year-text {
+    color: var(--secondary-purple);
+    font-weight: 600;
+    font-size: 1.3rem;
+    font-family: 'Inter', sans-serif;
+}
+
+/* REMOVED: Active filters section from header */
+.active-filters {
+    display: none;
+}
+
+/* Stats Summary - REMOVED */
+.stats-summary {
+    display: none;
+}
+
+/* Program Sections */
+.program-section {
+    margin-bottom: 3rem;
+}
+
+.program-header {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 12px 12px 0 0;
+    margin-bottom: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.program-header h5 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.3rem;
+}
+
+.program-header .badge {
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    font-family: 'Inter', sans-serif;
+    background: var(--gold) !important;
+    color: #000 !important;
+    font-weight: 600;
+}
+
+/* Achievers Grid */
+.achievers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    padding: 2.5rem;
+    background: #f8f9fa;
+    border-radius: 0 0 12px 12px;
+    border: 1px solid #e9ecef;
+    border-top: none;
+}
+
+/* Achiever Cards */
+.achiever-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+    position: relative;
+}
+
+.achiever-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* ALL HONORS SAME SILVER BORDER */
+.achiever-card.summa,
+.achiever-card.magna,
+.achiever-card.cum-laude {
+    border-color: #c0c0c0;
+}
+
+.achiever-header {
+    display: flex;
+    align-items: center;
+    padding: 1.8rem;
+    border-bottom: 1px solid #f0f0f0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+.achiever-image {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 1.2rem;
+    border: 4px solid var(--light-purple);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.achiever-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.achiever-info {
+    flex: 1;
+}
+
+.achiever-name {
+    color: var(--primary-purple);
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    font-size: 1.2rem;
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.3;
+}
+
+.achiever-year {
+    color: var(--dark-gray);
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 0.8rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.achiever-gwa {
+    background: var(--light-purple);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--primary-purple);
+    display: inline-block;
+    font-family: 'Inter', sans-serif;
+    border: 2px solid var(--primary-purple);
+}
+
+.achiever-honors {
+    padding: 1.2rem 1.8rem;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+    background: rgba(192, 192, 192, 0.1);
+}
+
+.honors-badge {
+    padding: 0.7rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Inter', sans-serif;
+    display: inline-block;
+    min-width: 180px;
+}
+
+/* ALL HONORS SAME SILVER COLOR */
+.honors-badge.summa,
+.honors-badge.magna,
+.honors-badge.cum-laude {
+    background: linear-gradient(135deg, #c0c0c0 0%, #e0e0e0 100%) !important;
+    color: #000 !important;
+    border: 2px solid #a0a0a0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.achiever-achievements {
+    padding: 1.5rem 1.8rem;
+}
+
+.achiever-achievements h6 {
+    color: var(--primary-purple);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+}
+
+.achiever-achievements h6 i {
+    margin-right: 0.5rem;
+    color: var(--accent);
+}
+
+.achiever-achievements ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.achiever-achievements li {
+    padding: 0.5rem 0;
+    color: var(--dark-gray);
+    font-size: 0.9rem;
+    position: relative;
+    padding-left: 1.2rem;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.4;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.achiever-achievements li:last-child {
+    border-bottom: none;
+}
+
+.achiever-achievements li::before {
+    content: '▸';
+    color: var(--accent);
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+/* Congratulations Message */
+.congratulations-message {
+    text-align: center;
+    padding: 3.5rem 2rem;
+    background: linear-gradient(135deg, var(--light-purple) 0%, #f0f0f5 100%);
+    border-radius: 15px;
+    margin-top: 3rem;
+    border: 2px dashed var(--primary-purple);
+    position: relative;
+    overflow: hidden;
+}
+
+.congratulations-message::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.3)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.1;
+}
+
+.congratulations-message i {
+    font-size: 3.5rem;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.congratulations-message h5 {
+    color: var(--primary-purple);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+    z-index: 2;
+}
+
+.congratulations-message p {
+    color: var(--dark-gray);
+    font-size: 1.15rem;
+    line-height: 1.7;
+    max-width: 700px;
+    margin: 0 auto;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    z-index: 2;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 5rem 2rem;
+    color: #7f8c8d;
+    background: var(--light-gray);
+    border-radius: 15px;
+    border: 2px dashed #bdc3c7;
+    margin: 2rem 0;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.empty-state h5 {
+    margin-bottom: 1rem;
+    color: var(--dark-gray);
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+}
+
+.empty-state p {
+    color: #7f8c8d;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .deanslist-filters-container {
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .deanslist-filters-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    
+    .filter-group-dropdown {
+        width: 100%;
+    }
+    
+    .filter-select {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .achievers-grid {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+        gap: 1.5rem;
+    }
+    
+    .achiever-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+    
+    .achiever-image {
+        margin-right: 0;
+        margin-bottom: 1rem;
+        width: 100px;
+        height: 100px;
+    }
+    
+    .program-header h5 {
+        flex-direction: column;
+        gap: 0.8rem;
+        text-align: center;
+    }
+    
+    .program-header {
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .deanslist-header {
+        padding: 2rem 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .deanslist-header h4 {
+        font-size: 1.6rem;
+    }
+    
+    .deanslist-header .academic-year-text {
+        font-size: 1.1rem;
+    }
+    
+    .congratulations-message {
+        padding: 2.5rem 1.5rem;
+    }
+    
+    .congratulations-message h5 {
+        font-size: 1.5rem;
+    }
+    
+    .congratulations-message p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .deanslist-header {
+        padding: 1.5rem 1rem;
+    }
+    
+    .deanslist-header h4 {
+        font-size: 1.4rem;
+    }
+    
+    .achiever-card {
+        margin: 0;
+    }
+    
+    .achievers-grid {
+        padding: 1rem;
+    }
+    
+    .achiever-header,
+    .achiever-honors,
+    .achiever-achievements {
+        padding: 1.2rem;
+    }
+    
+    .honors-badge {
+        min-width: 160px;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.85rem;
+    }
+    
+    .congratulations-message {
+        padding: 2rem 1rem;
+    }
+    
+    .congratulations-message h5 {
+        font-size: 1.3rem;
+    }
+    
+    .program-header h5 {
+        font-size: 1.1rem;
+    }
+    
+    .achiever-name {
+        font-size: 1.1rem;
+    }
+}
+
+/* Chatbot Notification Badge */
+.chatbot-toggle .chatbot-notification {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4757;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
