@@ -1,0 +1,1492 @@
+/* MANAGE FACULTY - SUPER ADMIN - WITH PROPER HEADER & FOOTER */
+
+:root {
+    --primary-purple: #6a0dad;
+    --secondary-purple: #9229f5;
+    --light-purple: #e6e6fa;
+    --accent: #ffd700;
+    --dark-gray: #2d3e50;
+    --light-gray: #f8f9fa;
+    --gold: #ffd700;
+    --logout-color: #dc3545;
+    --success: #28a745;
+    --danger: #dc3545;
+    --warning: #ffc107;
+}
+
+/* Reset and Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    background-color: #ffffff;
+    padding-top: 0;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    touch-action: pan-y;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Visually hidden but accessible to screen readers */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* Header Background with Building Image - Matching dashboard */
+.university-header {
+    background: 
+        linear-gradient(135deg, rgba(75, 0, 130, 0.85) 0%, rgba(106, 13, 173, 0.85) 100%),
+        url('../Building.jpg') center/cover no-repeat;
+    color: white;
+    padding: 1rem 0;
+    border-bottom: 5px solid var(--gold);
+    position: relative;
+    overflow: hidden;
+}
+
+.university-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.college-logo {
+    height: 70px;
+    width: 70px;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+    background-color: white;
+    border-radius: 50%;
+    object-fit: contain;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+    position: relative;
+    z-index: 2;
+}
+
+.college-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: white;
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    line-height: 1.2;
+    word-wrap: break-word;
+    text-align: left;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 2;
+}
+
+.college-subtitle {
+    font-size: 1rem;
+    color: var(--accent);
+    font-weight: 500;
+    margin: 0;
+    text-align: left;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 2;
+}
+
+/* RESTORED HEADER AUTH ICON STYLES */
+.header-auth-icon {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: auto;
+    position: relative;
+    z-index: 2;
+}
+
+.auth-icon-link {
+    color: white;
+    font-size: 1.8rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    text-decoration: none;
+    border: none;
+    outline: none;
+}
+
+.auth-icon-link:hover {
+    color: var(--accent);
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+#logout-icon-link {
+    color: white !important;
+    background-color: rgba(106, 13, 173, 0.2) !important;
+}
+
+#logout-icon-link:hover {
+    background-color: rgba(106, 13, 173, 0.3) !important;
+    color: var(--accent) !important;
+}
+
+/* Navigation Bar Styles */
+.navbar-main {
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+    border-top: 1px solid var(--light-purple);
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.navbar-main .navbar-collapse {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-main .navbar-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
+    flex: 1;
+}
+
+.navbar-main .nav-link {
+    font-weight: 500;
+    color: var(--dark-gray);
+    padding: 0.7rem 1.5rem;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin: 0 0.3rem;
+    white-space: nowrap;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-main .nav-link:hover,
+.navbar-main .nav-link.active {
+    color: var(--primary-purple);
+    background-color: var(--light-purple);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(106, 13, 173, 0.2);
+}
+
+/* User Info Styles */
+.user-info-text {
+    font-weight: 600;
+    color: var(--primary-purple) !important;
+    font-size: 0.9rem;
+}
+
+.user-info-text i {
+    color: var(--accent);
+}
+
+/* Date Display in Navigation */
+.nav-date {
+    display: flex;
+    align-items: center;
+    color: var(--primary-purple);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.3rem 0.8rem;
+    background: var(--light-purple);
+    border-radius: 6px;
+    border: 1px solid rgba(106, 13, 173, 0.2);
+    white-space: nowrap;
+    margin-left: 1rem;
+}
+
+.nav-date i {
+    font-size: 0.7rem;
+    color: var(--primary-purple);
+}
+
+/* Dashboard Specific Styles */
+.dashboard-bg {
+    background: linear-gradient(to bottom, #ffffff, #f0f2f5);
+    min-height: calc(100vh - 200px);
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-top: 5px solid var(--primary-purple);
+}
+
+.card-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: var(--primary-purple);
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+}
+
+.card-subtitle {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+}
+
+/* Section Cards - MODERN */
+.section-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(75, 0, 130, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.section-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--primary-purple), var(--secondary-purple));
+    transition: all 0.3s ease;
+}
+
+.section-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced hover effect */
+.section-card:hover::before {
+    width: 8px;
+    background: linear-gradient(to bottom, var(--secondary-purple), var(--primary-purple));
+}
+
+.section-title {
+    font-family: 'Poppins', sans-serif;
+    color: var(--primary-purple);
+    font-weight: 700;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.section-title i {
+    background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2rem;
+}
+
+.section-subtitle {
+    color: #6c757d;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* ===== UPDATED BUTTON STYLES ===== */
+/* Button Color Overrides - Light Gray Default, Purple on Hover */
+.btn-primary, 
+.btn-success,
+.btn-info {
+    background: #f8f9fa !important;
+    color: #6c757d !important;
+    border: 2px solid #dee2e6 !important;
+    box-shadow: none !important;
+}
+
+.btn-primary:hover, 
+.btn-primary:focus, 
+.btn-primary:active,
+.btn-success:hover, 
+.btn-success:focus, 
+.btn-success:active,
+.btn-info:hover, 
+.btn-info:focus, 
+.btn-info:active {
+    background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple)) !important;
+    color: white !important;
+    border-color: var(--primary-purple) !important;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(75, 0, 130, 0.4) !important;
+}
+
+/* UPDATED: Light Gray Delete/Remove Buttons */
+.btn-danger,
+.delete-faculty-btn {
+    background: #f8f9fa !important;
+    color: #6c757d !important;
+    border: 2px solid #dee2e6 !important;
+    box-shadow: none !important;
+}
+
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active,
+.delete-faculty-btn:hover,
+.delete-faculty-btn:focus,
+.delete-faculty-btn:active {
+    background: var(--danger) !important;
+    color: white !important;
+    border-color: var(--danger) !important;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4) !important;
+}
+
+/* Edit buttons - light gray by default */
+.edit-faculty-btn {
+    background: #f8f9fa !important;
+    color: #6c757d !important;
+    border: 2px solid #dee2e6 !important;
+    box-shadow: none !important;
+}
+
+.edit-faculty-btn:hover,
+.edit-faculty-btn:focus,
+.edit-faculty-btn:active {
+    background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple)) !important;
+    color: white !important;
+    border-color: var(--primary-purple) !important;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(75, 0, 130, 0.4) !important;
+}
+
+/* UPDATED: Modal Button Styles - Light gray by default, purple on hover */
+.modal-footer .btn-secondary {
+    background: #f8f9fa !important;
+    color: #6c757d !important;
+    border: 2px solid #dee2e6 !important;
+    box-shadow: none !important;
+}
+
+.modal-footer .btn-secondary:hover,
+.modal-footer .btn-secondary:focus,
+.modal-footer .btn-secondary:active {
+    background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple)) !important;
+    color: white !important;
+    border-color: var(--primary-purple) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(75, 0, 130, 0.3) !important;
+}
+
+.modal-footer .btn-primary {
+    background: #f8f9fa !important;
+    color: #6c757d !important;
+    border: 2px solid #dee2e6 !important;
+    box-shadow: none !important;
+}
+
+.modal-footer .btn-primary:hover,
+.modal-footer .btn-primary:focus,
+.modal-footer .btn-primary:active {
+    background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple)) !important;
+    color: white !important;
+    border-color: var(--primary-purple) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(75, 0, 130, 0.3) !important;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary-purple);
+    color: var(--primary-purple);
+}
+
+.btn-outline:hover {
+    background: var(--primary-purple);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+/* Content Lists (Faculty Members) */
+.faculty-list-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid var(--primary-purple);
+    height: 100%;
+    border: 1px solid #e9ecef;
+}
+
+.faculty-list-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.faculty-list-card .card-body {
+    padding: 1.5rem;
+}
+
+.faculty-list-card .card-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--primary-purple);
+    margin-bottom: 0.75rem;
+}
+
+.faculty-list-card .card-text {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+.faculty-list-card .meta-info {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.faculty-list-card .meta-info i {
+    color: var(--primary-purple);
+    margin-right: 3px;
+}
+
+.faculty-list-card .actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.faculty-list-card .btn {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+/* Image Previews */
+.faculty-image-preview {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Faculty Grid */
+.faculty-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.faculty-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.faculty-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.faculty-image {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    position: relative;
+}
+
+.faculty-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.faculty-card:hover .faculty-image img {
+    transform: scale(1.05);
+}
+
+.faculty-info {
+    padding: 1.5rem;
+}
+
+.faculty-info h4 {
+    color: #000000;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.faculty-position {
+    color: #000000;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.faculty-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.faculty-actions .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+/* Form Styling */
+.form-label {
+    font-weight: 500;
+    color: var(--dark-gray);
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-purple);
+    box-shadow: 0 0 0 0.2rem rgba(102, 16, 242, 0.25);
+}
+
+.form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+/* Card enhancements for forms */
+.card.p-4 {
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+/* Forms Management Section */
+.forms-management-section {
+    margin-top: 2rem;
+}
+
+.forms-management-section h4 {
+    color: var(--primary-purple);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--light-purple);
+}
+
+/* Image Upload Styles */
+.image-upload-container {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    background: #f8f9fa;
+}
+
+.image-upload-container:hover {
+    border-color: #4b0082;
+    background-color: #e6e6fa;
+}
+
+.image-upload-container.dragover {
+    border-color: #4b0082;
+    background-color: #e6e6fa;
+}
+
+.image-upload-container.active {
+    border-color: #4b0082;
+    background-color: #e6e6fa;
+}
+
+.image-upload-container .upload-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #6c757d;
+    transition: all 0.3s ease;
+}
+
+.image-upload-container:hover .upload-icon {
+    color: #4b0082;
+    transform: scale(1.1);
+}
+
+.image-upload-text {
+    color: #6c757d;
+    transition: all 0.3s ease;
+    margin-bottom: 0.5rem;
+}
+
+.image-upload-container:hover .image-upload-text {
+    color: #4b0082;
+}
+
+.faculty-image-preview {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    border: 3px solid #4b0082;
+}
+
+/* Notification Styles */
+.alert {
+    border: none;
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+}
+
+/* Modal Styling */
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    background-color: var(--light-purple);
+    border-bottom: none;
+    border-radius: 15px 15px 0 0;
+    padding: 1.5rem;
+}
+
+.modal-title {
+    color: var(--primary-purple);
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+}
+
+/* UPDATED: Confirmation Modal Styles - White header with red background */
+#confirmationModal .modal-header {
+    background: linear-gradient(135deg, var(--danger), #c82333);
+    color: white;
+    border-radius: 15px 15px 0 0;
+    border-bottom: none;
+    padding: 1.5rem;
+}
+
+#confirmationModal .modal-header .modal-title {
+    color: white;
+}
+
+#confirmationModal .modal-header .btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+}
+
+#confirmationModal .modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+/* UPDATED: Red triangle icon */
+.confirmation-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--danger);
+    display: block !important;
+}
+
+#confirmationModal .modal-body {
+    text-align: center;
+    padding: 2rem;
+}
+
+.confirmation-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+    color: var(--dark-gray);
+}
+
+/* UPDATED: Confirmation Modal Button Styles - Light gray remove button */
+#confirmationModal .modal-footer .btn {
+    background: #f8f9fa !important;
+    color: #6c757d !important;
+    border: 2px solid #dee2e6 !important;
+    box-shadow: none !important;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+#confirmationModal .modal-footer .btn-secondary {
+    background: #f8f9fa !important;
+    color: #6c757d !important;
+    border: 2px solid #dee2e6 !important;
+}
+
+#confirmationModal .modal-footer .btn-secondary:hover,
+#confirmationModal .modal-footer .btn-secondary:focus {
+    background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple)) !important;
+    color: white !important;
+    border-color: var(--primary-purple) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(75, 0, 130, 0.3) !important;
+}
+
+#confirmationModal .modal-footer .btn-danger {
+    background: #f8f9fa !important;
+    color: #6c757d !important;
+    border: 2px solid #dee2e6 !important;
+}
+
+#confirmationModal .modal-footer .btn-danger:hover,
+#confirmationModal .modal-footer .btn-danger:focus {
+    background: linear-gradient(135deg, var(--danger), #c82333) !important;
+    color: white !important;
+    border-color: var(--danger) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3) !important;
+}
+
+/* Ensure buttons have no icons */
+#confirmationModal .modal-footer .btn i {
+    display: none !important;
+}
+
+/* ========================================
+   FOOTER - IDENTICAL TO HOMEPAGE/LOGIN PAGE
+   ======================================== */
+.main-footer {
+    background: 
+        linear-gradient(135deg, rgba(75, 0, 130, 0.9) 0%, rgba(106, 13, 173, 0.9) 100%),
+        url('../building.jpg') center/cover no-repeat;
+    color: white;
+    padding: 1rem 0 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+/* ADD THIS TO HIDE RETURN TO DASHBOARD */
+.quick-links {
+    display: none;
+}
+
+/* FORCE HIDE ANY RETURN TO DASHBOARD ELEMENTS */
+.quick-links,
+.footer-links,
+.return-to-dashboard,
+a[href*="index.html"]:contains("Return to Dashboard"),
+a:contains("Return to Dashboard") {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+}
+
+.footer-section {
+    padding: 0.8rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* FIXED FOOTER ALIGNMENT - COMPLETE SOLUTION */
+.footer-content-wrapper-left {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.footer-logo-text-tapad {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    text-align: left;
+    width: 100%;
+    max-width: 100%;
+}
+
+.footer-logo {
+    height: 50px;
+    width: 50px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    flex-shrink: 0;
+    background-color: white;
+    border-radius: 50%;
+    object-fit: contain;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.3);
+}
+
+.footer-text-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+}
+
+/* FIXED: University name - proper alignment */
+.footer-university-name {
+    color: white;
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.3;
+    text-align: left;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: normal;
+    overflow-wrap: break-word;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    font-family: 'Inter', sans-serif;
+}
+
+/* FIXED: Core values - proper alignment */
+.core-values-footer {
+    font-size: 0.75rem;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.4;
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    flex-wrap: wrap;
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+}
+
+.value-item {
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    margin: 0;
+    display: inline-block;
+    white-space: nowrap;
+    font-size: 0.65rem;
+    line-height: 1.2;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.value-separator {
+    margin: 0;
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 0.65rem;
+    display: inline-block;
+}
+
+/* UPDATED FOOTER STYLES - Contact on left, Follow Us moved slightly to the left */
+.footer-contact-social-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    padding-left: 0;
+}
+
+.contact-info-left {
+    text-align: left;
+    flex: 0 1 auto;
+}
+
+.social-info-left {
+    text-align: right;
+    flex: 0 1 auto;
+    margin-left: 0;
+    margin-right: 2rem;
+}
+
+.contact-info-left {
+    min-width: 200px;
+}
+
+.social-info-left {
+    min-width: 150px;
+}
+
+.contact-info-left .contact-title {
+    text-align: left;
+    justify-content: flex-start;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+    position: relative;
+    display: inline-block;
+}
+
+.social-info-left .social-title {
+    text-align: right;
+    justify-content: flex-end;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+    position: relative;
+    display: inline-block;
+}
+
+.contact-info-left .contact-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 35px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+}
+
+.social-info-left .social-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: 0;
+    width: 35px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+}
+
+.contact-info-left .contact-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 0.6rem;
+    gap: 6px;
+    transition: transform 0.3s ease;
+    padding: 0.2rem;
+    border-radius: 6px;
+}
+
+.contact-info-left .contact-item:hover {
+    transform: translateX(3px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.contact-info-left .contact-item i {
+    color: var(--accent);
+    font-size: 0.9rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+.contact-info-left .contact-item span {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: left;
+}
+
+.social-info-left .social-links {
+    margin-top: 0.8rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+}
+
+.social-link {
+    color: white;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+}
+
+.social-link:hover {
+    color: white;
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background: #1877f2;
+}
+
+.copyright {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.75rem;
+    margin-bottom: 0.3rem;
+    text-align: center;
+}
+
+.main-footer hr {
+    border-color: rgba(255, 255, 255, 0.2);
+    margin: 1rem 0 0.8rem;
+    opacity: 0.5;
+}
+
+/* Mobile responsiveness for footer */
+@media (max-width: 768px) {
+    .footer-contact-social-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        gap: 1.5rem;
+    }
+    
+    .social-info-left {
+        text-align: left;
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+    }
+    
+    .social-info-left .social-title {
+        text-align: left;
+        justify-content: flex-start;
+    }
+    
+    .social-info-left .social-title::after {
+        left: 0;
+        right: auto;
+        transform: none;
+    }
+    
+    .social-info-left .social-links {
+        justify-content: flex-start;
+    }
+    
+    .contact-info-left,
+    .social-info-left {
+        text-align: left;
+        align-items: flex-start;
+        width: 100%;
+    }
+    
+    .contact-info-left .contact-title,
+    .social-info-left .social-title {
+        text-align: left;
+        justify-content: flex-start;
+    }
+    
+    .contact-info-left .contact-title::after,
+    .social-info-left .social-title::after {
+        left: 0;
+        transform: none;
+    }
+    
+    .contact-info-left .contact-item {
+        justify-content: flex-start;
+    }
+    
+    .social-info-left .social-links {
+        justify-content: flex-start;
+    }
+    
+    .footer-logo-text-tapad {
+        justify-content: flex-start;
+        text-align: left;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 0.8rem;
+    }
+    
+    .footer-text-group {
+        align-items: flex-start;
+        text-align: left;
+    }
+    
+    .footer-university-name {
+        text-align: left;
+        font-size: 0.8rem;
+    }
+    
+    .core-values-footer {
+        justify-content: flex-start;
+        text-align: left;
+        font-size: 0.7rem;
+    }
+    
+    /* Further reduce padding on mobile */
+    .main-footer {
+        padding: 0.8rem 0 0.4rem;
+    }
+    
+    .contact-info-left,
+    .social-info-left {
+        min-width: auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .footer-university-name {
+        font-size: 0.75rem;
+    }
+    
+    .core-values-footer {
+        font-size: 0.65rem;
+    }
+    
+    .footer-contact-social-wrapper {
+        gap: 1rem;
+    }
+    
+    .contact-info-left .contact-item {
+        font-size: 0.7rem;
+    }
+    
+    /* Even smaller padding on very small screens */
+    .main-footer {
+        padding: 0.6rem 0 0.3rem;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .navbar-main .navbar-nav {
+        gap: 0.3rem;
+    }
+    
+    .navbar-main .nav-link {
+        padding: 0.6rem 1rem;
+        margin: 0.1rem 0;
+        text-align: center;
+        font-size: 0.95rem;
+    }
+    
+    .header-auth-icon {
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+    
+    .auth-icon-link {
+        font-size: 1.6rem;
+        width: 40px;
+        height: 40px;
+    }
+    
+    .nav-date {
+        margin-left: 0;
+        margin-top: 0.5rem;
+        justify-content: center;
+        font-size: 0.7rem;
+        padding: 0.2rem 0.6rem;
+    }
+    
+    /* Footer Alignment Fixes for Mobile */
+    .footer-content-wrapper-left {
+        align-items: center; 
+        gap: 0.1rem;
+    }
+    
+    .footer-logo-text-tapad {
+        flex-direction: column; 
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        white-space: normal; 
+        margin-bottom: 0;
+        gap: 0.1rem; 
+    }
+    
+    .footer-text-group {
+        display: block; 
+        text-align: center;
+    }
+
+    .footer-logo {
+        margin-bottom: 0.5rem;
+    }
+    
+    .footer-university-name {
+        text-align: center;
+        white-space: normal;
+        max-width: 250px; 
+        margin-top: 0;
+        display: block; 
+        font-size: 0.7rem; 
+    }
+    
+    .core-values-footer {
+        display: flex; 
+        justify-content: center;
+        text-align: center;
+        margin-top: 0.5rem; 
+        margin-left: 0rem; 
+        flex-wrap: wrap; 
+        gap: 0.3rem;
+    }
+    
+    .value-item, .value-separator {
+        font-size: 0.6rem;
+        line-height: 1.1;
+    }
+    
+    .section-card {
+        padding: 2rem 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+
+    .faculty-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .college-title {
+        font-size: 1.1rem;
+        text-align: center;
+    }
+    
+    .college-subtitle {
+        text-align: center;
+        font-size: 0.8rem;
+    }
+    
+    .navbar-main {
+        padding: 0.6rem 0;
+    }
+    
+    .user-info-text {
+        font-size: 0.8rem;
+    }
+    
+    #user-info-item .nav-link {
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .main-footer {
+        padding: 1.2rem 0 0.6rem;
+    }
+    
+    .footer-logo {
+        height: 40px;
+        width: 40px;
+    }
+    
+    .footer-university-name {
+        font-size: 0.65rem; 
+        max-width: 200px;
+    }
+    
+    .core-values-footer {
+        font-size: 0.6rem;
+        margin-top: 0.4rem;
+    }
+    
+    .value-item {
+        font-size: 0.55rem;
+        padding: 0.05rem 0.2rem;
+    }
+
+    .value-separator {
+        font-size: 0.55rem;
+        display: inline-block; 
+    }
+
+    .contact-title, .social-title {
+        font-size: 0.85rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .contact-item {
+        font-size: 0.75rem;
+    }
+    
+    .copyright {
+        font-size: 0.65rem;
+    }
+    
+    .social-link {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .faculty-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 576px) {
+    .college-title {
+        font-size: 0.9rem;
+    }
+    
+    .college-subtitle {
+        font-size: 0.7rem;
+    }
+    
+    .navbar-main .nav-link {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+        margin: 0.05rem 0;
+    }
+    
+    .main-footer {
+        padding: 1rem 0 0.5rem;
+    }
+    
+    .footer-logo {
+        height: 35px;
+        width: 35px;
+    }
+    
+    .footer-university-name {
+        font-size: 0.6rem;
+        max-width: 150px;
+    }
+    
+    .core-values-footer {
+        font-size: 0.5rem;
+        margin-top: 0.5rem; 
+    }
+    
+    .value-item {
+        font-size: 0.48rem;
+        padding: 0.04rem 0.15rem;
+        margin: 0.01rem;
+        line-height: 1.1;
+    }
+    
+    .value-separator {
+        font-size: 0.48rem;
+        display: inline-block; 
+    }
+    
+    .contact-title, .social-title {
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .contact-item {
+        font-size: 0.7rem;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .copyright {
+        font-size: 0.6rem;
+    }
+    
+    .social-link {
+        width: 30px;
+        height: 30px;
+    }
+
+    .section-card {
+        padding: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+    }
+    
+    .nav-date {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.4rem;
+    }
+    
+    .faculty-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .faculty-actions {
+        flex-direction: column;
+    }
+    
+    .faculty-actions .btn {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 0.25rem;
+    }
+}

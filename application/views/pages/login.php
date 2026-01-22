@@ -9,7 +9,25 @@
                         <p class="login-subtitle">Access your account based on your role</p>
                     </div>
                     
-                    <form id="loginForm" class="login-form">
+                    <!-- Error Message -->
+                    <?php if (isset($error) && $error): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <?php echo $error; ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Success Message -->
+                    <?php if (isset($success) && $success): ?>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <?php echo $success; ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <form method="POST" action="<?php echo base_url('login/authenticate'); ?>" class="login-form">
                         <div class="form-group">
                             <label for="email" class="form-label">Email Address</label>
                             <div class="input-group">
@@ -42,7 +60,7 @@
                         </div>
                         
                         <div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
                             <label class="form-check-label" for="rememberMe">Remember me</label>
                         </div>
                         
@@ -54,6 +72,7 @@
                             <p class="mb-2">Forgot your password? <a href="#" id="forgotPassword">Contact Admin</a></p>
                             <div class="access-info">
                                 <p class="text-muted"><small>Different roles have different access levels</small></p>
+                                <p class="text-muted"><small>1: Super Admin | 2: Faculty | 3: Student | 4: Org Admin</small></p>
                             </div>
                         </div>
                     </form>
