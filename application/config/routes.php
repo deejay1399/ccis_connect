@@ -61,6 +61,10 @@ $route['admin/content/forms'] = 'admin/AdminContent/forms';
 $route['admin/content/organizations'] = 'admin/AdminContent/organizations';
 $route['admin/content/alumni'] = 'admin/AdminContent/alumni';
 
+// Admin Content Management - AJAX
+$route['admin/manage/load_homepage'] = 'admin/AdminContent/load_homepage';
+$route['admin/manage/save_homepage'] = 'admin/AdminContent/save_homepage';
+
 // Admin User Management
 $route['admin/users/create'] = 'admin/AdminUsers/create';
 $route['admin/users/save'] = 'admin/AdminUsers/save';

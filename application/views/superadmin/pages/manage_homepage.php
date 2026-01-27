@@ -24,7 +24,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <div class="mb-3">
                             <label for="homepageBanner" class="form-label">Banner Image</label>
                             <input type="file" class="form-control" id="homepageBanner" accept="image/*">
-                            <small class="form-text text-muted">Upload a banner image for the homepage</small>
+                            <small class="form-text text-muted">Upload a banner image for the homepage (Max 5MB)</small>
+                            <div id="banner-preview"></div>
                         </div>
                         <div class="text-end">
                             <button type="submit" class="btn btn-primary">

@@ -99,6 +99,8 @@
         <script src="<?php echo base_url('assets/js/create_user.js'); ?>"></script>
     <?php elseif(isset($page_type) && $page_type === 'list_users'): ?>
         <script src="<?php echo base_url('assets/js/list_users.js'); ?>"></script>
+    <?php elseif(isset($content_type) && $content_type === 'homepage'): ?>
+        <script src="<?php echo base_url('assets/js/manage_homepage.js'); ?>"></script>
     <?php else: ?>
         <script src="<?php echo base_url('assets/js/dashboard.js'); ?>"></script>
     <?php endif; ?>

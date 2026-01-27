@@ -633,9 +633,187 @@ $(document).ready(function() {
     function initializeHomepageManagement() {
         loadWelcomeMessage();
         loadCarouselImages();
-        renderPrograms(); 
+        renderPrograms();
+        
+        // Initialize Homepage Form Handler
+        setupHomepageFormHandler();
         
         console.log('✅ Homepage Management Initialized with full functionality.');
+    }
+
+    // =====================================
+    // HOMEPAGE FORM MANAGEMENT
+    // =====================================
+
+    const baseURL = window.location.origin + '/ccis_connect/';
+
+    function setupHomepageFormHandler() {
+        console.log('📝 Initializing homepage form handler...');
+        
+        // Form starts empty for fresh uploads - no auto-load
+        
+        // Handle form submission
+        $('#homepage-form').off('submit').on('submit', function(e) {
+            console.log('📝 Form submit event triggered');
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const title = $('#homepageTitle').val().trim();
+            const content = $('#homepageContent').val().trim();
+            const fileInput = document.getElementById('homepageBanner');
+            const file = fileInput ? fileInput.files[0] : null;
+            
+            // Validation
+            if (!title) {
+                showModalNotification('Validation Error', 'Please enter a homepage title', 'error');
+                return false;
+            }
+            
+            if (!content) {
+                showModalNotification('Validation Error', 'Please enter homepage content', 'error');
+                return false;
+            }
+            
+            console.log('✅ Form validation passed');
+            
+            // Submit form
+            submitHomepageForm(title, content, file);
+            return false;
+        });
+        
+        // Handle file input change for preview
+        $('#homepageBanner').on('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const preview = `<img src="${event.target.result}" style="max-width: 300px; margin-top: 10px; border-radius: 5px;">`;
+                    $('#banner-preview').html(preview);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        console.log('✅ Homepage form handler initialized');
+    }
+
+    function loadHomepageData() {
+        console.log('📥 Loading homepage data from database...');
+        
+        $.ajax({
+            url: baseURL + 'admin/manage/load_homepage',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                console.log('✅ Data loaded successfully:', response);
+                
+                if (response.success && response.data) {
+                    $('#homepageTitle').val(response.data.title || '');
+                    $('#homepageContent').val(response.data.content || '');
+                    
+                    if (response.data.banner_image) {
+                        const preview = `<img src="${baseURL}${response.data.banner_image}" style="max-width: 300px; margin-top: 10px; border-radius: 5px;">`;
+                        $('#banner-preview').html(preview);
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.warn('⚠️ Could not load homepage data (expected on first use):', error);
+            }
+        });
+    }
+
+    function submitHomepageForm(title, content, file) {
+        console.log('📤 Submitting homepage form...');
+        
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('content', content);
+        
+        if (file) {
+            console.log('📎 File attached:', file.name);
+            formData.append('banner_image', file);
+        }
+        
+        $.ajax({
+            url: baseURL + 'admin/manage/save_homepage',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                console.log('✅ Response received:', response);
+                
+                if (response.success) {
+                    showModalNotification('Success!', 'Homepage content has been saved successfully.', 'success');
+                    
+                    // Clear form fields after 1 second
+                    setTimeout(function() {
+                        $('#homepageTitle').val('');
+                        $('#homepageContent').val('');
+                        $('#homepageBanner').val('');
+                        $('#banner-preview').html('');
+                        console.log('🧹 Form fields cleared');
+                    }, 1000);
+                } else {
+                    showModalNotification('Error', response.message || 'Failed to save homepage', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('❌ AJAX Error:', error);
+                let errorMsg = 'Failed to save homepage: ' + error;
+                
+                // Try to parse error response
+                if (xhr.responseText) {
+                    try {
+                        let jsonResponse = JSON.parse(xhr.responseText);
+                        if (jsonResponse.message) {
+                            errorMsg = jsonResponse.message;
+                        }
+                    } catch(e) {
+                        console.log('Could not parse error response');
+                    }
+                }
+                
+                showModalNotification('Error', errorMsg, 'error');
+            }
+        });
+    }
+
+    function showModalNotification(title, message, type = 'info') {
+        console.log('📢 Showing modal: ' + title);
+        
+        const bgColor = type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8';
+        const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+        
+        const modalHTML = `
+            <div id="notificationModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+                <div style="background: white; border-radius: 10px; padding: 30px; max-width: 400px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <i class="fas ${icon}" style="font-size: 40px; color: ${bgColor}; margin-bottom: 15px;"></i>
+                    <h4 style="color: #333; margin-bottom: 10px;">${title}</h4>
+                    <p style="color: #666; margin-bottom: 20px;">${message}</p>
+                    <button onclick="window.closeNotificationModal()" style="background: ${bgColor}; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;">OK</button>
+                </div>
+            </div>
+        `;
+        
+        // Remove existing modal if any
+        $('#notificationModal').remove();
+        
+        // Add new modal to body
+        $('body').append(modalHTML);
+        
+        // Auto close after 5 seconds
+        setTimeout(function() {
+            window.closeNotificationModal();
+        }, 5000);
+    }
+
+    window.closeNotificationModal = function() {
+        console.log('🔒 Closing notification modal');
+        $('#notificationModal').fadeOut(300, function() {
+            $(this).remove();
+        });
     }
 
     // Smooth scrolling for anchor links

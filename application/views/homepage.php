@@ -1,98 +1,51 @@
     <section class="highlights-section">
         <div class="container">
             <div class="highlights-carousel">
+                <?php 
+                if (!empty($homepage_records)): 
+                    foreach ($homepage_records as $index => $record):
+                ?>
+                <div class="highlight-slide <?php echo $index === 0 ? 'active' : ''; ?>" id="slide-<?php echo $index; ?>">
+                    <div class="highlight-image">
+                        <?php if (!empty($record['banner_image'])): ?>
+                            <img src="<?php echo base_url($record['banner_image']); ?>" alt="<?php echo htmlspecialchars($record['title']); ?>">
+                        <?php else: ?>
+                            <div style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; min-height: 400px; color: #999;">
+                                <p>No image available</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php 
+                    endforeach; 
+                else: 
+                ?>
                 <div class="highlight-slide active" id="slide-0">
                     <div class="highlight-image">
-                        <img src="20.jpg" alt="CCIS Event 1">
+                        <div style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; min-height: 400px; color: #999;">
+                            <p>No carousel items uploaded yet</p>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="highlight-slide" id="slide-1">
-                    <div class="highlight-image">
-                        <img src="21.jpg" alt="CCIS Event 2">
-                    </div>
-                </div>
-                
-                <div class="highlight-slide" id="slide-2">
-                    <div class="highlight-image">
-                        <img src="3.jpg" alt="CCIS Event 3">
-                    </div>
-                </div>
-                
-                <div class="highlight-slide" id="slide-3">
-                    <div class="highlight-image">
-                        <img src="22.jpg" alt="CCIS Event 4">
-                    </div>
-                </div>
-                
-                <div class="highlight-slide" id="slide-4">
-                    <div class="highlight-image">
-                        <img src="14.jpg" alt="CCIS Event 5">
-                    </div>
-                </div>
-                
-                <div class="highlight-slide" id="slide-5">
-                    <div class="highlight-image">
-                        <img src="10.jpg" alt="CCIS Event 6">
-                    </div>
-                </div>
-                
-                <div class="highlight-slide" id="slide-6">
-                    <div class="highlight-image">
-                        <img src="13.jpg" alt="CCIS Event 7">
-                    </div>
-                </div>
-                
-                <div class="highlight-slide" id="slide-7">
-                    <div class="highlight-image">
-                        <img src="8.jpg" alt="CCIS Event 8">
-                    </div>
-                </div>
-                
-                <div class="highlight-slide" id="slide-8">
-                    <div class="highlight-image">
-                        <img src="2.jpg" alt="CCIS Event 9">
-                    </div>
-                </div>
-                
-                <div class="highlight-slide" id="slide-9">
-                    <div class="highlight-image">
-                        <img src="18.jpg" alt="CCIS Event 10">
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
             
             <div class="highlight-dots" role="tablist" aria-label="Carousel navigation dots">
-                <button class="dot active" role="tab" aria-selected="true" aria-controls="slide-0" data-slide="0" aria-label="Show slide 1 of 10">
+                <?php 
+                if (!empty($homepage_records)):
+                    foreach ($homepage_records as $index => $record):
+                ?>
+                <button class="dot <?php echo $index === 0 ? 'active' : ''; ?>" role="tab" aria-selected="<?php echo $index === 0 ? 'true' : 'false'; ?>" aria-controls="slide-<?php echo $index; ?>" data-slide="<?php echo $index; ?>" aria-label="Show slide <?php echo $index + 1; ?> of <?php echo count($homepage_records); ?>">
+                    <span class="visually-hidden">Slide <?php echo $index + 1; ?></span>
+                </button>
+                <?php 
+                    endforeach; 
+                else:
+                ?>
+                <button class="dot active" role="tab" aria-selected="true" aria-controls="slide-0" data-slide="0" aria-label="Show slide 1 of 1">
                     <span class="visually-hidden">Slide 1</span>
                 </button>
-                <button class="dot" role="tab" aria-selected="false" aria-controls="slide-1" data-slide="1" aria-label="Show slide 2 of 10">
-                    <span class="visually-hidden">Slide 2</span>
-                </button>
-                <button class="dot" role="tab" aria-selected="false" aria-controls="slide-2" data-slide="2" aria-label="Show slide 3 of 10">
-                    <span class="visually-hidden">Slide 3</span>
-                </button>
-                <button class="dot" role="tab" aria-selected="false" aria-controls="slide-3" data-slide="3" aria-label="Show slide 4 of 10">
-                    <span class="visually-hidden">Slide 4</span>
-                </button>
-                <button class="dot" role="tab" aria-selected="false" aria-controls="slide-4" data-slide="4" aria-label="Show slide 5 of 10">
-                    <span class="visually-hidden">Slide 5</span>
-                </button>
-                <button class="dot" role="tab" aria-selected="false" aria-controls="slide-5" data-slide="5" aria-label="Show slide 6 of 10">
-                    <span class="visually-hidden">Slide 6</span>
-                </button>
-                <button class="dot" role="tab" aria-selected="false" aria-controls="slide-6" data-slide="6" aria-label="Show slide 7 of 10">
-                    <span class="visually-hidden">Slide 7</span>
-                </button>
-                <button class="dot" role="tab" aria-selected="false" aria-controls="slide-7" data-slide="7" aria-label="Show slide 8 of 10">
-                    <span class="visually-hidden">Slide 8</span>
-                </button>
-                <button class="dot" role="tab" aria-selected="false" aria-controls="slide-8" data-slide="8" aria-label="Show slide 9 of 10">
-                    <span class="visually-hidden">Slide 9</span>
-                </button>
-                <button class="dot" role="tab" aria-selected="false" aria-controls="slide-9" data-slide="9" aria-label="Show slide 10 of 10">
-                    <span class="visually-hidden">Slide 10</span>
-                </button>
+                <?php endif; ?>
             </div>
             
             <button class="highlight-prev" aria-label="Previous image">
@@ -110,12 +63,18 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto text-center">
-                    <h3 class="welcome-title">Welcome to CCIS</h3>
+                    <h3 class="welcome-title"><?php echo !empty($homepage_records) && !empty($homepage_records[0]['title']) ? htmlspecialchars($homepage_records[0]['title']) : 'Welcome to CCIS'; ?></h3>
                     <p class="welcome-text">
-                        The College of Computing and Information Sciences (CCIS) is committed to providing 
+                        <?php 
+                        if (!empty($homepage_records) && !empty($homepage_records[0]['content'])) {
+                            echo nl2br(htmlspecialchars($homepage_records[0]['content']));
+                        } else {
+                            echo 'The College of Computing and Information Sciences (CCIS) is committed to providing 
                         quality education in the fields of Computer Science and Information Technology. 
                         We foster innovation, research, and technological advancement to prepare students 
-                        for successful careers in the digital age.
+                        for successful careers in the digital age.';
+                        }
+                        ?>
                     </p>
                 </div>
             </div>

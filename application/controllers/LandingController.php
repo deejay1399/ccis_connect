@@ -12,9 +12,20 @@ class LandingController extends CI_Controller {
 	public function homepage()
 	{
 		$data['page_type'] = 'homepage';
+		
+		// Load homepage data from database
+		try {
+			$this->load->model('Homepage_model');
+			$homepage_data = $this->Homepage_model->get_all();
+			$data['homepage_records'] = $homepage_data;
+		} catch (Exception $e) {
+			log_message('error', 'Homepage error: ' . $e->getMessage());
+			$data['homepage_records'] = array();
+		}
+		
 		$this->load->view('layouts/header', $data);
         $this->load->view('layouts/navigation');
-        $this->load->view('homepage');
+        $this->load->view('homepage', $data);
         $this->load->view('layouts/footer');
 	}
 
