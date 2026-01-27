@@ -25,8 +25,8 @@ class AdminUsers extends CI_Controller {
 
 	public function list_all()
 	{
-		$data['page_title'] = 'Manage Admins';
-		$data['page_type'] = 'admin_users';
+		$data['page_title'] = 'Manage Users';
+		$data['page_type'] = 'list_users';
 		$data['action'] = 'list';
 		
 		// Optionally load admin users data from model
@@ -224,5 +224,279 @@ class AdminUsers extends CI_Controller {
 		$organization = $this->input->post('organization', true);
 		log_message('info', "Organization admin assigned to: $organization for user: $userId");
 	}
+
+	/**
+	 * Get all users (AJAX handler)
+	 */
+	public function get_all_users()
+	{
+		header('Content-Type: application/json');
+
+		if ($this->input->method() !== 'get') {
+			http_response_code(405);
+			echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+			return;
+		}
+
+		$this->load->model('User_model');
+		$this->load->model('UserRole_model');
+		$this->load->model('Student_model');
+		$this->load->model('Faculty_model');
+
+		try {
+			$users = $this->User_model->get_all();
+			$usersData = [];
+
+			foreach ($users as $user) {
+				$roles = $this->UserRole_model->get_roles_by_user($user->id);
+				$roleNames = [];
+				if ($roles) {
+					foreach ($roles as $role) {
+						$roleNames[] = $role->role_name;
+					}
+				}
+				
+				// Fetch additional details based on role
+				$additionalDetails = [];
+				if ($roles) {
+					foreach ($roles as $role) {
+						if (strtolower($role->role_name) === 'student') {
+							$student = $this->db->where('user_id', $user->id)->get('students')->row();
+							if ($student) {
+								$additionalDetails = [
+									'student_number' => $student->student_number,
+									'course' => $student->course,
+									'year_level' => $student->year_level,
+									'section' => $student->section
+								];
+							}
+						} elseif (strtolower($role->role_name) === 'faculty') {
+							$faculty = $this->db->where('user_id', $user->id)->get('faculty')->row();
+							if ($faculty) {
+								$additionalDetails = [
+									'position' => $faculty->position,
+									'department' => $faculty->department,
+									'office_location' => $faculty->office_location,
+									'bio' => $faculty->bio
+								];
+							}
+						}
+					}
+				}
+				
+				$userData = [
+					'id' => $user->id,
+					'name' => $user->first_name . ' ' . $user->last_name,
+					'email' => $user->email,
+					'roles' => $roleNames,
+					'is_active' => (int)$user->is_active,
+					'email_verified' => (int)$user->email_verified,
+					'created_at' => $user->created_at
+				];
+				
+				// Merge additional details if they exist
+				if (!empty($additionalDetails)) {
+					$userData = array_merge($userData, $additionalDetails);
+				}
+				
+				$usersData[] = $userData;
+			}
+
+			http_response_code(200);
+			echo json_encode([
+				'success' => true,
+				'data' => $usersData,
+				'count' => count($usersData)
+			]);
+
+		} catch (Exception $e) {
+			log_message('error', 'Error fetching users: ' . $e->getMessage());
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error fetching users']);
+		}
+	}
+
+	/**
+	 * Update user (AJAX handler)
+	 */
+	public function update_user()
+	{
+		header('Content-Type: application/json');
+
+		if ($this->input->method() !== 'post') {
+			http_response_code(405);
+			echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+			return;
+		}
+
+		$this->load->model('User_model');
+
+		$userId = $this->input->post('user_id', true);
+		$firstName = $this->input->post('first_name', true);
+		$lastName = $this->input->post('last_name', true);
+		$email = $this->input->post('email', true);
+
+		if (empty($userId) || empty($firstName) || empty($lastName) || empty($email)) {
+			http_response_code(400);
+			echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+			return;
+		}
+
+		try {
+			$data = [
+				'first_name' => $firstName,
+				'last_name' => $lastName,
+				'email' => $email,
+				'updated_at' => date('Y-m-d H:i:s')
+			];
+
+			if ($this->User_model->update_user($userId, $data)) {
+				http_response_code(200);
+				echo json_encode(['success' => true, 'message' => 'User updated successfully']);
+			} else {
+				http_response_code(500);
+				echo json_encode(['success' => false, 'message' => 'Failed to update user']);
+			}
+
+		} catch (Exception $e) {
+			log_message('error', 'Error updating user: ' . $e->getMessage());
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error updating user']);
+		}
+	}
+
+	/**
+	 * Delete user (AJAX handler)
+	 */
+	public function delete_user()
+	{
+		header('Content-Type: application/json');
+
+		if ($this->input->method() !== 'post') {
+			http_response_code(405);
+			echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+			return;
+		}
+
+		$this->load->model('User_model');
+
+		$userId = $this->input->post('user_id', true);
+
+		if (empty($userId)) {
+			http_response_code(400);
+			echo json_encode(['success' => false, 'message' => 'Missing user ID']);
+			return;
+		}
+
+		try {
+			if ($this->User_model->delete_user($userId)) {
+				http_response_code(200);
+				echo json_encode(['success' => true, 'message' => 'User deleted successfully']);
+			} else {
+				http_response_code(500);
+				echo json_encode(['success' => false, 'message' => 'Failed to delete user']);
+			}
+
+		} catch (Exception $e) {
+			log_message('error', 'Error deleting user: ' . $e->getMessage());
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error deleting user']);
+		}
+	}
+
+	/**
+	 * Get user details (AJAX handler)
+	 */
+	public function get_user_details($user_id = null)
+	{
+		header('Content-Type: application/json');
+
+		if ($this->input->method() !== 'get') {
+			http_response_code(405);
+			echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+			return;
+		}
+
+		$this->load->model('User_model');
+		$this->load->model('UserRole_model');
+
+		if (empty($user_id)) {
+			http_response_code(400);
+			echo json_encode(['success' => false, 'message' => 'Missing user ID']);
+			return;
+		}
+
+		try {
+			$user = $this->User_model->get_by_id($user_id);
+			
+			if (!$user) {
+				http_response_code(404);
+				echo json_encode(['success' => false, 'message' => 'User not found']);
+				return;
+			}
+
+			// Get user roles
+			$roles = $this->UserRole_model->get_roles_by_user($user->id);
+			$roleNames = [];
+			if ($roles) {
+				foreach ($roles as $role) {
+					$roleNames[] = $role->role_name;
+				}
+			}
+
+			// Fetch additional details based on role
+			$additionalDetails = [];
+			if ($roles) {
+				foreach ($roles as $role) {
+					if (strtolower($role->role_name) === 'student') {
+						$student = $this->db->where('user_id', $user->id)->get('students')->row();
+						if ($student) {
+							$additionalDetails = [
+								'student_number' => $student->student_number,
+								'course' => $student->course,
+								'year_level' => $student->year_level,
+								'section' => $student->section
+							];
+						}
+					} elseif (strtolower($role->role_name) === 'faculty') {
+						$faculty = $this->db->where('user_id', $user->id)->get('faculty')->row();
+						if ($faculty) {
+							$additionalDetails = [
+								'position' => $faculty->position,
+								'department' => $faculty->department,
+								'office_location' => $faculty->office_location,
+								'bio' => $faculty->bio
+							];
+						}
+					}
+				}
+			}
+
+			$userData = [
+				'id' => $user->id,
+				'first_name' => $user->first_name,
+				'last_name' => $user->last_name,
+				'email' => $user->email,
+				'is_active' => (int)$user->is_active,
+				'roles' => $roleNames,
+				'created_at' => $user->created_at
+			];
+
+			// Merge additional details if they exist
+			if (!empty($additionalDetails)) {
+				$userData = array_merge($userData, $additionalDetails);
+			}
+
+			http_response_code(200);
+			echo json_encode([
+				'success' => true,
+				'data' => $userData
+			]);
+
+		} catch (Exception $e) {
+			log_message('error', 'Error fetching user details: ' . $e->getMessage());
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error fetching user details']);
+		}
+	}
 }
-?>

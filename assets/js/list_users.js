@@ -87,84 +87,140 @@ $(document).ready(function() {
             return;
         }
         
+        // Initialize baseUrl if not already set
+        if (!window.baseUrl) {
+            window.baseUrl = window.location.origin + '/ccis_connect/';
+            console.log('📍 Initialized baseUrl:', window.baseUrl);
+        }
+        
         // Setup public site link
         setupPublicSiteLink();
         
         // Initialize date display
         updateCurrentDate();
         
+        // Setup navigation
+        setupNavigation();
+        
         // Load users data
         loadUsers();
+        
+        // Setup search functionality
+        setupSearch();
         
         // Remove any Return to Dashboard links
         removeReturnToDashboard();
         
         console.log('🎯 List Users Page initialized successfully');
     }
-    
-    // Function to handle the "View Public Site" link
+
+    // Setup navigation handlers
+    function setupNavigation() {
+        console.log('📍 Setting up navigation handlers...');
+        
+        // Get base URL
+        const baseUrl = window.baseUrl || (window.location.origin + '/ccis_connect');
+        console.log('Base URL:', baseUrl);
+        
+        // Handle navigation clicks with event delegation
+        $(document).on('click', '.navbar-nav .nav-link[data-section]', function(e) {
+            e.preventDefault();
+            const section = $(this).data('section');
+            console.log('🔗 Navigation clicked:', section);
+            
+            if (section === 'dashboard-home') {
+                console.log('→ Redirecting to Dashboard Home');
+                window.location.href = baseUrl + '/admin';
+            } else if (section === 'content-management') {
+                console.log('→ Redirecting to Content Management');
+                window.location.href = baseUrl + '/admin#content-management';
+            } else if (section === 'user-management') {
+                console.log('→ Redirecting to User Management');
+                window.location.href = baseUrl + '/admin#user-management';
+            }
+        });
+        
+        // Setup logout button
+        $(document).on('click', '#logout-icon-link', function(e) {
+            e.preventDefault();
+            console.log('🔓 Logout clicked');
+            handleLogout();
+        });
+        
+        // Setup view public site link
+        $(document).on('click', '#view-public-site-link', function(e) {
+            e.preventDefault();
+            console.log('🌐 View Public Site clicked');
+            const publicUrl = baseUrl.replace('/admin', '') || '/ccis_connect/';
+            console.log('Opening:', publicUrl);
+            window.open(publicUrl, '_blank');
+        });
+        
+        console.log('✅ Navigation handlers setup complete');
+    }
+
+    // Handle logout
+    function handleLogout() {
+        const baseUrl = window.baseUrl || (window.location.origin + '/ccis_connect');
+        console.log('Logging out, redirecting to:', baseUrl + '/login');
+        window.location.href = baseUrl + '/login';
+    }
+
+    // Setup public site link
     function setupPublicSiteLink() {
-        const publicSiteLink = $('#view-public-site-link');
-        if (publicSiteLink.length) {
-            // Determine the relative path to the admin dashboard for the return button
-            const dashboardUrl = 'super_admin/index.html';
-                                 
-            publicSiteLink.on('click', function(e) {
-                // Store the current dashboard URL in local storage
-                localStorage.setItem('admin_return_url', dashboardUrl);
-                sessionStorage.setItem('admin_return_url', dashboardUrl); // Use both for redundancy
-                console.log(`🔗 Storing return URL: ${dashboardUrl}`);
-                // Continue with navigation
-            });
-        }
+        $('#view-public-site-link').on('click', function(e) {
+            e.preventDefault();
+            const publicUrl = window.baseUrl ? window.baseUrl.replace('admin', '') : '/ccis_connect/';
+            window.open(publicUrl, '_blank');
+        });
     }
-    
-    // Date Display Function - Same as manage_forms
+
+    // Update current date
     function updateCurrentDate() {
-        const now = new Date();
-        const options = { 
-            weekday: 'short', 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric'
-        };
-        $('#current-date').text(now.toLocaleDateString('en-US', options));
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const today = new Date().toLocaleDateString('en-US', options);
+        $('#current-date, #nav-date span').text(today);
     }
-    
-    // Notification functions
-    function showNotification(message, type = 'info') {
-        // Remove existing notifications
-        $('.admin-notification').remove();
+
+    // Remove return to dashboard
+    function removeReturnToDashboard() {
+        $('#return-to-dashboard').remove();
+    }
+
+    // Show notification
+    function showNotification(title, message, type = 'success') {
+        const notification = $('#success-notification');
+        $('#notification-title').text(title);
+        $('#notification-message').text(message);
         
-        const notificationClass = type === 'error' ? 'alert-danger' : 
-                                 type === 'success' ? 'alert-success' : 
-                                 type === 'warning' ? 'alert-warning' :
-                                 'alert-info';
+        notification.removeClass('show');
+        notification.addClass('show');
         
-        const iconClass = type === 'error' ? 'fa-exclamation-circle' : 
-                          type === 'success' ? 'fa-check-circle' : 
-                          type === 'warning' ? 'fa-exclamation-triangle' :
-                          'fa-info-circle';
-        
-        const notification = $(`
-            <div class="admin-notification alert ${notificationClass} alert-dismissible fade show" 
-                 style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
-                <i class="fas ${iconClass} me-2"></i>
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        `);
-        
-        $('body').append(notification);
-        
-        // Auto remove after 5 seconds
         setTimeout(() => {
-            notification.alert('close');
-        }, 5000);
+            notification.removeClass('show');
+        }, 3000);
+    }
+
+    // Setup search functionality
+    function setupSearch() {
+        $('#user-search').on('keyup', function() {
+            const searchTerm = $(this).val().toLowerCase();
+            const rows = $('#users-table tbody tr');
+            
+            rows.each(function() {
+                const text = $(this).text().toLowerCase();
+                
+                if (text.includes(searchTerm)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
     }
 
     // Sample data structure for organization admins
-    let organizationAdmins = JSON.parse(localStorage.getItem('organizationAdmins')) || [];
+    // Removed - data now loaded from server
 
     // Enhanced confirmation system
     let pendingAction = null;
@@ -251,63 +307,168 @@ $(document).ready(function() {
 
     // Load users and display
     function loadUsers() {
-        displayUsers(organizationAdmins);
-        updateStatistics();
+        showSkeletonLoader();
+        
+        $.ajax({
+            url: baseUrl + '/admin/users/get_all',
+            method: 'GET',
+            dataType: 'json',
+            timeout: 10000,
+            success: function(response) {
+                hideSkeletonLoader();
+                if (response.success) {
+                    displayUsers(response.data);
+                    updateRoleStatistics(response.data);
+                } else {
+                    showFloatingNotification('Error', 'Failed to load users', 'error');
+                    displayUsers([]);
+                }
+            },
+            error: function(xhr, status, error) {
+                hideSkeletonLoader();
+                console.error('Error loading users:', error);
+                showFloatingNotification('Error', 'Failed to load users from server', 'error');
+                displayUsers([]);
+            }
+        });
+    }
+
+    // Calculate role-based statistics
+    function updateRoleStatistics(users) {
+        // Group users by role
+        const stats = {
+            admin: { active: 0, total: 0 },
+            faculty: { active: 0, total: 0 },
+            student: { active: 0, total: 0 },
+            org: { active: 0, total: 0 }
+        };
+
+        users.forEach(user => {
+            if (user.roles && user.roles.length > 0) {
+                user.roles.forEach(role => {
+                    let roleKey = role.toLowerCase();
+                    if (roleKey.includes('admin') && roleKey.includes('system')) {
+                        roleKey = 'admin';
+                    } else if (roleKey.includes('admin') && roleKey.includes('org')) {
+                        roleKey = 'org';
+                    } else if (roleKey.includes('faculty')) {
+                        roleKey = 'faculty';
+                    } else if (roleKey.includes('student')) {
+                        roleKey = 'student';
+                    }
+
+                    if (stats[roleKey]) {
+                        stats[roleKey].total++;
+                        if (user.is_active === 1 || user.is_active === true) {
+                            stats[roleKey].active++;
+                        }
+                    }
+                });
+            }
+        });
+
+        // Update UI
+        updateRoleCard('admin', stats.admin);
+        updateRoleCard('faculty', stats.faculty);
+        updateRoleCard('student', stats.student);
+        updateRoleCard('org', stats.org);
+    }
+
+    // Update individual role card
+    function updateRoleCard(role, data) {
+        const selector = `#${role}-count`;
+        const barSelector = `#${role}-bar`;
+        
+        $(selector).text(`${data.active}/${data.total}`);
+        
+        const percentage = data.total > 0 ? (data.active / data.total) * 100 : 0;
+        $(barSelector).css('width', percentage + '%');
+        
+        // Animate the numbers
+        animateNumber(selector, data.active, data.total);
+    }
+
+    // Animate number changes
+    function animateNumber(selector, active, total) {
+        const element = $(selector);
+        element.fadeOut(100).fadeIn(100);
+    }
+
+    // Show skeleton loading state
+    function showSkeletonLoader() {
+        $('#empty-state').addClass('show').html(`
+            <div style="text-align: center; padding: 4rem 2rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem; animation: pulse 1.5s infinite;">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <p style="color: #7f8c8d;">Loading users...</p>
+            </div>
+        `);
+        $('#users-table').hide();
+    }
+
+    // Hide skeleton loader
+    function hideSkeletonLoader() {
+        $('#empty-state').removeClass('show').empty();
     }
 
     // Display users in table
     function displayUsers(users) {
         const tbody = $('#users-table-body');
-        tbody.empty();
+        
+        hideSkeletonLoader();
 
         if (users.length === 0) {
-            $('#empty-state').show();
+            $('#empty-state').addClass('show').html(`
+                <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+                <h3>No Users Found</h3>
+                <p>There are no users in the system yet.</p>
+            `);
             $('#users-table').hide();
             return;
         }
 
-        $('#empty-state').hide();
+        $('#empty-state').removeClass('show').empty();
         $('#users-table').show();
 
-        users.forEach(user => {
-            const statusClass = `status-${user.status}`;
-            const statusText = user.status === 'active' ? 'Active' : 
-                              user.status === 'pending' ? 'Pending' : 'Inactive';
+        tbody.empty();
 
-            const createdDate = new Date(user.createdDate).toLocaleDateString();
+        users.forEach((user, index) => {
+            const roleDisplay = user.roles && user.roles.length > 0 ? user.roles[0] : 'No role';
+            const roleClass = roleDisplay.toLowerCase().includes('admin') && roleDisplay.toLowerCase().includes('system') ? 'admin' :
+                            roleDisplay.toLowerCase().includes('faculty') ? 'faculty' :
+                            roleDisplay.toLowerCase().includes('student') ? 'student' :
+                            roleDisplay.toLowerCase().includes('org') ? 'org' : 'admin';
+            
+            const statusClass = user.is_active ? 'active' : 'inactive';
+            const statusText = user.is_active ? 'Active' : 'Inactive';
+            const createdDate = new Date(user.created_at).toLocaleDateString();
 
             const row = `
-                <tr data-user-id="${user.id}">
+                <tr style="animation: fadeIn 0.3s ease-out ${index * 30}ms;" data-user-id="${user.id}">
                     <td>
                         <strong>${user.name}</strong>
-                        ${user.status === 'pending' ? '<br><small class="text-warning"><i class="fas fa-user-clock me-1"></i>Awaiting Initial Setup</small>' : ''}
                     </td>
                     <td>${user.email}</td>
                     <td>
-                        <span class="badge bg-secondary">${user.organization === 'csguild' ? 'CSGuild' : 'The Legion'}</span>
+                        <span class="role-badge ${roleClass}">${roleDisplay}</span>
                     </td>
                     <td>
-                        <span class="status-badge ${statusClass}">${statusText}</span>
+                        <span class="status-badge ${statusClass}">
+                            <i class="fas fa-${user.is_active ? 'circle' : 'circle'}" style="font-size: 0.5rem;"></i>
+                            ${statusText}
+                        </span>
                     </td>
                     <td>${createdDate}</td>
-                    <td class="text-end">
+                    <td>
                         <div class="action-buttons">
-                            <button class="btn btn-edit btn-sm" onclick="editUser('${user.id}')" title="Edit User">
+                            <button class="btn-action btn-view" onclick="viewUser('${user.id}')" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-action btn-edit" onclick="editUser('${user.id}')" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-password btn-sm" onclick="setPassword('${user.id}')" title="Set Password">
-                                <i class="fas fa-key"></i>
-                            </button>
-                            ${user.status === 'active' ? `
-                                <button class="btn btn-deactivate btn-sm" onclick="toggleUserStatus('${user.id}', 'inactive')" title="Deactivate User">
-                                    <i class="fas fa-user-slash"></i>
-                                </button>
-                            ` : `
-                                <button class="btn btn-activate btn-sm" onclick="toggleUserStatus('${user.id}', 'active')" title="Activate User">
-                                    <i class="fas fa-user-check"></i>
-                                </button>
-                            `}
-                            <button class="btn btn-danger btn-sm" onclick="deleteUser('${user.id}')" title="Delete User">
+                            <button class="btn-action btn-delete" onclick="deleteUser('${user.id}')" title="Delete">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -318,193 +479,219 @@ $(document).ready(function() {
         });
     }
 
-    // Update statistics
-    function updateStatistics() {
-        const total = organizationAdmins.length;
-        const active = organizationAdmins.filter(u => u.status === 'active').length;
-        const pending = organizationAdmins.filter(u => u.status === 'pending').length;
-        const inactive = organizationAdmins.filter(u => u.status === 'inactive').length;
+    // Setup base URL
+    const baseUrl = window.location.origin + '/ccis_connect';
 
-        $('#total-users').text(total);
-        $('#active-users').text(active);
-        $('#pending-users').text(pending);
-        $('#inactive-users').text(inactive);
+    // View user details
+    window.viewUser = function(userId) {
+        showFloatingNotification('Loading', 'Fetching user details...', 'info');
+        
+        $.ajax({
+            url: baseUrl + '/admin/users/get_details/' + userId,
+            method: 'GET',
+            dataType: 'json',
+            timeout: 10000,
+            success: function(response) {
+                if (response.success) {
+                    const user = response.data;
+                    const message = `
+                        <div style="text-align: left;">
+                            <p><strong>Name:</strong> ${user.first_name} ${user.last_name}</p>
+                            <p><strong>Email:</strong> ${user.email}</p>
+                            <p><strong>Role:</strong> ${user.roles && user.roles.length > 0 ? user.roles[0] : 'No role'}</p>
+                            <p><strong>Status:</strong> <span class="badge ${user.is_active ? 'bg-success' : 'bg-danger'}">${user.is_active ? 'Active' : 'Inactive'}</span></p>
+                            <p><strong>Joined:</strong> ${new Date(user.created_at).toLocaleString()}</p>
+                        </div>
+                    `;
+                    
+                    showDetailModal('User Information', message);
+                } else {
+                    showFloatingNotification('Error', 'Failed to load user details', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading user:', error);
+                showFloatingNotification('Error', 'Failed to load user details', 'error');
+            }
+        });
     }
 
-    // Edit user function - REMOVED STATUS FIELD
-    window.editUser = function(userId) {
-        const user = organizationAdmins.find(u => u.id === userId);
-        if (!user) return;
-
-        $('#edit-user-id').val(user.id);
-        $('#edit-fullName').val(user.name);
-        $('#edit-userEmail').val(user.email);
-        $('#edit-orgName').val(user.organization);
-        // Status field removed from edit modal as requested
-
-        const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+    // Show detail modal with better styling
+    function showDetailModal(title, content) {
+        const modalHTML = `
+            <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem;">
+                            <h5 class="modal-title" style="color: white; font-weight: 800; font-size: 1.3rem; margin: 0;">${title}</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ${content}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        $('body').append(modalHTML);
+        const modal = new bootstrap.Modal(document.getElementById('detailModal'));
         modal.show();
+        
+        $('#detailModal').on('hidden.bs.modal', function() {
+            $(this).remove();
+        });
+    }
+
+    // Edit user function
+    window.editUser = function(userId) {
+        showFloatingNotification('Loading', 'Fetching user details...', 'info');
+        
+        $.ajax({
+            url: baseUrl + '/admin/users/get_details/' + userId,
+            method: 'GET',
+            dataType: 'json',
+            timeout: 10000,
+            success: function(response) {
+                if (response.success) {
+                    const user = response.data;
+                    $('#edit-user-id').val(user.id);
+                    $('#edit-fullName').val(user.first_name + ' ' + user.last_name);
+                    $('#edit-userEmail').val(user.email);
+
+                    // Hide all detail sections by default
+                    $('#student-details-section').hide();
+                    $('#faculty-details-section').hide();
+
+                    // Show and populate student details if available
+                    if (user.student_number) {
+                        $('#student-details-section').show();
+                        $('#edit-studentNumber').val(user.student_number || '');
+                        $('#edit-course').val(user.course || '');
+                        $('#edit-yearLevel').val(user.year_level || '');
+                        $('#edit-section').val(user.section || '');
+                    }
+
+                    // Show and populate faculty details if available
+                    if (user.position) {
+                        $('#faculty-details-section').show();
+                        $('#edit-position').val(user.position || '');
+                        $('#edit-department').val(user.department || '');
+                        $('#edit-officeLocation').val(user.office_location || '');
+                        $('#edit-bio').val(user.bio || '');
+                    }
+
+                    const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+                    modal.show();
+                } else {
+                    showFloatingNotification('Error', 'Failed to load user details', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading user:', error);
+                showFloatingNotification('Error', 'Failed to load user details', 'error');
+            }
+        });
     }
 
     // Set password function - AUTO-ADJUSTS BASED ON USER STATUS
     window.setPassword = function(userId) {
-        const user = organizationAdmins.find(u => u.id === userId);
-        if (!user) return;
-
-        $('#password-user-id').val(user.id);
-        $('#password-user-name').text(user.name);
-        $('#new-password').val('');
-        $('#confirm-password').val('');
-
-        // AUTO-ADJUST MODAL BASED ON USER STATUS
-        const modalTitle = document.getElementById('setPasswordModalLabel');
-        const saveButton = document.getElementById('save-password');
-        const alertMessage = document.querySelector('#setPasswordModal .alert-info');
-        
-        if (user.status === 'pending') {
-            // NEW USER - FIRST TIME SETUP
-            modalTitle.innerHTML = '<i class="fas fa-key me-2"></i>Set Initial Password for <span id="password-user-name"></span>';
-            saveButton.innerHTML = '<i class="fas fa-save me-2"></i>Set Password';
-            alertMessage.innerHTML = '<i class="fas fa-info-circle me-2"></i><strong>Initial Setup:</strong> User will be able to login with this temporary password and will be prompted to set their own password.';
-        } else {
-            // EXISTING USER - PASSWORD RESET
-            modalTitle.innerHTML = '<i class="fas fa-redo-alt me-2"></i>Reset Password for <span id="password-user-name"></span>';
-            saveButton.innerHTML = '<i class="fas fa-save me-2"></i>Reset Password';
-            alertMessage.innerHTML = '<i class="fas fa-info-circle me-2"></i><strong>Password Reset:</strong> User will be forced to set a new password upon next login.';
-        }
-        
-        // Update the name in the title
-        document.getElementById('password-user-name').textContent = user.name;
-
-        const modal = new bootstrap.Modal(document.getElementById('setPasswordModal'));
-        modal.show();
-    }
-
-    // Save password - HANDLES BOTH INITIAL SETUP AND PASSWORD RESET
-    $('#save-password').on('click', function() {
-        const userId = $('#password-user-id').val();
-        const newPassword = $('#new-password').val();
-        const confirmPassword = $('#confirm-password').val();
-
-        if (!newPassword || !confirmPassword) {
-            showFloatingNotification('Error', 'Please fill in both password fields.', 'error');
-            return;
-        }
-
-        if (newPassword.length < 8) {
-            showFloatingNotification('Error', 'Password must be at least 8 characters long.', 'error');
-            return;
-        }
-
-        if (newPassword !== confirmPassword) {
-            showFloatingNotification('Error', 'Passwords do not match.', 'error');
-            return;
-        }
-
-        const user = organizationAdmins.find(u => u.id === userId);
-        if (!user) return;
-
-        // PASSWORD SET/RESET LOGIC
-        if (user.status === 'pending') {
-            // FIRST-TIME PASSWORD SETUP FOR NEW USER
-            localStorage.setItem(`legion_${user.email}_password`, newPassword);
-            user.status = 'active';
-            user.lastLogin = null;
-            
-            saveUsers();
-            loadUsers();
-            $('#setPasswordModal').modal('hide');
-            showFloatingNotification('Password Set', 
-                `Initial password has been set for "${user.name}". They can now login and will be prompted to set their own password.`,
-                'success');
-        } else {
-            // PASSWORD RESET FOR EXISTING USER
-            localStorage.removeItem(`legion_${user.email}_password_changed`);
-            localStorage.setItem(`legion_${user.email}_password`, newPassword);
-            user.forcePasswordChange = true;
-            user.lastLogin = null;
-            user.passwordResetDate = new Date().toISOString();
-
-            saveUsers();
-            loadUsers();
-            $('#setPasswordModal').modal('hide');
-            showFloatingNotification('Password Reset', 
-                `Password has been reset for "${user.name}". They will be forced to set a new password upon next login.`,
-                'warning');
-        }
-    });
-
-    // Enhanced toggle user status with confirmation modal
-    window.toggleUserStatus = function(userId, newStatus) {
-        const user = organizationAdmins.find(u => u.id === userId);
-        if (!user) return;
-
-        const action = newStatus === 'active' ? 'activate' : 'deactivate';
-        const actionText = newStatus === 'active' ? 'activate' : 'deactivate';
-        const message = `Are you sure you want to ${actionText} "${user.name}"?`;
-        const details = newStatus === 'active' 
-            ? 'This user will be able to access the system.' 
-            : 'This user will no longer be able to access the system until reactivated.';
-
-        showConfirmation(message, details, action, function() {
-            user.status = newStatus;
-            if (newStatus === 'active') {
-                user.lastLogin = null;
-            }
-            saveUsers();
-            loadUsers();
-            
-            const notificationMessage = newStatus === 'active' 
-                ? `"${user.name}" has been activated successfully.` 
-                : `"${user.name}" has been deactivated successfully.`;
-                
-            showFloatingNotification('Status Updated', notificationMessage);
-        });
+        // Feature not implemented in this version
+        showFloatingNotification('Info', 'Password management will be implemented in admin panel', 'info');
     }
 
     // Enhanced delete user with confirmation modal
     window.deleteUser = function(userId) {
-        const user = organizationAdmins.find(u => u.id === userId);
-        if (!user) return;
-
-        const message = `Are you sure you want to delete "${user.name}"?`;
-        const details = 'This action cannot be undone. All user data will be permanently removed.';
+        const message = 'Are you sure you want to delete this user?';
+        const details = 'This action cannot be undone. All user data will be permanently removed from the system.';
 
         showConfirmation(message, details, 'delete', function() {
-            organizationAdmins = organizationAdmins.filter(u => u.id !== userId);
-            
-            // Also remove their password data
-            localStorage.removeItem(`legion_${user.email}_password_changed`);
-            localStorage.removeItem(`legion_${user.email}_password`);
-            
-            saveUsers();
-            loadUsers();
-            showFloatingNotification('User Deleted', `"${user.name}" has been deleted successfully.`);
+            const confirmBtn = $('#confirm-action-btn');
+            const originalHtml = confirmBtn.html();
+            confirmBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Deleting...');
+
+            $.ajax({
+                url: baseUrl + '/admin/users/remove',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    user_id: userId
+                },
+                timeout: 10000,
+                success: function(response) {
+                    confirmBtn.prop('disabled', false).html(originalHtml);
+                    $('#confirmationModal').modal('hide');
+                    if (response.success) {
+                        showFloatingNotification('Success', 'User deleted successfully', 'success');
+                        setTimeout(() => loadUsers(), 500);
+                    } else {
+                        showFloatingNotification('Error', response.message || 'Failed to delete user', 'error');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    confirmBtn.prop('disabled', false).html(originalHtml);
+                    $('#confirmationModal').modal('hide');
+                    console.error('Error deleting user:', error);
+                    showFloatingNotification('Error', 'Failed to delete user: ' + error, 'error');
+                }
+            });
         });
     }
 
     // Save user changes
     $('#save-user-changes').on('click', function() {
         const userId = $('#edit-user-id').val();
-        const user = organizationAdmins.find(u => u.id === userId);
-        if (!user) return;
+        const fullName = $('#edit-fullName').val();
+        const email = $('#edit-userEmail').val();
 
-        user.name = $('#edit-fullName').val();
-        user.email = $('#edit-userEmail').val();
-        user.organization = $('#edit-orgName').val();
-        // Status is not edited anymore as requested
+        if (!fullName || !email) {
+            showFloatingNotification('Validation Error', 'Please fill in all required fields', 'error');
+            return;
+        }
 
-        saveUsers();
-        loadUsers();
+        const nameParts = fullName.trim().split(' ');
+        const firstName = nameParts[0];
+        const lastName = nameParts.slice(1).join(' ') || '';
 
-        $('#editUserModal').modal('hide');
-        showFloatingNotification('User Updated', `"${user.name}"'s information has been updated successfully.`);
+        // Show loading state
+        const btn = $(this);
+        const originalHtml = btn.html();
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Saving...');
+
+        $.ajax({
+            url: baseUrl + '/admin/users/update',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                user_id: userId,
+                first_name: firstName,
+                last_name: lastName,
+                email: email
+            },
+            timeout: 10000,
+            success: function(response) {
+                btn.prop('disabled', false).html(originalHtml);
+                if (response.success) {
+                    $('#editUserModal').modal('hide');
+                    showFloatingNotification('Success', 'User information updated successfully', 'success');
+                    setTimeout(() => loadUsers(), 500);
+                } else {
+                    showFloatingNotification('Error', response.message || 'Failed to update user', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                btn.prop('disabled', false).html(originalHtml);
+                console.error('Error updating user:', error);
+                showFloatingNotification('Error', 'Failed to update user: ' + error, 'error');
+            }
+        });
     });
 
     // Save users to localStorage
-    function saveUsers() {
-        localStorage.setItem('organizationAdmins', JSON.stringify(organizationAdmins));
-    }
+    // Removed - data now managed by server
 
     // Initialize the page
     initializePage();

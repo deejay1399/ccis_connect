@@ -22,11 +22,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editUserModalLabel">
-                    <i class="fas fa-edit me-2"></i>Edit Organization Admin
+            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem;">
+                <h5 class="modal-title" id="editUserModalLabel" style="color: white; font-weight: 800; font-size: 1.3rem; margin: 0;">
+                    <i class="fas fa-edit me-2"></i>Edit User
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="edit-user-form">
@@ -41,13 +41,54 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <input type="email" class="form-control" id="edit-userEmail" required>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="edit-orgName" class="form-label">Organization</label>
-                            <select class="form-select" id="edit-orgName" required>
-                                <option value="csguild">CSGuild</option>
-                                <option value="the_legion">The Legion</option>
-                            </select>
+
+                    <!-- Student Details Section -->
+                    <div id="student-details-section" style="display: none;">
+                        <div class="border-top pt-3 mt-3">
+                            <h6 class="mb-3"><i class="fas fa-graduation-cap me-2"></i>Student Information</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit-studentNumber" class="form-label">Student Number</label>
+                                    <input type="text" class="form-control" id="edit-studentNumber" readonly>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit-course" class="form-label">Course</label>
+                                    <input type="text" class="form-control" id="edit-course" readonly>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit-yearLevel" class="form-label">Year Level</label>
+                                    <input type="text" class="form-control" id="edit-yearLevel" readonly>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit-section" class="form-label">Section</label>
+                                    <input type="text" class="form-control" id="edit-section" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Faculty Details Section -->
+                    <div id="faculty-details-section" style="display: none;">
+                        <div class="border-top pt-3 mt-3">
+                            <h6 class="mb-3"><i class="fas fa-chalkboard-user me-2"></i>Faculty Information</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit-position" class="form-label">Position</label>
+                                    <input type="text" class="form-control" id="edit-position" readonly>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="edit-department" class="form-label">Department</label>
+                                    <input type="text" class="form-control" id="edit-department" readonly>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="edit-officeLocation" class="form-label">Office Location</label>
+                                    <input type="text" class="form-control" id="edit-officeLocation" readonly>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="edit-bio" class="form-label">Bio</label>
+                                    <textarea class="form-control" id="edit-bio" readonly style="resize: vertical; min-height: 80px;"></textarea>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -56,50 +97,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="save-user-changes">
                     <i class="fas fa-save me-2"></i>Save Changes
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Set Password Modal -->
-<div class="modal fade" id="setPasswordModal" tabindex="-1" aria-labelledby="setPasswordModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="setPasswordModalLabel">
-                    <i class="fas fa-key me-2"></i>
-                    Set Password for <span id="password-user-name"></span>
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Password Setup:</strong> User will be able to login with this temporary password and will be prompted to set their own password.
-                </div>
-                <form id="set-password-form">
-                    <input type="hidden" id="password-user-id">
-                    <div class="mb-3">
-                        <label for="new-password" class="form-label">Temporary Password *</label>
-                        <input type="password" class="form-control" id="new-password" required 
-                               placeholder="Enter temporary password">
-                        <div class="form-text">
-                            <i class="fas fa-shield-alt me-1"></i>
-                            Must be at least 8 characters long
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirm-password" class="form-label">Confirm Temporary Password *</label>
-                        <input type="password" class="form-control" id="confirm-password" required 
-                               placeholder="Confirm temporary password">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="save-password">
-                    <i class="fas fa-save me-2"></i>Set Password
                 </button>
             </div>
         </div>
@@ -133,88 +130,86 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </div>
 </div>
 
-<div class="container py-4 py-md-5 dashboard-bg">
-    <div class="row">
-        <div class="col-12">
-            <div class="dashboard-card">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="card-title mb-0"><i class="fas fa-users-cog me-2"></i>Manage Organization Admins</h3>
-                </div>
-                
-                <!-- Statistics Cards -->
-                <div class="row mb-4">
-                    <div class="col-md-3 mb-3">
-                        <div class="stat-card">
-                            <div class="stat-icon total-users">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4 id="total-users">0</h4>
-                                <p>Total Admins</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="stat-card">
-                            <div class="stat-icon active-users">
-                                <i class="fas fa-user-check"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4 id="active-users">0</h4>
-                                <p>Active</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="stat-card">
-                            <div class="stat-icon pending-users">
-                                <i class="fas fa-user-clock"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4 id="pending-users">0</h4>
-                                <p>Pending</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="stat-card">
-                            <div class="stat-icon inactive-users">
-                                <i class="fas fa-user-slash"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h4 id="inactive-users">0</h4>
-                                <p>Inactive</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<!-- Main Content Area -->
+<div class="users-main">
+    <!-- Page Header -->
+    <div class="users-page-header">
+        <h1><i class="fas fa-users"></i> User Management</h1>
+        <p>Overview of all system users by role</p>
+    </div>
 
-                <!-- Users Table -->
-                <div class="table-responsive">
-                    <table class="table table-hover" id="users-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Organization</th>
-                                <th>Status</th>
-                                <th>Date Created</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="users-table-body">
-                            <!-- Users will be loaded here by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
+    <!-- Role Statistics -->
+    <div class="role-stats-grid">
+        <!-- Admin -->
+        <div class="role-stat-box role-stat-admin">
+            <div class="role-stat-icon"><i class="fas fa-crown"></i></div>
+            <h3>System Admin</h3>
+            <div class="role-stat-count" id="admin-count">0/0</div>
+            <div class="role-stat-label">Active / Total</div>
+            <div class="role-stat-bar"><div class="role-stat-bar-fill" id="admin-bar" style="width: 0%; background: #e74c3c;"></div></div>
+        </div>
 
-                <!-- Empty State -->
-                <div class="text-center py-5" id="empty-state">
-                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                    <h4>No Organization Admins Found</h4>
-                    <p class="text-muted">There are currently no organization admin accounts in the system.</p>
-                </div>
+        <!-- Faculty -->
+        <div class="role-stat-box role-stat-faculty">
+            <div class="role-stat-icon"><i class="fas fa-chalkboard-user"></i></div>
+            <h3>Faculty</h3>
+            <div class="role-stat-count" id="faculty-count">0/0</div>
+            <div class="role-stat-label">Active / Total</div>
+            <div class="role-stat-bar"><div class="role-stat-bar-fill" id="faculty-bar" style="width: 0%; background: #3498db;"></div></div>
+        </div>
+
+        <!-- Student -->
+        <div class="role-stat-box role-stat-student">
+            <div class="role-stat-icon"><i class="fas fa-graduation-cap"></i></div>
+            <h3>Student</h3>
+            <div class="role-stat-count" id="student-count">0/0</div>
+            <div class="role-stat-label">Active / Total</div>
+            <div class="role-stat-bar"><div class="role-stat-bar-fill" id="student-bar" style="width: 0%; background: #2ecc71;"></div></div>
+        </div>
+
+        <!-- Organization -->
+        <div class="role-stat-box role-stat-org">
+            <div class="role-stat-icon"><i class="fas fa-sitemap"></i></div>
+            <h3>Org Admin</h3>
+            <div class="role-stat-count" id="org-count">0/0</div>
+            <div class="role-stat-label">Active / Total</div>
+            <div class="role-stat-bar"><div class="role-stat-bar-fill" id="org-bar" style="width: 0%; background: #f39c12;"></div></div>
+        </div>
+    </div>
+
+    <!-- Users Section -->
+    <div class="users-section-box">
+        <div class="users-section-header">
+            <h2><i class="fas fa-list"></i> All Users</h2>
+            <div class="users-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="user-search" placeholder="Search users...">
             </div>
+        </div>
+
+        <!-- Table -->
+        <div class="users-table-container">
+            <table class="users-data-table" id="users-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="users-empty-state" id="empty-state" style="display: none;">
+            <i class="fas fa-inbox"></i>
+            <h3>No Users Found</h3>
+            <p>There are no users in the system yet.</p>
         </div>
     </div>
 </div>

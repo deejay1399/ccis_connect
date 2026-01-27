@@ -69,5 +69,31 @@ class User_model extends CI_Model {
         return $this->db->where('id', $user_id)
                         ->update($this->table, ['updated_at' => date('Y-m-d H:i:s')]);
     }
+
+    /**
+     * Get all users
+     */
+    public function get_all()
+    {
+        return $this->db->get($this->table)->result();
+    }
+
+    /**
+     * Update user
+     */
+    public function update_user($user_id, $data)
+    {
+        return $this->db->where('id', $user_id)
+                        ->update($this->table, $data);
+    }
+
+    /**
+     * Delete user
+     */
+    public function delete_user($user_id)
+    {
+        return $this->db->where('id', $user_id)
+                        ->delete($this->table);
+    }
 }
 ?>

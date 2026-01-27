@@ -56,5 +56,18 @@ class UserRole_model extends CI_Model {
                         ->where('role_id', $role_id)
                         ->count_all_results($this->table) > 0;
     }
+
+    /**
+     * Get all roles for a user
+     */
+    public function get_roles_by_user($user_id)
+    {
+        return $this->db->select('r.id, r.name as role_name')
+                        ->from('user_roles ur')
+                        ->join('roles r', 'ur.role_id = r.id')
+                        ->where('ur.user_id', $user_id)
+                        ->get()
+                        ->result();
+    }
 }
 ?>

@@ -14,6 +14,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <?php if(isset($page_type) && $page_type === 'admin_users'): ?>
         <link rel="stylesheet" href="<?php echo base_url('assets/css/create_user.css'); ?>">
     <?php endif; ?>
+    <?php if(isset($page_type) && $page_type === 'list_users'): ?>
+        <link rel="stylesheet" href="<?php echo base_url('assets/css/list_users_new.css'); ?>">
+    <?php endif; ?>
 </head>
 <body>
     <!-- Updated Header without BISU logo and notification -->

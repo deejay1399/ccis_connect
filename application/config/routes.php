@@ -17,6 +17,7 @@ $route['about'] = 'AboutController/index';
 
 // ==================== FACULTY ====================
 $route['faculty'] = 'FacultyController/faculty';
+$route['faculty/dashboard'] = 'FacultyController/dashboard';
 
 // ==================== ACADEMICS ====================
 $route['academics'] = 'AcademicsController/index';
@@ -66,3 +67,7 @@ $route['admin/users/save'] = 'admin/AdminUsers/save';
 $route['admin/users/list'] = 'admin/AdminUsers/list_all';
 $route['admin/users/edit/(:num)'] = 'admin/AdminUsers/edit/$1';
 $route['admin/users/delete/(:num)'] = 'admin/AdminUsers/delete/$1';
+$route['admin/users/get_all'] = 'admin/AdminUsers/get_all_users';
+$route['admin/users/get_details/(:num)'] = 'admin/AdminUsers/get_user_details/$1';
+$route['admin/users/update'] = 'admin/AdminUsers/update_user';
+$route['admin/users/remove'] = 'admin/AdminUsers/delete_user';

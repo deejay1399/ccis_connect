@@ -160,8 +160,8 @@
                                     <div class="overview-feature-icon gold-icon">
                                         <i class="fas fa-list-ul"></i>
                                     </div>
-                                    <h6>Manage Admins</h6>
-                                    <p>View and manage all organization admins</p>
+                                    <h6>Manage Users</h6>
+                                    <p>View and manage all users</p>
                                 </div>
                             </div>
                         </div>
@@ -276,9 +276,9 @@
                                 <div class="feature-icon gold-icon">
                                     <i class="fas fa-list-ul"></i>
                                 </div>
-                                <h5>Manage Admins</h5>
-                                <p>View and manage all organization admins</p>
-                                <a href="<?php echo site_url('admin/users/list'); ?>" class="btn btn-primary" id="list-users-btn">View All Admins</a>
+                                <h5>Manage Users</h5>
+                                <p>View and manage all users</p>
+                                <a href="<?php echo site_url('admin/users/list'); ?>" class="btn btn-primary" id="list-users-btn">View All Users</a>
                             </div>
                         </div>
                     </div>

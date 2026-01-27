@@ -7,6 +7,23 @@ class FacultyController extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->helper('url');
+		$this->load->library('session');
+		// Add authentication check here if needed
+		// $this->load->helper('auth');
+	}
+
+	/**
+	 * Faculty Dashboard - Main dashboard for faculty users
+	 */
+	public function dashboard()
+	{
+		$data['page_title'] = 'Dashboard';
+		$data['page_type'] = 'faculty_dashboard';
+		
+		$this->load->view('superadmin/layouts/header', $data);
+		$this->load->view('superadmin/layouts/navigation');
+		$this->load->view('superadmin/index', $data);
+		$this->load->view('superadmin/layouts/footer');
 	}
 
 	public function faculty()
