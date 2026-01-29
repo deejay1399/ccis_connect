@@ -53,11 +53,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <form id="uploadCurriculumForm">
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label for="curriculumName" class="form-label">Curriculum Name</label>
+                                        <label for="curriculumName" class="form-label">Curriculum Name <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="curriculumName" placeholder="e.g., BS Computer Science" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="curriculumFile" class="form-label">PDF File</label>
+                                        <label for="curriculumFile" class="form-label">PDF File <span class="text-danger">*</span></label>
                                         <input type="file" class="form-control" id="curriculumFile" accept=".pdf" required>
                                     </div>
                                     <div class="col-12 text-end">
@@ -151,7 +151,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <!-- Add Program Modal -->
 <div class="modal fade" id="addProgramModal" tabindex="-1" aria-labelledby="addProgramModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addProgramModalLabel">Add New Program</h5>
@@ -171,6 +171,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <label for="programDuration" class="form-label">Duration (years)</label>
                         <input type="number" class="form-control" id="programDuration" placeholder="e.g., 4" required>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Career Opportunities <span class="text-danger">*</span></label>
+                        <div id="add-opportunities-container">
+                            <div class="opportunity-input-group mb-2">
+                                <div class="input-group">
+                                    <input type="text" class="form-control opportunity-input" placeholder="Enter career opportunity">
+                                    <button class="btn btn-outline-danger remove-opportunity" type="button" style="display:none;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add-opportunity-btn">
+                            + Add Opportunity
+                        </button>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -183,10 +199,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <!-- Edit Program Modal -->
 <div class="modal fade" id="editProgramModal" tabindex="-1" aria-labelledby="editProgramModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editProgramModalLabel">Edit Program Details</h5>
+                <h5 class="modal-title" id="editProgramModalLabel">Edit Program</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="editProgramForm">
@@ -194,11 +210,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="editProgramName" class="form-label">Program Name</label>
-                        <input type="text" class="form-control" id="editProgramName" required>
+                        <input type="text" class="form-control" id="editProgramName" placeholder="e.g., BS Computer Science" required>
                     </div>
                     <div class="mb-3">
                         <label for="editProgramDescription" class="form-label">Description</label>
-                        <textarea class="form-control" id="editProgramDescription" rows="3" required></textarea>
+                        <textarea class="form-control" id="editProgramDescription" rows="3" placeholder="Program description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editProgramDuration" class="form-label">Duration (years)</label>
+                        <input type="number" class="form-control" id="editProgramDuration" placeholder="e.g., 4" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Career Opportunities <span class="text-danger">*</span></label>
+                        <div id="edit-opportunities-container">
+                            <div class="opportunity-input-group mb-2">
+                                <div class="input-group">
+                                    <input type="text" class="form-control opportunity-input" placeholder="Enter career opportunity">
+                                    <button class="btn btn-outline-danger remove-opportunity" type="button" style="display:none;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="edit-opportunity-btn">
+                            + Add Opportunity
+                        </button>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -231,3 +267,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
     </div>
 </div>
+<!-- PDF Preview Modal -->
+<div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-labelledby="pdfPreviewLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pdfPreviewLabel">
+                    <i class="fas fa-file-pdf me-2"></i>Curriculum Preview
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" style="background: #f5f5f5;">
+                <iframe id="pdfViewer" style="width: 100%; height: 100%; border: none;" src=""></iframe>
+            </div>
+            <div class="modal-footer">
+                <a id="pdfDownloadBtn" href="#" download class="btn btn-primary me-auto">
+                    <i class="fas fa-download me-2"></i>Download PDF
+                </a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="<?php echo base_url('assets/js/manage_academics_curriculum.js'); ?>"></script>

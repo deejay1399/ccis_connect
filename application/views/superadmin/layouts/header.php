@@ -17,6 +17,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <?php if(isset($page_type) && $page_type === 'list_users'): ?>
         <link rel="stylesheet" href="<?php echo base_url('assets/css/list_users_new.css'); ?>">
     <?php endif; ?>
+    <?php if(isset($content_type) && $content_type === 'faculty'): ?>
+        <link rel="stylesheet" href="<?php echo base_url('assets/css/manage_faculty.css'); ?>">
+    <?php endif; ?>
 </head>
 <body>
     <!-- Updated Header without BISU logo and notification -->

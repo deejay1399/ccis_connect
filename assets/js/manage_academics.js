@@ -1265,3 +1265,418 @@ function showNotification(message, type = 'info') {
         }
     }, 5000);
 }
+
+// ============================================
+// PROGRAMS MANAGEMENT FUNCTIONS
+// ============================================
+
+// Get baseUrl safely
+function getBaseUrl() {
+    return window.baseUrl || '/ccis_connect/';
+}
+
+// Initialize programs management
+function initializeProgramsManagement() {
+    loadPrograms();
+    setupAddProgramForm();
+    setupOpportunityHandlers();
+}
+
+// Load all programs
+function loadPrograms() {
+    fetch(getBaseUrl() + 'admin/content/api_get_programs')
+        .then(response => response.json())
+        .then(data => {
+            displayPrograms(data);
+        })
+        .catch(error => {
+            console.error('Error loading programs:', error);
+            showNotification('Error loading programs', 'error');
+        });
+}
+
+// Display programs
+function displayPrograms(programs) {
+    const container = document.getElementById('programsList');
+    
+    if (!container) return;
+    
+    if (!Array.isArray(programs) || programs.length === 0) {
+        container.innerHTML = '<p class="text-center col-12">No programs available yet.</p>';
+        return;
+    }
+    
+    container.innerHTML = programs.map(program => `
+        <div class="col-lg-6 col-md-12">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">${program.program_name}</h5>
+                    <p class="card-text text-muted mb-2">
+                        <i class="fas fa-clock me-2"></i>${program.duration_years} Year(s)
+                    </p>
+                    <p class="card-text mb-3">${program.description}</p>
+                    <div class="mb-3">
+                        <strong>Career Opportunities:</strong>
+                        <ul class="small mt-2 mb-0">
+                            ${program.career_opportunities.split(',').map(opp => `
+                                <li>${opp.trim()}</li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <button class="btn btn-sm btn-warning" onclick="editProgram(${program.program_id})">
+                        <i class="fas fa-edit me-1"></i>Edit
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteProgram(${program.program_id})">
+                        <i class="fas fa-trash me-1"></i>Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Setup add program form
+function setupAddProgramForm() {
+    console.log('Setting up add program form');
+    // This is now handled by jQuery on submit at bottom of file
+}
+
+// Edit program
+function editProgram(programId) {
+    fetch(getBaseUrl() + 'admin/content/api_load_program?id=' + programId)
+        .then(response => response.json())
+        .then(program => {
+            console.log('✅ Program loaded:', program);
+            
+            // Populate form fields
+            document.getElementById('editProgramKey').value = program.program_id;
+            document.getElementById('editProgramName').value = program.program_name;
+            document.getElementById('editProgramDescription').value = program.description;
+            document.getElementById('editProgramDuration').value = program.duration_years;
+            
+            // Populate career opportunities
+            const oppContainer = document.getElementById('edit-opportunities-container');
+            oppContainer.innerHTML = '';
+            
+            if (program.career_opportunities) {
+                const opportunities = program.career_opportunities.split(',').map(opp => opp.trim());
+                opportunities.forEach((opp, index) => {
+                    const html = `
+                        <div class="opportunity-input-group mb-2">
+                            <div class="input-group">
+                                <input type="text" class="form-control opportunity-input" placeholder="Enter career opportunity" value="${opp}">
+                                <button class="btn btn-outline-danger remove-opportunity" type="button">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    oppContainer.insertAdjacentHTML('beforeend', html);
+                });
+            }
+            
+            new bootstrap.Modal(document.getElementById('editProgramModal')).show();
+        })
+        .catch(error => {
+            console.error('❌ Error:', error);
+            showNotification('Error loading program details', 'error');
+        });
+}
+
+// Delete program
+function deleteProgram(programId) {
+    if (!confirm('Are you sure you want to delete this program? This action cannot be undone.')) return;
+    
+    const formData = new FormData();
+    formData.append('id', programId);
+    
+    fetch(getBaseUrl() + 'admin/content/api_delete_program', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Program deleted successfully!', 'success');
+            loadPrograms();
+        } else {
+            showNotification(data.message || 'Error deleting program', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error deleting program. Please try again.', 'error');
+    });
+}
+
+// Setup opportunity handlers
+function setupOpportunityHandlers() {
+    console.log('🔧 Setting up opportunity handlers');
+    
+    // Add opportunity button for add modal
+    $(document).on('click', '#add-opportunity-btn', function(e) {
+        e.preventDefault();
+        console.log('✅ Add opportunity button clicked');
+        addOpportunityFieldAdd();
+    });
+    
+    // Add opportunity button for edit modal
+    $(document).on('click', '#edit-opportunity-btn', function(e) {
+        e.preventDefault();
+        console.log('✅ Add opportunity button clicked (edit)');
+        addOpportunityFieldEdit();
+    });
+    
+    // Remove opportunity button
+    $(document).on('click', '.remove-opportunity', function(e) {
+        e.preventDefault();
+        console.log('✅ Remove opportunity button clicked');
+        $(this).closest('.opportunity-input-group').remove();
+    });
+    
+    // Show/hide trash button on input change for add modal
+    $(document).on('input', '#add-opportunities-container .opportunity-input', function(e) {
+        const btn = $(this).closest('.input-group').find('.remove-opportunity');
+        if ($(this).val().trim() !== '') {
+            btn.show();
+        } else {
+            btn.hide();
+        }
+    });
+    
+    // Show/hide trash button on input change for edit modal
+    $(document).on('input', '#edit-opportunities-container .opportunity-input', function(e) {
+        const btn = $(this).closest('.input-group').find('.remove-opportunity');
+        if ($(this).val().trim() !== '') {
+            btn.show();
+        } else {
+            btn.hide();
+        }
+    });
+}
+
+// Add opportunity field
+function addOpportunityFieldAdd() {
+    const container = $('#add-opportunities-container');
+    if (container.length === 0) {
+        console.error('❌ Container not found');
+        return;
+    }
+    
+    console.log('✅ Adding opportunity field');
+    
+    const newInput = `
+        <div class="opportunity-input-group mb-2">
+            <div class="input-group">
+                <input type="text" class="form-control opportunity-input" placeholder="Enter career opportunity">
+                <button class="btn btn-outline-danger remove-opportunity" type="button">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    container.append(newInput);
+    console.log('✅ Opportunity field added');
+}
+
+// Add opportunity field for edit modal
+function addOpportunityFieldEdit() {
+    const container = $('#edit-opportunities-container');
+    if (container.length === 0) {
+        console.error('❌ Container not found');
+        return;
+    }
+    
+    console.log('✅ Adding opportunity field (edit)');
+    
+    const newInput = `
+        <div class="opportunity-input-group mb-2">
+            <div class="input-group">
+                <input type="text" class="form-control opportunity-input" placeholder="Enter career opportunity">
+                <button class="btn btn-outline-danger remove-opportunity" type="button">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    container.append(newInput);
+    console.log('✅ Opportunity field added (edit)');
+}
+
+// Reset opportunities
+function resetOpportunitiesAdd() {
+    const container = document.getElementById('add-opportunities-container');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="opportunity-input-group mb-2">
+            <div class="input-group">
+                <input type="text" class="form-control opportunity-input" placeholder="Enter career opportunity">
+                <button class="btn btn-outline-secondary remove-opportunity" type="button" style="display:none;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// Initialize on document ready
+$(document).ready(function() {
+    console.log('✅ Document ready - initializing programs management');
+    initializeProgramsManagement();
+    
+    // Setup form submit handler
+    setupFormSubmitHandler();
+});
+
+function setupFormSubmitHandler() {
+    console.log('🔧 Setting up form submit handler');
+    
+    $(document).on('submit', '#addProgramForm', function(e) {
+        e.preventDefault();
+        console.log('✅ Form submitted');
+    
+    // Collect all opportunity inputs
+    const opportunityInputs = document.querySelectorAll('#add-opportunities-container .opportunity-input');
+    console.log('Opportunity inputs found:', opportunityInputs.length);
+    
+    const opportunities = [];
+    opportunityInputs.forEach(input => {
+        const val = input.value.trim();
+        if (val) {
+            opportunities.push(val);
+        }
+    });
+    
+    console.log('Filtered opportunities:', opportunities);
+    
+    if (opportunities.length === 0) {
+        showNotification('Please add at least one career opportunity', 'error');
+        return;
+    }
+    
+    const programName = $('#programName').val().trim();
+    const description = $('#programDescription').val().trim();
+    const duration = $('#programDuration').val().trim();
+    
+    if (!programName || !description || !duration) {
+        showNotification('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    console.log('Submitting:', {
+        program_name: programName,
+        description: description,
+        duration_years: duration,
+        career_opportunities: opportunities.join(',')
+    });
+    
+    $.ajax({
+        type: 'POST',
+        url: getBaseUrl() + 'admin/content/api_save_program',
+        data: {
+            program_name: programName,
+            description: description,
+            duration_years: duration,
+            career_opportunities: opportunities.join(',')
+        },
+        dataType: 'json',
+        success: function(data) {
+            console.log('✅ Response:', data);
+            if (data.success) {
+                showNotification('✅ Program added successfully!', 'success');
+                $('#addProgramForm')[0].reset();
+                resetOpportunitiesAdd();
+                var modal = bootstrap.Modal.getInstance(document.getElementById('addProgramModal'));
+                if (modal) {
+                    modal.hide();
+                }
+                loadPrograms();
+            } else {
+                showNotification('❌ ' + (data.message || 'Error adding program'), 'error');
+            }
+        },
+        error: function(err) {
+            console.error('❌ Error:', err);
+            showNotification('❌ Error adding program. Please try again.', 'error');
+        }
+    });
+    });
+}
+
+// Edit Program Form Submit Handler
+$(document).on('submit', '#editProgramForm', function(e) {
+    e.preventDefault();
+    console.log('✅ Edit form submitted');
+    
+    // Collect all opportunity inputs
+    const opportunityInputs = document.querySelectorAll('#edit-opportunities-container .opportunity-input');
+    console.log('Opportunity inputs found:', opportunityInputs.length);
+    
+    const opportunities = [];
+    opportunityInputs.forEach(input => {
+        const val = input.value.trim();
+        if (val) {
+            opportunities.push(val);
+        }
+    });
+    
+    console.log('Filtered opportunities:', opportunities);
+    
+    if (opportunities.length === 0) {
+        showNotification('Please add at least one career opportunity', 'error');
+        return;
+    }
+    
+    const programId = $('#editProgramKey').val();
+    const programName = $('#editProgramName').val().trim();
+    const description = $('#editProgramDescription').val().trim();
+    const duration = $('#editProgramDuration').val().trim();
+    
+    if (!programName || !description || !duration) {
+        showNotification('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    console.log('Submitting update:', {
+        program_id: programId,
+        program_name: programName,
+        description: description,
+        duration_years: duration,
+        career_opportunities: opportunities.join(',')
+    });
+    
+    $.ajax({
+        type: 'POST',
+        url: getBaseUrl() + 'admin/content/api_update_program',
+        data: {
+            program_id: programId,
+            program_name: programName,
+            description: description,
+            duration_years: duration,
+            career_opportunities: opportunities.join(',')
+        },
+        dataType: 'json',
+        success: function(data) {
+            console.log('✅ Response:', data);
+            if (data.success) {
+                showNotification('✅ Program updated successfully!', 'success');
+                var modal = bootstrap.Modal.getInstance(document.getElementById('editProgramModal'));
+                if (modal) {
+                    modal.hide();
+                }
+                loadPrograms();
+            } else {
+                showNotification('❌ ' + (data.message || 'Error updating program'), 'error');
+            }
+        },
+        error: function(err) {
+            console.error('❌ Error:', err);
+            showNotification('❌ Error updating program. Please try again.', 'error');
+        }
+    });
+});

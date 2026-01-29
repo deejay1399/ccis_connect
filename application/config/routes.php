@@ -25,6 +25,7 @@ $route['academics/programs'] = 'AcademicsController/programs';
 $route['academics/curriculum'] = 'AcademicsController/curriculum';
 $route['academics/schedule'] = 'AcademicsController/schedule';
 $route['academics/calendar'] = 'AcademicsController/calendar';
+$route['academics/get_programs_json'] = 'AcademicsController/get_programs_json';
 
 // ==================== UPDATES ====================
 $route['updates'] = 'UpdatesController/index';
@@ -38,6 +39,7 @@ $route['forms'] = 'FormsController/index';
 // ==================== LOGIN ====================
 $route['login'] = 'LoginController/index';
 $route['login/authenticate'] = 'LoginController/authenticate';
+$route['login/api_authenticate'] = 'LoginController/api_authenticate';
 $route['logout'] = 'LoginController/logout';
 
 // ==================== ALUMNI ====================
@@ -64,6 +66,24 @@ $route['admin/content/alumni'] = 'admin/AdminContent/alumni';
 // Admin Content Management - AJAX
 $route['admin/manage/load_homepage'] = 'admin/AdminContent/load_homepage';
 $route['admin/manage/save_homepage'] = 'admin/AdminContent/save_homepage';
+
+// Faculty Management API Endpoints
+$route['admin/api/get_faculty'] = 'admin/AdminContent/api_get_faculty';
+$route['admin/api/add_faculty'] = 'admin/AdminContent/api_add_faculty';
+$route['admin/api/update_faculty'] = 'admin/AdminContent/api_update_faculty';
+$route['admin/api/delete_faculty'] = 'admin/AdminContent/api_delete_faculty';
+
+// Programs Management API Endpoints
+$route['admin/content/api_get_programs'] = 'admin/AdminContent/api_get_programs';
+$route['admin/content/api_save_program'] = 'admin/AdminContent/api_save_program';
+$route['admin/content/api_load_program'] = 'admin/AdminContent/api_load_program';
+$route['admin/content/api_update_program'] = 'admin/AdminContent/api_update_program';
+$route['admin/content/api_delete_program'] = 'admin/AdminContent/api_delete_program';
+
+// Curriculum Management API Endpoints
+$route['admin/content/api_upload_curriculum'] = 'AdminContent/api_upload_curriculum';
+$route['admin/content/api_get_curriculums'] = 'AdminContent/api_get_curriculums';
+$route['admin/content/api_delete_curriculum'] = 'AdminContent/api_delete_curriculum';
 
 // Admin User Management
 $route['admin/users/create'] = 'admin/AdminUsers/create';

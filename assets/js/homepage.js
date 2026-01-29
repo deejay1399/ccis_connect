@@ -417,174 +417,10 @@ $(document).ready(function() {
     });
 
     // ============================================
-    // ACADEMIC PROGRAMS DISPLAY SYSTEM - USER SIDE
+    // PROGRAMS DISPLAY - DATABASE DRIVEN (PHP)
     // ============================================
-    let academicPrograms = [];
-    let programsLoaded = false;
-
-    // Initialize programs display
-    function initProgramsDisplay() {
-        loadProgramsForDisplay();
-        setupProgramsAutoRefresh();
-    }
-
-    // Load programs for display only
-    function loadProgramsForDisplay() {
-        const storedPrograms = localStorage.getItem('ccis_academic_programs');
-        
-        if (storedPrograms) {
-            try {
-                const adminPrograms = JSON.parse(storedPrograms);
-                // Combine hard-coded programs with admin-added programs
-                academicPrograms = [...getDefaultPrograms(), ...adminPrograms];
-                programsLoaded = true;
-            } catch (error) {
-                console.error('Error parsing programs data:', error);
-                academicPrograms = getDefaultPrograms();
-            }
-        } else {
-            academicPrograms = getDefaultPrograms();
-        }
-        
-        renderProgramsDisplay();
-    }
-
-    // Get default hard-coded programs
-    function getDefaultPrograms() {
-        return [
-            {
-                id: 1,
-                name: "Bachelor of Science in Computer Science (BSCS)",
-                icon: "fas fa-laptop-code",
-                description: "Focuses on software development, algorithms, and computer systems theory. Prepares students for careers in software engineering, AI, and web development.",
-                courses: [
-                    "Software Engineering",
-                    "Data Structures and Algorithms", 
-                    "Artificial Intelligence",
-                    "Web and Mobile Development",
-                    "Computer Networks",
-                    "Database Systems"
-                ]
-            },
-            {
-                id: 2,
-                name: "Bachelor of Science in Information Technology (BSIT)",
-                icon: "fas fa-network-wired",
-                description: "Emphasizes IT infrastructure, networking, and system administration. Trains students for roles in network administration, cybersecurity, and IT management.",
-                courses: [
-                    "Network Administration",
-                    "Database Management",
-                    "System Analysis and Design",
-                    "Information Security",
-                    "Cloud Computing",
-                    "IT Project Management"
-                ]
-            }
-        ];
-    }
-
-    // Render programs display
-    function renderProgramsDisplay() {
-        const programsContainer = $('#programs-container');
-        
-        // Clear container
-        programsContainer.empty();
-        
-        // Render all programs
-        academicPrograms.forEach((program, index) => {
-            const programHtml = createProgramCardHtml(program, index);
-            programsContainer.append(programHtml);
-        });
-    }
-
-    // Create program card HTML - FIXED: Removed bullet points
-    function createProgramCardHtml(program, index) {
-        const coursesList = program.courses.map(course => 
-            `<li>${course}</li>`
-        ).join('');
-        
-        // Add animation delay for staggered entrance
-        const animationDelay = index * 0.1;
-        
-        return `
-            <div class="program-card" style="animation-delay: ${animationDelay}s">
-                <div class="program-header">
-                    <i class="${program.icon}"></i>
-                    <h5>${program.name}</h5>
-                </div>
-                <p>${program.description}</p>
-                <ul class="career-list">${coursesList}</ul>
-            </div>
-        `;
-    }
-
-    // Setup auto-refresh to detect new programs
-    function setupProgramsAutoRefresh() {
-        // Check for program updates every 3 seconds
-        setInterval(() => {
-            checkForProgramUpdates();
-        }, 3000);
-    }
-
-    // Check for program updates
-    function checkForProgramUpdates() {
-        const storedPrograms = localStorage.getItem('ccis_academic_programs');
-        
-        if (storedPrograms) {
-            try {
-                const adminPrograms = JSON.parse(storedPrograms);
-                const newPrograms = [...getDefaultPrograms(), ...adminPrograms];
-                
-                const currentProgramIds = academicPrograms.map(p => p.id).join(',');
-                const newProgramIds = newPrograms.map(p => p.id).join(',');
-                
-                // If programs changed, update display
-                if (currentProgramIds !== newProgramIds) {
-                    console.log('Programs changed, updating display...');
-                    
-                    academicPrograms = newPrograms;
-                    renderProgramsDisplay();
-                    
-                    // Show notification if new admin programs were added
-                    if (adminPrograms.length > 0 && newPrograms.length > academicPrograms.length) {
-                        const newAdminProgramsCount = adminPrograms.length;
-                        showNewProgramsNotification(newAdminProgramsCount);
-                    }
-                }
-            } catch (error) {
-                console.error('Error checking for program updates:', error);
-            }
-        } else {
-            // No admin programs in storage, use only default programs
-            const defaultPrograms = getDefaultPrograms();
-            if (academicPrograms.length !== defaultPrograms.length) {
-                academicPrograms = defaultPrograms;
-                renderProgramsDisplay();
-            }
-        }
-    }
-
-    // Show notification when new programs are added
-    function showNewProgramsNotification(programCount) {
-        // Only show if user is actively viewing the page
-        if (document.visibilityState === 'visible') {
-            const notification = $(`
-                <div class="notification alert alert-success alert-dismissible fade show">
-                    <i class="fas fa-graduation-cap me-2"></i>
-                    <strong>New Program${programCount > 1 ? 's' : ''} Available!</strong><br>
-                    ${programCount} new academic program${programCount > 1 ? 's' : ''} added to our offerings.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `);
-            
-            $('body').append(notification);
-            
-            // Auto remove after 6 seconds
-            setTimeout(() => {
-                notification.alert('close');
-            }, 6000);
-        }
-    }
+    // Programs are rendered directly from PHP/database
+    // JavaScript only handles interactions, NOT rendering
 
     // Enhanced program card interactions
     function setupProgramInteractions() {
@@ -594,6 +430,11 @@ $(document).ready(function() {
         }).on('mouseleave', '.program-card', function() {
             $(this).removeClass('program-hover');
         });
+    }
+
+    // Initialize programs display (only for interactions)
+    function initProgramsDisplay() {
+        setupProgramInteractions();
     }
 
     // ✅ UPDATED INITIALIZATION FUNCTION - PRIORITIZE BACK TO TOP

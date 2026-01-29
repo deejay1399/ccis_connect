@@ -53,7 +53,7 @@ function initializeSecurity() {
     
     localStorage.removeItem('ccis_manual_login');
     
-    $('#email, #').on('input', function() {
+    $('#email, #password').on('input', function() {
         const value = $(this).val();
         $(this).val(value.replace(/[<>]/g, ''));
         
@@ -456,227 +456,65 @@ function redirectBasedOnRole(user) {
 
 // USER AUTHENTICATION SYSTEM - NOW ACCEPTS BOTH BISU AND PERSONAL EMAILS
 function authenticateUser(email, password) {
-    console.log('🔑 Authenticating user:', email);
+    console.log('🔑 Authenticating user via backend API:', email);
     
-    // CHECK BISU USERS FIRST
-    if (email.endsWith('@bisu.edu.ph')) {
-        return authenticateBISUUser(email, password);
-    }
+    // Make synchronous AJAX call to backend API
+    let result = {success: false, message: 'Authentication failed'};
     
-    // THEN CHECK PERSONAL EMAIL USERS
-    return authenticatePersonalEmailUser(email, password);
-}
-
-// PERSONAL EMAIL USER AUTHENTICATION
-function authenticatePersonalEmailUser(email, password) {
-    console.log('📧 Authenticating personal email user:', email);
-    
-    // Personal email accounts database
-    const personalAccounts = {
-        // Student accounts with personal email
-        'student@gmail.com': { 
-            password: 'student123', 
-            role: 'student', 
-            name: 'Student User',
-            isPersonalEmail: true
+    $.ajax({
+        type: 'POST',
+        url: 'login/api_authenticate',
+        dataType: 'json',
+        data: {
+            email: email,
+            password: password
         },
-        'student@yahoo.com': { 
-            password: 'student123', 
-            role: 'student', 
-            name: 'Student User',
-            isPersonalEmail: true
+        async: false,  // Synchronous call
+        success: function(response) {
+            console.log('✅ Backend authentication successful:', response);
+            if (response.success && response.user) {
+                result = {
+                    success: true,
+                    user: {
+                        email: response.user.email,
+                        role: response.user.role,
+                        name: response.user.name,
+                        first_name: response.user.first_name,
+                        last_name: response.user.last_name,
+                        loginTime: new Date().toISOString(),
+                        sessionId: generateSessionId()
+                    }
+                };
+            } else {
+                result = {
+                    success: false,
+                    errorType: 'credentials',
+                    message: response.message || 'Invalid credentials'
+                };
+            }
         },
-        
-        // Test accounts
-        'test@gmail.com': { 
-            password: 'test123', 
-            role: 'student', 
-            name: 'Test Student',
-            isPersonalEmail: true
-        },
-        
-        // Admin with personal email (for testing)
-        'admin@gmail.com': { 
-            password: 'admin123', 
-            role: 'superadmin', 
-            name: 'Personal Admin',
-            isPersonalEmail: true
-        },
-        
-        // Additional test accounts
-        'user123@gmail.com': { 
-            password: 'user123', 
-            role: 'student', 
-            name: 'User 123',
-            isPersonalEmail: true
-        },
-        'demo@yahoo.com': { 
-            password: 'demo123', 
-            role: 'student', 
-            name: 'Demo User',
-            isPersonalEmail: true
-        }
-    };
-    
-    if (personalAccounts[email.toLowerCase()]) {
-        const account = personalAccounts[email.toLowerCase()];
-        
-        if (account.password === password) {
-            console.log('✅ Personal email login successful:', email);
+        error: function(xhr, status, error) {
+            console.error('❌ Backend authentication error:', error, xhr.responseText);
+            let errorMsg = 'Invalid email or password';
             
-            const user = {
-                email: email,
-                role: account.role,
-                name: account.name,
-                loginTime: new Date().toISOString(),
-                sessionId: generateSessionId(),
-                isPersonalEmail: true  // Flag to identify personal email users
-            };
-            
-            // Add organization if applicable
-            if (account.organization) {
-                user.organization = account.organization;
+            try {
+                const response = JSON.parse(xhr.responseText);
+                errorMsg = response.message || errorMsg;
+            } catch(e) {
+                // Response is not JSON
             }
             
-            return {
-                success: true,
-                user: user
-            };
-        } else {
-            console.log('❌ Invalid password for personal email:', email);
-            return {
+            result = {
                 success: false,
-                errorType: 'password',
-                message: 'Invalid password. Please check your credentials and try again.'
+                errorType: 'credentials',
+                message: errorMsg
             };
         }
-    }
+    });
     
-    console.log('❌ Personal email account not found:', email);
-    return {
-        success: false,
-        errorType: 'email',
-        message: 'Account not found. Please check your email or contact the CCIS office.'
-    };
+    return result;
 }
 
-// BISU USER AUTHENTICATION - WITH SUPER ADMIN
-function authenticateBISUUser(email, password) {
-    const accounts = {
-        // SUPER ADMIN ACCOUNT
-        'faculty@bisu.edu.ph': { 
-            password: 'faculty123', 
-            role: 'superadmin', 
-            name: 'Admin',
-            isPersonalEmail: false
-        },
-        
-        // STUDENT ACCOUNTS
-        '2020-001@bisu.edu.ph': { 
-            password: 'student123', 
-            role: 'student', 
-            name: 'Student User',
-            isPersonalEmail: false
-        },
-        '2021-001@bisu.edu.ph': { 
-            password: 'student123', 
-            role: 'student', 
-            name: 'Student User',
-            isPersonalEmail: false
-        },
-        '2022-001@bisu.edu.ph': { 
-            password: 'student123', 
-            role: 'student', 
-            name: 'Student User',
-            isPersonalEmail: false
-        },
-        '2023-001@bisu.edu.ph': { 
-            password: 'student123', 
-            role: 'student', 
-            name: 'Student User',
-            isPersonalEmail: false
-        },
-        
-        // ORGANIZATION ADMIN ACCOUNTS
-        'csguild@bisu.edu.ph': { 
-            password: 'csguild123', 
-            role: 'orgadmin', 
-            name: 'CS Guild Admin',
-            organization: 'CS Guild - BSCS',
-            isPersonalEmail: false
-        },
-        'legion@bisu.edu.ph': { 
-            password: 'legion123', 
-            role: 'orgadmin', 
-            name: 'The Legion Admin',
-            organization: 'The Legion - BSIT',
-            isPersonalEmail: false
-        },
-        
-        // ADDITIONAL TEST ACCOUNTS
-        'admin@bisu.edu.ph': { 
-            password: 'admin123', 
-            role: 'superadmin', 
-            name: 'System Administrator',
-            isPersonalEmail: false
-        },
-        'test.student@bisu.edu.ph': { 
-            password: 'test123', 
-            role: 'student', 
-            name: 'Test Student',
-            isPersonalEmail: false
-        }
-    };
-    
-    if (accounts[email]) {
-        const account = accounts[email];
-        
-        if (account.password === password) {
-            console.log('✅ BISU login successful for:', email);
-            
-            const user = {
-                email: email,
-                role: account.role,
-                name: account.name,
-                loginTime: new Date().toISOString(),
-                sessionId: generateSessionId(),
-                isPersonalEmail: false  // Flag to identify BISU email users
-            };
-            
-            if (account.organization) {
-                user.organization = account.organization;
-            }
-            
-            return {
-                success: true,
-                user: user
-            };
-        } else {
-            console.log('❌ Invalid password for BISU email:', email);
-            return {
-                success: false,
-                errorType: 'password',
-                message: 'Invalid password. Please check your credentials and try again.'
-            };
-        }
-    }
-    
-    if (email.match(/^\d{4}-\d{3}@bisu\.edu\.ph$/)) {
-        console.log('❌ Student BISU account not found:', email);
-        return {
-            success: false,
-            errorType: 'email',
-            message: 'Student account not found. Please contact the registrar\'s office.'
-        };
-    }
-    
-    console.log('❌ BISU account not found:', email);
-    return {
-        success: false,
-        errorType: 'email',
-        message: 'BISU account not found. Please check your email or contact the CCIS office.'
-    };
-}
 
 // GENERATE SESSION ID
 function generateSessionId() {

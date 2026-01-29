@@ -1,134 +1,22 @@
-// Manage Faculty JavaScript
+$(document).ready(function () {
+    // LAST UPDATED: 2026-01-28 - Circular profile card design
 
-$(document).ready(function() {
-    console.log('Manage Faculty page loading...');
-    
-    // Delete functionality variables
-    let currentDeleteIndex = null;
-    
-    // Enhanced session check matching list_users.js
-    function checkSuperAdminSession() {
-        const session = window.checkUserSession(); // Use global checkUserSession
-        
-        console.log('Session check result:', session);
-        
-        if (!session.isValid) {
-            console.warn('❌ No valid session found, redirecting to login');
-            showNotification('Please login to access Super Admin dashboard', 'error');
-            setTimeout(() => {
-                window.location.href = '../login.html';
-            }, 2000);
-            return false;
-        }
-        
-        if (session.user.role !== 'superadmin') {
-            console.warn('🚫 Unauthorized access attempt by:', session.user.role);
-            showNotification('Access denied. Super Admin privileges required.', 'error');
-            setTimeout(() => {
-                window.location.href = '../index.html';
-            }, 2000);
-            return false;
-        }
-        
-        // Session is valid and user is superadmin
-        console.log('✅ Super Admin session confirmed:', session.user.name);
-        
-        // Update UI with admin info
-        updateAdminUI(session.user);
-        
-        return true;
-    }
-    
-    function updateAdminUI(user) {
-        // Update user name and role
-        $('#user-name').text(user.name);
-        $('#user-role').text(user.role);
-        
-        console.log('👤 UI updated for:', user.name);
-    }
-    
-    // Function to remove Return to Dashboard links
-    function removeReturnToDashboard() {
-        console.log('🔍 Searching for Return to Dashboard links...');
-        
-        // Method 1: Remove by exact text content
-        $('a').each(function() {
-            const text = $(this).text().trim();
-            if (text === 'Return to Dashboard') {
-                console.log('🚫 Removing Return to Dashboard link:', text);
-                $(this).remove();
-            }
-        });
-        
-        // Method 2: Remove by partial text match
-        $('a:contains("Return to Dashboard")').each(function() {
-            console.log('🚫 Removing Return to Dashboard element');
-            $(this).remove();
-        });
-        
-        // Method 3: Remove any quick-links or footer-links containers
-        $('.quick-links, .footer-links').each(function() {
-            console.log('🚫 Removing quick-links/footer-links container');
-            $(this).remove();
-        });
-        
-        // Method 4: Remove any elements containing the text
-        $('*:contains("Return to Dashboard")').each(function() {
-            if ($(this).children().length === 0) {
-                const text = $(this).text().trim();
-                if (text.includes('Return to Dashboard')) {
-                    console.log('🚫 Removing element with text:', text);
-                    $(this).remove();
-                }
-            }
-        });
-    }
-    
-    // Initialize page
-    function initializePage() {
-        if (!checkSuperAdminSession()) {
-            return;
-        }
-        
-        // Setup public site link
-        setupPublicSiteLink();
-        
-        // Initialize date display
-        updateCurrentDate();
-        
-        // Load faculty data
-        loadFacultyData();
-        
-        // Initialize UI components
-        initImageUpload();
-        initEditImageUpload();
-        initAddFacultyForm();
-        initResponsiveChecks();
-        
-        // Remove any Return to Dashboard links
-        removeReturnToDashboard();
-        
-        console.log('🎯 Manage Faculty Page initialized successfully');
-    }
-    
-    // Function to handle the "View Public Site" link
-    function setupPublicSiteLink() {
-        const publicSiteLink = $('#view-public-site-link');
-        if (publicSiteLink.length) {
-            // Determine the relative path to the admin dashboard for the return button
-            const dashboardUrl = 'super_admin/index.html';
-                                 
-            publicSiteLink.on('click', function(e) {
-                // Store the current dashboard URL in local storage
-                localStorage.setItem('admin_return_url', dashboardUrl);
-                sessionStorage.setItem('admin_return_url', dashboardUrl); // Use both for redundancy
-                console.log(`🔗 Storing return URL: ${dashboardUrl}`);
-                // Continue with navigation
-            });
+    let facultyData = [];
+    let addImageFile = null;
+    let editImageFile = null;
+    let editingId = null;
+    const baseUrl = window.baseUrl || '/ccis_connect/';
+
+    /* ================= HEADER & USER INFO SETUP ================= */
+    function setupUserInfo() {
+        const session = window.checkUserSession();
+        if (session && session.isValid) {
+            // Update user name
+            $('[id*="admin-name"], [id*="welcome-admin-name"], #user-name').text(session.user.name);
+            $('#user-role').text('Super Admin');
         }
     }
-    
-    // Date Display Function - Same as list_users.js
+
     function updateCurrentDate() {
         const now = new Date();
         const options = { 
@@ -139,524 +27,465 @@ $(document).ready(function() {
         };
         $('#current-date').text(now.toLocaleDateString('en-US', options));
     }
+
+    /* ================= NAVIGATION SETUP ================= */
+    function setupSectionNavigation() {
+        // Handle navigation clicks - navigate to dashboard
+        $('.navbar-main .nav-link[data-section]').on('click', function(e) {
+            e.preventDefault();
+            const targetSection = $(this).data('section');
+            // Navigate to dashboard with the section hash
+            window.location.href = baseUrl + 'admin#' + targetSection;
+        });
+
+        // Highlight Content Management nav item since we're on this page
+        $('.navbar-main .nav-link').removeClass('active');
+        $('.navbar-main .nav-link[data-section="content-management"]').addClass('active');
+    }
+
+    // Initialize
+    setupUserInfo();
+    updateCurrentDate();
+    setupSectionNavigation();
     
-    // Notification functions
-    function showNotification(message, type = 'info') {
-        // Remove existing notifications
-        $('.admin-notification').remove();
-        
-        const notificationClass = type === 'error' ? 'alert-danger' : 
-                                 type === 'success' ? 'alert-success' : 
-                                 type === 'warning' ? 'alert-warning' :
-                                 'alert-info';
-        
-        const iconClass = type === 'error' ? 'fa-exclamation-circle' : 
-                          type === 'success' ? 'fa-check-circle' : 
-                          type === 'warning' ? 'fa-exclamation-triangle' :
-                          'fa-info-circle';
-        
-        const notification = $(`
-            <div class="admin-notification alert ${notificationClass} alert-dismissible fade show" 
-                 style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
-                <i class="fas ${iconClass} me-2"></i>
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    // Update date every minute
+    setInterval(updateCurrentDate, 60000);
+
+    /* ================= NOTIFICATION MODAL ================= */
+    function showNotification(type, message) {
+        const notificationModal = `
+            <div class="modal fade" id="notificationModal" tabindex="-1" role="alertdialog" aria-modal="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body text-center py-5">
+                            <div class="mb-3">
+                                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} fa-4x" style="color: ${type === 'success' ? '#28a745' : '#dc3545'}"></i>
+                            </div>
+                            <h5 class="mb-2">${type === 'success' ? 'Success!' : 'Error'}</h5>
+                            <p class="text-muted mb-4">${message}</p>
+                            <button type="button" class="btn btn-${type === 'success' ? 'success' : 'danger'}" data-bs-dismiss="modal" autofocus>OK</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        `);
+        `;
         
-        $('body').append(notification);
+        // Remove old modal if exists
+        $('#notificationModal').remove();
         
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-            notification.alert('close');
-        }, 5000);
+        $('body').append(notificationModal);
+        new bootstrap.Modal(document.getElementById('notificationModal')).show();
+        
+        // Auto cleanup
+        document.getElementById('notificationModal').addEventListener('hidden.bs.modal', function() {
+            this.remove();
+        }, { once: true });
     }
 
-    // Load current faculty data
-    function loadFacultyData() {
-        console.log('Loading faculty data...');
-        
-        // Load from localStorage or initialize with default data
-        let facultyData;
-        try {
-            const storedData = localStorage.getItem('facultyData');
-            facultyData = storedData ? JSON.parse(storedData) : [];
-        } catch (error) {
-            console.error('Error parsing stored data:', error);
-            facultyData = [];
-        }
-        
-        // Ensure faculty data exists with default values
-        if (!Array.isArray(facultyData) || facultyData.length === 0) {
-            facultyData = [
-                {
-                    name: "Dr. Shella C. Olaguir",
-                    position: "Dean, College of Computing and Information Sciences",
-                    image: null
-                }
-            ];
-        }
-        
-        // Display faculty list
-        displayFacultyList(facultyData);
-        
-        console.log('Faculty data loaded successfully');
-        return facultyData;
+    /* ================= SIMPLE IMAGE PICKER FOR ADD MODAL ================= */
+    function initAddImagePicker() {
+        const fileInput = document.getElementById('add-image-input');
+        const uploadArea = document.getElementById('add-upload-area');
+        const previewImg = document.getElementById('add-image-preview');
+
+        if (!fileInput || !uploadArea) return;
+
+        // Click to upload
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // File selection
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                addImageFile = file;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    previewImg.src = event.target.result;
+                    previewImg.style.display = 'block';
+                    uploadArea.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
     }
 
-    // Display faculty list
-    function displayFacultyList(faculty) {
-        const facultyList = $('#faculty-list');
-        facultyList.empty();
+    /* ================= SIMPLE IMAGE PICKER FOR EDIT MODAL ================= */
+    function initEditImagePicker() {
+        const fileInput = document.getElementById('edit-image-input');
+        const uploadArea = document.getElementById('edit-upload-area');
+        const previewImg = document.getElementById('edit-image-preview');
+
+        if (!fileInput || !uploadArea) return;
+
+        // Click to upload
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // File selection
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                editImageFile = file;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    previewImg.src = event.target.result;
+                    previewImg.style.display = 'block';
+                    uploadArea.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+    }
+
+    // Initialize when modals are shown
+    $('#addFacultyModal').on('shown.bs.modal', function() {
+        initAddImagePicker();
         
-        // Ensure faculty is an array
-        if (!Array.isArray(faculty)) {
-            faculty = [];
+        // Advisory checkbox toggle
+        $('#add-advisory-check').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('.add-advisory-section').slideDown();
+            } else {
+                $('.add-advisory-section').slideUp();
+                $('#add-year').val('');
+                $('#add-section').val('');
+            }
+        });
+        
+        // Make image clickable to change
+        $(document).on('click', '#add-image-preview', function() {
+            $('#add-image-input').click();
+        });
+    });
+
+    $('#editFacultyModal').on('shown.bs.modal', function() {
+        initEditImagePicker();
+        
+        // Advisory checkbox toggle
+        $('#edit-advisory-check').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('.edit-advisory-section').slideDown();
+            } else {
+                $('.edit-advisory-section').slideUp();
+                $('#edit-year').val('');
+                $('#edit-section').val('');
+            }
+        });
+        
+        // Make image clickable to change
+        $(document).on('click', '#edit-image-preview', function() {
+            $('#edit-image-input').click();
+        });
+    });
+
+    /* ================= ADD FACULTY ================= */
+    $(document).on('submit', '#add-faculty-form', function (e) {
+        e.preventDefault();
+
+        const firstName = $('#add-firstname').val().trim();
+        const lastName = $('#add-lastname').val().trim();
+        const position = $('#add-position').val().trim();
+        const year = $('#add-year').val().trim();
+        const section = $('#add-section').val().trim();
+        
+        // Combine year and section for advisory field
+        let advisory = '';
+        if (year && section) {
+            advisory = year + ' - ' + section;
+        } else if (year) {
+            advisory = year;
+        } else if (section) {
+            advisory = section;
         }
-        
-        if (faculty.length === 0) {
-            facultyList.html('<p class="text-muted text-center py-3">No faculty members added yet.</p>');
+
+        // Validation
+        if (!firstName || !lastName || !position) {
+            showNotification('error', 'Please fill in First Name, Last Name, and Position');
             return;
         }
+
+        if (!addImageFile) {
+            showNotification('error', 'Please select an image');
+            return;
+        }
+
+        // Create FormData
+        const formData = new FormData();
+        formData.append('firstname', firstName);
+        formData.append('lastname', lastName);
+        formData.append('position', position);
+        formData.append('advisory', advisory);
+        formData.append('image', addImageFile);
+
+        // Submit
+        $.ajax({
+            url: baseUrl + 'admin/AdminContent/save_faculty',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    showNotification('success', 'Faculty added successfully!');
+                    resetAddForm();
+                    $('#addFacultyModal').modal('hide');
+                    loadFaculty();
+                } else {
+                    showNotification('error', response.message || 'Failed to add faculty');
+                }
+            },
+            error: function(xhr) {
+                const msg = xhr.responseJSON?.message || 'Failed to save faculty';
+                showNotification('error', msg);
+            }
+        });
+    });
+
+    function resetAddForm() {
+        $('#add-faculty-form')[0].reset();
+        document.getElementById('add-image-input').value = '';
+        document.getElementById('add-image-preview').style.display = 'none';
+        document.getElementById('add-upload-area').style.display = 'flex';
+        addImageFile = null;
+    }
+
+    /* ================= EDIT FACULTY ================= */
+    $(document).on('click', '.btn-edit-faculty', function() {
+        const id = $(this).data('id');
+        const faculty = facultyData.find(f => f.id == id);
         
-        faculty.forEach((member, index) => {
-            const facultyCard = `
-                <div class="col-md-6 col-lg-4">
-                    <div class="faculty-card" data-index="${index}">
-                        <div class="faculty-image">
-                            <img src="${member.image || 'https://via.placeholder.com/300x300/4b0082/ffffff?text=NO+IMAGE'}" alt="${member.name || 'Faculty Member'}" onerror="this.src='https://via.placeholder.com/300x300/4b0082/ffffff?text=NO+IMAGE'">
+        if (!faculty) return;
+
+        editingId = id;
+        $('#edit-firstname').val(faculty.firstname);
+        $('#edit-lastname').val(faculty.lastname);
+        $('#edit-position').val(faculty.position);
+        
+        // Parse advisory field to extract year and section
+        let year = '';
+        let section = '';
+        let hasAdvisory = false;
+        
+        if (faculty.advisory) {
+            hasAdvisory = true;
+            const parts = faculty.advisory.split(' - ');
+            if (parts.length === 2) {
+                year = parts[0];
+                section = parts[1];
+            } else if (parts[0].includes('Year')) {
+                year = parts[0];
+            } else if (parts[0].includes('Section')) {
+                section = parts[0];
+            }
+        }
+        
+        // Set checkbox and show/hide fields
+        $('#edit-advisory-check').prop('checked', hasAdvisory);
+        if (hasAdvisory) {
+            $('.edit-advisory-section').show();
+        } else {
+            $('.edit-advisory-section').hide();
+        }
+        
+        $('#edit-year').val(year);
+        $('#edit-section').val(section);
+
+        // Show existing image
+        const imageUrl = faculty.image && faculty.image.startsWith('http') 
+            ? faculty.image 
+            : (baseUrl + 'uploads/faculty/' + faculty.image);
+        
+        document.getElementById('edit-image-preview').src = imageUrl;
+        document.getElementById('edit-image-preview').style.display = 'block';
+        document.getElementById('edit-upload-area').style.display = 'none';
+        editImageFile = null;
+
+        new bootstrap.Modal(document.getElementById('editFacultyModal')).show();
+    });
+
+    $(document).on('submit', '#edit-faculty-form', function (e) {
+        e.preventDefault();
+
+        const firstName = $('#edit-firstname').val().trim();
+        const lastName = $('#edit-lastname').val().trim();
+        const position = $('#edit-position').val().trim();
+        const year = $('#edit-year').val().trim();
+        const section = $('#edit-section').val().trim();
+        
+        // Combine year and section for advisory field
+        let advisory = '';
+        if (year && section) {
+            advisory = year + ' - ' + section;
+        } else if (year) {
+            advisory = year;
+        } else if (section) {
+            advisory = section;
+        }
+
+        if (!firstName || !lastName || !position) {
+            showNotification('error', 'Please fill in all required fields');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('id', editingId);
+        formData.append('firstname', firstName);
+        formData.append('lastname', lastName);
+        formData.append('position', position);
+        formData.append('advisory', advisory);
+        if (editImageFile) {
+            formData.append('image', editImageFile);
+        }
+
+        $.ajax({
+            url: baseUrl + 'admin/AdminContent/update_faculty',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    showNotification('success', 'Faculty updated successfully!');
+                    $('#editFacultyModal').modal('hide');
+                    loadFaculty();
+                } else {
+                    showNotification('error', response.message || 'Failed to update faculty');
+                }
+            },
+            error: function(xhr) {
+                const msg = xhr.responseJSON?.message || 'Failed to update faculty';
+                showNotification('error', msg);
+            }
+        });
+    });
+
+    /* ================= DELETE FACULTY ================= */
+    $(document).on('click', '.btn-delete-faculty', function() {
+        const id = $(this).data('id');
+        const faculty = facultyData.find(f => f.id == id);
+        
+        if (!faculty) return;
+
+        if (confirm(`Delete ${faculty.firstname} ${faculty.lastname}?`)) {
+            $.ajax({
+                url: baseUrl + 'admin/AdminContent/delete_faculty',
+                type: 'POST',
+                data: { id: id },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        showNotification('success', 'Faculty deleted successfully!');
+                        loadFaculty();
+                    } else {
+                        showNotification('error', response.message || 'Failed to delete');
+                    }
+                },
+                error: function(xhr) {
+                    const msg = xhr.responseJSON?.message || 'Failed to delete faculty';
+                    showNotification('error', msg);
+                }
+            });
+        }
+    });
+
+    /* ================= LOAD & RENDER ================= */
+    function loadFaculty() {
+        $.ajax({
+            url: baseUrl + 'admin/AdminContent/load_faculty',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    facultyData = response.data || [];
+                    renderFaculty();
+                }
+            },
+            error: function(xhr) {
+                console.error('Error loading faculty:', xhr);
+            }
+        });
+    }
+
+    function renderFaculty() {
+        const list = $('#faculty-list');
+        list.empty();
+
+        if (!facultyData || facultyData.length === 0) {
+            list.html('<p class="text-muted text-center col-12">No faculty members yet.</p>');
+            return;
+        }
+
+        facultyData.forEach(f => {
+            const imageUrl = f.image && f.image.startsWith('http') 
+                ? f.image 
+                : (baseUrl + 'uploads/faculty/' + f.image);
+            
+            list.append(`
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="faculty-card">
+                        <div class="faculty-card-image-wrapper">
+                            <img src="${imageUrl}" alt="${f.firstname} ${f.lastname}">
                         </div>
                         <div class="faculty-info">
-                            <h4>${member.name || 'Unknown Name'}</h4>
-                            <p class="faculty-position">${member.position || 'No Position'}</p>
+                            <h5>${f.firstname} ${f.lastname}</h5>
+                            <p class="position">${f.position}</p>
+                            ${f.advisory ? `<p class="advisory"><i class="fas fa-book-reader"></i> ${f.advisory}</p>` : ''}
                             <div class="faculty-actions">
-                                <button class="btn btn-sm edit-faculty-btn edit-faculty" data-index="${index}">
-                                    Edit
+                                <button class="btn btn-warning btn-edit-faculty" data-id="${f.id}" title="Edit Faculty">
+                                    <i class="fas fa-edit"></i> Edit
                                 </button>
-                                <button class="btn btn-sm delete-faculty-btn delete-faculty" data-index="${index}">
-                                    Remove
+                                <button class="btn btn-danger btn-delete-faculty" data-id="${f.id}" title="Delete Faculty">
+                                    <i class="fas fa-trash-alt"></i> Delete
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-            `;
-            facultyList.append(facultyCard);
-        });
-        
-        // Add event listeners for edit and delete buttons
-        $('.edit-faculty').off('click').on('click', function() {
-            const index = $(this).data('index');
-            editFacultyMember(index);
-        });
-        
-        $('.delete-faculty').off('click').on('click', function() {
-            const index = $(this).data('index');
-            deleteFacultyMember(index);
+            `);
         });
     }
 
-    // Save faculty data to localStorage
-    function saveFacultyData(facultyData) {
-        try {
-            localStorage.setItem('facultyData', JSON.stringify(facultyData));
-            showNotification('Faculty member saved successfully!', 'success');
-            
-            // Update display
-            displayFacultyList(facultyData);
-        } catch (error) {
-            console.error('Error saving data:', error);
-            showNotification('Error saving changes!', 'error');
-        }
-    }
-
-    // Initialize image upload functionality
-    function initImageUpload() {
-        console.log('Initializing image upload...');
-        
-        const uploadArea = $('#image-upload-area');
-        const fileInput = $('#faculty-image');
-        const preview = $('#faculty-image-preview');
-        
-        // Create a proper file input wrapper
-        const fileInputWrapper = $('<div class="image-upload-wrapper position-relative"></div>');
-        fileInput.wrap(fileInputWrapper);
-        
-        // Proper click handling for upload area
-        uploadArea.on('click', function(e) {
-            console.log('Upload area clicked - opening file dialog');
-            fileInput.trigger('click');
-        });
-        
-        // File input change handler
-        fileInput.on('change', function(e) {
-            const file = e.target.files[0];
-            console.log('File selected:', file);
-            
-            if (file) {
-                handleImageFile(file, preview, uploadArea);
-            }
-        });
-        
-        // Drag and drop functionality
-        uploadArea.on('dragover', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            uploadArea.addClass('dragover');
-        });
-        
-        uploadArea.on('dragleave', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            uploadArea.removeClass('dragover');
-        });
-        
-        uploadArea.on('drop', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            uploadArea.removeClass('dragover');
-            
-            const files = e.originalEvent.dataTransfer.files;
-            if (files.length > 0) {
-                const file = files[0];
-                console.log('File dropped:', file);
-                
-                if (file && file.type.match('image.*')) {
-                    handleImageFile(file, preview, uploadArea);
-                    
-                    // Update the file input
-                    const dt = new DataTransfer();
-                    dt.items.add(file);
-                    fileInput[0].files = dt.files;
-                } else {
-                    showNotification('Please drop a valid image file (JPG, PNG).', 'error');
-                }
-            }
-        });
-    }
-
-    // Initialize edit image upload functionality
-    function initEditImageUpload() {
-        console.log('Initializing edit image upload...');
-        
-        const uploadArea = $('#edit-image-upload-area');
-        const fileInput = $('#edit-faculty-image');
-        const preview = $('#edit-faculty-image-preview');
-        
-        // Create a proper file input wrapper
-        const fileInputWrapper = $('<div class="image-upload-wrapper position-relative"></div>');
-        fileInput.wrap(fileInputWrapper);
-        
-        // Proper click handling
-        uploadArea.on('click', function(e) {
-            console.log('Edit upload area clicked');
-            fileInput.trigger('click');
-        });
-        
-        // File selection
-        fileInput.on('change', function(e) {
-            const file = e.target.files[0];
-            console.log('Edit file selected:', file);
-            
-            if (file) {
-                handleImageFile(file, preview, uploadArea);
-            }
-        });
-        
-        // Drag and drop functionality
-        uploadArea.on('dragover', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            uploadArea.addClass('dragover');
-        });
-        
-        uploadArea.on('dragleave', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            uploadArea.removeClass('dragover');
-        });
-        
-        uploadArea.on('drop', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            uploadArea.removeClass('dragover');
-            
-            const files = e.originalEvent.dataTransfer.files;
-            if (files.length > 0) {
-                const file = files[0];
-                console.log('Edit file dropped:', file);
-                
-                if (file && file.type.match('image.*')) {
-                    handleImageFile(file, preview, uploadArea);
-                    
-                    // Update the file input
-                    const dt = new DataTransfer();
-                    dt.items.add(file);
-                    fileInput[0].files = dt.files;
-                } else {
-                    showNotification('Please drop a valid image file (JPG, PNG).', 'error');
-                }
-            }
-        });
-    }
-
-    // Helper function to handle image files
-    function handleImageFile(file, preview, uploadArea) {
-        // Validate file type and size
-        if (!file.type.match('image.*')) {
-            showNotification('Please select a valid image file (JPG, PNG).', 'error');
-            return false;
-        }
-        
-        if (file.size > 2 * 1024 * 1024) {
-            showNotification('Image size must be less than 2MB.', 'error');
-            return false;
-        }
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.attr('src', e.target.result);
-            preview.removeClass('d-none');
-            uploadArea.addClass('d-none');
-            console.log('Image preview updated');
-        };
-        reader.onerror = function() {
-            showNotification('Error reading the image file.', 'error');
-        };
-        reader.readAsDataURL(file);
-        return true;
-    }
-
-    // Initialize add faculty form
-    function initAddFacultyForm() {
-        console.log('Initializing add faculty form...');
-        
-        $('#add-faculty-form').on('submit', function(e) {
-            e.preventDefault();
-            console.log('Add faculty form submitted');
-            
-            const name = $('#faculty-name').val().trim();
-            const position = $('#faculty-position').val().trim();
-            const imageFile = $('#faculty-image')[0].files[0];
-            
-            console.log('Form data:', { name, position, hasImage: !!imageFile });
-            
-            if (!name || !position) {
-                showNotification('Please fill in all required fields.', 'error');
-                return;
-            }
-            
-            // Get current data
-            const facultyData = JSON.parse(localStorage.getItem('facultyData')) || [];
-            
-            // Create new faculty member
-            const newFaculty = {
-                name: name,
-                position: position,
-                image: null
-            };
-            
-            console.log('New faculty object created:', newFaculty);
-            
-            // Handle image if uploaded
-            if (imageFile) {
-                console.log('Processing image file...');
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    newFaculty.image = e.target.result;
-                    console.log('Image processed, adding faculty member...');
-                    
-                    // Add to faculty list
-                    facultyData.push(newFaculty);
-                    
-                    // Save data
-                    saveFacultyData(facultyData);
-                    
-                    // Reset form
-                    resetFacultyForm();
-                    console.log('Faculty member added successfully with image');
-                };
-                reader.onerror = function() {
-                    showNotification('Error reading the image file.', 'error');
-                };
-                reader.readAsDataURL(imageFile);
-            } else {
-                console.log('No image, adding faculty member directly...');
-                // Add to faculty list
-                facultyData.push(newFaculty);
-                
-                // Save data
-                saveFacultyData(facultyData);
-                
-                // Reset form
-                resetFacultyForm();
-                console.log('Faculty member added successfully without image');
-            }
-        });
-    }
-
-    // Helper function to reset faculty form
-    function resetFacultyForm() {
-        $('#faculty-name').val('');
-        $('#faculty-position').val('');
-        $('#faculty-image').val('');
-        $('#faculty-image-preview').addClass('d-none');
-        $('#image-upload-area').removeClass('d-none');
-    }
-
-    // Edit faculty member
-    function editFacultyMember(index) {
-        const facultyData = JSON.parse(localStorage.getItem('facultyData')) || [];
-        const member = facultyData[index];
-        
-        if (!member) {
-            showNotification('Faculty member not found.', 'error');
-            return;
-        }
-        
-        // Populate modal
-        $('#edit-faculty-index').val(index);
-        $('#edit-faculty-name').val(member.name || '');
-        $('#edit-faculty-position').val(member.position || '');
-        
-        // Handle image
-        if (member.image) {
-            $('#edit-faculty-image-preview').attr('src', member.image);
-            $('#edit-faculty-image-preview').removeClass('d-none');
-            $('#edit-image-upload-area').addClass('d-none');
-        } else {
-            $('#edit-faculty-image-preview').addClass('d-none');
-            $('#edit-image-upload-area').removeClass('d-none');
-        }
-        
-        // Show modal
-        $('#editFacultyModal').modal('show');
-    }
-
-    // Save faculty changes
-    $('#save-faculty-changes').on('click', function() {
-        const index = $('#edit-faculty-index').val();
-        const name = $('#edit-faculty-name').val().trim();
-        const position = $('#edit-faculty-position').val().trim();
-        const imageFile = $('#edit-faculty-image')[0].files[0];
-        
-        if (!name || !position) {
-            showNotification('Please fill in all required fields.', 'error');
-            return;
-        }
-        
-        // Get current data
-        const facultyData = JSON.parse(localStorage.getItem('facultyData')) || [];
-        
-        if (!facultyData[index]) {
-            showNotification('Faculty member not found.', 'error');
-            return;
-        }
-        
-        // Update faculty member
-        facultyData[index].name = name;
-        facultyData[index].position = position;
-        
-        // Handle image if uploaded
-        if (imageFile) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                facultyData[index].image = e.target.result;
-                saveFacultyData(facultyData);
-                $('#editFacultyModal').modal('hide');
-            };
-            reader.readAsDataURL(imageFile);
-        } else {
-            saveFacultyData(facultyData);
-            $('#editFacultyModal').modal('hide');
-        }
-    });
-
-    // Delete faculty member with enhanced confirmation
-    function deleteFacultyMember(index) {
-        const facultyData = JSON.parse(localStorage.getItem('facultyData')) || [];
-        const member = facultyData[index];
-        
-        if (!member) {
-            showNotification('Faculty member not found.', 'error');
-            return;
-        }
-        
-        // Store the index for deletion
-        currentDeleteIndex = index;
-        
-        // Show the confirmation modal
-        $('#confirmationModal').modal('show');
-    }
-
-    // Handle the actual deletion when confirmed
-    $('#confirmActionBtn').on('click', function() {
-        if (currentDeleteIndex === null) return;
-        
-        const facultyData = JSON.parse(localStorage.getItem('facultyData')) || [];
-        const memberName = facultyData[currentDeleteIndex]?.name || 'Faculty Member';
-        
-        if (facultyData[currentDeleteIndex]) {
-            // Remove the faculty member
-            facultyData.splice(currentDeleteIndex, 1);
-            
-            // Save the updated data
-            saveFacultyData(facultyData);
-            
-            // Show success message
-            showNotification(`Faculty member "${memberName}" has been removed successfully.`, 'success');
-            
-            // Close the modal
-            $('#confirmationModal').modal('hide');
-            
-            // Reset the index
-            currentDeleteIndex = null;
-        }
-    });
-
-    // Reset the delete index when modal is closed
-    $('#confirmationModal').on('hidden.bs.modal', function() {
-        currentDeleteIndex = null;
-    });
-
-    // Initialize responsive design checks
-    function initResponsiveChecks() {
-        console.log('Initializing responsive design checks...');
-        
-        // Check screen size on load
-        checkScreenSize();
-        
-        // Check screen size on resize
-        $(window).on('resize', function() {
-            checkScreenSize();
-        });
-    }
-    
-    function checkScreenSize() {
-        const width = $(window).width();
-        console.log(`Screen width: ${width}px`);
-        
-        if (width < 576) {
-            console.log('📱 Mobile view activated');
-        } else if (width < 768) {
-            console.log('📱 Small tablet view activated');
-        } else if (width < 992) {
-            console.log('💻 Tablet view activated');
-        } else if (width < 1200) {
-            console.log('💻 Small desktop view activated');
-        } else {
-            console.log('🖥️ Large desktop view activated');
-        }
-    }
-
-    // Initialize the page
-    initializePage();
-    
-    // Update date every minute (in case day changes)
-    setInterval(updateCurrentDate, 60000);
-    
-    // Run cleanup multiple times to ensure removal
-    setTimeout(removeReturnToDashboard, 500);
-    setTimeout(removeReturnToDashboard, 1000);
-    setTimeout(removeReturnToDashboard, 2000);
+    // Initial load
+    loadFaculty();
 });

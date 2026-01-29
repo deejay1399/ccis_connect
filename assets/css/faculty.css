@@ -457,6 +457,12 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 2rem;
     margin-top: 2rem;
+    justify-items: start;
+}
+
+/* Center single card */
+.faculty-grid.single-card {
+    justify-items: center;
 }
 
 .faculty-card {
@@ -515,7 +521,7 @@ body {
 .main-footer {
     background: 
         linear-gradient(135deg, rgba(75, 0, 130, 0.9) 0%, rgba(106, 13, 173, 0.9) 100%),
-        url('building.jpg') center/cover no-repeat;
+        url('Building.jpg') center/cover no-repeat;
     color: white;
     padding: 1rem 0 0.5rem;
     position: relative;

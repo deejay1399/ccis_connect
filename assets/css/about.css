@@ -533,10 +533,11 @@ body {
     align-items: flex-start;
     gap: 2rem;
     background: white;
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: 15px;
     border-left: 4px solid var(--accent);
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
 }
 
 .vmgo-icon-horizontal {
@@ -622,6 +623,25 @@ body {
     margin-bottom: 0.5rem;
 }
 
+/* Values List Styling */
+.values-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.values-list li {
+    padding: 0.6rem 0;
+    color: var(--dark-gray);
+    line-height: 1.6;
+    border-bottom: none;
+    margin-bottom: 0.3rem;
+}
+
+.values-list li:last-child {
+    margin-bottom: 0;
+}
+
 /* Hymn Section - UPDATED STYLES */
 .hymn-content {
     text-align: center;
@@ -681,7 +701,7 @@ body {
 .main-footer {
     background: 
         linear-gradient(135deg, rgba(75, 0, 130, 0.9) 0%, rgba(106, 13, 173, 0.9) 100%),
-        url('building.jpg') center/cover no-repeat;
+        url('Building.jpg') center/cover no-repeat;
     color: white;
     padding: 1rem 0 0.5rem;
     position: relative;

@@ -7,6 +7,7 @@ class LandingController extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->helper('url');
+		$this->load->model('Programs_model');
 	}
 
 	public function homepage()
@@ -22,6 +23,9 @@ class LandingController extends CI_Controller {
 			log_message('error', 'Homepage error: ' . $e->getMessage());
 			$data['homepage_records'] = array();
 		}
+		
+		// Load programs from database
+		$data['programs'] = $this->Programs_model->get_all_programs();
 		
 		$this->load->view('layouts/header', $data);
         $this->load->view('layouts/navigation');

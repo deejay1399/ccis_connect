@@ -117,37 +117,42 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function loadAcademicsPrograms() {
-        const storedPrograms = localStorage.getItem('ccis_academic_programs');
-        const adminSettings = localStorage.getItem('ccis_admin_settings');
+        // Fetch programs from database via AJAX
+        const baseUrl = window.location.origin + '/ccis_connect/index.php/academics/get_programs_json';
+        console.log('Fetching programs from:', baseUrl);
         
-        let showDefaultPrograms = true;
-        
-        if (adminSettings) {
-            try {
-                const settings = JSON.parse(adminSettings);
-                showDefaultPrograms = settings.showDefaultPrograms !== false;
-            } catch (error) {
-                console.error('Error parsing admin settings:', error);
+        fetch(baseUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             }
-        }
-        
-        if (storedPrograms) {
-            try {
-                const adminPrograms = JSON.parse(storedPrograms);
-                if (showDefaultPrograms) {
-                    academicsPrograms = [...getAcademicsDefaultPrograms(), ...adminPrograms];
-                } else {
-                    academicsPrograms = [...adminPrograms];
-                }
-            } catch (error) {
-                console.error('Error parsing programs data:', error);
-                academicsPrograms = showDefaultPrograms ? getAcademicsDefaultPrograms() : [];
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        } else {
-            academicsPrograms = showDefaultPrograms ? getAcademicsDefaultPrograms() : [];
-        }
-        
-        renderAcademicsPrograms();
+            return response.json();
+        })
+        .then(data => {
+            console.log('Programs fetched from database:', data);
+            if (data && Array.isArray(data) && data.length > 0) {
+                academicsPrograms = data;
+                console.log('Successfully loaded', data.length, 'programs from database');
+            } else {
+                console.warn('No programs returned from database, using defaults');
+                academicsPrograms = getAcademicsDefaultPrograms();
+            }
+            renderAcademicsPrograms();
+        })
+        .catch(error => {
+            console.error('Error fetching programs from database:', error);
+            console.log('Falling back to default programs');
+            // Fallback to default programs if fetch fails
+            academicsPrograms = getAcademicsDefaultPrograms();
+            renderAcademicsPrograms();
+        });
     }
 
     function getAcademicsDefaultPrograms() {
@@ -246,54 +251,43 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function setupAcademicsProgramsAutoRefresh() {
+        // Check for updates daily (86400000 ms = 24 hours)
         setInterval(() => {
             checkForAcademicsProgramUpdates();
-        }, 3000);
+        }, 86400000);
     }
 
     function checkForAcademicsProgramUpdates() {
-        const storedPrograms = localStorage.getItem('ccis_academic_programs');
-        const adminSettings = localStorage.getItem('ccis_admin_settings');
+        // Fetch latest programs from database
+        const baseUrl = window.location.origin + '/ccis_connect/index.php/academics/get_programs_json';
         
-        let showDefaultPrograms = true;
-        if (adminSettings) {
-            try {
-                const settings = JSON.parse(adminSettings);
-                showDefaultPrograms = settings.showDefaultPrograms !== false;
-            } catch (error) {
-                console.error('Error parsing admin settings:', error);
+        fetch(baseUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             }
-        }
-        
-        let newPrograms = [];
-        if (storedPrograms) {
-            try {
-                const adminPrograms = JSON.parse(storedPrograms);
-                if (showDefaultPrograms) {
-                    newPrograms = [...getAcademicsDefaultPrograms(), ...adminPrograms];
-                } else {
-                    newPrograms = [...adminPrograms];
-                }
-            } catch (error) {
-                console.error('Error parsing programs data:', error);
-                newPrograms = showDefaultPrograms ? getAcademicsDefaultPrograms() : [];
+        })
+        .then(response => response.json())
+        .then(newPrograms => {
+            if (!newPrograms || newPrograms.length === 0) {
+                return;
             }
-        } else {
-            newPrograms = showDefaultPrograms ? getAcademicsDefaultPrograms() : [];
-        }
-        
-        const currentIds = academicsPrograms.map(p => p.id).join(',');
-        const newIds = newPrograms.map(p => p.id).join(',');
-        
-        if (currentIds !== newIds) {
-            academicsPrograms = newPrograms;
-            renderAcademicsPrograms();
             
-            const adminProgramsCount = newPrograms.filter(p => !p.isDefault).length;
-            if (adminProgramsCount > 0 && newPrograms.length > academicsPrograms.length) {
-                showNotification(`${adminProgramsCount} new program(s) added!`, 'success');
+            const currentIds = academicsPrograms.map(p => p.id).join(',');
+            const newIds = newPrograms.map(p => p.id).join(',');
+            
+            if (currentIds !== newIds) {
+                console.log('Program updates detected, refreshing...');
+                academicsPrograms = newPrograms;
+                renderAcademicsPrograms();
+                
+                showNotification('Academic programs updated!', 'success');
             }
-        }
+        })
+        .catch(error => {
+            console.warn('Error checking for program updates:', error);
+        });
     }
 
     // Curriculum Management

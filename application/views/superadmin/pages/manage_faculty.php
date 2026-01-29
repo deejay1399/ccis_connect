@@ -1,120 +1,194 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-?>
+<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+<div class="container-fluid dashboard-bg py-4">
+    <div class="container">
+        <div class="dashboard-card">
 
-<div class="container py-4 py-md-5 dashboard-bg">
-    <div class="row g-4">
-        <main class="col-12">
-            <div class="dashboard-card">
-                <h1 class="card-title"><i class="fas fa-chalkboard-teacher me-2"></i>Manage Faculty</h1>
-                <p class="card-subtitle">Add, edit, and remove faculty members from the college directory.</p>
-                <hr>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="card-title">Manage Faculty</h3>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFacultyModal">
+                    + Add Faculty
+                </button>
+            </div>
 
-                <div class="card p-4 mb-4">
-                    <h4 class="mb-3"><i class="fas fa-plus-circle me-2"></i>Add New Faculty Member</h4>
-                    <form id="add-faculty-form">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <div class="image-upload-container" id="image-upload-area">
-                                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                                    <p class="image-upload-text mb-1">Click to upload or drag and drop</p>
-                                    <input type="file" id="faculty-image" accept="image/*" class="d-none">
-                                </div>
-                                <div class="text-center">
-                                    <img id="faculty-image-preview" class="faculty-image-preview d-none" src="" alt="Faculty Preview">
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="mb-3">
-                                    <label for="faculty-name" class="form-label">Full Name</label>
-                                    <input type="text" class="form-control" id="faculty-name" placeholder="Enter faculty member's full name" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="faculty-position" class="form-label">Position</label>
-                                    <input type="text" class="form-control" id="faculty-position" placeholder="Enter faculty position" required>
-                                </div>
-                            </div>
-                            <div class="col-12 text-end">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-plus me-2"></i>Save Faculty Member
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+            <div class="row g-4" id="faculty-list">
+                <!-- Faculty cards injected here -->
+            </div>
 
-                <div class="forms-management-section">
-                    <h4 class="mb-3"><i class="fas fa-list-ul me-2"></i>Current Faculty Members</h4>
-                    <div id="faculty-list" class="row g-4">
-                        <!-- Faculty members will be loaded here -->
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-</div>
-
-<!-- Edit Faculty Modal -->
-<div class="modal fade" id="editFacultyModal" tabindex="-1" aria-labelledby="editFacultyModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editFacultyModalLabel">Edit Faculty Member</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="edit-faculty-form">
-                    <input type="hidden" id="edit-faculty-index">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="image-upload-container" id="edit-image-upload-area">
-                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                                <p class="image-upload-text mb-1">Click to upload or drag and drop</p>
-                                <input type="file" id="edit-faculty-image" accept="image/*" class="d-none">
-                            </div>
-                            <div class="text-center">
-                                <img id="edit-faculty-image-preview" class="faculty-image-preview" src="" alt="Faculty Preview">
-                            </div>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="mb-3">
-                                <label for="edit-faculty-name" class="form-label">Full Name</label>
-                                <input type="text" class="form-control" id="edit-faculty-name" placeholder="Enter faculty member's full name" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit-faculty-position" class="form-label">Position</label>
-                                <input type="text" class="form-control" id="edit-faculty-position" placeholder="Enter faculty position" required>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="save-faculty-changes">Save Changes</button>
-            </div>
         </div>
     </div>
 </div>
 
-<!-- Confirmation Modal -->
-<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+<!-- ================= ADD FACULTY MODAL ================= -->
+<div class="modal fade" id="addFacultyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="confirmationModalLabel">Confirm Action</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header">
+                <h5>Add Faculty</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <div class="text-center mb-3">
-                    <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
-                    <p id="confirmationMessage">Are you sure you want to remove this faculty member?</p>
+
+            <form id="add-faculty-form">
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <!-- Image Section -->
+                        <div class="col-md-4 text-center">
+                            <div class="image-upload-container" id="add-upload-area" style="cursor: pointer; min-height: 220px;">
+                                <input type="file" id="add-image-input" accept="image/*" style="display: none;">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <p class="image-upload-text">Click or Drag Image</p>
+                                <p class="image-upload-text-small">Click image to change</p>
+                            </div>
+                            <img id="add-image-preview" class="faculty-image-preview-modal" style="cursor: pointer; width: 100%; max-width: 250px;" title="Click to change image">
+                        </div>
+
+                        <!-- Form Section -->
+                        <div class="col-md-8">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="add-firstname" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="add-lastname" class="form-control" required>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Position <span class="text-danger">*</span></label>
+                                    <select id="add-position" class="form-control" required>
+                                        <option value="">-- Select Position --</option>
+                                        <option value="Dean">Dean</option>
+                                        <option value="Chairperson">Chairperson</option>
+                                        <option value="Instructor">Instructor</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="add-advisory-check">
+                                        <label class="form-check-label" for="add-advisory-check">
+                                            Advisory <span class="text-muted">(Optional)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 add-advisory-section" style="display: none;">
+                                    <label class="form-label">Year</label>
+                                    <select id="add-year" class="form-control">
+                                        <option value="">-- Select Year --</option>
+                                        <option value="1st Year">1st Year</option>
+                                        <option value="2nd Year">2nd Year</option>
+                                        <option value="3rd Year">3rd Year</option>
+                                        <option value="4th Year">4th Year</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 add-advisory-section" style="display: none;">
+                                    <label class="form-label">Section</label>
+                                    <select id="add-section" class="form-control">
+                                        <option value="">-- Select Section --</option>
+                                        <option value="A">Section A</option>
+                                        <option value="B">Section B</option>
+                                        <option value="C">Section C</option>
+                                        <option value="D">Section D</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Save</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- ================= EDIT FACULTY MODAL ================= -->
+<div class="modal fade" id="editFacultyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Edit Faculty</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmActionBtn">Remove</button>
-            </div>
+
+            <form id="edit-faculty-form">
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <!-- Image Section -->
+                        <div class="col-md-4 text-center">
+                            <div class="image-upload-container" id="edit-upload-area" style="cursor: pointer; min-height: 220px;">
+                                <input type="file" id="edit-image-input" accept="image/*" style="display: none;">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <p class="image-upload-text">Click or Drag Image</p>
+                                <p class="image-upload-text-small">Click image to change</p>
+                            </div>
+                            <img id="edit-image-preview" class="faculty-image-preview-modal" style="cursor: pointer; width: 100%; max-width: 250px;" title="Click to change image">
+                        </div>
+
+                        <!-- Form Section -->
+                        <div class="col-md-8">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="edit-firstname" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="edit-lastname" class="form-control" required>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Position <span class="text-danger">*</span></label>
+                                    <select id="edit-position" class="form-control" required>
+                                        <option value="">-- Select Position --</option>
+                                        <option value="Dean">Dean</option>
+                                        <option value="Chairperson">Chairperson</option>
+                                        <option value="Instructor">Instructor</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="edit-advisory-check">
+                                        <label class="form-check-label" for="edit-advisory-check">
+                                            Advisory <span class="text-muted">(Optional)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 edit-advisory-section" style="display: none;">
+                                    <label class="form-label">Year</label>
+                                    <select id="edit-year" class="form-control">
+                                        <option value="">-- Select Year --</option>
+                                        <option value="1st Year">1st Year</option>
+                                        <option value="2nd Year">2nd Year</option>
+                                        <option value="3rd Year">3rd Year</option>
+                                        <option value="4th Year">4th Year</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 edit-advisory-section" style="display: none;">
+                                    <label class="form-label">Section</label>
+                                    <select id="edit-section" class="form-control">
+                                        <option value="">-- Select Section --</option>
+                                        <option value="A">Section A</option>
+                                        <option value="B">Section B</option>
+                                        <option value="C">Section C</option>
+                                        <option value="D">Section D</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" type="submit">Update</button>
+                </div>
+            </form>
+
         </div>
     </div>
 </div>

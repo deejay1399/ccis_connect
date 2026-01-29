@@ -85,50 +85,59 @@
         <div class="container">
             <h3 class="programs-title">Academic Programs</h3>
             
-            <div class="programs-container" id="programs-container">
-                <div class="program-card">
-                    <div class="program-header">
-                        <i class="fas fa-laptop-code"></i>
-                        <h5>Bachelor of Science in Computer Science</h5>
+            <div class="programs-grid" id="programs-grid">
+                <?php if (!empty($programs)): ?>
+                    <?php 
+                        // Map program names to appropriate icons
+                        $iconMap = array(
+                            'BSCS' => 'fas fa-laptop-code',
+                            'BSIT' => 'fas fa-network-wired',
+                            'Computer Science' => 'fas fa-laptop-code',
+                            'Information Technology' => 'fas fa-network-wired'
+                        );
+                        
+                        foreach ($programs as $program): 
+                            // Determine icon
+                            $icon = 'fas fa-graduation-cap';
+                            foreach ($iconMap as $keyword => $iconClass) {
+                                if (stripos($program['program_name'], $keyword) !== false) {
+                                    $icon = $iconClass;
+                                    break;
+                                }
+                            }
+                            
+                            // Parse career opportunities if it's a comma-separated string
+                            $careers = array();
+                            if (!empty($program['career_opportunities'])) {
+                                $careers = array_map('trim', explode(',', $program['career_opportunities']));
+                            }
+                    ?>
+                        <div class="program-card detailed">
+                            <div class="program-header">
+                                <i class="<?php echo htmlspecialchars($icon); ?>"></i>
+                                <h4><?php echo htmlspecialchars($program['program_name']); ?></h4>
+                            </div>
+                            <div class="program-details">
+                                <p><strong>Program Description:</strong> <?php echo htmlspecialchars($program['description']); ?></p>
+                                <p class="program-duration"><strong>Duration:</strong> <?php echo htmlspecialchars($program['duration_years']); ?> years</p>
+                                <?php if (!empty($careers)): ?>
+                                    <div class="program-features">
+                                        <h5>Career Opportunities:</h5>
+                                        <ul>
+                                            <?php foreach ($careers as $career): ?>
+                                                <li><?php echo htmlspecialchars(trim($career)); ?></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="program-card">
+                        <p>No programs available at this time.</p>
                     </div>
-                    <p>A comprehensive program focusing on software development, algorithms, and computer systems.</p>
-                    <ul class="career-list">
-                        <li> Software Engineering</li>
-                        <li> Data Structures and Algorithms</li>
-                        <li> Artificial Intelligence</li>
-                        <li> Web and Mobile Development</li>
-                        <li> Computer Networks</li>
-                        <li> Database Systems</li>
-                    </ul>
-                </div>
-                
-                <div class="program-card">
-                    <div class="program-header">
-                        <i class="fas fa-network-wired"></i>
-                        <h5>Bachelor of Science in Information Technology</h5>
-                    </div>
-                    <p>Focuses on IT infrastructure, networking, and information systems management.</p>
-                    <ul class="career-list">
-                        <li> Network Administration</li>
-                        <li> Web Development</li>
-                        <li> Cybersecurity</li>
-                        <li> System Administration</li>
-                    </ul>
-                </div>
-                
-                <div class="program-card">
-                    <div class="program-header">
-                        <i class="fas fa-database"></i>
-                        <h5>Bachelor of Science in Information Systems</h5>
-                    </div>
-                    <p>Bridges business needs with technology solutions through information systems.</p>
-                    <ul class="career-list">
-                        <li> Business Analytics</li>
-                        <li> Enterprise Systems</li>
-                        <li> Project Management</li>
-                        <li> Data Analytics</li>
-                    </ul>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
     </section>

@@ -93,7 +93,7 @@ $(document).ready(function() {
                 window.logoutUser();
             } else {
                 // Fallback: Redirect to logout controller
-                window.location.href = window.baseUrl ? window.baseUrl + 'login/logout' : '/ccis_connect/login/logout';
+                window.location.href = window.baseUrl ? window.baseUrl + 'logout' : '/ccis_connect/logout';
             }
         });
         

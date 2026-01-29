@@ -73,6 +73,7 @@
     
     <!-- Initialize PHP session data for JavaScript -->
     <script>
+        window.baseUrl = '<?php echo base_url(); ?>';
         window.sessionData = {
             isValid: <?php echo $this->session->userdata('logged_in') ? 'true' : 'false'; ?>,
             user: <?php 
@@ -94,6 +95,17 @@
     <!-- Session check function -->
     <script src="<?php echo base_url('assets/js/check-session.js'); ?>"></script>
     
+    <!-- Global base URL for AJAX calls -->
+    <script>
+        if (typeof baseUrl === 'undefined') {
+            const baseUrl = '<?php echo base_url(); ?>';
+        }
+        // API Base URL for admin controllers
+        window.API_BASE_URL = '<?php echo base_url('index.php/admin/content/api_'); ?>';
+        // Base URL for file access
+        window.BASE_URL = '<?php echo base_url(); ?>';
+    </script>
+    
     <!-- Page-specific scripts -->
     <?php if(isset($page_type) && $page_type === 'admin_users'): ?>
         <script src="<?php echo base_url('assets/js/create_user.js'); ?>"></script>
@@ -101,6 +113,11 @@
         <script src="<?php echo base_url('assets/js/list_users.js'); ?>"></script>
     <?php elseif(isset($content_type) && $content_type === 'homepage'): ?>
         <script src="<?php echo base_url('assets/js/manage_homepage.js'); ?>"></script>
+    <?php elseif(isset($content_type) && $content_type === 'faculty'): ?>
+        <script src="<?php echo base_url('assets/js/manage_faculty.js'); ?>"></script>
+    <?php elseif(isset($content_type) && $content_type === 'academics'): ?>
+        <script src="<?php echo base_url('assets/js/manage_academics.js'); ?>"></script>
+        <script src="<?php echo base_url('assets/js/manage_academics_curriculum.js'); ?>"></script>
     <?php else: ?>
         <script src="<?php echo base_url('assets/js/dashboard.js'); ?>"></script>
     <?php endif; ?>
