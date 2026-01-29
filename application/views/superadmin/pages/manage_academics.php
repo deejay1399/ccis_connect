@@ -90,8 +90,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <label for="scheduleSemester" class="form-label">Semester</label>
                                         <select class="form-select" id="scheduleSemester" required>
                                             <option value="">Select semester...</option>
-                                            <option value="1st">1st Semester</option>
-                                            <option value="2nd">2nd Semester</option>
+                                            <option value="1st Semester">1st Semester</option>
+                                            <option value="2nd Semester">2nd Semester</option>
+                                            <option value="Summer">Summer</option>
                                         </select>
                                     </div>
                                     <div class="col-md-4">

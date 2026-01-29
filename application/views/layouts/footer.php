@@ -182,6 +182,7 @@
             <script src="<?php echo base_url('assets/js/faculty.js'); ?>"></script>
         <?php elseif ($page_type === 'academics'): ?>
             <script src="<?php echo base_url('assets/js/academics.js'); ?>"></script>
+            <script src="<?php echo base_url('assets/js/program_offerings.js?v=' . time()); ?>"></script>
         <?php elseif ($page_type === 'updates'): ?>
             <script src="<?php echo base_url('assets/js/updates.js'); ?>"></script>
             <script src="<?php echo base_url('assets/js/updates-pagination.js'); ?>"></script>
