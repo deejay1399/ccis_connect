@@ -90,6 +90,11 @@ $route['admin/content/api_upload_schedule'] = 'AdminContent/api_upload_schedule'
 $route['admin/content/api_get_schedules'] = 'AdminContent/api_get_schedules';
 $route['admin/content/api_delete_schedule'] = 'AdminContent/api_delete_schedule';
 
+// Academic Calendars Management API Endpoints
+$route['admin/content/api_upload_calendar'] = 'AdminContent/api_upload_calendar';
+$route['admin/content/api_get_calendars'] = 'AdminContent/api_get_calendars';
+$route['admin/content/api_delete_calendar'] = 'AdminContent/api_delete_calendar';
+
 // Admin User Management
 $route['admin/users/create'] = 'admin/AdminUsers/create';
 $route['admin/users/save'] = 'admin/AdminUsers/save';

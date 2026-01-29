@@ -888,6 +888,140 @@ class AdminContent extends CI_Controller {
 		]);
 	}
 
+	// Academic Calendar Upload
+	public function api_upload_calendar() {
+		header('Content-Type: application/json');
+		$this->load->model('AcademicCalendars_model');
+		
+		// Validate inputs
+		$academic_year = $this->input->post('academic_year');
+		$file = $_FILES['calendar_file'] ?? null;
+		
+		if (empty($academic_year)) {
+			echo json_encode(['success' => false, 'message' => 'Academic year is required']);
+			return;
+		}
+		
+		if (!$file) {
+			echo json_encode(['success' => false, 'message' => 'File is required']);
+			return;
+		}
+		
+		// Validate file type and size
+		$allowed_types = ['application/pdf'];
+		$max_size = 52428800; // 50MB
+		
+		if (!in_array($file['type'], $allowed_types)) {
+			echo json_encode(['success' => false, 'message' => 'Only PDF files are allowed']);
+			return;
+		}
+		
+		if ($file['size'] > $max_size) {
+			echo json_encode(['success' => false, 'message' => 'File size exceeds 50MB limit']);
+			return;
+		}
+		
+		// Create upload directory if it doesn't exist
+		$upload_dir = FCPATH . 'uploads/academic_calendars/';
+		if (!is_dir($upload_dir)) {
+			mkdir($upload_dir, 0755, true);
+		}
+		
+		// Generate unique filename
+		$filename = 'calendar_' . time() . '_' . uniqid() . '.pdf';
+		$filepath = $upload_dir . $filename;
+		
+		if (!move_uploaded_file($file['tmp_name'], $filepath)) {
+			echo json_encode(['success' => false, 'message' => 'Failed to upload file']);
+			return;
+		}
+		
+		// Save to database
+		$data = [
+			'academic_year' => $academic_year,
+			'file_url' => 'uploads/academic_calendars/' . $filename
+		];
+		
+		$insert_id = null;
+		if ($this->AcademicCalendars_model->insert_calendar($data)) {
+			$insert_id = $this->db->insert_id();
+		}
+		
+		echo json_encode([
+			'success' => true,
+			'message' => 'Calendar uploaded successfully',
+			'file_url' => $data['file_url'],
+			'insert_id' => $insert_id
+		]);
+	}
+
+	// Get all academic calendars
+	public function api_get_calendars() {
+		header('Content-Type: application/json');
+		$this->load->model('AcademicCalendars_model');
+		
+		try {
+			// Check if table exists
+			if (!$this->db->table_exists('academic_calendars')) {
+				error_log('Academic calendars table does not exist - creating it');
+				$this->create_academic_calendars_table();
+				error_log('Academic calendars table created');
+			}
+			
+			// Get calendars
+			$calendars = $this->AcademicCalendars_model->get_all();
+			error_log('Calendars retrieved: ' . count($calendars));
+			
+			http_response_code(200);
+			echo json_encode([
+				'success' => true,
+				'data' => $calendars,
+				'count' => count($calendars)
+			]);
+			exit;
+		} catch (Exception $e) {
+			error_log('Error in get_calendars: ' . $e->getMessage());
+			http_response_code(500);
+			echo json_encode([
+				'success' => false,
+				'message' => 'Error retrieving calendars: ' . $e->getMessage()
+			]);
+			exit;
+		}
+	}
+
+	// Delete academic calendar
+	public function api_delete_calendar() {
+		header('Content-Type: application/json');
+		$this->load->model('AcademicCalendars_model');
+		
+		$id = $this->input->post('id');
+		
+		if (empty($id)) {
+			echo json_encode([
+				'success' => false,
+				'message' => 'Calendar ID is required'
+			]);
+			return;
+		}
+
+		// Get calendar file path for deletion
+		$calendar = $this->AcademicCalendars_model->get_by_id($id);
+		
+		if ($calendar && !empty($calendar['file_url'])) {
+			$filepath = FCPATH . $calendar['file_url'];
+			if (file_exists($filepath)) {
+				unlink($filepath);
+			}
+		}
+
+		$result = $this->AcademicCalendars_model->delete_calendar($id);
+		echo json_encode([
+			'success' => $result,
+			'message' => $result ? 'Academic calendar deleted successfully' : 'Error deleting academic calendar'
+		]);
+	}
+
 	// Helper function to create class_schedules table if it doesn't exist
 	private function create_class_schedules_table() {
 		try {
@@ -932,6 +1066,50 @@ class AdminContent extends CI_Controller {
 			return TRUE;
 		} catch (Exception $e) {
 			error_log('⚠️ Error creating table: ' . $e->getMessage());
+			error_log('Database Error: ' . json_encode($this->db->error()));
+			return FALSE;
+		}
+	}
+
+	// Helper function to create academic_calendars table if it doesn't exist
+	private function create_academic_calendars_table() {
+		try {
+			// Check if table already exists
+			if ($this->db->table_exists('academic_calendars')) {
+				error_log('⚠️ Academic calendars table already exists');
+				return TRUE;
+			}
+			
+			$this->load->dbforge();
+			
+			$this->dbforge->add_field(array(
+				'calendar_id' => array(
+					'type' => 'INT',
+					'constraint' => 11,
+					'auto_increment' => TRUE
+				),
+				'academic_year' => array(
+					'type' => 'VARCHAR',
+					'constraint' => '20',
+					'null' => FALSE
+				),
+				'pdf_file' => array(
+					'type' => 'VARCHAR',
+					'constraint' => '255',
+					'null' => FALSE
+				),
+				'uploaded_at' => array(
+					'type' => 'TIMESTAMP',
+					'default' => 'CURRENT_TIMESTAMP'
+				)
+			));
+			
+			$this->dbforge->add_key('calendar_id', TRUE);
+			$this->dbforge->create_table('academic_calendars');
+			error_log('✅ Academic calendars table created successfully');
+			return TRUE;
+		} catch (Exception $e) {
+			error_log('⚠️ Error creating calendar table: ' . $e->getMessage());
 			error_log('Database Error: ' . json_encode($this->db->error()));
 			return FALSE;
 		}
