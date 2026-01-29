@@ -1,5 +1,106 @@
 /* DEAN'S LIST SPECIFIC STYLES - ACADEMIC YEAR ONLY */
 
+:root {
+    --primary-purple: #4b0082;
+    --secondary-purple: #6a0dad;
+    --light-purple: #e6e6fa;
+    --accent: #ffd700;
+    --dark-gray: #2d3e50;
+    --light-gray: #f8f9fa;
+    --medium-gray: #6c757d;
+    --gold: #ffd700;
+}
+
+/* UNIVERSITY HEADER WITH BUILDING BACKGROUND */
+.university-header {
+    background: 
+        linear-gradient(135deg, rgba(75, 0, 130, 0.85) 0%, rgba(106, 13, 173, 0.85) 100%),
+        url('../images/Building.jpg') center/cover no-repeat;
+    color: white;
+    padding: 1rem 0;
+    border-bottom: 5px solid var(--gold);
+    position: relative;
+    overflow: hidden;
+}
+
+.university-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.university-logo,
+.college-logo {
+    height: 70px;
+    width: 70px;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+    background-color: white;
+    border-radius: 50%;
+    object-fit: contain;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+    position: relative;
+    z-index: 2;
+}
+
+.college-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: white;
+    font-size: 1.8rem;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    line-height: 1.2;
+    word-wrap: break-word;
+    text-align: left;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 2;
+}
+
+.college-subtitle {
+    font-size: 1rem;
+    color: var(--accent);
+    font-weight: 500;
+    margin: 0;
+    text-align: left;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 2;
+}
+
+/* MAIN FOOTER WITH BUILDING BACKGROUND */
+.main-footer {
+    background: 
+        linear-gradient(135deg, rgba(75, 0, 130, 0.9) 0%, rgba(106, 13, 173, 0.9) 100%),
+        url('../images/Building.jpg') center/cover no-repeat;
+    color: white;
+    padding: 1rem 0 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.footer-section {
+    padding: 0.8rem;
+    position: relative;
+    z-index: 2;
+}
+
 /* Combined Dropdown Filters Container */
 .deanslist-filters-container {
     display: flex;

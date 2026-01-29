@@ -513,9 +513,9 @@ body {
    FOOTER - IDENTICAL TO MANAGE_FORMS
    ======================================== */
 .main-footer {
-    /* background: 
+   background: 
         linear-gradient(135deg, rgba(75, 0, 130, 0.9) 0%, rgba(106, 13, 173, 0.9) 100%),
-        url('<?php echo base_url('assets/images/Building.jpg'); ?>') center/cover no-repeat; */
+        url('../images/Building.jpg') center/cover no-repeat;
     color: white;
     padding: 1rem 0 0.5rem;
     position: relative;
