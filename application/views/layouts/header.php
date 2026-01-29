@@ -50,10 +50,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 </div>
                 <div class="col-md-1">
                     <div class="header-auth-icon">
-                        <a href="<?php echo site_url('login'); ?>" id="login-icon-link" class="auth-icon-link" title="Login">
+                        <a href="<?php echo base_url('index.php/login'); ?>" id="login-icon-link" class="auth-icon-link" title="Login">
                             <i class="fas fa-user-circle"></i>
                         </a>
-                        <a href="javascript:void(0)" id="logout-icon-link" class="auth-icon-link" style="display: none;" title="Logout">
+                        <a href="<?php echo base_url('index.php/logout'); ?>" id="logout-icon-link" class="auth-icon-link" style="display: none;" title="Logout">
                             <i class="fas fa-sign-out-alt"></i>
                         </a>
                     </div>

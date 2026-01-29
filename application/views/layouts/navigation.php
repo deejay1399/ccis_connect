@@ -32,17 +32,19 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="academicsDropdown">
                         <li><a class="dropdown-item"
-                                href="<?php echo site_url('academics/programs'); ?>#programs-section">Programs
+                                href="<?php echo site_url('academics'); ?>#programs-section">Programs
                                 Offerings</a></li>
+                        <?php if ($this->session->userdata('logged_in')): ?>
                         <li><a class="dropdown-item"
-                                href="<?php echo site_url('academics/curriculum'); ?>#curriculum-section">Curriculum</a>
+                                href="<?php echo site_url('academics'); ?>#curriculum-section">Curriculum</a>
                         </li>
                         <li><a class="dropdown-item"
-                                href="<?php echo site_url('academics/schedule'); ?>#schedule-section">Class Schedule</a>
+                                href="<?php echo site_url('academics'); ?>#schedule-section">Class Schedule</a>
                         </li>
                         <li><a class="dropdown-item"
-                                href="<?php echo site_url('academics/calendar'); ?>#calendar-section">Academic
+                                href="<?php echo site_url('academics'); ?>#calendar-section">Academic
                                 Calendar</a></li>
+                        <?php endif; ?>
                     </ul>
                 </li>
 
@@ -62,10 +64,13 @@
                     </ul>
                 </li>
 
+                <?php if ($this->session->userdata('logged_in')): ?>
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo site_url('forms'); ?>">Forms</a>
                 </li>
+                <?php endif; ?>
 
+                <?php if ($this->session->userdata('logged_in')): ?>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="organizationDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
@@ -78,6 +83,7 @@
                                 Guild</a></li>
                     </ul>
                 </li>
+                <?php endif; ?>
 
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="alumniDropdown" role="button"

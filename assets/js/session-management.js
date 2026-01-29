@@ -212,7 +212,7 @@ function updateUIForGuest() {
     if (logoutLink) logoutLink.style.display = 'none';
     if (loginLink) {
         loginLink.style.display = 'block';
-        loginLink.href = 'login.html';
+        loginLink.href = './index.php/login';
     }
     
     console.log('✅ UI updated for guest user');
@@ -383,10 +383,8 @@ function showLogoutModal(user) {
                 $modalElement.modal('hide'); 
                 
                 setTimeout(() => {
-                    // Ensure admin pages (in subfolders) correctly reach the root login page
-                    const path = window.location.pathname;
-                    const isInAdminFolder = /\/super_admin\//.test(path) || /\/csguild_admin\//.test(path) || /\/legion_admin\//.test(path);
-                    window.location.href = (isInAdminFolder ? '../login.html' : 'login.html') + '?logout=true';
+                    // Redirect to root logout using global BASE_URL
+                    window.location.href = window.BASE_URL + 'index.php/logout?logout=true';
                 }, 500);
         }, 1000);
     });
@@ -454,6 +452,7 @@ function hasAccess(requiredRole) {
     const roleHierarchy = {
         'guest': 0,
         'student': 1,
+        'faculty': 2,
         'orgadmin': 2,
         'superadmin': 3
     };
@@ -522,6 +521,12 @@ function getAccessibleContent(userRole = 'guest') {
             'events', 'deanslist', 'achievements'
         ],
         'student': [
+            'home', 'history', 'vmgo', 'faculty', 'hymn',
+            'programs', 'subjects', 'schedule', 'announcements', 
+            'news', 'events', 'deanslist', 'achievements', 'calendar', 
+            'forms', 'organization', 'curriculum'
+        ],
+        'faculty': [
             'home', 'history', 'vmgo', 'faculty', 'hymn',
             'programs', 'subjects', 'schedule', 'announcements', 
             'news', 'events', 'deanslist', 'achievements', 'calendar', 
@@ -735,7 +740,7 @@ function filterPageContent(userRole) {
         // Redirect guests away from forms page
         window.showNotification('You need to login as a student to access forms.', 'error');
         setTimeout(() => {
-            window.location.href = 'login.html';
+            window.location.href = './index.php/login';
         }, 2000);
     }
     
@@ -744,7 +749,7 @@ function filterPageContent(userRole) {
         // Redirect GUESTS away from organization page (but allow students)
         window.showNotification('You need to login as a student to view organizations.', 'error');
         setTimeout(() => {
-            window.location.href = 'login.html';
+            window.location.href = './index.php/login';
         }, 2000);
     }
     
@@ -760,7 +765,7 @@ function filterPageContent(userRole) {
         } else {
              window.showNotification('You need to login as a student to view curriculum.', 'error');
              setTimeout(() => {
-                 window.location.href = 'login.html';
+                 window.location.href = './index.php/login';
             }, 2000);
         }
     }

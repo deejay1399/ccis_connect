@@ -81,7 +81,8 @@ $(document).ready(function() {
                     sessionStorage.removeItem('userSession');
                     showNotification('Logged out successfully', 'success');
                     setTimeout(() => {
-                        window.location.href = '../login.html';
+                        const baseUrl = window.BASE_URL || window.location.protocol + '//' + window.location.host + '/ccis_connect/';
+                        window.location.href = baseUrl + 'logout';
                     }, 1500);
                 }
             );

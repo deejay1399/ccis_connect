@@ -53,16 +53,14 @@ class LoginController extends CI_Controller {
 
     /*
     |--------------------------------------------------
-    | TEMPORARY SUPER ADMIN BYPASS
-    | REMOVE THIS BLOCK AFTER SETUP
+    | TEMPORARY TEST ACCOUNTS (REMOVE AFTER SETUP)
     |--------------------------------------------------
     */
+    // SUPER ADMIN
     if ($email === 'admin@email.com' && $password === 'pass1234') {
-
         $token = bin2hex(random_bytes(32));
-
         $session_data = [
-            'user_id'    => 0, // virtual user
+            'user_id'    => 0,
             'email'      => $email,
             'first_name' => 'Super',
             'last_name'  => 'Admin',
@@ -70,12 +68,26 @@ class LoginController extends CI_Controller {
             'token'      => $token,
             'logged_in'  => true
         ];
-
         $this->session->set_userdata($session_data);
-
         redirect('admin/dashboard');
     }
-    /* ---------- END BYPASS ---------- */
+
+    // STUDENT TEST ACCOUNT
+    if ($email === 'student@email.com' && $password === 'pass1234') {
+        $token = bin2hex(random_bytes(32));
+        $session_data = [
+            'user_id'    => 1,
+            'email'      => $email,
+            'first_name' => 'John',
+            'last_name'  => 'Student',
+            'role_id'    => 3, // STUDENT
+            'token'      => $token,
+            'logged_in'  => true
+        ];
+        $this->session->set_userdata($session_data);
+        redirect('homepage');
+    }
+    /* ---------- END TEST ACCOUNTS ---------- */
 
     // NORMAL DATABASE LOGIN FLOW
     $user = $this->User_model->get_by_email($email);

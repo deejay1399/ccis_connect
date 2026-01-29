@@ -66,82 +66,60 @@
                 <div class="content-card">
                     <h3><i class="fas fa-book-open me-3"></i>Curriculum</h3>
                     
-                    <div class="program-tabs">
-                        <div class="tab-nav">
-                            <button class="tab-btn active" data-tab="bscs-curriculum">BSCS New Curriculum</button>
-                            <button class="tab-btn" data-tab="bsit-curriculum">BSIT New Curriculum</button>
-                        </div>
-                        
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="bscs-curriculum-tab">
-                                <div class="pdf-viewer-container">
-                                    <div id="bscs-pdf-placeholder">
-                                        <div class="pdf-placeholder">
-                                            <i class="fas fa-file-pdf pdf-icon"></i>
-                                            <h4>BSCS New Curriculum 2024-2025</h4>
-                                            <p>View the complete Bachelor of Science in Computer Science curriculum including all subjects and course requirements.</p>
-                                            <div class="button-group-tapad mt-4">
-                                                <button class="btn btn-view-pdf me-2 view-curriculum-pdf" data-program="bscs">
-                                                    <i class="fas fa-eye me-1"></i>View PDF
-                                                </button>
-                                                <button class="btn btn-download-pdf curriculum-download" data-program="bscs">
-                                                    <i class="fas fa-download me-1"></i>Download
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div id="bscs-pdfEmbedContainer" style="display: none;">
-                                        <div class="pdf-embed-container">
-                                            <div class="pdf-header">
-                                                <h5>BSCS New Curriculum 2024-2025</h5>
-                                                <button class="btn btn-sm btn-outline-light close-pdf close-curriculum-pdf" data-program="bscs">
-                                                    <i class="fas fa-times me-1"></i>Close
-                                                </button>
-                                            </div>
-                                            <div class="pdf-frame-container">
-                                                <iframe id="bscs-pdfFrame" src="curriculum-bscs.pdf" width="100%" height="600px" frameborder="0"></iframe>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                    <?php if (!empty($curricula)): ?>
+                        <div class="program-tabs">
+                            <div class="tab-nav">
+                                <?php foreach ($curricula as $index => $curriculum): ?>
+                                    <button class="tab-btn <?php echo $index === 0 ? 'active' : ''; ?>" data-tab="curriculum-<?php echo htmlspecialchars($curriculum['program']); ?>">
+                                        <?php echo htmlspecialchars($curriculum['program']); ?> Curriculum
+                                    </button>
+                                <?php endforeach; ?>
                             </div>
                             
-                            <div class="tab-pane" id="bsit-curriculum-tab">
-                                <div class="pdf-viewer-container">
-                                    <div id="bsit-pdf-placeholder">
-                                        <div class="pdf-placeholder">
-                                            <i class="fas fa-file-pdf pdf-icon"></i>
-                                            <h4>BSIT New Curriculum 2024-2025</h4>
-                                            <p>View the complete Bachelor of Science in Information Technology curriculum including all subjects and course requirements.</p>
-                                            <div class="button-group-tapad mt-4">
-                                                <button class="btn btn-view-pdf me-2 view-curriculum-pdf" data-program="bsit">
-                                                    <i class="fas fa-eye me-1"></i>View PDF
-                                                </button>
-                                                <button class="btn btn-download-pdf curriculum-download" data-program="bsit">
-                                                    <i class="fas fa-download me-1"></i>Download
-                                                </button>
+                            <div class="tab-content">
+                                <?php foreach ($curricula as $index => $curriculum): ?>
+                                    <div class="tab-pane <?php echo $index === 0 ? 'active' : ''; ?>" id="curriculum-<?php echo htmlspecialchars($curriculum['program']); ?>-tab">
+                                        <div class="pdf-viewer-container">
+                                            <div id="<?php echo htmlspecialchars($curriculum['program']); ?>-pdf-placeholder">
+                                                <div class="pdf-placeholder">
+                                                    <i class="fas fa-file-pdf pdf-icon"></i>
+                                                    <h4><?php echo htmlspecialchars($curriculum['program']); ?> Curriculum</h4>
+                                                    <p>View the complete <?php echo htmlspecialchars($curriculum['program']); ?> curriculum including all subjects and course requirements.</p>
+                                                    <div class="button-group-tapad mt-4">
+                                                        <button class="btn btn-view-pdf me-2 view-curriculum-pdf" data-program="<?php echo htmlspecialchars($curriculum['program']); ?>" data-file-url="<?php echo htmlspecialchars($curriculum['file_url']); ?>">
+                                                            <i class="fas fa-eye me-1"></i>View PDF
+                                                        </button>
+                                                        <button class="btn btn-download-pdf curriculum-download" data-file-url="<?php echo htmlspecialchars($curriculum['file_url']); ?>">
+                                                            <i class="fas fa-download me-1"></i>Download
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div id="<?php echo htmlspecialchars($curriculum['program']); ?>-pdfEmbedContainer" style="display: none;">
+                                                <div class="pdf-embed-container">
+                                                    <div class="pdf-header">
+                                                        <h5><?php echo htmlspecialchars($curriculum['program']); ?> Curriculum</h5>
+                                                        <button class="btn btn-sm btn-outline-light close-pdf close-curriculum-pdf" data-program="<?php echo htmlspecialchars($curriculum['program']); ?>">
+                                                            <i class="fas fa-times me-1"></i>Close
+                                                        </button>
+                                                    </div>
+                                                    <div class="pdf-frame-container">
+                                                        <iframe id="<?php echo htmlspecialchars($curriculum['program']); ?>-pdfFrame" src="<?php echo htmlspecialchars($curriculum['file_url']); ?>" width="100%" height="600px" frameborder="0"></iframe>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <div id="bsit-pdfEmbedContainer" style="display: none;">
-                                        <div class="pdf-embed-container">
-                                            <div class="pdf-header">
-                                                <h5>BSIT New Curriculum 2024-2025</h5>
-                                                <button class="btn btn-sm btn-outline-light close-pdf close-curriculum-pdf" data-program="bsit">
-                                                    <i class="fas fa-times me-1"></i>Close
-                                                </button>
-                                            </div>
-                                            <div class="pdf-frame-container">
-                                                <iframe id="bsit-pdfFrame" src="curriculum-bsit.pdf" width="100%" height="600px" frameborder="0"></iframe>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <?php endforeach; ?>
                             </div>
                         </div>
-                    </div>
+                    <?php else: ?>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>No curricula available</strong> at this time.
+                        </div>
+                    <?php endif; ?>
                 </div>
             </section>
 

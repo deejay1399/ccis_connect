@@ -8,12 +8,14 @@ class AcademicsController extends CI_Controller {
 		parent::__construct();
 		$this->load->helper('url');
 		$this->load->model('Programs_model');
+		$this->load->model('Curriculum_model');
 	}
 
 	public function index()
 	{
 		$data['page_type'] = 'academics';
 		$data['programs'] = $this->Programs_model->get_all_programs();
+		$data['curricula'] = $this->Curriculum_model->get_all();
 		$this->load->view('layouts/header', $data);
 		$this->load->view('layouts/navigation');
 		$this->load->view('pages/program_offerings', $data);

@@ -123,6 +123,54 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Global Configuration -->
+    <script>
+        // Set global base URL for all pages
+        window.BASE_URL = '<?php echo base_url(); ?>';
+    </script>
+    
+    <!-- Session Data Bridge: PHP Session -> JavaScript localStorage -->
+    <script>
+        // Sync PHP session data to localStorage immediately on page load
+        (function() {
+            const sessionData = <?php 
+                $user_session = array();
+                if ($this->session->userdata('logged_in')) {
+                    $role_id = $this->session->userdata('role_id');
+                    $user_session = array(
+                        'user_id' => $this->session->userdata('user_id'),
+                        'email' => $this->session->userdata('email'),
+                        'name' => $this->session->userdata('first_name') . ' ' . $this->session->userdata('last_name'),
+                        'first_name' => $this->session->userdata('first_name'),
+                        'last_name' => $this->session->userdata('last_name'),
+                        'role_id' => $role_id,
+                        'token' => $this->session->userdata('token'),
+                        'sessionId' => session_id()
+                    );
+                }
+                echo json_encode($user_session);
+            ?>;
+
+            // If user is logged in, sync to localStorage
+            if (sessionData && sessionData.user_id) {
+                // Map role_id to role name
+                const roleMap = {
+                    1: 'superadmin',
+                    2: 'faculty',
+                    3: 'student',
+                    4: 'orgadmin'
+                };
+                sessionData.role = roleMap[sessionData.role_id] || 'student';
+
+                localStorage.setItem('ccis_user', JSON.stringify(sessionData));
+                localStorage.setItem('ccis_session_id', sessionData.sessionId);
+                localStorage.setItem('ccis_login_time', new Date().getTime());
+                console.log('✅ Session synced to localStorage:', sessionData);
+            }
+        })();
+    </script>
+    
     <script src="<?php echo base_url('assets/js/session-management.js'); ?>"></script>
     <script src="<?php echo base_url('assets/js/chatbot.js'); ?>"></script>
     <?php if (!empty($page_type)): ?>
