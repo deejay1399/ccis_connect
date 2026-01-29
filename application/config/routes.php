@@ -85,6 +85,11 @@ $route['admin/content/api_upload_curriculum'] = 'AdminContent/api_upload_curricu
 $route['admin/content/api_get_curriculums'] = 'AdminContent/api_get_curriculums';
 $route['admin/content/api_delete_curriculum'] = 'AdminContent/api_delete_curriculum';
 
+// Class Schedules Management API Endpoints
+$route['admin/content/api_upload_schedule'] = 'AdminContent/api_upload_schedule';
+$route['admin/content/api_get_schedules'] = 'AdminContent/api_get_schedules';
+$route['admin/content/api_delete_schedule'] = 'AdminContent/api_delete_schedule';
+
 // Admin User Management
 $route['admin/users/create'] = 'admin/AdminUsers/create';
 $route['admin/users/save'] = 'admin/AdminUsers/save';

@@ -1,7 +1,8 @@
--- Create curriculum table if it doesn't exist
-CREATE TABLE IF NOT EXISTS `curriculum` (
+-- Create class_schedules table if it doesn't exist
+CREATE TABLE IF NOT EXISTS `class_schedules` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `program` varchar(255) NOT NULL,
+  `academic_year` varchar(20) NOT NULL,
+  `semester` varchar(50) NOT NULL,
   `file_url` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)

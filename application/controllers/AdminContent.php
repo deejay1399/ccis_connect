@@ -629,4 +629,311 @@ class AdminContent extends CI_Controller {
 			'message' => $result ? 'Curriculum deleted successfully' : 'Error deleting curriculum'
 		]);
 	}
+
+	// ==================== CLASS SCHEDULES ====================
+
+	// Upload class schedule
+	public function api_upload_schedule() {
+		header('Content-Type: application/json');
+		error_log('=== Class Schedule Upload Started ===');
+		
+		try {
+			// Load model
+			$this->load->model('ClassSchedules_model');
+			error_log('Model loaded');
+			
+			// Create table if it doesn't exist
+			if (!$this->db->table_exists('class_schedules')) {
+				error_log('Creating class_schedules table');
+				$this->create_class_schedules_table();
+			}
+			
+			// Check for file
+			if (!isset($_FILES['file'])) {
+				error_log('No file in $_FILES');
+				http_response_code(400);
+				echo json_encode([
+					'success' => false,
+					'message' => 'No file uploaded'
+				]);
+				return;
+			}
+
+			$academic_year = $this->input->post('academic_year');
+			$semester = $this->input->post('semester');
+			$file = $_FILES['file'];
+			
+			error_log('Academic Year: ' . $academic_year);
+			error_log('Semester: ' . $semester);
+			error_log('File Name: ' . $file['name']);
+			error_log('File Type: ' . $file['type']);
+			error_log('File Size: ' . $file['size']);
+			error_log('File Error: ' . $file['error']);
+
+			// Validate inputs
+			if (empty($academic_year)) {
+				error_log('Academic year is empty');
+				http_response_code(400);
+				echo json_encode([
+					'success' => false,
+					'message' => 'Academic year is required'
+				]);
+				return;
+			}
+
+			if (empty($semester)) {
+				error_log('Semester is empty');
+				http_response_code(400);
+				echo json_encode([
+					'success' => false,
+					'message' => 'Semester is required'
+				]);
+				return;
+			}
+
+			// Validate file upload error
+			if ($file['error'] !== UPLOAD_ERR_OK) {
+				error_log('File upload error: ' . $file['error']);
+				http_response_code(400);
+				$errorMessages = [
+					UPLOAD_ERR_INI_SIZE => 'File exceeds upload_max_filesize in php.ini',
+					UPLOAD_ERR_FORM_SIZE => 'File exceeds MAX_FILE_SIZE in form',
+					UPLOAD_ERR_PARTIAL => 'File was only partially uploaded',
+					UPLOAD_ERR_NO_FILE => 'No file was uploaded',
+					UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder',
+					UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
+					UPLOAD_ERR_EXTENSION => 'Upload stopped by extension'
+				];
+				$errorMessage = $errorMessages[$file['error']] ?? 'Unknown upload error';
+				echo json_encode([
+					'success' => false,
+					'message' => 'File upload error: ' . $errorMessage
+				]);
+				return;
+			}
+
+			// Validate file is PDF
+			if ($file['type'] !== 'application/pdf') {
+				error_log('Invalid file type: ' . $file['type']);
+				http_response_code(400);
+				echo json_encode([
+					'success' => false,
+					'message' => 'Only PDF files are allowed. Got: ' . $file['type']
+				]);
+				return;
+			}
+
+			// Create schedules directory
+			$uploadDir = FCPATH . 'uploads/schedules';
+			error_log('Upload directory: ' . $uploadDir);
+			
+			if (!is_dir($uploadDir)) {
+				error_log('Creating directory: ' . $uploadDir);
+				if (!mkdir($uploadDir, 0755, true)) {
+					error_log('Failed to create directory');
+					http_response_code(500);
+					echo json_encode([
+						'success' => false,
+						'message' => 'Failed to create upload directory'
+					]);
+					return;
+				}
+			}
+
+			// Generate filename
+			$filename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $academic_year . '_' . $semester) . '_' . time() . '.pdf';
+			$filepath = $uploadDir . '/' . $filename;
+			error_log('Generated filepath: ' . $filepath);
+
+			// Move uploaded file
+			if (move_uploaded_file($file['tmp_name'], $filepath)) {
+				error_log('File moved successfully');
+				
+				// Save to database
+				$data = [
+					'academic_year' => $academic_year,
+					'semester' => $semester,
+					'file_url' => 'uploads/schedules/' . $filename
+				];
+				
+				error_log('Attempting to insert into database');
+				error_log('Data: ' . json_encode($data));
+
+				// Verify model is loaded and ready
+				if (!isset($this->ClassSchedules_model)) {
+					error_log('ERROR: ClassSchedules_model not loaded!');
+					throw new Exception('Model not loaded');
+				}
+
+				$result = $this->ClassSchedules_model->insert_schedule($data);
+				
+				error_log('Insert result: ' . ($result ? 'Success (ID: ' . $this->db->insert_id() . ')' : 'Failed'));
+				
+				// Check for database errors
+				$db_error = $this->db->error();
+				if (!empty($db_error['message'])) {
+					error_log('Database Error: ' . json_encode($db_error));
+				}
+
+				if ($result) {
+					error_log('Class schedule uploaded successfully');
+					http_response_code(200);
+					echo json_encode([
+						'success' => true,
+						'message' => 'Class schedule uploaded successfully',
+						'file_url' => base_url('uploads/schedules/' . $filename),
+						'data' => $data,
+						'insert_id' => $this->db->insert_id()
+					]);
+					exit;
+				} else {
+					// Delete file if database insert failed
+					error_log('Database insert failed, deleting file');
+					unlink($filepath);
+					http_response_code(500);
+					echo json_encode([
+						'success' => false,
+						'message' => 'Error saving schedule to database: ' . $this->db->error()['message']
+					]);
+					exit;
+				}
+			} else {
+				error_log('Failed to move uploaded file');
+				http_response_code(500);
+				echo json_encode([
+					'success' => false,
+					'message' => 'Error uploading file'
+				]);
+				exit;
+			}
+		} catch (Exception $e) {
+			error_log('Exception in upload_schedule: ' . $e->getMessage());
+			http_response_code(500);
+			echo json_encode([
+				'success' => false,
+				'message' => 'Error: ' . $e->getMessage()
+			]);
+			exit;
+		}
+	}
+
+	// Get all class schedules
+	public function api_get_schedules() {
+		header('Content-Type: application/json');
+		error_log('=== Get Class Schedules Started ===');
+		
+		try {
+			// Load model
+			$this->load->model('ClassSchedules_model');
+			error_log('Model loaded successfully');
+			
+			// Check if table exists
+			if (!$this->db->table_exists('class_schedules')) {
+				error_log('Class schedules table does not exist - creating it');
+				$this->create_class_schedules_table();
+				error_log('Class schedules table created');
+			}
+			
+			// Get schedules
+			$schedules = $this->ClassSchedules_model->get_all();
+			error_log('Schedules retrieved: ' . count($schedules));
+			
+			http_response_code(200);
+			echo json_encode([
+				'success' => true,
+				'data' => $schedules,
+				'count' => count($schedules)
+			]);
+			exit;
+		} catch (Exception $e) {
+			error_log('Error in get_schedules: ' . $e->getMessage());
+			http_response_code(500);
+			echo json_encode([
+				'success' => false,
+				'message' => 'Error retrieving schedules: ' . $e->getMessage()
+			]);
+			exit;
+		}
+	}
+
+	// Delete class schedule
+	public function api_delete_schedule() {
+		header('Content-Type: application/json');
+		$this->load->model('ClassSchedules_model');
+		
+		$id = $this->input->post('id');
+		
+		if (empty($id)) {
+			echo json_encode([
+				'success' => false,
+				'message' => 'Schedule ID is required'
+			]);
+			return;
+		}
+
+		// Get schedule file path for deletion
+		$schedule = $this->ClassSchedules_model->get_by_id($id);
+		
+		if ($schedule && !empty($schedule['file_url'])) {
+			$filepath = FCPATH . $schedule['file_url'];
+			if (file_exists($filepath)) {
+				unlink($filepath);
+			}
+		}
+
+		$result = $this->ClassSchedules_model->delete_schedule($id);
+		echo json_encode([
+			'success' => $result,
+			'message' => $result ? 'Class schedule deleted successfully' : 'Error deleting class schedule'
+		]);
+	}
+
+	// Helper function to create class_schedules table if it doesn't exist
+	private function create_class_schedules_table() {
+		try {
+			// Check if table already exists
+			if ($this->db->table_exists('class_schedules')) {
+				error_log('⚠️ Class schedules table already exists');
+				return TRUE;
+			}
+			
+			$this->load->dbforge();
+			
+			$this->dbforge->add_field(array(
+				'id' => array(
+					'type' => 'INT',
+					'constraint' => 11,
+					'auto_increment' => TRUE
+				),
+				'academic_year' => array(
+					'type' => 'VARCHAR',
+					'constraint' => '20',
+					'null' => FALSE
+				),
+				'semester' => array(
+					'type' => 'VARCHAR',
+					'constraint' => '50',
+					'null' => FALSE
+				),
+				'file_url' => array(
+					'type' => 'VARCHAR',
+					'constraint' => '255',
+					'null' => FALSE
+				),
+				'created_at' => array(
+					'type' => 'TIMESTAMP',
+					'default' => 'CURRENT_TIMESTAMP'
+				)
+			));
+			
+			$this->dbforge->add_key('id', TRUE);
+			$this->dbforge->create_table('class_schedules');
+			error_log('✅ Class schedules table created successfully');
+			return TRUE;
+		} catch (Exception $e) {
+			error_log('⚠️ Error creating table: ' . $e->getMessage());
+			error_log('Database Error: ' . json_encode($this->db->error()));
+			return FALSE;
+		}
+	}
 }

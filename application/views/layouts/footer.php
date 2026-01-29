@@ -196,5 +196,13 @@
             <script src="<?php echo base_url('assets/js/organization.js'); ?>"></script>
         <?php endif; ?>
     <?php endif; ?>
+    
+    <!-- Super Admin Management Scripts -->
+    <?php if (isset($content_type)): ?>
+        <?php if ($content_type === 'academics'): ?>
+            <script src="<?php echo base_url('assets/js/manage_academics_curriculum.js?v=' . time()); ?>"></script>
+            <script src="<?php echo base_url('assets/js/manage_academics_schedule.js?v=' . time()); ?>"></script>
+        <?php endif; ?>
+    <?php endif; ?>
 </body>
 </html>

@@ -1,12 +1,12 @@
-// MANAGE ACADEMICS PAGE - Curriculum Upload Version
+// MANAGE ACADEMICS PAGE - Class Schedules Upload Version
 // Uses vanilla JavaScript - no jQuery dependency
 
 // Global upload state
-let isUploading = false;
+let isScheduleUploading = false;
 
 // Initialize on DOM ready and also when tab becomes visible
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📚 Curriculum Management Initializing...');
+    console.log('📅 Class Schedules Management Initializing...');
     console.log('🔗 API_BASE_URL:', window.API_BASE_URL);
     
     if (!window.API_BASE_URL) {
@@ -15,28 +15,28 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Small delay to ensure all DOM elements are ready
     setTimeout(function() {
-        initializeCurriculumUpload();
-        loadCurriculumList();
-        console.log('✅ Curriculum Management Ready');
+        initializeScheduleUpload();
+        loadScheduleList();
+        console.log('✅ Class Schedules Management Ready');
     }, 100);
 });
 
-// Also reinitialize when curriculum tab is clicked
+// Also reinitialize when schedule tab is clicked
 document.addEventListener('shown.bs.tab', function(e) {
-    if (e.target && e.target.id === 'curriculum-tab') {
-        console.log('📚 Curriculum tab shown - reinitializing...');
-        initializeCurriculumUpload();
-        loadCurriculumList();
+    if (e.target && e.target.id === 'schedule-tab') {
+        console.log('📅 Schedule tab shown - reinitializing...');
+        initializeScheduleUpload();
+        loadScheduleList();
     }
 });
 
-// Initialize Curriculum Upload Form
-function initializeCurriculumUpload() {
-    console.log('🔧 Setting up curriculum form...');
-    const form = document.getElementById('uploadCurriculumForm');
+// Initialize Schedule Upload Form
+function initializeScheduleUpload() {
+    console.log('🔧 Setting up schedule form...');
+    const form = document.getElementById('uploadScheduleForm');
     
     if (!form) {
-        console.error('❌ Upload form not found');
+        console.error('❌ Upload form not found - waiting...');
         return;
     }
     
@@ -47,7 +47,7 @@ function initializeCurriculumUpload() {
     form.parentNode.replaceChild(formClone, form);
     
     // Add new listener to cloned form
-    const newForm = document.getElementById('uploadCurriculumForm');
+    const newForm = document.getElementById('uploadScheduleForm');
     if (!newForm) {
         console.error('❌ Form not found after clone');
         return;
@@ -56,28 +56,35 @@ function initializeCurriculumUpload() {
     newForm.addEventListener('submit', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('📝 Form submitted - AJAX mode');
+        console.log('📝 Schedule form submitted - AJAX mode');
         
         // Prevent double submission
-        if (isUploading) {
+        if (isScheduleUploading) {
             console.warn('⚠️ Upload already in progress');
             showNotification('Upload already in progress. Please wait...', 'warning');
             return;
         }
         
-        const curriculumName = document.getElementById('curriculumName');
-        const fileInput = document.getElementById('curriculumFile');
+        const yearInput = document.getElementById('scheduleYear');
+        const semesterInput = document.getElementById('scheduleSemester');
+        const fileInput = document.getElementById('scheduleFile');
         
-        if (!curriculumName || !fileInput) {
+        if (!yearInput || !semesterInput || !fileInput) {
             console.error('❌ Form elements not found');
             showNotification('Form elements missing', 'error');
             return;
         }
         
-        const name = curriculumName.value.trim();
+        const year = yearInput.value.trim();
+        const semester = semesterInput.value.trim();
         
-        if (!name) {
-            showNotification('Please enter curriculum name', 'warning');
+        if (!year) {
+            showNotification('Please enter academic year', 'warning');
+            return;
+        }
+        
+        if (!semester) {
+            showNotification('Please select semester', 'warning');
             return;
         }
         
@@ -102,35 +109,38 @@ function initializeCurriculumUpload() {
             return;
         }
         
-        uploadCurriculumFile(name, file);
+        uploadScheduleFile(year, semester, file);
         return false; // Extra safety
     });
     
-    console.log('✓ Curriculum form listener attached successfully');
+    console.log('✓ Schedule form listener attached successfully');
 }
 
-// Upload Curriculum File
-function uploadCurriculumFile(curriculumName, file) {
+// Upload Schedule File
+function uploadScheduleFile(academicYear, semester, file) {
     // Set uploading flag
-    isUploading = true;
+    isScheduleUploading = true;
     
     const formData = new FormData();
-    formData.append('curriculum_name', curriculumName);
+    formData.append('academic_year', academicYear);
+    formData.append('semester', semester);
     formData.append('file', file);
     
     // Show loading state and disable form
-    const form = document.getElementById('uploadCurriculumForm');
+    const form = document.getElementById('uploadScheduleForm');
     const submitBtn = form.querySelector('button[type="submit"]');
-    const curriculumName_ = document.getElementById('curriculumName');
-    const fileInput = document.getElementById('curriculumFile');
+    const yearInput = document.getElementById('scheduleYear');
+    const semesterInput = document.getElementById('scheduleSemester');
+    const fileInput = document.getElementById('scheduleFile');
     
     const originalText = submitBtn.innerHTML;
     submitBtn.disabled = true;
-    curriculumName_.disabled = true;
+    yearInput.disabled = true;
+    semesterInput.disabled = true;
     fileInput.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
     
-    const uploadUrl = window.API_BASE_URL + 'upload_curriculum';
+    const uploadUrl = window.API_BASE_URL + 'upload_schedule';
     console.log('🚀 Uploading to:', uploadUrl);
     console.log('📦 FormData keys:', Array.from(formData.entries()));
     
@@ -163,11 +173,11 @@ function uploadCurriculumFile(curriculumName, file) {
         
         if (data.success) {
             console.log('✨ Success! File uploaded');
-            showNotification('✅ Curriculum uploaded successfully!', 'success');
+            showNotification('✅ Class schedule uploaded successfully!', 'success');
             form.reset();
-            setTimeout(() => loadCurriculumList(), 500);
+            setTimeout(() => loadScheduleList(), 500);
         } else {
-            const errorMsg = data.message || 'Error uploading curriculum';
+            const errorMsg = data.message || 'Error uploading schedule';
             console.error('❌ Upload failed:', errorMsg);
             showNotification('Error: ' + errorMsg, 'error');
         }
@@ -179,17 +189,18 @@ function uploadCurriculumFile(curriculumName, file) {
     })
     .finally(() => {
         // Reset uploading flag and re-enable form
-        isUploading = false;
+        isScheduleUploading = false;
         submitBtn.disabled = false;
-        curriculumName_.disabled = false;
+        yearInput.disabled = false;
+        semesterInput.disabled = false;
         fileInput.disabled = false;
         submitBtn.innerHTML = originalText;
     });
 }
 
-// Load Curriculum List
-function loadCurriculumList() {
-    const listUrl = window.API_BASE_URL + 'get_curriculums';
+// Load Schedule List
+function loadScheduleList() {
+    const listUrl = window.API_BASE_URL + 'get_schedules';
     console.log('📂 Loading from:', listUrl);
     
     fetch(listUrl, {
@@ -213,58 +224,58 @@ function loadCurriculumList() {
         });
     })
     .then(data => {
-        console.log('📚 Curriculums loaded:', data);
-        const container = document.getElementById('curriculumList');
+        console.log('📅 Schedules loaded:', data);
+        const container = document.getElementById('scheduleList');
         
         if (!container) {
-            console.warn('⚠️ Curriculum list container not found');
+            console.warn('⚠️ Schedule list container not found');
             return;
         }
         
         if (data.success && data.data && data.data.length > 0) {
-            renderCurriculumList(data.data);
+            renderScheduleList(data.data);
         } else {
-            container.innerHTML = '<div class="col-12"><p class="text-muted text-center py-5">No curriculums uploaded yet</p></div>';
+            container.innerHTML = '<div class="col-12"><p class="text-muted text-center py-5">No schedules uploaded yet</p></div>';
         }
     })
     .catch(error => {
-        console.error('❌ Error loading curriculums:', error);
-        const container = document.getElementById('curriculumList');
+        console.error('❌ Error loading schedules:', error);
+        const container = document.getElementById('scheduleList');
         if (container) {
-            container.innerHTML = '<div class="col-12"><p class="text-danger text-center py-5">Error loading curriculums: ' + error.message + '</p></div>';
+            container.innerHTML = '<div class="col-12"><p class="text-danger text-center py-5">Error loading schedules: ' + error.message + '</p></div>';
         }
     });
 }
 
-// Render Curriculum List
-function renderCurriculumList(curriculums) {
-    console.log('🎨 Rendering', curriculums.length, 'curriculums');
+// Render Schedule List
+function renderScheduleList(schedules) {
+    console.log('🎨 Rendering', schedules.length, 'schedules');
     let html = '';
     
-    curriculums.forEach((curriculum, index) => {
-        const createdDate = new Date(curriculum.created_at).toLocaleDateString();
-        const viewUrl = window.BASE_URL + curriculum.file_url;
+    schedules.forEach((schedule, index) => {
+        const createdDate = new Date(schedule.created_at).toLocaleDateString();
+        const viewUrl = window.BASE_URL + schedule.file_url;
         
         html += `
             <div class="col-12 col-md-6">
-                <div class="curriculum-card">
-                    <div class="curriculum-preview">
+                <div class="schedule-card">
+                    <div class="schedule-preview">
                         <div class="pdf-thumbnail">
                             <i class="fas fa-file-pdf"></i>
                         </div>
-                        <div class="curriculum-info">
-                            <h5 class="curriculum-title">
-                                <i class="fas fa-file-pdf text-danger me-2"></i>${curriculum.program}
+                        <div class="schedule-info">
+                            <h5 class="schedule-title">
+                                <i class="fas fa-calendar text-primary me-2"></i>${schedule.academic_year} - ${schedule.semester}
                             </h5>
-                            <p class="curriculum-date text-muted">Uploaded: ${createdDate}</p>
+                            <p class="schedule-date text-muted">Uploaded: ${createdDate}</p>
                         </div>
                     </div>
-                    <div class="curriculum-header">
-                        <div class="curriculum-actions">
-                            <button class="btn btn-sm btn-primary" onclick="previewPDF('${viewUrl}', '${curriculum.program}')" title="Preview PDF">
+                    <div class="schedule-header">
+                        <div class="schedule-actions">
+                            <button class="btn btn-sm btn-primary" onclick="previewSchedulePDF('${viewUrl}', '${schedule.academic_year} - ${schedule.semester}')" title="Preview PDF">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteCurriculumItem(${curriculum.id})" title="Delete">
+                            <button class="btn btn-sm btn-danger" onclick="deleteScheduleItem(${schedule.id})" title="Delete">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -274,18 +285,18 @@ function renderCurriculumList(curriculums) {
         `;
     });
     
-    const container = document.getElementById('curriculumList');
+    const container = document.getElementById('scheduleList');
     if (container) {
         container.innerHTML = html;
     }
 }
 
-// Delete Curriculum
-function deleteCurriculumItem(curriculumId) {
-    console.log('🗑️ Delete requested for ID:', curriculumId);
+// Delete Schedule
+function deleteScheduleItem(scheduleId) {
+    console.log('🗑️ Delete requested for Schedule ID:', scheduleId);
     
-    if (confirm('Are you sure you want to delete this curriculum? This action cannot be undone.')) {
-        const deleteUrl = window.API_BASE_URL + 'delete_curriculum';
+    if (confirm('Are you sure you want to delete this schedule? This action cannot be undone.')) {
+        const deleteUrl = window.API_BASE_URL + 'delete_schedule';
         
         fetch(deleteUrl, {
             method: 'POST',
@@ -293,7 +304,7 @@ function deleteCurriculumItem(curriculumId) {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'X-Requested-With': 'XMLHttpRequest'
             },
-            body: 'id=' + curriculumId
+            body: 'id=' + scheduleId
         })
         .then(response => {
             console.log('📥 Delete response:', response.status);
@@ -305,21 +316,21 @@ function deleteCurriculumItem(curriculumId) {
         .then(data => {
             console.log('✅ Delete response data:', data);
             if (data.success) {
-                showNotification('✅ Curriculum deleted successfully!', 'success');
-                setTimeout(() => loadCurriculumList(), 500);
+                showNotification('✅ Class schedule deleted successfully!', 'success');
+                setTimeout(() => loadScheduleList(), 500);
             } else {
-                showNotification('❌ ' + (data.message || 'Error deleting curriculum'), 'error');
+                showNotification('❌ ' + (data.message || 'Error deleting schedule'), 'error');
             }
         })
         .catch(error => {
             console.error('❌ Delete error:', error);
-            showNotification('❌ Error deleting curriculum: ' + error.message, 'error');
+            showNotification('❌ Error deleting schedule: ' + error.message, 'error');
         });
     }
 }
 
-// Preview PDF in Modal
-function previewPDF(pdfUrl, title) {
+// Preview Schedule PDF in Modal
+function previewSchedulePDF(pdfUrl, title) {
     console.log('👀 Opening PDF preview:', title);
     const modal = new bootstrap.Modal(document.getElementById('pdfPreviewModal'));
     const pdfViewer = document.getElementById('pdfViewer');
