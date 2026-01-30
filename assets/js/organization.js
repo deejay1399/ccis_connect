@@ -470,6 +470,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Handle hash changes (e.g. clicking nav links like /organization#cs-guild while already on /organization)
+    function handleHashChange() {
+        const hash = window.location.hash.substring(1);
+        const validSections = ['the-legion', 'cs-guild'];
+
+        const mappedHash = hashMapping[hash] || hash;
+        if (mappedHash && validSections.includes(mappedHash)) {
+            showSection(mappedHash);
+        }
+    }
+
+    window.addEventListener('hashchange', handleHashChange);
+
     // Handle hash on load - IMPROVED VERSION
     function handleHashOnLoad() {
         let hash = window.location.hash.substring(1);

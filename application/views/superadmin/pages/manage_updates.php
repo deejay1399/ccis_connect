@@ -46,6 +46,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                     <label for="announcementDate" class="form-label">Date</label>
                                     <input type="date" class="form-control" id="announcementDate" required>
                                 </div>
+                                <div class="mb-3">
+                                    <label for="announcementImage" class="form-label">Image (optional)</label>
+                                    <input type="file" class="form-control" id="announcementImage" accept="image/*">
+                                </div>
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save me-2"></i>Create Announcement
                                 </button>
@@ -73,8 +77,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <label for="eventType" class="form-label">Type</label>
                                         <select class="form-select" id="eventType" required>
                                             <option value="">Select type...</option>
-                                            <option value="event">Event</option>
-                                            <option value="achievement">Achievement</option>
+                                            <option value="Event">Event</option>
+                                            <option value="Achievement">Achievement</option>
                                         </select>
                                     </div>
                                 </div>
@@ -85,6 +89,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 <div class="mb-3">
                                     <label for="eventDate" class="form-label">Date</label>
                                     <input type="date" class="form-control" id="eventDate" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="eventImage" class="form-label">Image (optional)</label>
+                                    <input type="file" class="form-control" id="eventImage" accept="image/*">
                                 </div>
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save me-2"></i>Create Event/Achievement
@@ -114,8 +122,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <label for="deansListSemester" class="form-label">Semester</label>
                                         <select class="form-select" id="deansListSemester" required>
                                             <option value="">Select semester...</option>
-                                            <option value="1st">1st Semester</option>
-                                            <option value="2nd">2nd Semester</option>
+                                            <option value="1st Semester">1st Semester</option>
+                                            <option value="2nd Semester">2nd Semester</option>
+                                            <option value="Summer">Summer</option>
                                         </select>
                                     </div>
                                     <div class="col-md-4">
@@ -164,11 +173,87 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <label for="editAnnouncementDate" class="form-label">Date</label>
                         <input type="date" class="form-control" id="editAnnouncementDate" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="editAnnouncementImage" class="form-label">Replace Image (optional)</label>
+                        <input type="file" class="form-control" id="editAnnouncementImage" accept="image/*">
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" form="editAnnouncementForm" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Event/Achievement Modal -->
+<div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editEventModalLabel">Edit Event/Achievement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editEventForm">
+                    <input type="hidden" id="editEventId">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="editEventTitle" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="editEventTitle" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editEventType" class="form-label">Type</label>
+                            <select class="form-select" id="editEventType" required>
+                                <option value="Event">Event</option>
+                                <option value="Achievement">Achievement</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 mt-3">
+                        <label for="editEventDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editEventDescription" rows="4" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEventDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="editEventDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEventImage" class="form-label">Replace Image (optional)</label>
+                        <input type="file" class="form-control" id="editEventImage" accept="image/*">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="editEventForm" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status (Success / Failed) Modal -->
+<div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" id="statusModalHeader">
+                <h5 class="modal-title" id="statusModalLabel">Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="fs-2" id="statusModalIcon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div>
+                        <div class="fw-semibold" id="statusModalTitle">Status</div>
+                        <div class="text-muted" id="statusModalMessage">...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
             </div>
         </div>
     </div>

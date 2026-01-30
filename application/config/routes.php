@@ -33,6 +33,11 @@ $route['updates/announcements'] = 'UpdatesController/announcements';
 $route['updates/events'] = 'UpdatesController/events';
 $route['updates/deanslist'] = 'UpdatesController/deanslist';
 
+// Updates - Public JSON API (DB-backed)
+$route['updates/api/announcements'] = 'UpdatesController/api_announcements';
+$route['updates/api/events_achievements'] = 'UpdatesController/api_events_achievements';
+$route['updates/api/deans_list'] = 'UpdatesController/api_deans_list';
+
 // ==================== FORMS ====================
 $route['forms'] = 'FormsController/view_forms';
 
@@ -66,6 +71,21 @@ $route['admin/content/alumni'] = 'admin/AdminContent/alumni';
 // Admin Content Management - AJAX
 $route['admin/manage/load_homepage'] = 'admin/AdminContent/load_homepage';
 $route['admin/manage/save_homepage'] = 'admin/AdminContent/save_homepage';
+
+// Admin Content Management - UPDATES (Announcements / Events & Achievements / Dean's List)
+$route['admin/manage/load_announcements'] = 'admin/AdminContent/load_announcements';
+$route['admin/manage/create_announcement'] = 'admin/AdminContent/create_announcement';
+$route['admin/manage/update_announcement'] = 'admin/AdminContent/update_announcement';
+$route['admin/manage/delete_announcement'] = 'admin/AdminContent/delete_announcement';
+
+$route['admin/manage/load_events_achievements'] = 'admin/AdminContent/load_events_achievements';
+$route['admin/manage/create_event_achievement'] = 'admin/AdminContent/create_event_achievement';
+$route['admin/manage/update_event_achievement'] = 'admin/AdminContent/update_event_achievement';
+$route['admin/manage/delete_event_achievement'] = 'admin/AdminContent/delete_event_achievement';
+
+$route['admin/manage/load_deans_list'] = 'admin/AdminContent/load_deans_list';
+$route['admin/manage/create_deans_list'] = 'admin/AdminContent/create_deans_list';
+$route['admin/manage/delete_deans_list'] = 'admin/AdminContent/delete_deans_list';
 
 // Faculty Management API Endpoints
 $route['admin/api/get_faculty'] = 'admin/AdminContent/api_get_faculty';

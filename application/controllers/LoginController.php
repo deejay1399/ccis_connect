@@ -270,13 +270,31 @@ class LoginController extends CI_Controller {
 	public function logout()
 	{
 		$token = $this->session->userdata('token');
-		
 		if ($token) {
 			$this->Session_model->delete_session($token);
 		}
 
-		$this->session->sess_destroy();
+		// Clear CodeIgniter session data without destroying the session entirely,
+		// so flashdata can still be used for logout messaging.
+		$this->session->unset_userdata([
+			'user_id',
+			'email',
+			'first_name',
+			'last_name',
+			'role_id',
+			'role',
+			'token',
+			'logged_in'
+		]);
+
 		$this->session->set_flashdata('success', 'You have been logged out successfully');
+		$this->session->sess_regenerate(true);
+
+		// If the client is explicitly requesting a post-logout login screen (used by JS), honor it.
+		if ($this->input->get('logout') === 'true') {
+			redirect('login?logout=true');
+		}
+
 		redirect('homepage');
 	}
 

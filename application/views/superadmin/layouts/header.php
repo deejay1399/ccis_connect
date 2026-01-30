@@ -20,6 +20,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <?php if(isset($content_type) && $content_type === 'faculty'): ?>
         <link rel="stylesheet" href="<?php echo base_url('assets/css/manage_faculty.css'); ?>">
     <?php endif; ?>
+    <?php if(isset($content_type) && $content_type === 'updates'): ?>
+        <?php
+            $updates_css_path = FCPATH . 'assets/css/manage_updates.css';
+            $updates_css_version = file_exists($updates_css_path) ? filemtime($updates_css_path) : time();
+        ?>
+        <link rel="stylesheet" href="<?php echo base_url('assets/css/manage_updates.css?v=' . $updates_css_version); ?>">
+    <?php endif; ?>
 </head>
 <body>
     <!-- Updated Header without BISU logo and notification -->
@@ -39,7 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <div class="col-md-1">
                     <div class="header-auth-icon">
                         <!-- LOGOUT BUTTON ONLY in header -->
-                        <a href="javascript:void(0)" id="logout-icon-link" class="auth-icon-link" title="Logout">
+                        <a href="<?php echo base_url('index.php/logout?logout=true'); ?>" id="logout-icon-link" class="auth-icon-link" title="Logout">
                             <i class="fas fa-user-circle"></i>
                         </a>
                     </div>

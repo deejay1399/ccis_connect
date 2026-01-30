@@ -33,17 +33,17 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#" data-section="dashboard-home">
+                        <a class="nav-link active" href="<?php echo site_url('admin'); ?>#dashboard-home" data-section="dashboard-home">
                             <i class="fas fa-home me-1"></i>Dashboard Home
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="content-management">
+                        <a class="nav-link" href="<?php echo site_url('admin'); ?>#content-management" data-section="content-management">
                             <i class="fas fa-edit me-1"></i>Content Management
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="user-management">
+                        <a class="nav-link" href="<?php echo site_url('admin'); ?>#user-management" data-section="user-management">
                             <i class="fas fa-users-cog me-1"></i>User Accounts
                         </a>
                     </li>

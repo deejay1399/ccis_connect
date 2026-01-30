@@ -1,7 +1,20 @@
-// UPDATES PAGINATION SYSTEM - COMPLETE VERSION WITH WORKING FUNCTIONALITY
+// UPDATES PAGINATION SYSTEM - DB-BACKED (ANNOUNCEMENTS + EVENTS)
 $(document).ready(function() {
-    // Pagination configuration - 10 ITEMS PER PAGE
     const ITEMS_PER_PAGE = 10;
+
+    function getBaseURL() {
+        const b = window.baseUrl || window.BASE_URL;
+        if (b) return b.endsWith('/') ? b : (b + '/');
+        // Fallback (repo is under /ccis_connect/ in this environment)
+        return window.location.origin + '/ccis_connect/';
+    }
+
+    const baseURL = getBaseURL();
+
+    const API = {
+        announcements: baseURL + 'updates/api/announcements',
+        events: baseURL + 'updates/api/events_achievements'
+    };
     
     // State management for each content type
     const paginationState = {
@@ -9,45 +22,124 @@ $(document).ready(function() {
         'events': { currentPage: 1, sort: 'latest' }
     };
 
-    // Cache for pre-loaded content
+    // Cache for loaded content
     const contentCache = {
         'announcements': null,
         'events': null
     };
 
+    function notify(message, type) {
+        if (typeof window.showNotification === 'function') {
+            window.showNotification(message, type || 'info');
+        } else {
+            console.log('[notify]', type || 'info', message);
+        }
+    }
+
+    function mapAnnouncementRow(row) {
+        const images = row.image ? [{
+            url: baseURL + row.image,
+            alt: row.title || 'Announcement'
+        }] : [];
+
+        return {
+            id: row.announcement_id,
+            date: row.announcement_date,
+            title: row.title || '',
+            description: row.content || '',
+            details: '',
+            venue: '',
+            time: '',
+            type: 'general',
+            hasPdf: false,
+            images
+        };
+    }
+
+    function mapEventRow(row) {
+        const images = row.image ? [{
+            url: baseURL + row.image,
+            alt: row.title || 'Event'
+        }] : [];
+
+        const type = (row.type === 'Achievement') ? 'achievement' : 'event';
+
+        return {
+            id: row.id,
+            date: row.event_date,
+            title: row.title || '',
+            description: row.description || '',
+            type,
+            // optional fields used by existing UI
+            team: '',
+            event: '',
+            time: '',
+            location: '',
+            images
+        };
+    }
+
+    function fetchAnnouncements() {
+        return $.ajax({
+            url: API.announcements,
+            method: 'GET',
+            dataType: 'json'
+        });
+    }
+
+    function fetchEvents() {
+        return $.ajax({
+            url: API.events,
+            method: 'GET',
+            dataType: 'json'
+        });
+    }
+
+    function preloadAllContent() {
+        console.log('📦 Loading announcements + events from DB...');
+
+        return $.when(fetchAnnouncements(), fetchEvents())
+            .then((annRes, evRes) => {
+                // jQuery returns [data, statusText, jqXHR]
+                const announcementsPayload = annRes?.[0];
+                const eventsPayload = evRes?.[0];
+
+                const announcementsRows = (announcementsPayload && announcementsPayload.success) ? (announcementsPayload.data || []) : [];
+                const eventsRows = (eventsPayload && eventsPayload.success) ? (eventsPayload.data || []) : [];
+
+                const announcements = announcementsRows.map(mapAnnouncementRow);
+                const events = eventsRows.map(mapEventRow);
+
+                contentCache.announcements = {
+                    data: announcements,
+                    sorted: sortContent(announcements, 'latest')
+                };
+
+                contentCache.events = {
+                    data: events,
+                    sorted: sortContent(events, 'latest')
+                };
+
+                console.log('✅ DB content loaded', { announcements: announcements.length, events: events.length });
+            })
+            .catch((xhr) => {
+                notify('Failed to load updates from database. Please try again later.', 'error');
+                console.error('Failed to preload updates content', xhr);
+                // Ensure cache is still usable
+                contentCache.announcements = { data: [], sorted: [] };
+                contentCache.events = { data: [], sorted: [] };
+            });
+    }
+
     // Initialize pagination system
     function initializePaginationSystem() {
         console.log('🚀 Initializing Updates Pagination System...');
-        
-        // Pre-load all content
-        preloadAllContent();
-        
-        // Set up event listeners
-        setupViewButtons();
-        
-        // Initialize pagination content
-        initializePaginationContent();
-        
-        console.log('✅ Updates Pagination System Initialized');
-    }
 
-    // Pre-load all content to cache
-    function preloadAllContent() {
-        console.log('📦 Pre-loading all content...');
-        
-        // Pre-load announcements data
-        contentCache.announcements = {
-            data: getAnnouncementsData(),
-            sorted: sortContent(getAnnouncementsData(), 'latest')
-        };
-        
-        // Pre-load events data
-        contentCache.events = {
-            data: getEventsData(),
-            sorted: sortContent(getEventsData(), 'latest')
-        };
-        
-        console.log('✅ All content pre-loaded to cache');
+        preloadAllContent().then(() => {
+            setupViewButtons();
+            initializePaginationContent();
+            console.log('✅ Updates Pagination System Initialized');
+        });
     }
 
     // Initialize pagination content
@@ -143,7 +235,7 @@ $(document).ready(function() {
         }
         
         announcements.forEach((announcement) => {
-            const venueText = announcement.venue || 'No venue specified';
+            const venueText = announcement.venue || '';
             const timeText = announcement.time || '';
             const typeClass = announcement.type || 'general';
             
@@ -195,14 +287,22 @@ $(document).ready(function() {
                 </div>
             ` : '';
             
+            const metaParts = [
+                `<span><i class="fas fa-calendar me-1"></i>${formatDate(announcement.date)}</span>`
+            ];
+            if (timeText) {
+                metaParts.push(`<span><i class="fas fa-clock me-1"></i>${timeText}</span>`);
+            }
+            if (venueText) {
+                metaParts.push(`<span><i class="fas fa-map-marker-alt me-1"></i>${venueText}</span>`);
+            }
+
             const announcementHTML = `
                 <div class="announcement-card ${typeClass}" data-announcement-id="${announcement.id}">
                     <div class="announcement-header">
                         <h3 class="announcement-title">${announcement.title}</h3>
                         <div class="announcement-meta">
-                            <span><i class="fas fa-calendar me-1"></i>${formatDate(announcement.date)}</span>
-                            ${timeText ? `<span><i class="fas fa-clock me-1"></i>${timeText}</span>` : ''}
-                            <span><i class="fas fa-map-marker-alt me-1"></i>${venueText}</span>
+                            ${metaParts.join('')}
                         </div>
                     </div>
                     
@@ -296,8 +396,8 @@ $(document).ready(function() {
                     <div class="achievement-item" data-event-id="${event.id}">
                         <div class="achievement-content">
                             <h4 class="achievement-title">${event.title}</h4>
-                            <p class="achievement-details"><strong>Team:</strong> ${event.team}</p>
-                            <p class="achievement-details"><strong>Event:</strong> ${event.event}</p>
+                            ${event.team ? `<p class="achievement-details"><strong>Team:</strong> ${event.team}</p>` : ''}
+                            ${event.event ? `<p class="achievement-details"><strong>Event:</strong> ${event.event}</p>` : ''}
                             <p class="achievement-details"><strong>Date:</strong> ${formatDate(event.date)}</p>
                             
                             ${achievementImagesGallery}
@@ -344,8 +444,8 @@ $(document).ready(function() {
                     <div class="event-card" data-event-id="${event.id}">
                         <div class="event-content">
                             <h4 class="event-title">${event.title}</h4>
-                            <p class="event-details"><i class="fas fa-clock me-2"></i>${event.time}</p>
-                            <p class="event-details"><i class="fas fa-map-marker-alt me-2"></i>${event.location}</p>
+                            ${event.time ? `<p class="event-details"><i class="fas fa-clock me-2"></i>${event.time}</p>` : ''}
+                            ${event.location ? `<p class="event-details"><i class="fas fa-map-marker-alt me-2"></i>${event.location}</p>` : ''}
                             
                             ${eventImagesGallery}
                             
@@ -437,88 +537,6 @@ $(document).ready(function() {
         }
     }
 
-    // ========================================
-    // DATA FUNCTIONS
-    // ========================================
-
-    function getAnnouncementsData() {
-        return [
-            {
-                id: 1,
-                date: "2025-10-25",
-                title: "Long Weekend Advisory - Holiday Schedule",
-                description: "In observance of the upcoming holidays, Bohol Island State University will implement the following holiday schedule and arrangements from October 31 to November 4, 2025.",
-                venue: "Bohol Island State University",
-                time: "",
-                details: "October 31 - All Saints' Day Eve (Special Non-Working Holiday)\nNovember 1 - All Saints' Day (Special Non-Working Holiday)\nNovember 2 - All Souls' Day (Special Non-Working Holiday)\nNovember 3 - Asynchronous Classes\nNovember 4 - Carlos P. Garcia Day (Bohol Special Non-Working Holiday)\n\nRegular classes will resume on November 5, 2025.\n\nBISUans are all encouraged to maximize the time to rest, reflect, and spend quality moments with their families and loved ones.",
-                type: "important",
-                hasPdf: false,
-                images: [
-                    {
-                        url: "weekend.jpg",
-                        alt: "Long Weekend Advisory",
-                        caption: "Holiday schedule from October 31 to November 4, 2025"
-                    }
-                ]
-            },
-            {
-                id: 2,
-                date: "2025-10-05",
-                title: "Midterm Examination Schedule - First Semester 2024-2025",
-                description: "Official schedule for midterm examinations for all programs. Please check the detailed schedule for your specific program and year level.",
-                venue: "Various Classrooms",
-                time: "8:00 AM - 5:00 PM",
-                details: "Examinations will be conducted from October 05-10, 2025 according to the published schedule. Students must bring their examination permits and valid IDs.",
-                type: "urgent",
-                hasPdf: true,
-                pdfUrl: "Midterm exam.pdf",
-                pdfTitle: "Midterm Examination Schedule First Semester 2024-2025",
-                images: [] 
-            }
-        ];
-    }
-
-    function getEventsData() {
-        return [
-            {
-                id: 1,
-                date: "2025-09-18",
-                title: "Top 25 Regional Finalists - Philippine Startup Challenge",
-                team: "Team ANDAM (Alalay App)",
-                event: "Philippine Startup Challenge",
-                description: `✨𝑪𝒐𝒏𝒈𝒓𝒂𝒕𝒖𝒍𝒂𝒕𝒊𝒐𝒏𝒔, 𝑻𝒆𝒂𝒎 𝑨𝑵𝑫𝑨𝑴! ✨\n\nWe're proud to announce that Team ANDAM (Alalay App) has secured a spot among the 𝐓𝐨𝐩 𝟐𝟓 𝐑𝐞𝐠𝐢𝐨𝐧𝐚𝐥 𝐅𝐢𝐧𝐚𝐥𝐢𝐬𝐭𝐬 out of 158 entries in the prestigious 𝐏𝐡𝐢𝐥𝐢𝐩𝐩𝐢𝐧𝐞 𝐒𝐭𝐚𝐫𝐭𝐮𝐩 𝐂𝐡𝐚𝐥𝐥𝐞𝐧𝐠𝐞 𝐗! 🎉\n\nThe team is composed of:\nMentor: Mrs. Angelica T. Sit\nMembers:\n• James Paul Dacaldacal – BSCS 3A\n• Aga Abarquez – BSCS 3A\n• Floss Carmelli Daquio – BSCS 3A\n\nWe also extend our heartfelt congratulations to Team InnoTap and Team Error 404, who also submitted their entries to the Philippine Startup Challenge X!\n\nTeam InnoTap - TAPS (Track, Assure and Protect System)\nMentor: Dr. Julie O. Bitasolo\nMembers:\n• Karl Jacquin M. Ag-ag – BSCS 2\n• John Reno D. Villapaña – BSCS 2\n• Laira Angela R. Bustillos - BSCS 2\n\nTeam Error 404 - KleanApp\nMentor: Dr. Julie O. Bitasolo\nMembers:\n• McNeal Louise Sinajon – BSIT 3A\n• Ferdinand Roy Lopez – BSIT 3D\n• Christian Pagapong - BSIT 3D\n\nThe CCIS Family is truly proud of you all!💙\n\n✍️ Laira Angela R. Bustillos \n💻 John Reno D. Villapaña`,
-                type: "achievement",
-                images: [
-                    {
-                        url: "99.jpg",
-                        alt: "Team ANDAM - Top 25 Regional Finalists",
-                        caption: "Team ANDAM celebrating their achievement as Top 25 Regional Finalists"
-                    },
-                    {
-                        url: "98.jpg",
-                        alt: "Alalay App Presentation",
-                        caption: "Team ANDAM presenting their Alalay App in the competition"
-                    }
-                ]
-            },
-            {
-                id: 2,
-                date: "2025-03-15",
-                title: "Campus Paugnat and Pasundayag 2025 - Overall 2nd Place Winner",
-                team: "CCIS Phantoms",
-                event: "Campus Paugnat and Pasundayag 2025",
-                description: `🎉 𝗔𝗳𝘁𝗲𝗿 𝘁𝗵𝗿𝗲𝗲 𝗱𝗮𝘆𝘀 𝗼𝗳 𝘁𝗵𝗿𝗶𝗹𝗹, 𝗲𝘅𝗰𝗶𝘁𝗲𝗺𝗲𝗻𝘁, 𝗮𝗻𝗱 𝗳𝘂𝗻-𝗳𝗶𝗹𝗹𝗲𝗱 𝗰𝗼𝗺𝗽𝗲𝘁𝗶𝘁𝗶𝗼𝗻𝘀, 𝗖𝗮𝗺𝗽𝘂𝘀 𝗣𝗮𝘂𝗴𝗻𝗮𝘁 𝗮𝗻𝗱 𝗣𝗮𝘀𝘂𝗻𝗱𝗮𝘆𝗮𝗴 𝟮𝟬𝟮𝟱 𝗵𝗮𝘀 𝗼𝗳𝗳𝗶𝗰𝗶𝗮𝗹𝗹𝘆 𝗰𝗼𝗺𝗲 𝘁𝗼 𝗮 𝗰𝗹𝗼𝘀𝗲!\n\nWe are proud to share that our very own CCIS Phantoms soared high and emerged as the 𝗢𝘃𝗲𝗿𝗮𝗹𝗹 𝟮𝗻𝗱 𝗣𝗹𝗮𝗰𝗲 𝗪𝗶𝗻𝗻𝗲𝗿!🏆🩷\n\nCongratulations to all CCIS participants for showcasing passion, teamwork, and excellence throughout the event, you made our department shine! ✨👏\n\n✍️ Laira Angela R. Bustillos \n💻 John Reno D. Villapaña`,
-                type: "achievement",
-                images: [
-                    {
-                        url: "20.jpg",
-                        alt: "CCIS Phantoms - Overall 2nd Place Winner",
-                        caption: "CCIS Phantoms celebrating their Overall 2nd Place achievement"
-                    }
-                ]
-            }
-        ];
-    }
 
     // Format date function
     window.formatDate = function(dateString) {
@@ -532,9 +550,6 @@ $(document).ready(function() {
         }
     }
 
-    // Make data functions globally available for image modal
-    window.getAnnouncementsData = getAnnouncementsData;
-    window.getEventsData = getEventsData;
 
     // ========================================
     // INITIALIZATION

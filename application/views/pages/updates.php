@@ -59,26 +59,19 @@
             </div>
         </section>
 
-        <!-- Dean's List Section -->
+        <!-- Dean's List Section (PDF list) -->
         <section id="deanslist-section" class="content-section">
             <div class="content-card">
                 <div class="section-header">
-                    <h3><i class="fas fa-award me-3"></i>Dean's List Achievers</h3>
+                    <h3><i class="fas fa-award me-3"></i>Dean's List</h3>
                     <div class="content-controls">
-                        <!-- Academic Year Filter -->
-                        <div class="academic-year-filter">
-                            <!-- This will be populated by JavaScript -->
-                        </div>
+                        <!-- Academic Year Filter (populated by JS) -->
+                        <div class="academic-year-filter"></div>
                     </div>
                 </div>
-                
-                <!-- Filter Buttons Container -->
-                <div class="deanslist-filters">
-                    <!-- Program and Year Level filters will be populated by JavaScript -->
-                </div>
-                
+
                 <div class="deanslist-content" id="deanslist-content">
-                    <!-- Dean's List content will be loaded here -->
+                    <!-- Dean's List PDFs will be loaded here -->
                 </div>
             </div>
         </section>

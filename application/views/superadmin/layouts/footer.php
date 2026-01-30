@@ -113,6 +113,8 @@
         <script src="<?php echo base_url('assets/js/list_users.js'); ?>"></script>
     <?php elseif(isset($content_type) && $content_type === 'homepage'): ?>
         <script src="<?php echo base_url('assets/js/manage_homepage.js'); ?>"></script>
+    <?php elseif(isset($content_type) && $content_type === 'updates'): ?>
+        <script src="<?php echo base_url('assets/js/manage_updates.js?v=' . time()); ?>"></script>
     <?php elseif(isset($content_type) && $content_type === 'faculty'): ?>
         <script src="<?php echo base_url('assets/js/manage_faculty.js'); ?>"></script>
     <?php elseif(isset($content_type) && $content_type === 'academics'): ?>
@@ -125,5 +127,40 @@
     <?php else: ?>
         <script src="<?php echo base_url('assets/js/dashboard.js'); ?>"></script>
     <?php endif; ?>
+
+    <!-- Global (superadmin) logout handler: ensures server session logout is called -->
+    <script>
+        (function() {
+            function clearClientAuthState() {
+                try {
+                    // Admin/legacy keys
+                    localStorage.removeItem('userSession');
+                    sessionStorage.removeItem('userSession');
+
+                    // Public-site session keys
+                    localStorage.removeItem('ccis_user');
+                    localStorage.removeItem('ccis_login_time');
+                    localStorage.removeItem('ccis_session_id');
+
+                    // Admin return URL (floating return button)
+                    localStorage.removeItem('admin_return_url');
+                    sessionStorage.removeItem('admin_return_url');
+                } catch (e) {
+                    // Intentionally ignore storage errors (e.g., private mode / disabled)
+                }
+            }
+
+            $(function() {
+                // Force a single, authoritative handler (some page scripts bind their own logout logic)
+                $(document)
+                    .off('click', '#logout-icon-link')
+                    .on('click', '#logout-icon-link', function(e) {
+                        e.preventDefault();
+                        clearClientAuthState();
+                        window.location.href = window.BASE_URL + 'index.php/logout?logout=true';
+                    });
+            });
+        })();
+    </script>
 </body>
 </html>

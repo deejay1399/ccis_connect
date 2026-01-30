@@ -746,6 +746,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Handle hash changes (e.g. clicking nav links like /academics#calendar-section while already on /academics)
+    function handleHashChange() {
+        const hash = window.location.hash.substring(1);
+        const validSections = ['programs-section', 'curriculum-section', 'schedule-section', 'calendar-section'];
+
+        const mappedHash = hashMapping[hash] || hash;
+        if (mappedHash && validSections.includes(mappedHash)) {
+            showSection(mappedHash);
+        }
+    }
+
+    window.addEventListener('hashchange', handleHashChange);
+
     // Handle hash on page load - FIXED VERSION
     function handleHashOnLoad() {
         // Only run this on the Academics page - check if academics content sections exist

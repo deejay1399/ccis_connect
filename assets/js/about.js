@@ -221,6 +221,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Handle hash changes (e.g. clicking nav links like /about#vmgo while already on /about)
+    function handleHashChange() {
+        let hash = window.location.hash.substring(1);
+        const validSections = ['history-section', 'vmgo-section', 'hymn-section'];
+
+        // Allow both short hashes (#history) and full section ids (#history-section)
+        const mappedHash = hashMapping[hash] || hash;
+
+        if (mappedHash && validSections.includes(mappedHash)) {
+            showSection(mappedHash);
+        }
+    }
+
+    window.addEventListener('hashchange', handleHashChange);
+
     // Handle hash on page load - FIXED VERSION
     function handleHashOnLoad() {
         // Only run this on the About page - check if about content sections exist

@@ -510,6 +510,9 @@ body {
 
 .updates-list-card .card-body {
     padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .updates-list-card .card-title {
@@ -523,6 +526,12 @@ body {
     font-size: 0.95rem;
     color: #555;
     line-height: 1.5;
+
+    /* keep list cards visually consistent even with very long text */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .updates-list-card .meta-info {
@@ -546,6 +555,9 @@ body {
     gap: 0.5rem;
     justify-content: flex-end;
     flex-wrap: wrap;
+
+    /* push actions to bottom for consistent card height */
+    margin-top: auto;
 }
 
 .updates-list-card .btn {
@@ -561,9 +573,20 @@ body {
 .achievement-image-preview,
 .achiever-image-preview {
     width: 100%;
-    height: 200px;
-    object-fit: cover;
+    height: 200px !important;
+    max-height: 200px !important;
+    object-fit: cover !important;
+    display: block;
     border-bottom: 1px solid #dee2e6;
+}
+
+/* Extra guard: in our admin list cards, the preview image is a direct child of the card */
+.updates-list-card > img {
+    width: 100%;
+    height: 200px !important;
+    max-height: 200px !important;
+    object-fit: cover !important;
+    display: block;
 }
 
 /* Achievements Specific */

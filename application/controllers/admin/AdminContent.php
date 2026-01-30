@@ -259,6 +259,411 @@ class AdminContent extends CI_Controller {
 		return 'uploads/dashboard/' . $upload_data['file_name'];
 	}
 
+	// ==================== UPDATES MANAGEMENT (ANNOUNCEMENTS / EVENTS / DEAN'S LIST) ====================
+
+	private function _ensure_upload_dir($relative_dir)
+	{
+		$abs_dir = FCPATH . trim($relative_dir, '/\\');
+		if (!is_dir($abs_dir)) {
+			@mkdir($abs_dir, 0755, true);
+		}
+		return $abs_dir;
+	}
+
+	private function _upload_file_to($relative_dir, $input_name, $allowed_types, $prefix, $max_size_kb)
+	{
+		$abs_dir = $this->_ensure_upload_dir($relative_dir);
+		if (!is_dir($abs_dir) || !is_writable($abs_dir)) {
+			log_message('error', 'Upload dir missing/not writable: ' . $abs_dir);
+			return false;
+		}
+
+		$config = [
+			'upload_path' => rtrim($abs_dir, '/\\') . '/',
+			'allowed_types' => $allowed_types,
+			'max_size' => $max_size_kb,
+			'file_name' => $prefix . '_' . time() . '_' . random_string('alnum', 8),
+			'overwrite' => false,
+			'encrypt_name' => false
+		];
+
+		$this->load->library('upload', $config);
+
+		if (!$this->upload->do_upload($input_name)) {
+			log_message('error', 'Upload Error: ' . $this->upload->display_errors('', ''));
+			return false;
+		}
+
+		$upload_data = $this->upload->data();
+		return rtrim($relative_dir, '/\\') . '/' . $upload_data['file_name'];
+	}
+
+	public function load_announcements()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Announcements_model');
+
+		try {
+			$data = $this->Announcements_model->get_all();
+			echo json_encode(['success' => true, 'data' => $data]);
+		} catch (Exception $e) {
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function create_announcement()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Announcements_model');
+
+		try {
+			$title = trim((string) $this->input->post('title'));
+			$content = trim((string) $this->input->post('content'));
+			$announcement_date = $this->input->post('announcement_date');
+
+			if ($title === '' || $content === '' || empty($announcement_date)) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Title, content, and date are required']);
+				exit;
+			}
+
+			$image = null;
+			if (!empty($_FILES['image']['name'])) {
+				$image = $this->_upload_file_to('uploads/announcements', 'image', 'gif|jpg|png|jpeg|jpe', 'announcement', 5120);
+				if ($image === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload image.']);
+					exit;
+				}
+			}
+
+			$id = $this->Announcements_model->insert_announcement([
+				'title' => $title,
+				'content' => $content,
+				'announcement_date' => $announcement_date,
+				'image' => $image
+			]);
+
+			if ($id) {
+				echo json_encode(['success' => true, 'message' => 'Announcement created successfully', 'id' => $id]);
+			} else {
+				http_response_code(500);
+				echo json_encode(['success' => false, 'message' => 'Failed to save announcement: ' . $this->db->error()['message']]);
+			}
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function update_announcement()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Announcements_model');
+
+		try {
+			$announcement_id = (int) $this->input->post('announcement_id');
+			$title = trim((string) $this->input->post('title'));
+			$content = trim((string) $this->input->post('content'));
+			$announcement_date = $this->input->post('announcement_date');
+
+			if ($announcement_id <= 0 || $title === '' || $content === '' || empty($announcement_date)) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Announcement ID, title, content, and date are required']);
+				exit;
+			}
+
+			$update_data = [
+				'title' => $title,
+				'content' => $content,
+				'announcement_date' => $announcement_date,
+			];
+
+			if (!empty($_FILES['image']['name'])) {
+				$image = $this->_upload_file_to('uploads/announcements', 'image', 'gif|jpg|png|jpeg|jpe', 'announcement', 5120);
+				if ($image === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload image.']);
+					exit;
+				}
+				$update_data['image'] = $image;
+			}
+
+			$result = $this->Announcements_model->update_announcement($announcement_id, $update_data);
+			if ($result) {
+				echo json_encode(['success' => true, 'message' => 'Announcement updated successfully']);
+			} else {
+				http_response_code(500);
+				echo json_encode(['success' => false, 'message' => 'Failed to update announcement']);
+			}
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function delete_announcement()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Announcements_model');
+
+		try {
+			$announcement_id = (int) $this->input->post('announcement_id');
+			if ($announcement_id <= 0) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Announcement ID required']);
+				exit;
+			}
+
+			$result = $this->Announcements_model->delete_announcement($announcement_id);
+			echo json_encode([
+				'success' => (bool) $result,
+				'message' => $result ? 'Announcement deleted successfully' : 'Failed to delete announcement'
+			]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function load_events_achievements()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Events_achievements_model');
+
+		try {
+			$data = $this->Events_achievements_model->get_all();
+			echo json_encode(['success' => true, 'data' => $data]);
+		} catch (Exception $e) {
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function create_event_achievement()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Events_achievements_model');
+
+		try {
+			$title = trim((string) $this->input->post('title'));
+			$description = trim((string) $this->input->post('description'));
+			$type = $this->input->post('type');
+			$event_date = $this->input->post('event_date');
+
+			if ($title === '' || $description === '' || empty($type) || empty($event_date)) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Title, description, type, and date are required']);
+				exit;
+			}
+
+			if ($type !== 'Event' && $type !== 'Achievement') {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Invalid type']);
+				exit;
+			}
+
+			$image = null;
+			if (!empty($_FILES['image']['name'])) {
+				$image = $this->_upload_file_to('uploads/events_achievements', 'image', 'gif|jpg|png|jpeg|jpe', 'event', 5120);
+				if ($image === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload image.']);
+					exit;
+				}
+			}
+
+			$id = $this->Events_achievements_model->insert_event_achievement([
+				'title' => $title,
+				'description' => $description,
+				'type' => $type,
+				'event_date' => $event_date,
+				'image' => $image
+			]);
+
+			if ($id) {
+				echo json_encode(['success' => true, 'message' => 'Event/Achievement created successfully', 'id' => $id]);
+			} else {
+				http_response_code(500);
+				echo json_encode(['success' => false, 'message' => 'Failed to save event/achievement: ' . $this->db->error()['message']]);
+			}
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function update_event_achievement()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Events_achievements_model');
+
+		try {
+			$id = (int) $this->input->post('id');
+			$title = trim((string) $this->input->post('title'));
+			$description = trim((string) $this->input->post('description'));
+			$type = $this->input->post('type');
+			$event_date = $this->input->post('event_date');
+
+			if ($id <= 0 || $title === '' || $description === '' || empty($type) || empty($event_date)) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'ID, title, description, type, and date are required']);
+				exit;
+			}
+
+			if ($type !== 'Event' && $type !== 'Achievement') {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Invalid type']);
+				exit;
+			}
+
+			$update_data = [
+				'title' => $title,
+				'description' => $description,
+				'type' => $type,
+				'event_date' => $event_date,
+			];
+
+			if (!empty($_FILES['image']['name'])) {
+				$image = $this->_upload_file_to('uploads/events_achievements', 'image', 'gif|jpg|png|jpeg|jpe', 'event', 5120);
+				if ($image === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload image.']);
+					exit;
+				}
+				$update_data['image'] = $image;
+			}
+
+			$result = $this->Events_achievements_model->update_event_achievement($id, $update_data);
+			if ($result) {
+				echo json_encode(['success' => true, 'message' => 'Event/Achievement updated successfully']);
+			} else {
+				http_response_code(500);
+				echo json_encode(['success' => false, 'message' => 'Failed to update event/achievement']);
+			}
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function delete_event_achievement()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Events_achievements_model');
+
+		try {
+			$id = (int) $this->input->post('id');
+			if ($id <= 0) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'ID required']);
+				exit;
+			}
+
+			$result = $this->Events_achievements_model->delete_event_achievement($id);
+			echo json_encode([
+				'success' => (bool) $result,
+				'message' => $result ? 'Event/Achievement deleted successfully' : 'Failed to delete event/achievement'
+			]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function load_deans_list()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Deans_list_model');
+
+		try {
+			$data = $this->Deans_list_model->get_all();
+			echo json_encode(['success' => true, 'data' => $data]);
+		} catch (Exception $e) {
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function create_deans_list()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Deans_list_model');
+
+		try {
+			$academic_year = trim((string) $this->input->post('academic_year'));
+			$semester = $this->input->post('semester');
+
+			if ($academic_year === '' || empty($semester)) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Academic year and semester are required']);
+				exit;
+			}
+
+			if (empty($_FILES['pdf_file']['name'])) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'PDF file is required']);
+				exit;
+			}
+
+			$pdf = $this->_upload_file_to('uploads/deans_list', 'pdf_file', 'pdf', 'deanslist', 10240);
+			if ($pdf === false) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Failed to upload PDF.']);
+				exit;
+			}
+
+			$id = $this->Deans_list_model->insert_deans_list([
+				'academic_year' => $academic_year,
+				'semester' => $semester,
+				'pdf_file' => $pdf,
+			]);
+
+			if ($id) {
+				echo json_encode(['success' => true, 'message' => "Dean's List uploaded successfully", 'id' => $id]);
+			} else {
+				http_response_code(500);
+				echo json_encode(['success' => false, 'message' => 'Failed to save dean\'s list: ' . $this->db->error()['message']]);
+			}
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function delete_deans_list()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Deans_list_model');
+
+		try {
+			$id = (int) $this->input->post('id');
+			if ($id <= 0) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'ID required']);
+				exit;
+			}
+
+			$result = $this->Deans_list_model->delete_deans_list($id);
+			echo json_encode([
+				'success' => (bool) $result,
+				'message' => $result ? "Dean's List deleted successfully" : "Failed to delete Dean's List"
+			]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
 	// ==================== FACULTY API ENDPOINTS ====================
 
 	public function api_get_faculty() {

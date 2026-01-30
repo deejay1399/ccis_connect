@@ -497,293 +497,152 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Initialize academic year filter for Dean's List
-    function initializeAcademicYearFilter() {
-        console.log('🎓 Initializing academic year filter...');
-        
+    // ===============================
+    // Dean's List (PDF list, DB-backed)
+    // ===============================
+
+    let cachedDeansListRows = [];
+
+    function getBaseURL() {
+        const b = window.baseUrl || window.BASE_URL;
+        if (b) return b.endsWith('/') ? b : (b + '/');
+        // Fallback (repo is under /ccis_connect/ in this environment)
+        return window.location.origin + '/ccis_connect/';
+    }
+
+    function renderAcademicYearFilter(years) {
+        const filterContainer = document.querySelector('.academic-year-filter');
+        if (!filterContainer) return;
+
+        const opts = ['<option value="all">All</option>']
+            .concat(years.map(y => `<option value="${y}">${y}</option>`));
+
+        filterContainer.innerHTML = `
+            <div class="academic-year-select-wrapper">
+                <label class="form-label" for="academicYearSelect">Academic Year</label>
+                <select id="academicYearSelect" class="form-select academic-year-select">${opts.join('')}</select>
+            </div>
+        `;
+
         const academicYearSelect = document.getElementById('academicYearSelect');
         if (academicYearSelect) {
             academicYearSelect.addEventListener('change', function() {
-                const selectedYear = this.value;
-                console.log(`🎓 Academic year changed to: ${selectedYear}`);
-                showNotification(`Loading Dean's List for ${selectedYear}`, 'info');
-                
-                // Update Dean's List content
-                updateDeansListContent(selectedYear);
+                updateDeansListContent(this.value);
             });
         }
-        
-        console.log('✅ Academic year filter initialized');
     }
 
-    // Load Dean's List data
-    function loadDeansListData() {
-        console.log('📊 Loading Dean\'s List data...');
-        
-        const academicYear = document.getElementById('academicYearSelect').value;
-        updateDeansListContent(academicYear);
-        
-        console.log('✅ Dean\'s List data loaded');
+    async function loadDeansListFromDB() {
+        const baseURL = getBaseURL();
+        const url = baseURL + 'updates/api/deans_list';
+
+        try {
+            const res = await fetch(url, { method: 'GET' });
+            const json = await res.json();
+            if (!json || !json.success) {
+                throw new Error(json?.message || 'Failed to load Dean\'s List');
+            }
+
+            cachedDeansListRows = Array.isArray(json.data) ? json.data : [];
+        } catch (e) {
+            console.error('Failed to load deans list', e);
+            cachedDeansListRows = [];
+        }
     }
 
-    // Update Dean's List content based on selected academic year
+    function getUniqueAcademicYears(rows) {
+        const set = new Set();
+        rows.forEach(r => {
+            if (r && r.academic_year) set.add(r.academic_year);
+        });
+        return Array.from(set).sort().reverse();
+    }
+
     function updateDeansListContent(academicYear) {
-        console.log(`🔄 Updating Dean's List for: ${academicYear}`);
-        
         const deansListContent = document.getElementById('deanslist-content');
         if (!deansListContent) return;
-        
-        // Sample Dean's List data - replace with your actual data
-        const deansListData = {
-            '2024-2025': {
-                header: "Dean's List Achievers",
-                subtitle: `Academic Year ${academicYear}`,
-                programs: [
-                    {
-                        name: 'BSCS Program',
-                        achievers: [
-                            { 
-                                name: 'Maria Cristina Santos', 
-                                yearLevel: '4th Year', 
-                                gwa: 1.25, 
-                                honors: 'Summa Cum Laude', 
-                                profilePic: '2.jpg',
-                                achievements: ['President\'s Lister 3 consecutive semesters', 'Research Paper Presenter', 'Programming Competition Champion']
-                            },
-                            { 
-                                name: 'Juan Dela Cruz', 
-                                yearLevel: '3rd Year', 
-                                gwa: 1.35, 
-                                honors: 'Magna Cum Laude', 
-                                profilePic: '3.jpg',
-                                achievements: ['Math Excellence Award', 'Dean\'s Lister 2 semesters']
-                            },
-                            { 
-                                name: 'Pedro Garcia', 
-                                yearLevel: '2nd Year', 
-                                gwa: 1.45, 
-                                honors: 'Cum Laude', 
-                                profilePic: '8.jpg',
-                                achievements: ['Outstanding Performance in Algorithms']
-                            }
-                        ]
-                    },
-                    {
-                        name: 'BSIT Program',
-                        achievers: [
-                            { 
-                                name: 'Amanda Grace Wilson', 
-                                yearLevel: '3rd Year', 
-                                gwa: 1.36, 
-                                honors: 'Magna Cum Laude', 
-                                profilePic: '13.jpg',
-                                achievements: ['Web Development Competition Champion', 'UI/UX Design Excellence']
-                            },
-                            { 
-                                name: 'Carlos Miguel Reyes', 
-                                yearLevel: '4th Year', 
-                                gwa: 1.48, 
-                                honors: 'Cum Laude', 
-                                profilePic: '14.jpg',
-                                achievements: ['Database Design Excellence', 'IT Project Management Award']
-                            }
-                        ]
-                    }
-                ]
-            },
-            '2023-2024': {
-                header: "Dean's List Achievers",
-                subtitle: `Academic Year ${academicYear}`,
-                programs: [
-                    {
-                        name: 'BSCS Program',
-                        achievers: [
-                            { 
-                                name: 'Stephanie Marie Wong', 
-                                yearLevel: '4th Year', 
-                                gwa: 1.31, 
-                                honors: 'Summa Cum Laude', 
-                                profilePic: '20.jpg',
-                                achievements: ['Best Capstone Project', 'AI Research Paper Award']
-                            },
-                            { 
-                                name: 'Michael Johnson', 
-                                yearLevel: '3rd Year', 
-                                gwa: 1.42, 
-                                honors: 'Cum Laude', 
-                                profilePic: '21.jpg',
-                                achievements: ['Mobile App Development Award', 'Startup Competition Finalist']
-                            }
-                        ]
-                    },
-                    {
-                        name: 'BSIT Program',
-                        achievers: [
-                            { 
-                                name: 'Brian Joseph Adams', 
-                                yearLevel: '3rd Year', 
-                                gwa: 1.38, 
-                                honors: 'Magna Cum Laude', 
-                                profilePic: '2.jpg',
-                                achievements: ['Systems Analysis Excellence', 'Database Optimization Award']
-                            }
-                        ]
-                    }
-                ]
-            },
-            '2022-2023': {
-                header: "Dean's List Achievers",
-                subtitle: `Academic Year ${academicYear}`,
-                programs: [
-                    {
-                        name: 'BSCS Program',
-                        achievers: [
-                            { 
-                                name: 'Jennifer Brown', 
-                                yearLevel: '3rd Year', 
-                                gwa: 1.34, 
-                                honors: 'Magna Cum Laude', 
-                                profilePic: '8.jpg',
-                                achievements: ['AI Research Paper Award', 'Machine Learning Competition Winner']
-                            }
-                        ]
-                    },
-                    {
-                        name: 'BSIT Program',
-                        achievers: [
-                            { 
-                                name: 'Lisa Anderson', 
-                                yearLevel: '2nd Year', 
-                                gwa: 1.47, 
-                                honors: 'Cum Laude', 
-                                profilePic: '13.jpg',
-                                achievements: ['Web Technology Excellence', 'Frontend Development Award']
-                            }
-                        ]
-                    }
-                ]
-            }
-        };
-        
-        const data = deansListData[academicYear] || deansListData['2024-2025'];
-        
-        // Update the header - NO DATE
+
+        const baseURL = getBaseURL();
+
+        const rows = (academicYear && academicYear !== 'all')
+            ? cachedDeansListRows.filter(r => r.academic_year === academicYear)
+            : cachedDeansListRows;
+
+        const subtitle = (academicYear && academicYear !== 'all')
+            ? `Academic Year ${academicYear}`
+            : 'All Academic Years';
+
         deansListContent.innerHTML = `
             <div class="deanslist-header">
-                <h4>${data.header}</h4>
-                <p class="text-muted">${data.subtitle}</p>
+                <h4>Dean's List</h4>
+                <p class="text-muted">${subtitle}</p>
             </div>
         `;
-        
-        // Display achievers by program
-        let hasAchievers = false;
-        
-        // Check if data is in old format (achievers object) or new format (programs array)
-        if (data.programs) {
-            // New format with programs array
-            data.programs.forEach(program => {
-                if (program.achievers && program.achievers.length > 0) {
-                    hasAchievers = true;
-                    deansListContent.appendChild(createProgramSection(program.name, program.achievers));
-                }
-            });
-        } else if (data.achievers) {
-            // Old format with achievers object
-            for (const [program, achievers] of Object.entries(data.achievers)) {
-                if (achievers && achievers.length > 0) {
-                    hasAchievers = true;
-                    deansListContent.appendChild(createProgramSection(program, achievers));
-                }
-            }
-        }
 
-        if (!hasAchievers) {
+        if (!rows.length) {
             deansListContent.innerHTML += `
                 <div class="empty-state">
                     <i class="fas fa-award fa-3x mb-3"></i>
-                    <h5>No Dean's List Achievers</h5>
-                    <p>No students made it to the Dean's List for this academic year.</p>
+                    <h5>No Dean's List PDFs</h5>
+                    <p>No Dean's List files found for this selection.</p>
                 </div>
             `;
             return;
         }
 
-        // Congratulations message
-        deansListContent.innerHTML += `
-            <div class="congratulations-message">
-                <i class="fas fa-trophy"></i>
-                <h5>Congratulations to All Dean's List Achievers!</h5>
-                <p>Your hard work, dedication, and academic excellence inspire the entire CCIS community. 
-                Continue to strive for excellence and make us proud!</p>
-            </div>
-        `;
-        
-        showNotification(`Dean's List updated for ${academicYear}`, 'success');
-    }
+        const cards = rows.map(r => {
+            const pdfUrl = r.pdf_file ? (baseURL + r.pdf_file) : '#';
+            const title = `Dean's List - ${r.semester || ''}`.trim();
+            const uploaded = r.uploaded_at ? formatDate(r.uploaded_at) : '';
 
-    // Create program section for Dean's List
-    function createProgramSection(program, achievers) {
-        const programSection = document.createElement('div');
-        programSection.className = 'program-section';
-        
-        programSection.innerHTML = `
-            <div class="program-header">
-                <h5>
-                    <i class="fas fa-graduation-cap me-2"></i>
-                    ${program}
-                    <span class="badge bg-primary">${achievers.length} Achievers</span>
-                </h5>
-            </div>
-            <div class="achievers-grid">
-                ${achievers.map(achiever => createAchieverCard(achiever)).join('')}
-            </div>
-        `;
-        
-        return programSection;
-    }
-
-    // Create achiever card for Dean's List
-    function createAchieverCard(achiever) {
-        const honorsClass = getHonorsClass(achiever.honors);
-        
-        return `
-            <div class="achiever-card ${honorsClass}">
-                <div class="achiever-header">
-                    <div class="achiever-image">
-                        <img src="${achiever.profilePic}" alt="${achiever.name}" 
-                             onerror="this.src='https://via.placeholder.com/100/4b0082/ffffff?text=${achiever.name.charAt(0)}'">
+            return `
+                <div class="announcement-card general">
+                    <div class="announcement-header">
+                        <h3 class="announcement-title">${title}</h3>
+                        <div class="announcement-meta">
+                            <span><i class="fas fa-calendar me-1"></i>${r.academic_year || ''}</span>
+                            ${uploaded ? `<span><i class="fas fa-upload me-1"></i>${uploaded}</span>` : ''}
+                        </div>
                     </div>
-                    <div class="achiever-info">
-                        <h6 class="achiever-name">${achiever.name}</h6>
-                        <span class="achiever-year">${achiever.yearLevel}</span>
-                        <div class="achiever-gwa">
-                            <strong>GWA:</strong> ${achiever.gwa}
+                    <div class="announcement-body">
+                        <div class="announcement-content">Official Dean's List PDF file.</div>
+                        <div class="announcement-pdf mt-3">
+                            <div class="button-group-tapad">
+                                <button class="btn btn-view-pdf me-2" data-pdf-url="${pdfUrl}">
+                                    <i class="fas fa-eye me-1"></i>View PDF
+                                </button>
+                                <button class="btn btn-download-pdf" data-pdf-url="${pdfUrl}" data-pdf-title="${(r.academic_year || 'deans_list') + '_' + (r.semester || '')}">
+                                    <i class="fas fa-download me-1"></i>Download
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="achiever-honors">
-                    <span class="honors-badge ${honorsClass}">${achiever.honors}</span>
-                </div>
-                ${achiever.achievements && achiever.achievements.length > 0 ? `
-                    <div class="achiever-achievements">
-                        <h6>Notable Achievements:</h6>
-                        <ul>
-                            ${achiever.achievements.map(achievement => `<li>${achievement}</li>`).join('')}
-                        </ul>
-                    </div>
-                ` : ''}
-            </div>
-        `;
+            `;
+        }).join('');
+
+        // Reuse the existing grid styling
+        const grid = document.createElement('div');
+        grid.className = 'announcements-container';
+        grid.innerHTML = cards;
+        deansListContent.appendChild(grid);
     }
 
-    // Get honors class for Dean's List
-    function getHonorsClass(honors) {
-        switch(honors) {
-            case 'Summa Cum Laude': return 'summa';
-            case 'Magna Cum Laude': return 'magna';
-            case 'Cum Laude': return 'cum-laude';
-            default: return '';
-        }
+    async function initializeDeansListContent() {
+        console.log('🏆 Initializing Dean\'s List content (PDF list)...');
+
+        await loadDeansListFromDB();
+
+        const years = getUniqueAcademicYears(cachedDeansListRows);
+        renderAcademicYearFilter(years);
+
+        // Hide legacy filters container if it exists
+        const legacyFilters = document.querySelector('.deanslist-filters');
+        if (legacyFilters) legacyFilters.style.display = 'none';
+
+        updateDeansListContent(years[0] || 'all');
+
+        console.log('✅ Dean\'s List content initialized');
     }
 
     // Initialize dropdown hover functionality
@@ -857,6 +716,19 @@ document.addEventListener('DOMContentLoaded', function() {
             showSection(mappedHash);
         }
     });
+
+    // Handle hash changes (e.g. clicking nav links like /updates#deanslist-section while already on /updates)
+    function handleHashChange() {
+        const hash = window.location.hash.substring(1);
+        const validSections = ['announcements-section', 'events-achievements-section', 'deanslist-section'];
+
+        const mappedHash = hashMapping[hash] || hash;
+        if (mappedHash && validSections.includes(mappedHash)) {
+            showSection(mappedHash);
+        }
+    }
+
+    window.addEventListener('hashchange', handleHashChange);
 
     // Handle hash on load - IMPROVED VERSION
     function handleHashOnLoad() {
