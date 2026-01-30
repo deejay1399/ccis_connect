@@ -54,7 +54,7 @@
                     </li>
                     <li class="nav-item" id="user-info-item">
                         <span class="nav-link user-info-text" style="color: var(--primary-purple);">
-                            <i class="fas fa-user me-1"></i><span id="user-name"></span> (<span id="user-role"></span>)
+                            <i class="fas fa-user me-1"></i><span id="user-name"></span>
                         </span>
                     </li>
                 </ul>

@@ -40,7 +40,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class="header-auth-icon">
                         <!-- LOGOUT BUTTON ONLY in header -->
                         <a href="javascript:void(0)" id="logout-icon-link" class="auth-icon-link" title="Logout">
-                            <i class="fas fa-sign-out-alt"></i>
+                            <i class="fas fa-user-circle"></i>
                         </a>
                     </div>
                 </div>

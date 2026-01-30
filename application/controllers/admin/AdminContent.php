@@ -75,6 +75,17 @@ class AdminContent extends CI_Controller {
 
 	public function forms()
 	{
+		// Access control - only superadmin can manage forms
+		if (!$this->session->userdata('logged_in')) {
+			redirect('login');
+		}
+		
+		$user_role = $this->session->userdata('role');
+		if ($user_role == 'student') {
+			// Redirect unauthorized users to public forms page
+			redirect('forms');
+		}
+
 		$data['page_title'] = 'Manage Forms';
 		$data['page_type'] = 'admin_content';
 		$data['content_type'] = 'forms';

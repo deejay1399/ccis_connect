@@ -197,14 +197,26 @@ $(document).ready(function() {
     // PDF Download Functionality
     function initPDFDownloads() {
         try {
-            $('.btn-download-pdf').off('click.pdf').on('click.pdf', function() {
-                const formId = $(this).data('form');
-                const pdfConfig = pdfFiles[formId];
+            $('.btn-download-pdf').off('click.pdf').on('click.pdf', function(e) {
+                // Check if it's a direct link (has href attribute)
+                if ($(this).is('a')) {
+                    return true; // Let the browser handle the download
+                }
                 
-                if (pdfConfig) {
-                    downloadPDF(pdfConfig, $(this));
+                // Otherwise it's a preview download button from the modal
+                e.preventDefault();
+                const pdfUrl = $('#pdfFrame').attr('src');
+                
+                if (pdfUrl) {
+                    const link = document.createElement('a');
+                    link.href = pdfUrl;
+                    link.download = true;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    showSuccess('Download started!');
                 } else {
-                    showError('PDF file not found for this form.');
+                    showError('Unable to download. PDF URL not found.');
                 }
             });
         } catch (error) {
@@ -216,11 +228,15 @@ $(document).ready(function() {
     function initPDFPreviews() {
         try {
             $('.btn-preview').off('click.preview').on('click.preview', function() {
-                const formId = $(this).data('form');
-                const pdfConfig = pdfFiles[formId];
+                const formUrl = $(this).data('form-url');
+                const formTitle = $(this).closest('.form-card').find('h3').text();
                 
-                if (pdfConfig) {
-                    showPDFPreview(pdfConfig);
+                if (formUrl) {
+                    // Direct preview from database forms
+                    $('#modalFormTitle').text(formTitle + ' Preview');
+                    $('#pdfFrame').attr('src', formUrl);
+                    $('#pdfPreviewModal').fadeIn(300);
+                    $('body').addClass('modal-open');
                 } else {
                     showError('Preview not available for this form.');
                 }

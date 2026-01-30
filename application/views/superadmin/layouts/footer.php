@@ -120,6 +120,8 @@
         <script src="<?php echo base_url('assets/js/manage_academics_curriculum.js?v=' . time()); ?>"></script>
         <script src="<?php echo base_url('assets/js/manage_academics_schedule.js?v=' . time()); ?>"></script>
         <script src="<?php echo base_url('assets/js/manage_academics_calendar.js?v=' . time()); ?>"></script>
+    <?php elseif(isset($content_type) && $content_type === 'forms'): ?>
+        <script src="<?php echo base_url('assets/js/manage_forms.js'); ?>"></script>
     <?php else: ?>
         <script src="<?php echo base_url('assets/js/dashboard.js'); ?>"></script>
     <?php endif; ?>

@@ -106,17 +106,111 @@
     z-index: 2;
 }
 
+.footer-logo-text-tapad {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    text-align: left;
+    width: 100%;
+    max-width: 100%;
+}
+
+.footer-logo {
+    height: 50px;
+    width: 50px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    flex-shrink: 0;
+    background-color: white;
+    border-radius: 50%;
+    object-fit: contain;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.3);
+}
+
+.footer-text-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+}
+
+.footer-university-name {
+    color: white;
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.3;
+    text-align: left;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: normal;
+    overflow-wrap: break-word;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    font-family: 'Inter', sans-serif;
+}
+
+.core-values-footer {
+    font-size: 0.75rem;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.4;
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    flex-wrap: wrap;
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ========================================
+   BACK TO TOP BUTTON
+   ======================================== */
+
+.back-to-top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: var(--primary-purple);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.back-to-top-btn:hover {
+    background: var(--accent);
+    color: var(--primary-purple);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
 .alumni-main {
-    padding: 0;
+    padding: 0 0 3rem 0;
     background: #f8f9fa;
     min-height: 70vh;
     position: relative;
+    z-index: 1;
 }
 
 /* Content Area - where sections will be loaded */
 .alumni-content-area {
     position: relative;
     min-height: 500px;
+    z-index: 1;
 }
 
 /* Content Animation */

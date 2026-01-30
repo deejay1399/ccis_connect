@@ -34,7 +34,7 @@ $route['updates/events'] = 'UpdatesController/events';
 $route['updates/deanslist'] = 'UpdatesController/deanslist';
 
 // ==================== FORMS ====================
-$route['forms'] = 'FormsController/index';
+$route['forms'] = 'FormsController/view_forms';
 
 // ==================== LOGIN ====================
 $route['login'] = 'LoginController/index';

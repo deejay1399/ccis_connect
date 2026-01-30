@@ -3,125 +3,27 @@
     <div class="container">
         <!-- Forms Grid -->
         <div class="forms-grid">
-            <!-- Application Form for Entrance Examination -->
-            <div class="form-card" id="application-form-for-entrance-examination">
-                <div class="form-content">
-                    <h3>Application Form for Entrance Examination</h3>
+            <?php if (!empty($forms)): ?>
+                <?php foreach ($forms as $form): ?>
+                    <div class="form-card" id="form-<?php echo $form['id']; ?>">
+                        <div class="form-content">
+                            <h3><?php echo htmlspecialchars($form['title']); ?></h3>
+                        </div>
+                        <div class="form-actions">
+                            <a href="<?php echo base_url($form['file_url']); ?>" class="btn-download-pdf" download>
+                                Download PDF
+                            </a>
+                            <button class="btn-preview" data-form-id="<?php echo $form['id']; ?>" data-form-url="<?php echo base_url($form['file_url']); ?>">
+                                Preview
+                            </button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="alert alert-info" style="grid-column: 1/-1;">
+                    <p>No forms available at this time.</p>
                 </div>
-                <div class="form-actions">
-                    <button class="btn-download-pdf" data-form="application-form-entrance">
-                        Download PDF
-                    </button>
-                    <button class="btn-preview" data-form="application-form-entrance">
-                        Preview
-                    </button>
-                </div>
-            </div>
-
-            <!-- Exit Form -->
-            <div class="form-card" id="exit-form">
-                <div class="form-content">
-                    <h3>Exit Form</h3>
-                </div>
-                <div class="form-actions">
-                    <button class="btn-download-pdf" data-form="exit-form">
-                        Download PDF
-                    </button>
-                    <button class="btn-preview" data-form="exit-form">
-                        Preview
-                    </button>
-                </div>
-            </div>
-
-            <!-- Parent's Guardian Consent Form -->
-            <div class="form-card" id="parents-guardian-consent-form">
-                <div class="form-content">
-                    <h3>Parent's/Guardian Consent Form</h3>
-                </div>
-                <div class="form-actions">
-                    <button class="btn-download-pdf" data-form="parents-consent-form">
-                        Download PDF
-                    </button>
-                    <button class="btn-preview" data-form="parents-consent-form">
-                        Preview
-                    </button>
-                </div>
-            </div>
-
-            <!-- Internship Agreement BSCS -->
-            <div class="form-card" id="internship-agreement-bscs">
-                <div class="form-content">
-                    <h3>Internship Agreement (BSCS)</h3>
-                </div>
-                <div class="form-actions">
-                    <button class="btn-download-pdf" data-form="internship-agreement-bscs">
-                        Download PDF
-                    </button>
-                    <button class="btn-preview" data-form="internship-agreement-bscs">
-                        Preview
-                    </button>
-                </div>
-            </div>
-
-            <!-- Parent Consent OJT -->
-            <div class="form-card" id="parent-consent-ojt">
-                <div class="form-content">
-                    <h3>Parent Consent OJT</h3>
-                </div>
-                <div class="form-actions">
-                    <button class="btn-download-pdf" data-form="parent-consent-ojt">
-                        Download PDF
-                    </button>
-                    <button class="btn-preview" data-form="parent-consent-ojt">
-                        Preview
-                    </button>
-                </div>
-            </div>
-
-            <!-- Student Information Form -->
-            <div class="form-card" id="student-information-form">
-                <div class="form-content">
-                    <h3>Student Information Form</h3>
-                </div>
-                <div class="form-actions">
-                    <button class="btn-download-pdf" data-form="student-information-form">
-                        Download PDF
-                    </button>
-                    <button class="btn-preview" data-form="student-information-form">
-                        Preview
-                    </button>
-                </div>
-            </div>
-
-            <!-- Shiftee Form -->
-            <div class="form-card" id="shiftee-form">
-                <div class="form-content">
-                    <h3>Shiftee Form</h3>
-                </div>
-                <div class="form-actions">
-                    <button class="btn-download-pdf" data-form="shiftee-form">
-                        Download PDF
-                    </button>
-                    <button class="btn-preview" data-form="shiftee-form">
-                        Preview
-                    </button>
-                </div>
-            </div>
-
-            <!-- Adding/Dropping Forms -->
-            <div class="form-card" id="adding-dropping-forms">
-                <div class="form-content">
-                    <h3>Adding/Dropping Forms</h3>
-                </div>
-                <div class="form-actions">
-                    <button class="btn-download-pdf" data-form="adding-dropping-forms">
-                        Download PDF
-                    </button>
-                    <button class="btn-preview" data-form="adding-dropping-forms">
-                        Preview
-                    </button>
-                </div>
-            </div>
+            <?php endif; ?>
         </div>
     </div>
 </section>
@@ -134,12 +36,7 @@
             <h3 id="modalFormTitle">Form Preview</h3>
         </div>
         <div class="modal-body">
-            <div id="pdfPreview">
-                <div class="pdf-placeholder">
-                    <p>PDF Preview</p>
-                    <small>This is a preview of the selected form. Download the PDF for printing.</small>
-                </div>
-            </div>
+            <iframe id="pdfFrame" style="width: 100%; height: 600px; border: none;"></iframe>
         </div>
         <div class="modal-footer">
             <button id="downloadFromPreview" class="btn-download-pdf">
@@ -148,3 +45,44 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle preview buttons
+    document.querySelectorAll('.btn-preview').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const formUrl = this.getAttribute('data-form-url');
+            const formTitle = this.closest('.form-card').querySelector('h3').textContent;
+            
+            document.getElementById('modalFormTitle').textContent = formTitle + ' Preview';
+            document.getElementById('pdfFrame').src = formUrl;
+            document.getElementById('pdfPreviewModal').style.display = 'block';
+        });
+    });
+
+    // Handle modal close
+    document.querySelector('.close-modal').addEventListener('click', function() {
+        document.getElementById('pdfPreviewModal').style.display = 'none';
+        document.getElementById('pdfFrame').src = '';
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('pdfPreviewModal');
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            document.getElementById('pdfFrame').src = '';
+        }
+    });
+
+    // Handle download from preview
+    document.getElementById('downloadFromPreview').addEventListener('click', function() {
+        const pdfUrl = document.getElementById('pdfFrame').src;
+        const a = document.createElement('a');
+        a.href = pdfUrl;
+        a.download = true;
+        a.click();
+    });
+});
+</script>
+

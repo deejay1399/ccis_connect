@@ -28,7 +28,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <link rel="stylesheet" href="<?php echo base_url('assets/css/login.css'); ?>">
         <?php elseif ($page_type === 'alumni'): ?>
             <link rel="stylesheet" href="<?php echo base_url('assets/css/alumni.css'); ?>">
-             <link rel="stylesheet" href="<?php echo base_url('assets/css/faculty.css'); ?>">
         <?php elseif ($page_type === 'organization'): ?>
             <link rel="stylesheet" href="<?php echo base_url('assets/css/organization.css'); ?>">
         <?php endif; ?>
