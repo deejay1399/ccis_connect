@@ -306,6 +306,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <input type="text" class="form-control" id="featuredPosition" required>
                     </div>
                     <div class="mb-3">
+                        <label for="featuredPhoto" class="form-label">Photo (optional)</label>
+                        <input type="file" class="form-control" id="featuredPhoto" accept="image/*">
+                    </div>
+                    <div class="mb-3">
                         <label for="featuredBio" class="form-label">Biography</label>
                         <textarea class="form-control" id="featuredBio" rows="3" required></textarea>
                     </div>
@@ -332,6 +336,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class="mb-3">
                         <label for="dirName" class="form-label">Name</label>
                         <input type="text" class="form-control" id="dirName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="dirPhoto" class="form-label">Photo (optional)</label>
+                        <input type="file" class="form-control" id="dirPhoto" accept="image/*">
                     </div>
                     <div class="mb-3">
                         <label for="dirBatch" class="form-label">Batch/Year</label>
@@ -370,6 +378,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <input type="text" class="form-control" id="storyTitle" required>
                     </div>
                     <div class="mb-3">
+                        <label for="storyPhoto" class="form-label">Photo (optional)</label>
+                        <input type="file" class="form-control" id="storyPhoto" accept="image/*">
+                    </div>
+                    <div class="mb-3">
                         <label for="storyAuthor" class="form-label">Author</label>
                         <input type="text" class="form-control" id="storyAuthor" required>
                     </div>
@@ -404,6 +416,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class="mb-3">
                         <label for="eventDate" class="form-label">Date</label>
                         <input type="date" class="form-control" id="eventDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventPhoto" class="form-label">Photo (optional)</label>
+                        <input type="file" class="form-control" id="eventPhoto" accept="image/*">
                     </div>
                     <div class="mb-3">
                         <label for="eventLocation" class="form-label">Location</label>

@@ -49,6 +49,13 @@ $route['logout'] = 'LoginController/logout';
 
 // ==================== ALUMNI ====================
 $route['alumni'] = 'AlumniController/index';
+$route['alumni/api/featured'] = 'AlumniController/api_featured';
+$route['alumni/api/directory'] = 'AlumniController/api_directory';
+$route['alumni/api/stories'] = 'AlumniController/api_stories';
+$route['alumni/api/events'] = 'AlumniController/api_events';
+$route['alumni/api/submit_update'] = 'AlumniController/submit_update';
+$route['alumni/api/submit_giveback'] = 'AlumniController/submit_giveback';
+$route['alumni/api/submit_connection'] = 'AlumniController/submit_connection';
 
 // ==================== ORGANIZATION ====================
 $route['organization'] = 'OrganizationController/index';
@@ -86,6 +93,27 @@ $route['admin/manage/delete_event_achievement'] = 'admin/AdminContent/delete_eve
 $route['admin/manage/load_deans_list'] = 'admin/AdminContent/load_deans_list';
 $route['admin/manage/create_deans_list'] = 'admin/AdminContent/create_deans_list';
 $route['admin/manage/delete_deans_list'] = 'admin/AdminContent/delete_deans_list';
+
+// Admin Content Management - ALUMNI
+$route['admin/manage/alumni/mentor_requests'] = 'admin/AdminContent/load_alumni_mentor_requests';
+$route['admin/manage/alumni/mentor_status'] = 'admin/AdminContent/update_alumni_mentor_status';
+$route['admin/manage/alumni/chatbot_inquiries'] = 'admin/AdminContent/load_alumni_chatbot_inquiries';
+$route['admin/manage/alumni/connection_requests'] = 'admin/AdminContent/load_alumni_connection_requests';
+$route['admin/manage/alumni/updates'] = 'admin/AdminContent/load_alumni_updates';
+$route['admin/manage/alumni/update_status'] = 'admin/AdminContent/update_alumni_update_status';
+$route['admin/manage/alumni/giveback'] = 'admin/AdminContent/load_alumni_giveback';
+$route['admin/manage/alumni/featured'] = 'admin/AdminContent/load_alumni_featured';
+$route['admin/manage/alumni/featured/create'] = 'admin/AdminContent/create_alumni_featured';
+$route['admin/manage/alumni/featured/delete'] = 'admin/AdminContent/delete_alumni_featured';
+$route['admin/manage/alumni/directory'] = 'admin/AdminContent/load_alumni_directory';
+$route['admin/manage/alumni/directory/create'] = 'admin/AdminContent/create_alumni_directory';
+$route['admin/manage/alumni/directory/delete'] = 'admin/AdminContent/delete_alumni_directory';
+$route['admin/manage/alumni/stories'] = 'admin/AdminContent/load_alumni_stories';
+$route['admin/manage/alumni/stories/create'] = 'admin/AdminContent/create_alumni_story';
+$route['admin/manage/alumni/stories/delete'] = 'admin/AdminContent/delete_alumni_story';
+$route['admin/manage/alumni/events'] = 'admin/AdminContent/load_alumni_events';
+$route['admin/manage/alumni/events/create'] = 'admin/AdminContent/create_alumni_event';
+$route['admin/manage/alumni/events/delete'] = 'admin/AdminContent/delete_alumni_event';
 
 // Faculty Management API Endpoints
 $route['admin/api/get_faculty'] = 'admin/AdminContent/api_get_faculty';

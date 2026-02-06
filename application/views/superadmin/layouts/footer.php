@@ -124,6 +124,8 @@
         <script src="<?php echo base_url('assets/js/manage_academics_calendar.js?v=' . time()); ?>"></script>
     <?php elseif(isset($content_type) && $content_type === 'forms'): ?>
         <script src="<?php echo base_url('assets/js/manage_forms.js'); ?>"></script>
+    <?php elseif(isset($content_type) && $content_type === 'alumni'): ?>
+        <script src="<?php echo base_url('assets/js/manage_alumni.js'); ?>"></script>
     <?php else: ?>
         <script src="<?php echo base_url('assets/js/dashboard.js'); ?>"></script>
     <?php endif; ?>

@@ -78,6 +78,48 @@
     z-index: 2;
 }
 
+/* Auth icon in header */
+.header-auth-icon {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-left: auto;
+    position: relative;
+    z-index: 2;
+}
+
+.auth-icon-link {
+    color: white;
+    font-size: 1.8rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    text-decoration: none;
+    border: none;
+    outline: none;
+}
+
+.auth-icon-link:hover {
+    color: var(--accent);
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+#logout-icon-link {
+    color: white !important;
+    background-color: rgba(106, 13, 173, 0.2) !important;
+}
+
+#logout-icon-link:hover {
+    background-color: rgba(106, 13, 173, 0.3) !important;
+    color: var(--accent) !important;
+}
+
 /* MAIN FOOTER WITH BUILDING BACKGROUND */
 .main-footer {
     background: 

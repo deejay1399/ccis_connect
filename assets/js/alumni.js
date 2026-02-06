@@ -2,39 +2,57 @@
 function getCurrentSection() {
     // Get hash from URL
     let hash = window.location.hash;
-    console.log('📌 Raw hash from URL:', hash);
+    console.log('?? Raw hash from URL:', hash);
     
     // Remove the # if it exists
     if (hash.startsWith('#')) {
         hash = hash.substring(1);
     }
-    console.log('📌 Cleaned hash:', hash);
+    console.log('?? Cleaned hash:', hash);
     
     // If hash exists and is valid, use it
     if (hash && sectionTemplates[hash]) {
-        console.log('✅ Valid hash found:', hash);
+        console.log('? Valid hash found:', hash);
         return hash;
     }
     
     // Otherwise use default
-    console.log('📌 Using default: featured-section');
+    console.log('?? Using default: featured-section');
     return 'featured-section';
 }
 
+const baseUrl = window.BASE_URL || '/ccis_connect/';
+const alumniApiBase = baseUrl + 'alumni/api/';
+let currentSection = null;
+const alumniPublicData = {
+    featured: [],
+    directory: [],
+    stories: [],
+    events: [],
+    loaded: {
+        featured: false,
+        directory: false,
+        stories: false,
+        events: false
+    }
+};
+
+
 // ALUMNI PAGE JAVASCRIPT - WITH HASH-BASED NAVIGATION
 $(document).ready(function() {
-    console.log('🎓 Alumni page initialized');
+    console.log('?? Alumni page initialized');
     
     // LOAD THE SECTION on initial page load
-    const currentSection = getCurrentSection();
-    console.log('📍 Initial loading section:', currentSection);
+    currentSection = getCurrentSection();
+    console.log('?? Initial loading section:', currentSection);
     loadAlumniSection(currentSection);
+    prefetchPublicAlumniData();
     
     // Setup hash change listener for dropdown clicks
     window.addEventListener('hashchange', function() {
-        console.log('🔄 Hash changed event fired!');
+        console.log('?? Hash changed event fired!');
         const newSection = getCurrentSection();
-        console.log('🔄 Hash changed! New section:', newSection);
+        console.log('?? Hash changed! New section:', newSection);
         loadAlumniSection(newSection);
     });
     
@@ -43,13 +61,13 @@ $(document).ready(function() {
         const href = $(this).attr('href');
         if (href && href.includes('#')) {
             const hash = href.substring(href.indexOf('#'));
-            console.log('🔗 Navigation link clicked, hash:', hash);
+            console.log('?? Navigation link clicked, hash:', hash);
             
             // If already on alumni page, directly load section instead of waiting for hash change
             if (window.location.pathname.includes('alumni')) {
                 const sectionId = hash.substring(1); // Remove the #
                 if (sectionTemplates[sectionId]) {
-                    console.log('📂 Directly loading section:', sectionId);
+                    console.log('?? Directly loading section:', sectionId);
                     loadAlumniSection(sectionId);
                     e.preventDefault();
                     // Update hash for history
@@ -68,13 +86,97 @@ $(document).ready(function() {
     // Initialize chatbot responses
     setTimeout(setupAlumniChatbotResponses, 1000);
     
-    console.log('✅ Alumni page ready');
+    console.log('? Alumni page ready');
 });
 
+function prefetchPublicAlumniData() {
+    const refreshIfActive = (sectionId) => {
+        if (currentSection === sectionId) {
+            loadAlumniSection(sectionId);
+        }
+    };
+
+    $.getJSON(alumniApiBase + 'featured', function(response) {
+        if (response.success) {
+            alumniPublicData.featured = response.data || [];
+            alumniPublicData.loaded.featured = true;
+            refreshIfActive('featured-section');
+        }
+    });
+
+    $.getJSON(alumniApiBase + 'directory', function(response) {
+        if (response.success) {
+            alumniPublicData.directory = response.data || [];
+            alumniPublicData.loaded.directory = true;
+            refreshIfActive('directory-section');
+        }
+    });
+
+    $.getJSON(alumniApiBase + 'stories', function(response) {
+        if (response.success) {
+            alumniPublicData.stories = response.data || [];
+            alumniPublicData.loaded.stories = true;
+            refreshIfActive('success-section');
+        }
+    });
+
+    $.getJSON(alumniApiBase + 'events', function(response) {
+        if (response.success) {
+            alumniPublicData.events = response.data || [];
+            alumniPublicData.loaded.events = true;
+            refreshIfActive('events-section');
+        }
+    });
+}
 // ===== SECTION TEMPLATES =====
 const sectionTemplates = {
     // Featured Alumni Template
     'featured-section': function() {
+        if (!alumniPublicData.loaded.featured) {
+            return `
+                <section class="featured-alumni-section">
+                    <div class="container">
+                        <h2 class="section-title">Featured Alumni</h2>
+                        <p class="section-subtitle">Loading featured alumni...</p>
+                    </div>
+                </section>
+            `;
+        }
+
+        const featured = alumniPublicData.featured || [];
+        let cards = '';
+
+        if (featured.length === 0) {
+            cards = `<p class="text-muted text-center">No featured alumni yet.</p>`;
+        } else {
+            featured.forEach(alumni => {
+                const photoHtml = alumni.photo
+                    ? `<img src="${baseUrl + alumni.photo}" alt="${alumni.name}">`
+                    : `<div class="alumni-photo-placeholder"><i class="fas fa-user"></i></div>`;
+                cards += `
+                    <div class="featured-alumni-card" data-alumni-id="${alumni.id}" data-alumni-name="${alumni.name}">
+                        <div class="alumni-image">
+                            ${photoHtml}
+                            <div class="featured-badge">
+                                <i class="fas fa-star"></i> Featured
+                            </div>
+                        </div>
+                        <div class="alumni-info">
+                            <h3>${alumni.name}</h3>
+                            ${alumni.batch ? `<p class="alumni-batch">${alumni.batch}</p>` : ''}
+                            <p class="alumni-position">${alumni.position}</p>
+                            <p class="alumni-achievement">${alumni.bio}</p>
+                            <div class="alumni-actions">
+                                <button class="alumni-view-details" data-alumni-id="${alumni.id}">
+                                    <i class="fas fa-eye me-1"></i> View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         return `
             <section class="featured-alumni-section">
                 <div class="container">
@@ -82,68 +184,7 @@ const sectionTemplates = {
                     <p class="section-subtitle">Our outstanding graduates making waves in the tech industry</p>
                     
                     <div class="featured-alumni-container">
-                        <!-- Alumni Card 1 -->
-                        <div class="featured-alumni-card" data-alumni-id="1">
-                            <div class="alumni-image">
-                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Juan Delacruz">
-                                <div class="featured-badge">
-                                    <i class="fas fa-star"></i> Featured
-                                </div>
-                            </div>
-                            <div class="alumni-info">
-                                <h3>Juan Delacruz</h3>
-                                <p class="alumni-batch">BSCS Batch 2015</p>
-                                <p class="alumni-position">Senior Software Engineer at Google</p>
-                                <p class="alumni-achievement">Led development of Google's AI-powered search algorithms</p>
-                                <div class="alumni-actions">
-                                    <button class="alumni-view-details" data-alumni-id="1">
-                                        <i class="fas fa-eye me-1"></i> View Details
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Alumni Card 2 -->
-                        <div class="featured-alumni-card" data-alumni-id="2">
-                            <div class="alumni-image">
-                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Maria Santos">
-                                <div class="featured-badge">
-                                    <i class="fas fa-star"></i> Featured
-                                </div>
-                            </div>
-                            <div class="alumni-info">
-                                <h3>Maria Santos</h3>
-                                <p class="alumni-batch">BSIT Batch 2018</p>
-                                <p class="alumni-position">Cybersecurity Director at Bank of the Philippines</p>
-                                <p class="alumni-achievement">Awarded "Top IT Professional 2023" by DICT</p>
-                                <div class="alumni-actions">
-                                    <button class="alumni-view-details" data-alumni-id="2">
-                                        <i class="fas fa-eye me-1"></i> View Details
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Alumni Card 3 -->
-                        <div class="featured-alumni-card" data-alumni-id="3">
-                            <div class="alumni-image">
-                                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Pedro Garcia">
-                                <div class="featured-badge">
-                                    <i class="fas fa-star"></i> Featured
-                                </div>
-                            </div>
-                            <div class="alumni-info">
-                                <h3>Pedro Garcia</h3>
-                                <p class="alumni-batch">BSIS Batch 2016</p>
-                                <p class="alumni-position">CEO & Founder of TechSolutions PH</p>
-                                <p class="alumni-achievement">Startup recognized as "Top Tech Startup 2022"</p>
-                                <div class="alumni-actions">
-                                    <button class="alumni-view-details" data-alumni-id="3">
-                                        <i class="fas fa-eye me-1"></i> View Details
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        ${cards}
                     </div>
                 </div>
             </section>
@@ -152,28 +193,48 @@ const sectionTemplates = {
     
     // Directory Template
     'directory-section': function() {
-        const alumniData = [
-            { id: 1, name: "Juan Delacruz", program: "BSCS", batch: "2015", company: "Google Philippines", position: "Senior Software Engineer" },
-            { id: 2, name: "Maria Santos", program: "BSIT", batch: "2018", company: "Bank of the Philippines", position: "Cybersecurity Director" },
-            { id: 3, name: "Pedro Garcia", program: "BSIS", batch: "2016", company: "TechSolutions PH", position: "CEO & Founder" },
-            { id: 4, name: "Anna Lopez", program: "BSCS", batch: "2017", company: "Meta", position: "AI Research Lead" },
-            { id: 5, name: "Michael Tan", program: "BSIT", batch: "2015", company: "PinoyTech Solutions", position: "CEO" },
-            { id: 6, name: "Sarah Lim", program: "BSIS", batch: "2016", company: "BDO", position: "Head of Cybersecurity" }
-        ];
-        
-        let directoryCards = '';
-        alumniData.forEach(alumni => {
-            directoryCards += `
-                <div class="directory-card" data-id="${alumni.id}" data-program="${alumni.program}" data-batch="${alumni.batch}">
-                    <h4>${alumni.name}</h4>
-                    <p class="directory-program">${alumni.program} Graduate</p>
-                    <p class="directory-company">${alumni.company}</p>
-                    <p class="directory-position">${alumni.position}</p>
-                    <p class="directory-batch">Batch ${alumni.batch}</p>
-                </div>
+        if (!alumniPublicData.loaded.directory) {
+            return `
+                <section class="directory-section">
+                    <div class="container">
+                        <h2 class="section-title">Alumni Directory</h2>
+                        <p class="section-subtitle">Loading alumni directory...</p>
+                    </div>
+                </section>
             `;
-        });
-        
+        }
+
+        const alumniData = alumniPublicData.directory || [];
+        let directoryCards = '';
+
+        if (alumniData.length === 0) {
+            directoryCards = `<p class="text-muted text-center">No alumni directory entries yet.</p>`;
+        } else {
+            alumniData.forEach(alumni => {
+                const program = alumni.program || '';
+                const company = alumni.company || '';
+                const position = alumni.position || '';
+                const phone = alumni.phone || '';
+                const email = alumni.email || '';
+                const photoHtml = alumni.photo
+                    ? `<img src="${baseUrl + alumni.photo}" alt="${alumni.name}" class="directory-photo">`
+                    : '';
+
+                directoryCards += `
+                    <div class="directory-card" data-id="${alumni.id}" data-program="${program}" data-batch="${alumni.batch}">
+                        ${photoHtml}
+                        <h4>${alumni.name}</h4>
+                        ${program ? `<p class="directory-program">${program} Graduate</p>` : ''}
+                        ${company ? `<p class="directory-company">${company}</p>` : ''}
+                        ${position ? `<p class="directory-position">${position}</p>` : ''}
+                        ${email ? `<p class="directory-company">${email}</p>` : ''}
+                        ${phone ? `<p class="directory-position">${phone}</p>` : ''}
+                        <p class="directory-batch">Batch ${alumni.batch}</p>
+                    </div>
+                `;
+            });
+        }
+
         return `
             <section class="directory-section">
                 <div class="container">
@@ -183,7 +244,7 @@ const sectionTemplates = {
                     <div class="directory-filters">
                         <div class="search-box">
                             <i class="fas fa-search"></i>
-                            <input type="text" id="search-alumni" placeholder="Search by name, company, or position...">
+                            <input type="text" id="search-alumni" placeholder="Search by name, email, or phone...">
                         </div>
                         
                         <select id="filter-batch" class="filter-select">
@@ -222,6 +283,42 @@ const sectionTemplates = {
     
     // Success Stories Template
     'success-section': function() {
+        if (!alumniPublicData.loaded.stories) {
+            return `
+                <section class="success-stories-section">
+                    <div class="container">
+                        <h2 class="section-title">Success Stories</h2>
+                        <p class="section-subtitle">Loading success stories...</p>
+                    </div>
+                </section>
+            `;
+        }
+
+        const stories = alumniPublicData.stories || [];
+        let storyCards = '';
+
+        if (stories.length === 0) {
+            storyCards = `<p class="text-muted text-center">No success stories yet.</p>`;
+        } else {
+            stories.forEach(story => {
+                const photoHtml = story.photo
+                    ? `<img src="${baseUrl + story.photo}" alt="${story.author}">`
+                    : '';
+                storyCards += `
+                    <div class="story-card">
+                        ${photoHtml ? `<div class=\"story-image\">${photoHtml}</div>` : ''}
+                        <div class="story-content">
+                            <h3>${story.title}</h3>
+                            <p class="story-text">${story.content}</p>
+                            <div class="story-author-info">
+                                <p class="story-author">${story.author}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         return `
             <section class="success-stories-section">
                 <div class="container">
@@ -229,47 +326,7 @@ const sectionTemplates = {
                     <p class="section-subtitle">Inspiring journeys of CCIS graduates who made it big</p>
                     
                     <div class="success-stories">
-                        <div class="story-card">
-                            <div class="story-image">
-                                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Anna Lopez">
-                            </div>
-                            <div class="story-content">
-                                <h3>From CCIS Student to Silicon Valley Engineer</h3>
-                                <p class="story-text">"My journey at CCIS taught me not just coding, but problem-solving. The late nights in the computer lab, the group projects, and the guidance from professors prepared me for the challenges at Facebook. Today, I lead a team working on AI research, and I owe my foundation to CCIS."</p>
-                                <div class="story-author-info">
-                                    <p class="story-author">Anna Lopez</p>
-                                    <p class="story-author-details">BSCS Batch 2017 • AI Research Lead at Meta</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="story-card">
-                            <div class="story-image">
-                                <img src="https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Michael Tan">
-                            </div>
-                            <div class="story-content">
-                                <h3>Building a Tech Startup from Scratch</h3>
-                                <p class="story-text">"The entrepreneurship course at CCIS sparked my interest in startups. After graduation, I founded 'PinoyTech Solutions' with two classmates. Today, we employ 50+ people and serve clients globally. CCIS didn't just teach me technology; it taught me how to build something meaningful."</p>
-                                <div class="story-author-info">
-                                    <p class="story-author">Michael Tan</p>
-                                    <p class="story-author-details">BSIT Batch 2015 • CEO, PinoyTech Solutions</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="story-card">
-                            <div class="story-image">
-                                <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Sarah Lim">
-                            </div>
-                            <div class="story-content">
-                                <h3>Cybersecurity Expert Protecting National Banks</h3>
-                                <p class="story-text">"The cybersecurity track at CCIS was challenging but rewarding. The hands-on experience with network security tools gave me the confidence to apply for positions at major banks. Now, I protect financial systems worth billions. Every day, I use skills I learned at CCIS to prevent cyber attacks."</p>
-                                <div class="story-author-info">
-                                    <p class="story-author">Sarah Lim</p>
-                                    <p class="story-author-details">BSIS Batch 2016 • Head of Cybersecurity, BDO</p>
-                                </div>
-                            </div>
-                        </div>
+                        ${storyCards}
                     </div>
                 </div>
             </section>
@@ -278,6 +335,50 @@ const sectionTemplates = {
     
     // Events Template
     'events-section': function() {
+        if (!alumniPublicData.loaded.events) {
+            return `
+                <section class="events-section">
+                    <div class="container">
+                        <h2 class="section-title">Alumni Events</h2>
+                        <p class="section-subtitle">Loading events...</p>
+                    </div>
+                </section>
+            `;
+        }
+
+        const events = alumniPublicData.events || [];
+        let eventCards = '';
+
+        if (events.length === 0) {
+            eventCards = `<p class="text-muted text-center">No alumni events yet.</p>`;
+        } else {
+            events.forEach(event => {
+                const photoHtml = event.photo
+                    ? `<img src="${baseUrl + event.photo}" alt="${event.name}">`
+                    : '';
+                const dateObj = event.event_date ? new Date(event.event_date) : null;
+                const month = dateObj ? dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase() : '';
+                const day = dateObj ? String(dateObj.getDate()).padStart(2, '0') : '';
+                const year = dateObj ? dateObj.getFullYear() : '';
+
+                eventCards += `
+                    <div class="event-card">
+                        ${photoHtml ? `<div class=\"event-image\">${photoHtml}</div>` : ''}
+                        <div class="event-date">
+                            <div class="event-month">${month}</div>
+                            <div class="event-day">${day}</div>
+                            <div class="event-year">${year}</div>
+                        </div>
+                        <div class="event-details">
+                            <h3>${event.name}</h3>
+                            <p class="event-location"><i class="fas fa-map-marker-alt"></i> ${event.location}</p>
+                            <p class="event-description">${event.description}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         return `
             <section class="events-section">
                 <div class="container">
@@ -285,47 +386,7 @@ const sectionTemplates = {
                     <p class="section-subtitle">Join our upcoming gatherings and networking opportunities</p>
                     
                     <div class="events-container">
-                        <div class="event-card">
-                            <div class="event-date">
-                                <div class="event-month">DEC</div>
-                                <div class="event-day">15</div>
-                                <div class="event-year">2024</div>
-                            </div>
-                            <div class="event-details">
-                                <h3>Annual CCIS Homecoming</h3>
-                                <p class="event-time"><i class="fas fa-clock"></i> 5:00 PM - 10:00 PM</p>
-                                <p class="event-location"><i class="fas fa-map-marker-alt"></i> BISU Balilihan Campus</p>
-                                <p class="event-description">Reconnect with batchmates, meet current students, and celebrate CCIS achievements. Dinner and program included.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="event-card">
-                            <div class="event-date">
-                                <div class="event-month">JAN</div>
-                                <div class="event-day">25</div>
-                                <div class="event-year">2025</div>
-                            </div>
-                            <div class="event-details">
-                                <h3>Alumni Career Fair 2025</h3>
-                                <p class="event-time"><i class="fas fa-clock"></i> 9:00 AM - 4:00 PM</p>
-                                <p class="event-location"><i class="fas fa-map-marker-alt"></i> BISU Gymnasium</p>
-                                <p class="event-description">Connect with alumni employers, explore job opportunities, and network with industry professionals.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="event-card">
-                            <div class="event-date">
-                                <div class="event-month">FEB</div>
-                                <div class="event-day">10</div>
-                                <div class="event-year">2025</div>
-                            </div>
-                            <div class="event-details">
-                                <h3>Tech Talk: AI in Business</h3>
-                                <p class="event-time"><i class="fas fa-clock"></i> 6:00 PM - 8:00 PM (Online)</p>
-                                <p class="event-location"><i class="fas fa-video"></i> Zoom Webinar</p>
-                                <p class="event-description">Learn how AI is transforming businesses from successful alumni. Q&A session included.</p>
-                            </div>
-                        </div>
+                        ${eventCards}
                     </div>
                 </div>
             </section>
@@ -409,6 +470,13 @@ const sectionTemplates = {
                                 <div class="form-group">
                                     <label for="update-email">Email Address *</label>
                                     <input type="email" id="update-email" required placeholder="juan.delacruz@example.com">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="update-photo">Photo (optional)</label>
+                                    <input type="file" id="update-photo" accept="image/*">
                                 </div>
                             </div>
                             
@@ -495,23 +563,23 @@ const sectionTemplates = {
 
 // ===== LOAD SECTION =====
 function loadAlumniSection(sectionId) {
-    console.log(`📂 Loading section: ${sectionId}`);
+    console.log(`?? Loading section: ${sectionId}`);
     
     // Get template function
     const templateFunction = sectionTemplates[sectionId];
     
     if (!templateFunction) {
-        console.error(`❌ Template not found for: ${sectionId}`);
+        console.error(`? Template not found for: ${sectionId}`);
         console.log('Available templates:', Object.keys(sectionTemplates));
         return;
     }
     
     // Get content area
     const contentArea = $('.alumni-content-area');
-    console.log(`📦 Content area found:`, contentArea.length > 0);
+    console.log(`?? Content area found:`, contentArea.length > 0);
     
     if (contentArea.length === 0) {
-        console.error('❌ Content area element not found!');
+        console.error('? Content area element not found!');
         return;
     }
     
@@ -522,15 +590,15 @@ function loadAlumniSection(sectionId) {
     setTimeout(() => {
         // Clear and load new content
         contentArea.empty();
-        console.log(`🗑️ Content cleared`);
+        console.log(`??? Content cleared`);
         
         // Generate HTML from template
         const sectionHtml = templateFunction();
-        console.log(`📝 Template generated for: ${sectionId}`);
+        console.log(`?? Template generated for: ${sectionId}`);
         
         // Append new content
         contentArea.html(sectionHtml);
-        console.log(`✅ Content appended to page`);
+        console.log(`? Content appended to page`);
         
         // Remove exit class, add enter class
         contentArea.removeClass('alumni-content-exit');
@@ -544,17 +612,17 @@ function loadAlumniSection(sectionId) {
             $('html, body').animate({
                 scrollTop: contentArea.offset().top - 100
             }, 500, function() {
-                console.log('✨ Scroll complete');
+                console.log('? Scroll complete');
             });
         }, 100);
         
-        console.log(`✨ Section ${sectionId} loaded and displayed`);
+        console.log(`? Section ${sectionId} loaded and displayed`);
     }, 300);
 }
 
 // ===== SETUP SECTION FUNCTIONALITY =====
 function setupSectionFunctionality(sectionId) {
-    console.log(`⚙️ Setting up functionality for: ${sectionId}`);
+    console.log(`?? Setting up functionality for: ${sectionId}`);
     
     switch(sectionId) {
         case 'featured-section':
@@ -577,7 +645,7 @@ function setupSectionFunctionality(sectionId) {
 
 // ===== BUTTON EFFECTS =====
 function setupButtonEffects() {
-    console.log('🔘 Setting up button effects...');
+    console.log('?? Setting up button effects...');
     
     // Add pressed class on button click
     $(document).on('mousedown touchstart', '.alumni-view-details, .giveback-btn, .submit-update-btn, .btn-primary, .btn-secondary, .btn-outline-primary, #clear-filters', function() {
@@ -641,12 +709,12 @@ function setupButtonEffects() {
         }, 150);
     });
     
-    console.log('✅ Button effects setup complete');
+    console.log('? Button effects setup complete');
 }
 
 // ===== FEATURED ALUMNI =====
 function setupFeaturedAlumni() {
-    console.log('👤 Setting up featured alumni...');
+    console.log('?? Setting up featured alumni...');
     
     // Setup alumni card click
     $(document).on('click', '.alumni-view-details', function(e) {
@@ -662,103 +730,39 @@ function setupFeaturedAlumni() {
         }
     });
     
-    console.log('✅ Featured alumni setup complete');
+    console.log('? Featured alumni setup complete');
 }
 
 function showAlumniDetails(alumniId) {
-    console.log(`👁️ Showing alumni details for ID: ${alumniId}`);
-    
-    const alumniData = {
-        1: {
-            name: "Juan Delacruz",
-            batch: "BSCS 2015",
-            position: "Senior Software Engineer",
-            company: "Google Philippines",
-            bio: "Juan graduated from CCIS in 2015 with honors. His passion for artificial intelligence led him to Google, where he now leads a team of engineers developing cutting-edge search algorithms.",
-            achievements: [
-                "Led development of Google's AI-powered search algorithms",
-                "Published 5 research papers in top-tier AI conferences",
-                "Mentored 15+ junior engineers at Google"
-            ]
-        },
-        2: {
-            name: "Maria Santos",
-            batch: "BSIT 2018",
-            position: "Cybersecurity Director",
-            company: "Bank of the Philippines",
-            bio: "Maria's interest in cybersecurity began during her BSIT capstone project at CCIS. She now oversees cybersecurity for one of the country's largest banks.",
-            achievements: [
-                "Awarded 'Top IT Professional 2023' by DICT",
-                "Implemented bank-wide cybersecurity protocol",
-                "Led digital transformation of banking security systems"
-            ]
-        },
-        3: {
-            name: "Pedro Garcia",
-            batch: "BSIS 2016",
-            position: "CEO & Founder",
-            company: "TechSolutions PH",
-            bio: "Pedro started TechSolutions PH right after graduation with two classmates. What began as a small web development service is now a full-scale tech solutions company.",
-            achievements: [
-                "Startup recognized as 'Top Tech Startup 2022'",
-                "Created 50+ jobs in Bohol and Cebu",
-                "Developed software solutions for 100+ SMEs"
-            ]
-        }
-    };
-    
-    const alumni = alumniData[alumniId];
+    console.log(`??? Showing alumni details for ID: ${alumniId}`);
+
+    const alumni = (alumniPublicData.featured || []).find(a => String(a.id) === String(alumniId));
+
     if (!alumni) {
-        showNotification('Alumni information not found.', 'error');
+        $('#alumniModalContent').html('<p class="text-muted">Alumni details not available.</p>');
+        $('#alumniDetailsModal').modal('show');
         return;
     }
-    
-    const achievementsList = alumni.achievements.map(ach => `<li><i class="fas fa-check text-success me-2"></i>${ach}</li>`).join('');
-    
+
+    const photoHtml = alumni.photo
+        ? `<img src="${baseUrl + alumni.photo}" alt="${alumni.name}" class="img-fluid rounded mb-3">`
+        : '';
+
     const modalContent = `
-        <div class="alumni-modal-content">
-            <div class="alumni-modal-image">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="${alumni.name}">
-            </div>
-            <div class="alumni-modal-details">
-                <div class="alumni-modal-header">
-                    <h2>${alumni.name}</h2>
-                    <p class="alumni-modal-batch">${alumni.batch}</p>
-                </div>
-                
-                <div class="alumni-modal-position">
-                    <h4>${alumni.position}</h4>
-                    <p class="alumni-modal-company">${alumni.company}</p>
-                </div>
-                
-                <div class="alumni-modal-section">
-                    <h4><i class="fas fa-user-graduate"></i> Bio</h4>
-                    <p>${alumni.bio}</p>
-                </div>
-                
-                <div class="alumni-modal-section alumni-modal-achievements">
-                    <h4><i class="fas fa-trophy"></i> Key Achievements</h4>
-                    <ul>${achievementsList}</ul>
-                </div>
-            </div>
-        </div>
+        ${photoHtml}
+        <h4>${alumni.name}</h4>
+        <p class="text-muted mb-2">${alumni.position}</p>
+        <p>${alumni.bio}</p>
     `;
-    
+
     $('#alumniModalContent').html(modalContent);
-    $('#alumniDetailsModalLabel').text(`Alumni Details - ${alumni.name}`);
-    
-    // Store alumni name in modal for connection button
     $('#alumniDetailsModal').data('alumni-name', alumni.name);
-    
-    const alumniModal = new bootstrap.Modal(document.getElementById('alumniDetailsModal'));
-    alumniModal.show();
-    
-    console.log(`✅ Alumni details modal shown for: ${alumni.name}`);
+    $('#alumniDetailsModal').modal('show');
 }
 
 // ===== SEARCH AND FILTER =====
 function setupSearchAndFilter() {
-    console.log('🔍 Setting up search and filter...');
+    console.log('?? Setting up search and filter...');
     
     // Wait a bit for DOM to be ready
     setTimeout(() => {
@@ -767,7 +771,7 @@ function setupSearchAndFilter() {
         const programFilter = $('#filter-program');
         
         if (!searchInput.length) {
-            console.warn('⚠️ Search elements not found');
+            console.warn('?? Search elements not found');
             return;
         }
         
@@ -840,101 +844,96 @@ function setupSearchAndFilter() {
             showAlumniDetails(alumniId);
         });
         
-        console.log('✅ Search and filter setup complete');
+        console.log('? Search and filter setup complete');
     }, 100);
 }
 
 // ===== EVENT CARDS =====
 function setupEventCards() {
-    console.log('📅 Setting up event cards...');
+    console.log('?? Setting up event cards...');
     
     $(document).on('click', '.event-card', function() {
         const eventTitle = $(this).find('h3').text();
         showNotification(`Event: ${eventTitle} - More details will be announced soon.`, 'info');
     });
     
-    console.log('✅ Event cards setup complete');
+    console.log('? Event cards setup complete');
 }
 
 // ===== UPDATE FORM =====
 function setupUpdateForm() {
-    console.log('📝 Setting up update form...');
-    
+    console.log('?? Setting up update form...');
+
     $(document).on('submit', '#alumni-update-form', function(e) {
-        e.preventDefault(); // PREVENT PAGE RELOAD
-        
-        console.log('📨 Submitting alumni update form...');
-        
-        // Validate form
+        e.preventDefault();
+
         if (!validateForm('alumni-update-form')) {
             showNotification('Please fill in all required fields correctly.', 'error');
             return;
         }
-        
-        // Show loading state
+
         const submitBtn = $(this).find('.submit-update-btn');
         const originalText = submitBtn.html();
         submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i> Processing...');
         submitBtn.prop('disabled', true);
-        
-        // Collect form data
-        const formData = {
-            name: $('#update-name').val().trim(),
-            email: $('#update-email').val().trim(),
-            batch: $('#update-batch').val(),
-            program: $('#update-program').val(),
-            position: $('#update-current-position').val().trim(),
-            company: $('#update-company').val().trim(),
-            achievements: $('#update-achievements').val().trim(),
-            giveback: {
-                mentor: $('#update-willing-mentor').is(':checked'),
-                speaker: $('#update-willing-speaker').is(':checked'),
-                internship: $('#update-willing-internship').is(':checked'),
-                donation: $('#update-willing-donate').is(':checked')
+
+        const formData = new FormData();
+        formData.append('name', $('#update-name').val().trim());
+        formData.append('email', $('#update-email').val().trim());
+        formData.append('batch', $('#update-batch').val());
+        formData.append('program', $('#update-program').val());
+        formData.append('position', $('#update-current-position').val().trim());
+        formData.append('company', $('#update-company').val().trim());
+        formData.append('achievements', $('#update-achievements').val().trim());
+        formData.append('mentor', $('#update-willing-mentor').is(':checked') ? 1 : 0);
+        formData.append('speaker', $('#update-willing-speaker').is(':checked') ? 1 : 0);
+        formData.append('internship', $('#update-willing-internship').is(':checked') ? 1 : 0);
+        formData.append('donation', $('#update-willing-donate').is(':checked') ? 1 : 0);
+
+        const photoFile = $('#update-photo')[0]?.files?.[0];
+        if (photoFile) {
+            formData.append('photo', photoFile);
+        }
+
+        $.ajax({
+            url: alumniApiBase + 'submit_update',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    showNotification('Thank you for updating your information! CCIS Alumni Office will verify and update your records.', 'success');
+                    $('#alumni-update-form')[0].reset();
+                    $('#alumni-update-form').find('.form-control, .form-select').removeClass('is-invalid is-valid');
+                } else {
+                    showNotification(response.message || 'There was an error submitting your information. Please try again.', 'error');
+                }
             },
-            timestamp: new Date().toISOString()
-        };
-        
-        // Simulate API call (for demo)
-        setTimeout(() => {
-            // Store update
-            const success = storeAlumniUpdate(formData);
-            
-            if (success) {
-                // Show success message
-                showNotification('Thank you for updating your information! CCIS Alumni Office will verify and update your records.', 'success');
-                
-                // Reset form
-                $(this)[0].reset();
-                
-                // Remove validation classes
-                $(this).find('.form-control, .form-select').removeClass('is-invalid is-valid');
-                
-                console.log('✅ Alumni update submitted successfully');
-            } else {
-                showNotification('There was an error submitting your information. Please try again.', 'error');
-                console.error('❌ Failed to store alumni update');
+            error: function(xhr) {
+                const msg = xhr.responseJSON?.message || 'There was an error submitting your information. Please try again.';
+                showNotification(msg, 'error');
+            },
+            complete: function() {
+                submitBtn.html(originalText);
+                submitBtn.prop('disabled', false);
             }
-            
-            // Restore button
-            submitBtn.html(originalText);
-            submitBtn.prop('disabled', false);
-            
-        }, 1500);
+        });
     });
-    
-    console.log('✅ Update form setup complete');
+
+    console.log('? Update form setup complete');
 }
 
 // ===== GIVE BACK BUTTONS =====
 function setupGiveBackButtons() {
-    console.log('🤝 Setting up give back buttons...');
+    console.log('?? Setting up give back buttons...');
     
     $(document).on('click', '.giveback-btn', function(e) {
         e.stopPropagation();
         const givebackType = $(this).data('giveback-type');
         
-        console.log(`🎯 Give back button clicked: ${givebackType}`);
+        console.log(`?? Give back button clicked: ${givebackType}`);
         
         if (givebackType === 'Donation') {
             // Show donation information modal
@@ -945,11 +944,17 @@ function setupGiveBackButtons() {
         }
     });
     
-    console.log('✅ Give back buttons setup complete');
+    console.log('? Give back buttons setup complete');
 }
 
 function showGivebackForm(givebackType) {
-    console.log(`📋 Showing giveback form for: ${givebackType}`);
+    console.log(`?? Showing giveback form for: ${givebackType}`);
+
+    const modalEl = document.getElementById('givebackFormModal');
+    if (!modalEl) {
+        showNotification('Give back form modal is missing on the page.', 'error');
+        return;
+    }
     
     const formContent = `
         <h5>${givebackType} Interest Form</h5>
@@ -985,103 +990,97 @@ function showGivebackForm(givebackType) {
     $('#givebackFormContent').html(formContent);
     $('#givebackFormModalLabel').text(`Give Back to CCIS - ${givebackType}`);
     
-    const givebackModal = new bootstrap.Modal(document.getElementById('givebackFormModal'));
+    const givebackModal = new bootstrap.Modal(modalEl);
     givebackModal.show();
     
-    console.log(`✅ Giveback form modal shown for: ${givebackType}`);
+    console.log(`? Giveback form modal shown for: ${givebackType}`);
 }
 
 // ===== MODAL FUNCTIONS =====
 function setupModalEvents() {
-    console.log('🔧 Setting up modal events...');
+    console.log('?? Setting up modal events...');
     
     // Connection form submission
     $(document).on('submit', '#connectionForm', function(e) {
         e.preventDefault();
-        
+
         const alumniName = $('#connectionModalLabel').text().replace('Connect with ', '');
         const submitBtn = $(this).find('.btn-primary');
         const originalText = submitBtn.html();
-        
-        console.log(`🔗 Submitting connection request for: ${alumniName}`);
-        
-        // Show loading state
+
         submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i> Sending...');
         submitBtn.prop('disabled', true);
-        
-        // Validate form
+
         if (!validateConnectionForm()) {
             submitBtn.html(originalText);
             submitBtn.prop('disabled', false);
             return;
         }
-        
-        // Store connection request
-        storeConnectionRequest({
-            alumniName: alumniName,
-            userName: $('#connName').val(),
-            userEmail: $('#connEmail').val(),
+
+        $.post(alumniApiBase + 'submit_connection', {
+            alumni_name: alumniName,
+            user_name: $('#connName').val(),
+            user_email: $('#connEmail').val(),
             purpose: $('#connPurpose').val(),
             message: $('#connMessage').val(),
-            batch: $('#connBatch').val(),
-            timestamp: new Date().toISOString()
-        });
-        
-        // Simulate API delay
-        setTimeout(() => {
-            showNotification(`Your connection request for ${alumniName} has been sent to CCIS Alumni Office. We'll contact you soon.`, 'success');
-            
-            $('#connectionModal').modal('hide');
-            $(this)[0].reset();
+            batch: $('#connBatch').val()
+        }, function(response) {
+            if (response.success) {
+                showNotification(`Your connection request for ${alumniName} has been sent to CCIS Alumni Office. We'll contact you soon.`, 'success');
+                $('#connectionModal').modal('hide');
+                $('#connectionForm')[0].reset();
+            } else {
+                showNotification(response.message || 'Failed to send connection request.', 'error');
+            }
             submitBtn.html(originalText);
             submitBtn.prop('disabled', false);
-            
-            console.log(`✅ Connection request sent for: ${alumniName}`);
-        }, 1500);
+        }, 'json').fail(function(xhr) {
+            const msg = xhr.responseJSON?.message || 'Failed to send connection request.';
+            showNotification(msg, 'error');
+            submitBtn.html(originalText);
+            submitBtn.prop('disabled', false);
+        });
     });
     
     // Giveback form submission
     $(document).on('submit', '#givebackForm', function(e) {
         e.preventDefault();
-        
+
         const givebackType = $('#givebackFormModalLabel').text().replace('Give Back to CCIS - ', '');
         const submitBtn = $('#givebackFormModal').find('.btn-primary');
         const originalText = submitBtn.html();
-        
-        console.log(`📤 Submitting giveback form for: ${givebackType}`);
-        
-        // Show loading state
+
         submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i> Sending...');
         submitBtn.prop('disabled', true);
-        
-        // Validate form
+
         if (!validateGivebackForm()) {
             submitBtn.html(originalText);
             submitBtn.prop('disabled', false);
             return;
         }
-        
-        const formData = {
+
+        $.post(alumniApiBase + 'submit_giveback', {
             type: givebackType,
             name: $('#gbName').val(),
             email: $('#gbEmail').val(),
             batch: $('#gbBatch').val(),
-            details: $('#gbDetails').val(),
-            timestamp: new Date().toISOString()
-        };
-        
-        // Simulate API delay
-        setTimeout(() => {
-            storeGivebackInterest(formData);
-            showNotification(`Thank you for your interest! Your ${formData.type} submission has been received. CCIS Admin will contact you within 3 working days.`, 'success');
-            
-            $('#givebackFormModal').modal('hide');
-            $(this)[0].reset();
+            details: $('#gbDetails').val()
+        }, function(response) {
+            if (response.success) {
+                showNotification(`Thank you for your interest! Your ${givebackType} submission has been received. CCIS Admin will contact you within 3 working days.`, 'success');
+                $('#givebackFormModal').modal('hide');
+                $('#givebackForm')[0].reset();
+            } else {
+                showNotification(response.message || 'There was an error submitting your request.', 'error');
+            }
             submitBtn.html(originalText);
             submitBtn.prop('disabled', false);
-            
-            console.log(`✅ Giveback form submitted for: ${givebackType}`);
-        }, 1500);
+        }, 'json').fail(function(xhr) {
+            const msg = xhr.responseJSON?.message || 'There was an error submitting your request.';
+            showNotification(msg, 'error');
+            submitBtn.html(originalText);
+            submitBtn.prop('disabled', false);
+        });
     });
     
     // Connect with Alumni button
@@ -1089,7 +1088,7 @@ function setupModalEvents() {
         const alumniName = $('#alumniDetailsModal').data('alumni-name');
         
         if (alumniName) {
-            console.log(`🤝 Connecting with alumni: ${alumniName}`);
+            console.log(`?? Connecting with alumni: ${alumniName}`);
             
             $('#alumniDetailsModal').modal('hide');
             setTimeout(() => {
@@ -1099,7 +1098,7 @@ function setupModalEvents() {
         }
     });
     
-    console.log('✅ Modal events setup complete');
+    console.log('? Modal events setup complete');
 }
 
 // ===== FORM VALIDATION HELPERS =====
@@ -1177,10 +1176,10 @@ function storeAlumniUpdate(data) {
         let updates = JSON.parse(localStorage.getItem('alumni_updates') || '[]');
         updates.push(data);
         localStorage.setItem('alumni_updates', JSON.stringify(updates));
-        console.log('📝 Alumni update stored:', data);
+        console.log('?? Alumni update stored:', data);
         return true;
     } catch (error) {
-        console.error('❌ Error storing alumni update:', error);
+        console.error('? Error storing alumni update:', error);
         return false;
     }
 }
@@ -1190,10 +1189,10 @@ function storeGivebackInterest(data) {
         let interests = JSON.parse(localStorage.getItem('giveback_interests') || '[]');
         interests.push(data);
         localStorage.setItem('giveback_interests', JSON.stringify(interests));
-        console.log('🤝 Giveback interest stored:', data);
+        console.log('?? Giveback interest stored:', data);
         return true;
     } catch (error) {
-        console.error('❌ Error storing giveback interest:', error);
+        console.error('? Error storing giveback interest:', error);
         return false;
     }
 }
@@ -1203,17 +1202,17 @@ function storeConnectionRequest(data) {
         let requests = JSON.parse(localStorage.getItem('connection_requests') || '[]');
         requests.push(data);
         localStorage.setItem('connection_requests', JSON.stringify(requests));
-        console.log('🔗 Connection request stored:', data);
+        console.log('?? Connection request stored:', data);
         return true;
     } catch (error) {
-        console.error('❌ Error storing connection request:', error);
+        console.error('? Error storing connection request:', error);
         return false;
     }
 }
 
 // ===== NOTIFICATION FUNCTION =====
 function showNotification(message, type = 'info', duration = 5000) {
-    console.log(`📢 Notification: ${type} - ${message}`);
+    console.log(`?? Notification: ${type} - ${message}`);
     
     const colors = {
         success: '#28a745',
@@ -1363,9 +1362,9 @@ function setupAlumniChatbotResponses() {
             ]
         );
         
-        console.log('✅ Alumni chatbot responses added');
+        console.log('? Alumni chatbot responses added');
     } else {
-        console.log('⚠️ Chatbot response system not available');
+        console.log('?? Chatbot response system not available');
     }
 }
 
@@ -1374,8 +1373,9 @@ function setupAlumniChatbotResponses() {
 if (typeof window.alumniNav !== 'undefined') {
     $(document).ready(function() {
         if (window.alumniNav.section) {
-            console.log(`🔗 Navigation requested to: ${window.alumniNav.section}`);
+            console.log(`?? Navigation requested to: ${window.alumniNav.section}`);
             loadAlumniSection(window.alumniNav.section);
         }
     });
 }
+

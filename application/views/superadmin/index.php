@@ -96,7 +96,7 @@
                                     <p>Profiles, Positions.</p>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-lg-3 additional-overview-card" style="display: none;">
+                            <!-- <div class="col-md-6 col-lg-3 additional-overview-card" style="display: none;">
                                 <div class="overview-feature-card">
                                     <div class="overview-feature-icon gold-icon">
                                         <i class="fas fa-flag"></i>
@@ -104,7 +104,7 @@
                                     <h6>About Us</h6>
                                     <p>History, VMGO, Hymn</p>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="col-md-6 col-lg-3 additional-overview-card" style="display: none;">
                                 <div class="overview-feature-card">
                                     <div class="overview-feature-icon gold-icon">
@@ -203,7 +203,7 @@
                                 <a href="<?php echo site_url('admin/content/academics'); ?>" class="btn btn-primary" id="manage-academics-btn">Open Editor</a>
                             </div>
                         </div>
-                        <div class="col-md-6 col-lg-4">
+                        <!-- <div class="col-md-6 col-lg-4">
                             <div class="feature-card">
                                 <div class="feature-icon gold-icon">
                                     <i class="fas fa-flag"></i>
@@ -212,7 +212,7 @@
                                 <p>Update college history, VMGO, and the BISU Hymn with lyrics and an audio file.</p>
                                 <a href="<?php echo site_url('admin/content/about'); ?>" class="btn btn-primary" id="manage-about-btn">Open Editor</a>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="col-md-6 col-lg-4">
                             <div class="feature-card">
                                 <div class="feature-icon gold-icon">

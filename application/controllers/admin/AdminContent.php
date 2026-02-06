@@ -120,6 +120,454 @@ class AdminContent extends CI_Controller {
 		$this->load->view('superadmin/layouts/footer');
 	}
 
+	// ==================== ALUMNI MANAGEMENT (AJAX) ====================
+
+	public function load_alumni_mentor_requests()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$data = $this->Alumni_model->get_all_mentor_requests();
+			echo json_encode(['success' => true, 'data' => $data]);
+		} catch (Exception $e) {
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function update_alumni_mentor_status()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$id = (int) $this->input->post('id');
+			$status = trim((string) $this->input->post('status'));
+
+			if ($id <= 0 || $status === '') {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'ID and status are required']);
+				exit;
+			}
+
+			$result = $this->Alumni_model->update_mentor_status($id, $status);
+			echo json_encode(['success' => (bool) $result]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function load_alumni_chatbot_inquiries()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$data = $this->Alumni_model->get_all_chatbot_inquiries();
+			echo json_encode(['success' => true, 'data' => $data]);
+		} catch (Exception $e) {
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function load_alumni_connection_requests()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$data = $this->Alumni_model->get_all_connection_requests();
+			echo json_encode(['success' => true, 'data' => $data]);
+		} catch (Exception $e) {
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function load_alumni_updates()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$data = $this->Alumni_model->get_all_updates();
+			echo json_encode(['success' => true, 'data' => $data]);
+		} catch (Exception $e) {
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function update_alumni_update_status()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$id = (int) $this->input->post('id');
+			$status = trim((string) $this->input->post('status'));
+
+			if ($id <= 0 || $status === '') {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'ID and status are required']);
+				exit;
+			}
+
+			$result = $this->Alumni_model->update_update_status($id, $status);
+			echo json_encode(['success' => (bool) $result]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function load_alumni_giveback()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$data = $this->Alumni_model->get_all_giveback();
+			echo json_encode(['success' => true, 'data' => $data]);
+		} catch (Exception $e) {
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function load_alumni_featured()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$data = $this->Alumni_model->get_all_featured();
+			echo json_encode(['success' => true, 'data' => $data]);
+		} catch (Exception $e) {
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function create_alumni_featured()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$name = trim((string) $this->input->post('name'));
+			$position = trim((string) $this->input->post('position'));
+			$bio = trim((string) $this->input->post('bio'));
+
+			if ($name === '' || $position === '' || $bio === '') {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Name, position, and bio are required']);
+				exit;
+			}
+
+			$photo = null;
+			if (!empty($_FILES['photo']['name'])) {
+				$photo = $this->_upload_file_to('uploads/alumni/featured', 'photo', 'gif|jpg|png|jpeg|jpe', 'featured', 5120);
+				if ($photo === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload photo.']);
+					exit;
+				}
+			}
+
+			$payload = [
+				'name' => $name,
+				'position' => $position,
+				'bio' => $bio
+			];
+			if ($photo) {
+				$payload['photo'] = $photo;
+			}
+
+			$id = $this->Alumni_model->insert_featured($payload);
+
+			echo json_encode(['success' => (bool) $id, 'id' => $id]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function delete_alumni_featured()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$id = (int) $this->input->post('id');
+			if ($id <= 0) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'ID required']);
+				exit;
+			}
+
+			$result = $this->Alumni_model->delete_featured($id);
+			echo json_encode(['success' => (bool) $result]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function load_alumni_directory()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$data = $this->Alumni_model->get_all_directory();
+			echo json_encode(['success' => true, 'data' => $data]);
+		} catch (Exception $e) {
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function create_alumni_directory()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$name = trim((string) $this->input->post('name'));
+			$batch = trim((string) $this->input->post('batch'));
+			$email = trim((string) $this->input->post('email'));
+			$phone = trim((string) $this->input->post('phone'));
+
+			if ($name === '' || $batch === '' || $email === '' || $phone === '') {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Name, batch, email, and phone are required']);
+				exit;
+			}
+
+			$photo = null;
+			if (!empty($_FILES['photo']['name'])) {
+				$photo = $this->_upload_file_to('uploads/alumni/directory', 'photo', 'gif|jpg|png|jpeg|jpe', 'directory', 5120);
+				if ($photo === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload photo.']);
+					exit;
+				}
+			}
+
+			$payload = [
+				'name' => $name,
+				'batch' => $batch,
+				'email' => $email,
+				'phone' => $phone
+			];
+			if ($photo) {
+				$payload['photo'] = $photo;
+			}
+
+			$id = $this->Alumni_model->insert_directory($payload);
+
+			echo json_encode(['success' => (bool) $id, 'id' => $id]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function delete_alumni_directory()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$id = (int) $this->input->post('id');
+			if ($id <= 0) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'ID required']);
+				exit;
+			}
+
+			$result = $this->Alumni_model->delete_directory($id);
+			echo json_encode(['success' => (bool) $result]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function load_alumni_stories()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$data = $this->Alumni_model->get_all_stories();
+			echo json_encode(['success' => true, 'data' => $data]);
+		} catch (Exception $e) {
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function create_alumni_story()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$title = trim((string) $this->input->post('title'));
+			$author = trim((string) $this->input->post('author'));
+			$content = trim((string) $this->input->post('content'));
+
+			if ($title === '' || $author === '' || $content === '') {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Title, author, and content are required']);
+				exit;
+			}
+
+			$photo = null;
+			if (!empty($_FILES['photo']['name'])) {
+				$photo = $this->_upload_file_to('uploads/alumni/stories', 'photo', 'gif|jpg|png|jpeg|jpe', 'story', 5120);
+				if ($photo === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload photo.']);
+					exit;
+				}
+			}
+
+			$payload = [
+				'title' => $title,
+				'author' => $author,
+				'content' => $content
+			];
+			if ($photo) {
+				$payload['photo'] = $photo;
+			}
+
+			$id = $this->Alumni_model->insert_story($payload);
+
+			echo json_encode(['success' => (bool) $id, 'id' => $id]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function delete_alumni_story()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$id = (int) $this->input->post('id');
+			if ($id <= 0) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'ID required']);
+				exit;
+			}
+
+			$result = $this->Alumni_model->delete_story($id);
+			echo json_encode(['success' => (bool) $result]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function load_alumni_events()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$data = $this->Alumni_model->get_all_events();
+			echo json_encode(['success' => true, 'data' => $data]);
+		} catch (Exception $e) {
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function create_alumni_event()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$name = trim((string) $this->input->post('name'));
+			$event_date = $this->input->post('event_date');
+			$location = trim((string) $this->input->post('location'));
+			$description = trim((string) $this->input->post('description'));
+
+			if ($name === '' || empty($event_date) || $location === '' || $description === '') {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Name, date, location, and description are required']);
+				exit;
+			}
+
+			$photo = null;
+			if (!empty($_FILES['photo']['name'])) {
+				$photo = $this->_upload_file_to('uploads/alumni/events', 'photo', 'gif|jpg|png|jpeg|jpe', 'event', 5120);
+				if ($photo === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload photo.']);
+					exit;
+				}
+			}
+
+			$payload = [
+				'name' => $name,
+				'event_date' => $event_date,
+				'location' => $location,
+				'description' => $description
+			];
+			if ($photo) {
+				$payload['photo'] = $photo;
+			}
+
+			$id = $this->Alumni_model->insert_event($payload);
+
+			echo json_encode(['success' => (bool) $id, 'id' => $id]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function delete_alumni_event()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$id = (int) $this->input->post('id');
+			if ($id <= 0) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'ID required']);
+				exit;
+			}
+
+			$result = $this->Alumni_model->delete_event($id);
+			echo json_encode(['success' => (bool) $result]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
 	// AJAX: Load homepage data
 	public function load_homepage()
 	{

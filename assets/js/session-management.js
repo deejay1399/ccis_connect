@@ -172,6 +172,10 @@ function updateUIForLoggedInUser(user) {
         logoutIconLink.style.display = 'flex';
         // FIXED: Change logout icon to person icon instead of arrow
         logoutIconLink.innerHTML = '<i class="fas fa-user-circle"></i>';
+        // Ensure absolute logout URL
+        if (window.BASE_URL) {
+            logoutIconLink.href = window.BASE_URL + 'index.php/logout?logout=true';
+        }
     }
     if (userInfoItem) userInfoItem.style.display = 'none';
     
@@ -206,13 +210,24 @@ function updateUIForGuest() {
     
     if (userInfoItem) userInfoItem.style.display = 'none';
     if (logoutIconLink) logoutIconLink.style.display = 'none';
-    if (loginIconLink) loginIconLink.style.display = 'flex';
+    if (loginIconLink) {
+        loginIconLink.style.display = 'flex';
+        if (window.BASE_URL) {
+            loginIconLink.href = window.BASE_URL + 'index.php/login';
+        }
+        // Ensure click always navigates
+        loginIconLink.addEventListener('click', function() {
+            if (window.BASE_URL) {
+                window.location.href = window.BASE_URL + 'index.php/login';
+            }
+        });
+    }
     
     // Handle text links if they exist
     if (logoutLink) logoutLink.style.display = 'none';
     if (loginLink) {
         loginLink.style.display = 'block';
-        loginLink.href = './index.php/login';
+        loginLink.href = window.BASE_URL ? window.BASE_URL + 'index.php/login' : './index.php/login';
     }
     
     console.log('✅ UI updated for guest user');
