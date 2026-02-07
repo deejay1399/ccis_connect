@@ -7,7 +7,9 @@ class AlumniController extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->helper('url');
+		$this->load->helper('auth');
 		$this->load->model('Alumni_model');
+		restrict_public_for_admin_roles();
 	}
 
 	public function index()

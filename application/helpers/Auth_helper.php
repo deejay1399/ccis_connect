@@ -122,4 +122,41 @@ function redirect_by_role($role_id = null)
     $redirect_path = isset($redirect_paths[$role_id]) ? $redirect_paths[$role_id] : 'login';
     redirect($redirect_path);
 }
+
+/**
+ * Restrict public-side access for roles that must stay in dashboards.
+ * Currently: superadmin (1), faculty (2)
+ */
+function restrict_public_for_admin_roles()
+{
+    $CI = &get_instance();
+
+    if (!$CI->session->userdata('logged_in')) {
+        return;
+    }
+
+    $role_id = (int) $CI->session->userdata('role_id');
+    if ($role_id === 1) {
+        redirect('admin/dashboard');
+    }
+    if ($role_id === 2) {
+        redirect('faculty/dashboard');
+    }
+}
+
+/**
+ * Require a logged-in student account.
+ */
+function require_student_only()
+{
+    $CI = &get_instance();
+
+    if (!$CI->session->userdata('logged_in')) {
+        redirect('login');
+    }
+
+    if ((int) $CI->session->userdata('role_id') !== 3) {
+        redirect_by_role((int) $CI->session->userdata('role_id'));
+    }
+}
 ?>

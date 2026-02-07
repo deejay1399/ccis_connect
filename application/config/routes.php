@@ -61,6 +61,13 @@ $route['alumni/api/submit_connection'] = 'AlumniController/submit_connection';
 $route['organization'] = 'OrganizationController/index';
 $route['organization/legion'] = 'OrganizationController/legion';
 $route['organization/csguild'] = 'OrganizationController/csguild';
+
+// ==================== ORG ADMIN ====================
+$route['org/dashboard'] = 'Org/dashboard';
+$route['org/officers/create'] = 'Org/add_officer';
+$route['org/advisers/create'] = 'Org/add_adviser';
+$route['org/announcements/create'] = 'Org/add_announcement';
+$route['org/happenings/create'] = 'Org/add_happening';
 // ==================== SUPER ADMIN ====================
 $route['admin'] = 'admin/AdminDashboard/index';
 $route['admin/dashboard'] = 'admin/AdminDashboard/index';

@@ -89,6 +89,8 @@ class AdminUsers extends CI_Controller {
 		$this->load->library('session');
 		$this->load->model('User_model');
 		$this->load->model('UserRole_model');
+		$this->load->model('OrgAdmin_model');
+		$this->load->model('Student_model');
 
 		// Get form data
 		$firstName = $this->input->post('first_name', true);
@@ -199,14 +201,27 @@ class AdminUsers extends CI_Controller {
 	 */
 	private function _saveStudentData($userId)
 	{
-		$this->load->model('Student_model');
-		
+		$organization = $this->input->post('student_organization', true);
+		$organizationCustom = $this->input->post('student_organization_custom', true);
+		$course = $this->input->post('course', true);
+		if (empty($organization) && !empty($course)) {
+			$course_upper = strtoupper((string) $course);
+			if (strpos($course_upper, 'BSIT') !== false || strpos($course_upper, 'INFORMATION TECHNOLOGY') !== false) {
+				$organization = 'the_legion';
+			} elseif (strpos($course_upper, 'BSCS') !== false || strpos($course_upper, 'COMPUTER SCIENCE') !== false) {
+				$organization = 'csguild';
+			}
+		}
+		$org = $this->OrgAdmin_model->normalize_organization($organization, $organizationCustom);
+
 		$studentData = [
 			'user_id' => $userId,
 			'student_number' => $this->input->post('student_number', true),
-			'course' => $this->input->post('course', true),
+			'course' => $course,
 			'year_level' => $this->input->post('year_level', true),
-			'section' => $this->input->post('section', true)
+			'section' => $this->input->post('section', true),
+			'organization_slug' => $org['slug'],
+			'organization_name' => $org['name']
 		];
 
 		if (!$this->Student_model->create($studentData)) {
@@ -220,8 +235,9 @@ class AdminUsers extends CI_Controller {
 	 */
 	private function _saveOrgAdminData($userId)
 	{
-		// Organization assignment (for future implementation)
 		$organization = $this->input->post('organization', true);
+		$organizationCustom = $this->input->post('organization_custom', true);
+		$this->OrgAdmin_model->set_user_organization($userId, $organization, $organizationCustom);
 		log_message('info', "Organization admin assigned to: $organization for user: $userId");
 	}
 
@@ -242,6 +258,7 @@ class AdminUsers extends CI_Controller {
 		$this->load->model('UserRole_model');
 		$this->load->model('Student_model');
 		$this->load->model('Faculty_model');
+		$this->load->model('OrgAdmin_model');
 
 		try {
 			$users = $this->User_model->get_all();
@@ -267,7 +284,9 @@ class AdminUsers extends CI_Controller {
 									'student_number' => $student->student_number,
 									'course' => $student->course,
 									'year_level' => $student->year_level,
-									'section' => $student->section
+									'section' => $student->section,
+									'organization' => isset($student->organization_name) ? $student->organization_name : null,
+									'organization_slug' => isset($student->organization_slug) ? $student->organization_slug : null
 								];
 							}
 						} elseif (strtolower($role->role_name) === 'faculty') {
@@ -280,6 +299,12 @@ class AdminUsers extends CI_Controller {
 									'bio' => $faculty->bio
 								];
 							}
+						} elseif (strtolower($role->role_name) === 'orgadmin') {
+							$org = $this->OrgAdmin_model->get_user_organization($user->id);
+							$additionalDetails = [
+								'organization' => isset($org['organization_name']) ? $org['organization_name'] : null,
+								'organization_slug' => isset($org['organization_slug']) ? $org['organization_slug'] : null
+							];
 						}
 					}
 				}
@@ -419,6 +444,7 @@ class AdminUsers extends CI_Controller {
 
 		$this->load->model('User_model');
 		$this->load->model('UserRole_model');
+		$this->load->model('OrgAdmin_model');
 
 		if (empty($user_id)) {
 			http_response_code(400);
@@ -455,7 +481,9 @@ class AdminUsers extends CI_Controller {
 								'student_number' => $student->student_number,
 								'course' => $student->course,
 								'year_level' => $student->year_level,
-								'section' => $student->section
+								'section' => $student->section,
+								'organization' => isset($student->organization_name) ? $student->organization_name : null,
+								'organization_slug' => isset($student->organization_slug) ? $student->organization_slug : null
 							];
 						}
 					} elseif (strtolower($role->role_name) === 'faculty') {
@@ -468,6 +496,12 @@ class AdminUsers extends CI_Controller {
 								'bio' => $faculty->bio
 							];
 						}
+					} elseif (strtolower($role->role_name) === 'orgadmin') {
+						$org = $this->OrgAdmin_model->get_user_organization($user->id);
+						$additionalDetails = [
+							'organization' => isset($org['organization_name']) ? $org['organization_name'] : null,
+							'organization_slug' => isset($org['organization_slug']) ? $org['organization_slug'] : null
+						];
 					}
 				}
 			}

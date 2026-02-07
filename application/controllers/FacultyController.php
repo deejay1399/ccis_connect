@@ -7,6 +7,7 @@ class FacultyController extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->helper('url');
+		$this->load->helper('auth');
 		$this->load->library('session');
 		// Add authentication check here if needed
 		// $this->load->helper('auth');
@@ -28,6 +29,7 @@ class FacultyController extends CI_Controller {
 
 	public function faculty()
 	{
+		restrict_public_for_admin_roles();
 		$this->load->model('Faculty_users_model');
 		
 		// Get all faculty members from database

@@ -1,0 +1,127 @@
+﻿:root {
+    --primary: #4b0082;
+    --secondary: #6a0dad;
+    --accent: #ffd700;
+    --light: #f8f9fa;
+    --border: #e5e7eb;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #fff;
+    color: #1f2937;
+}
+
+.university-header {
+    background: linear-gradient(135deg, rgba(75, 0, 130, 0.9), rgba(106, 13, 173, 0.85));
+    color: #fff;
+    padding: 1rem 0;
+    border-bottom: 4px solid var(--accent);
+}
+
+.college-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #fff;
+    padding: 4px;
+}
+
+.college-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.45rem;
+    margin: 0;
+}
+
+.college-subtitle {
+    margin: 0;
+    color: #fef3c7;
+}
+
+.auth-icon-link {
+    color: #fff;
+    font-size: 1.65rem;
+}
+
+.admin-nav {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: .75rem 0;
+}
+
+.admin-nav .nav-link {
+    color: #374151;
+}
+
+.admin-nav .nav-link.active,
+.admin-nav .nav-link:hover {
+    color: var(--secondary);
+    background: #f3e8ff;
+}
+
+.admin-main {
+    padding: 1.5rem 0 3rem;
+}
+
+.admin-section { display: none; }
+.admin-section.active-section { display: block; }
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.section-subtitle { color: #6b7280; }
+
+.stat-card,
+.officer-card,
+.adviser-card,
+.announcement-card,
+.happening-card,
+.empty-state {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.stat-card { display: flex; align-items: center; gap: 1rem; }
+.stat-icon { width: 42px; height: 42px; border-radius: 50%; background: #f3e8ff; display:flex; align-items:center; justify-content:center; color: var(--secondary); }
+.stat-info h4 { margin: 0; }
+
+.officers-grid,
+.advisers-grid,
+.announcements-grid,
+.happenings-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.admin-footer {
+    background: linear-gradient(135deg, rgba(75, 0, 130, 0.95), rgba(106, 13, 173, 0.9));
+    color: #fff;
+    padding: 1rem 0 .5rem;
+}
+
+.footer-university-name,
+.contact-title,
+.social-title {
+    color: #fff;
+}
+
+.contact-item { margin-bottom: .4rem; }
+.contact-item i { color: var(--accent); width: 18px; }
+
+.social-link { color: #fff; }
+
+@media (max-width: 768px) {
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .college-title { font-size: 1.1rem; }
+}

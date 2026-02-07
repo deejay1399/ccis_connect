@@ -1,7 +1,23 @@
 // SUPER ADMIN CREATE USER JAVASCRIPT - UPDATED VERSION
 
 $(document).ready(function() {
-    console.log('🔐 Create User Page Loading...');
+    console.log('?? Create User Page Loading...');
+
+    function getBaseUrl() {
+        if (typeof window.BASE_URL === 'string' && window.BASE_URL.length > 0) {
+            return window.BASE_URL;
+        }
+        if (typeof window.baseUrl === 'string' && window.baseUrl.length > 0) {
+            return window.baseUrl;
+        }
+        return '/ccis_connect/';
+    }
+
+    function buildUrl(path) {
+        const base = getBaseUrl().replace(/\/+$/, '');
+        const cleanPath = String(path || '').replace(/^\/+/, '');
+        return `${base}/${cleanPath}`;
+    }
     
     // Enhanced session check for Super Admin
     function checkSuperAdminSession() {
@@ -10,25 +26,25 @@ $(document).ready(function() {
         console.log('Session check result:', session);
         
         if (!session.isValid) {
-            console.warn('❌ No valid session found, redirecting to login');
+            console.warn('? No valid session found, redirecting to login');
             showNotification('Please login to access Super Admin dashboard', 'error');
             setTimeout(() => {
-                window.location.href = '../user_side/login.html';
+                window.location.href = buildUrl('index.php/login');
             }, 2000);
             return false;
         }
         
         if (session.user.role !== 'superadmin') {
-            console.warn('🚫 Unauthorized access attempt by:', session.user.role);
+            console.warn('?? Unauthorized access attempt by:', session.user.role);
             showNotification('Access denied. Super Admin privileges required.', 'error');
             setTimeout(() => {
-                window.location.href = '../user_side/login.html';
+                window.location.href = buildUrl('index.php/login');
             }, 2000);
             return false;
         }
         
         // Session is valid and user is superadmin
-        console.log('✅ Super Admin session confirmed:', session.user.name);
+        console.log('? Super Admin session confirmed:', session.user.name);
         
         // Update UI with admin info
         updateAdminUI(session.user);
@@ -41,7 +57,7 @@ $(document).ready(function() {
         $('#user-name').text(user.name);
         $('#user-role').text(user.role);
         
-        console.log('👤 UI updated for:', user.name);
+        console.log('?? UI updated for:', user.name);
     }
     
     // Initialize page
@@ -65,7 +81,7 @@ $(document).ready(function() {
         // SETUP CONDITIONAL FIELDS HANDLER
         setupConditionalFields();
         
-        console.log('🎯 Create User Page initialized successfully');
+        console.log('?? Create User Page initialized successfully');
     }
     
     // Function to setup logout handler
@@ -73,19 +89,19 @@ $(document).ready(function() {
         $('#logout-icon-link').off('click').on('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log('🚪 Logout requested - Super Admin');
+            console.log('?? Logout requested - Super Admin');
             showLogoutModal();
         });
     }
 
     // FUNCTION TO SETUP CONDITIONAL FIELDS DISPLAY
     function setupConditionalFields() {
-        console.log('🔧 Setting up conditional fields handler...');
+        console.log('?? Setting up conditional fields handler...');
         
         $('.user-type-radio').on('change', function() {
             const selectedRole = $(this).val();
             
-            console.log(`🔄 User type changed to: ${selectedRole}`);
+            console.log(`?? User type changed to: ${selectedRole}`);
             
             // Hide all conditional field sections
             $('#studentFields').slideUp(300);
@@ -93,31 +109,53 @@ $(document).ready(function() {
             $('#orgAdminFields').slideUp(300);
             
             // Clear validation for hidden fields
-            $('#studentFields input, #studentFields select, #facultyFields input, #facultyFields textarea, #orgAdminFields select').removeAttr('required');
+            $('#studentFields input, #studentFields select, #facultyFields input, #facultyFields textarea, #orgAdminFields select, #organizationCustom, #studentOrganizationCustom').removeAttr('required');
+            $('#organizationCustomWrapper').hide();
+            $('#studentOrganizationCustomWrapper').hide();
             
             // Show appropriate section based on selection
             if (selectedRole === '3') {
                 // Student
                 $('#studentFields').slideDown(300);
-                $('#studentNumber, #course, #yearLevel, #section').attr('required', 'required');
-                console.log('📚 Student fields displayed');
+                $('#studentNumber, #course, #yearLevel, #section, #studentOrganization').attr('required', 'required');
+                console.log('?? Student fields displayed');
             } else if (selectedRole === '2') {
                 // Faculty
                 $('#facultyFields').slideDown(300);
                 $('#position, #department, #bio, #officeLocation').attr('required', 'required');
-                console.log('👨‍🏫 Faculty fields displayed');
+                console.log('????? Faculty fields displayed');
             } else if (selectedRole === '4') {
                 // Organization Admin
                 $('#orgAdminFields').slideDown(300);
                 $('#organization').attr('required', 'required');
-                console.log('🏢 Organization Admin fields displayed');
+                console.log('?? Organization Admin fields displayed');
             } else if (selectedRole === '1') {
                 // Super Admin
-                console.log('👑 Super Admin selected (no additional fields needed)');
+                console.log('?? Super Admin selected (no additional fields needed)');
+            }
+        });
+
+        $('#organization').on('change', function() {
+            if ($(this).val() === 'other') {
+                $('#organizationCustomWrapper').slideDown(200);
+                $('#organizationCustom').attr('required', 'required');
+            } else {
+                $('#organizationCustomWrapper').slideUp(200);
+                $('#organizationCustom').removeAttr('required').val('');
+            }
+        });
+
+        $('#studentOrganization').on('change', function() {
+            if ($(this).val() === 'other') {
+                $('#studentOrganizationCustomWrapper').slideDown(200);
+                $('#studentOrganizationCustom').attr('required', 'required');
+            } else {
+                $('#studentOrganizationCustomWrapper').slideUp(200);
+                $('#studentOrganizationCustom').removeAttr('required').val('');
             }
         });
         
-        console.log('✅ Conditional fields handler attached');
+        console.log('? Conditional fields handler attached');
     }
     function setupPublicSiteLink() {
         const publicSiteLink = $('#view-public-site-link');
@@ -129,7 +167,7 @@ $(document).ready(function() {
                 // Store the current dashboard URL in local storage
                 localStorage.setItem('admin_return_url', dashboardUrl);
                 sessionStorage.setItem('admin_return_url', dashboardUrl); // Use both for redundancy
-                console.log(`🔗 Storing return URL: ${dashboardUrl}`);
+                console.log(`?? Storing return URL: ${dashboardUrl}`);
                 // Continue with navigation
             });
         }
@@ -137,26 +175,26 @@ $(document).ready(function() {
     
     // FUNCTION TO REMOVE RETURN TO DASHBOARD LINKS
     function removeReturnToDashboard() {
-        console.log('🔍 Searching for Return to Dashboard links...');
+        console.log('?? Searching for Return to Dashboard links...');
         
         // Method 1: Remove by exact text content
         $('a').each(function() {
             const text = $(this).text().trim();
             if (text === 'Return to Dashboard') {
-                console.log('🚫 Removing Return to Dashboard link:', text);
+                console.log('?? Removing Return to Dashboard link:', text);
                 $(this).remove();
             }
         });
         
         // Method 2: Remove by partial text match
         $('a:contains("Return to Dashboard")').each(function() {
-            console.log('🚫 Removing Return to Dashboard element');
+            console.log('?? Removing Return to Dashboard element');
             $(this).remove();
         });
         
         // Method 3: Remove any quick-links or footer-links containers
         $('.quick-links, .footer-links').each(function() {
-            console.log('🚫 Removing quick-links/footer-links container');
+            console.log('?? Removing quick-links/footer-links container');
             $(this).remove();
         });
         
@@ -165,7 +203,7 @@ $(document).ready(function() {
             if ($(this).children().length === 0) {
                 const text = $(this).text().trim();
                 if (text.includes('Return to Dashboard')) {
-                    console.log('🚫 Removing element with text:', text);
+                    console.log('?? Removing element with text:', text);
                     $(this).remove();
                 }
             }
@@ -318,6 +356,8 @@ $(document).ready(function() {
             userData.course = $('#course').val().trim();
             userData.year_level = $('#yearLevel').val();
             userData.section = $('#section').val().trim();
+            userData.student_organization = $('#studentOrganization').val();
+            userData.student_organization_custom = $('#studentOrganizationCustom').val().trim();
         } else if (roleId === '2') {
             // Faculty
             userData.position = $('#position').val().trim();
@@ -327,9 +367,10 @@ $(document).ready(function() {
         } else if (roleId === '4') {
             // Organization Admin
             userData.organization = $('#organization').val();
+            userData.organization_custom = $('#organizationCustom').val().trim();
         }
         
-        console.log('📝 User data to submit:', userData);
+        console.log('?? User data to submit:', userData);
         
         // Send to backend
         submitUserForm(userData);
@@ -343,7 +384,7 @@ $(document).ready(function() {
         
         const saveUrl = baseUrl + 'admin/users/save';
         
-        console.log('📤 Submitting to:', saveUrl);
+        console.log('?? Submitting to:', saveUrl);
         
         $.ajax({
             url: saveUrl,
@@ -363,7 +404,7 @@ $(document).ready(function() {
                     
                     showFloatingNotification(`Account for ${fullName} (${roleDisplay}) has been created successfully!`);
                     
-                    console.log(`✅ User created successfully:`, response);
+                    console.log(`? User created successfully:`, response);
                     
                     // Reset the form
                     $('#create-user-form')[0].reset();
@@ -380,7 +421,7 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr) {
-                console.error('❌ Ajax error:', xhr);
+                console.error('? Ajax error:', xhr);
                 let errorMsg = 'Error creating user. Please try again.';
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMsg = xhr.responseJSON.message;
@@ -446,13 +487,13 @@ $(document).ready(function() {
             btn.html('<div class="loading-spinner"></div>Logging out...');
             btn.prop('disabled', true);
 
-            console.log('🚪 Starting logout process...');
+            console.log('?? Starting logout process...');
             clearUserSession();
 
             setTimeout(() => {
-                console.log('🔀 Redirecting to user_side login...');
+                console.log('?? Redirecting to system logout...');
                 modal.hide();
-                window.location.href = '../user_side/login.html?logout=true';
+                window.location.href = buildUrl('index.php/logout?logout=true');
             }, 1000);
         });
 
@@ -470,7 +511,7 @@ $(document).ready(function() {
 
     // CLEAR SESSION FUNCTION
     function clearUserSession() {
-        console.log('🧹 Clearing user session...');
+        console.log('?? Clearing user session...');
         const userData = localStorage.getItem('ccis_user');
         const user = userData ? JSON.parse(userData) : null;
 
@@ -483,7 +524,7 @@ $(document).ready(function() {
         localStorage.removeItem('admin_return_url');
         sessionStorage.removeItem('admin_return_url');
 
-        console.log('✅ User session completely cleared');
+        console.log('? User session completely cleared');
     }
 
     // LOG LOGOUT ACTIVITY FUNCTION
@@ -500,7 +541,7 @@ $(document).ready(function() {
         logoutLogs.unshift(logEntry);
         if (logoutLogs.length > 50) logoutLogs.splice(50);
         localStorage.setItem('ccis_logout_logs', JSON.stringify(logoutLogs));
-        console.log('📝 Logout activity logged for:', user.email || 'Unknown');
+        console.log('?? Logout activity logged for:', user.email || 'Unknown');
     }
 
     // Initialize the page

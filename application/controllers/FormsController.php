@@ -7,8 +7,10 @@ class FormsController extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->helper('url');
+		$this->load->helper('auth');
 		$this->load->model('Forms_model');
 		$this->_ensure_table_exists();
+		restrict_public_for_admin_roles();
 	}
 
 	/**

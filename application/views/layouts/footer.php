@@ -145,6 +145,8 @@
                         'first_name' => $this->session->userdata('first_name'),
                         'last_name' => $this->session->userdata('last_name'),
                         'role_id' => $role_id,
+                        'organization' => $this->session->userdata('organization_name'),
+                        'organization_slug' => $this->session->userdata('organization_slug'),
                         'token' => $this->session->userdata('token'),
                         'sessionId' => session_id()
                     );
@@ -195,6 +197,15 @@
             <script src="<?php echo base_url('assets/js/alumni.js'); ?>"></script>
         <?php elseif ($page_type === 'organization'): ?>
             <script src="<?php echo base_url('assets/js/organization.js'); ?>"></script>
+        <?php elseif ($page_type === 'organization_student'): ?>
+            <script>
+                (function () {
+                    var hash = window.location.hash || '';
+                    if (hash === '#the-legion' || hash === '#cs-guild') {
+                        history.replaceState(null, '', '<?php echo site_url('organization'); ?>');
+                    }
+                })();
+            </script>
         <?php endif; ?>
     <?php endif; ?>
     

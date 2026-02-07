@@ -10,6 +10,8 @@ class LoginController extends CI_Controller {
 		$this->load->model('User_model');
 		$this->load->model('UserRole_model');
 		$this->load->model('Session_model');
+		$this->load->model('OrgAdmin_model');
+		$this->load->model('Student_model');
 		$this->load->helper('url');
 	}
 
@@ -124,6 +126,12 @@ class LoginController extends CI_Controller {
         'logged_in'  => true
     ];
 
+    if ((int) $role_id === 4) {
+        $session_data = array_merge($session_data, $this->_get_org_session_data((int) $user->id));
+    } elseif ((int) $role_id === 3) {
+        $session_data = array_merge($session_data, $this->_get_student_org_session_data((int) $user->id));
+    }
+
     $this->session->set_userdata($session_data);
 
     $this->_redirect_by_role($role_id);
@@ -229,6 +237,12 @@ class LoginController extends CI_Controller {
 			'logged_in'  => true
 		];
 
+		if ((int) $role_id === 4) {
+			$session_data = array_merge($session_data, $this->_get_org_session_data((int) $user->id));
+		} elseif ((int) $role_id === 3) {
+			$session_data = array_merge($session_data, $this->_get_student_org_session_data((int) $user->id));
+		}
+
 		$this->session->set_userdata($session_data);
 
 		error_log('Login successful for: ' . $email . ' (Role: ' . $role_name . ')');
@@ -244,7 +258,9 @@ class LoginController extends CI_Controller {
 				'last_name'  => $user->last_name,
 				'role_id'    => $role_id,
 				'role'       => $role_name,
-				'name'       => $user->first_name . ' ' . $user->last_name
+				'name'       => $user->first_name . ' ' . $user->last_name,
+				'organization' => isset($session_data['organization_name']) ? $session_data['organization_name'] : null,
+				'organization_slug' => isset($session_data['organization_slug']) ? $session_data['organization_slug'] : null
 			]
 		]);
 		exit;
@@ -283,6 +299,8 @@ class LoginController extends CI_Controller {
 			'last_name',
 			'role_id',
 			'role',
+			'organization_name',
+			'organization_slug',
 			'token',
 			'logged_in'
 		]);
@@ -351,5 +369,41 @@ class LoginController extends CI_Controller {
 	private function _generate_token()
 	{
 		return bin2hex(random_bytes(32));
+	}
+
+	private function _get_org_session_data($user_id)
+	{
+		$org = $this->OrgAdmin_model->get_user_organization((int) $user_id);
+
+		return [
+			'organization_name' => isset($org['organization_name']) ? $org['organization_name'] : 'Unassigned Organization',
+			'organization_slug' => isset($org['organization_slug']) ? $org['organization_slug'] : 'unassigned',
+		];
+	}
+
+	private function _get_student_org_session_data($user_id)
+	{
+		$student = $this->Student_model->get_by_user_id((int) $user_id);
+		if ($student && (!empty($student->organization_slug) || !empty($student->organization_name))) {
+			return [
+				'organization_name' => !empty($student->organization_name) ? $student->organization_name : 'Unassigned Organization',
+				'organization_slug' => !empty($student->organization_slug) ? $student->organization_slug : 'unassigned',
+			];
+		}
+
+		if ($student && !empty($student->course)) {
+			$course_upper = strtoupper((string) $student->course);
+			if (strpos($course_upper, 'BSIT') !== false || strpos($course_upper, 'INFORMATION TECHNOLOGY') !== false) {
+				return ['organization_name' => 'The Legion', 'organization_slug' => 'the_legion'];
+			}
+			if (strpos($course_upper, 'BSCS') !== false || strpos($course_upper, 'COMPUTER SCIENCE') !== false) {
+				return ['organization_name' => 'CS Guild', 'organization_slug' => 'csguild'];
+			}
+		}
+
+		return [
+			'organization_name' => 'Unassigned Organization',
+			'organization_slug' => 'unassigned',
+		];
 	}
 }

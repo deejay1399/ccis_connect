@@ -117,6 +117,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <input type="text" class="form-control" id="section" placeholder="e.g. A, B, C">
                                     </div>
                                 </div>
+                                <div class="mb-3">
+                                    <label for="studentOrganization" class="form-label">Student Organization <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="studentOrganization">
+                                        <option value="" selected disabled>Select organization...</option>
+                                        <option value="the_legion">The Legion</option>
+                                        <option value="csguild">CS Guild</option>
+                                        <option value="other">Other Organization</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3" id="studentOrganizationCustomWrapper" style="display: none;">
+                                    <label for="studentOrganizationCustom" class="form-label">Organization Name</label>
+                                    <input type="text" class="form-control" id="studentOrganizationCustom" placeholder="Type organization name">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -159,7 +172,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <option value="" selected disabled>Select an organization...</option>
                                         <option value="csguild">CSGuild</option>
                                         <option value="the_legion">The Legion</option>
+                                        <option value="other">Other Organization</option>
                                     </select>
+                                </div>
+                                <div class="mb-3" id="organizationCustomWrapper" style="display: none;">
+                                    <label for="organizationCustom" class="form-label">Organization Name</label>
+                                    <input type="text" class="form-control" id="organizationCustom" placeholder="Type organization name">
                                 </div>
                             </div>
                         </div>
