@@ -1,6 +1,8 @@
 $(document).ready(function () {
     const baseUrl = window.baseUrl || '/ccis_connect/';
 
+    let activeSubmissionContext = null;
+
     function showNotification(type, message) {
         const notificationModal = `
             <div class="modal fade" id="notificationModal" tabindex="-1" role="alertdialog" aria-modal="true">
@@ -40,8 +42,116 @@ $(document).ready(function () {
         let cls = 'secondary';
         if (normalized === 'approved') cls = 'success';
         if (normalized === 'pending') cls = 'warning';
-        if (normalized === 'rejected' || normalized === 'hidden') cls = 'danger';
+        if (normalized === 'rejected' || normalized === 'hidden' || normalized === 'disapproved') cls = 'danger';
         return `<span class="badge bg-${cls}">${status || 'Pending'}</span>`;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function toTitleCase(value) {
+        const input = String(value || '').toLowerCase();
+        return input ? input.charAt(0).toUpperCase() + input.slice(1) : '';
+    }
+
+    function buildGmailLink(to, subject, body) {
+        return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    function formatDetailRows(details) {
+        return Object.entries(details)
+            .map(([label, value]) => `<tr><th style="width: 35%;">${escapeHtml(label)}</th><td>${escapeHtml(value || '-')}</td></tr>`)
+            .join('');
+    }
+
+    function openSubmissionModal(context) {
+        activeSubmissionContext = context;
+        const currentStatus = String(context.currentStatus || '').toLowerCase();
+        const isPending = currentStatus === '' || currentStatus === 'pending';
+
+        $('#submissionDetailsModalLabel').text(context.title);
+        $('#submission-details-content').html(`
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered align-middle mb-0">
+                    <tbody>
+                        ${formatDetailRows(context.details)}
+                    </tbody>
+                </table>
+            </div>
+        `);
+
+        if (isPending) {
+            $('#submission-approve-btn')
+                .text('Approve & Open Gmail')
+                .removeClass('d-none');
+            $('#submission-disapprove-btn')
+                .text('Disapprove & Open Gmail')
+                .removeClass('d-none');
+        } else {
+            $('#submission-approve-btn').addClass('d-none');
+            $('#submission-disapprove-btn').addClass('d-none');
+        }
+
+        new bootstrap.Modal(document.getElementById('submissionDetailsModal')).show();
+    }
+
+    function performStatusAndCompose(action) {
+        if (!activeSubmissionContext) {
+            return;
+        }
+
+        const context = activeSubmissionContext;
+        const recordId = context.id;
+        const status = action === 'approve' ? (context.approveStatus || 'approved') : (context.disapproveStatus || 'rejected');
+
+        if (!context.recipientEmail) {
+            showNotification('error', 'No recipient email found for this submission');
+            return;
+        }
+
+        $.post(baseUrl + context.statusPath, { id: recordId, status }, function(response) {
+            if (!response.success) {
+                showNotification('error', response.message || 'Failed to update status');
+                return;
+            }
+
+            const normalizedStatus = status.toLowerCase();
+            const readableStatus = toTitleCase(normalizedStatus);
+            const subject = `[CCIS Alumni] ${context.emailType} ${readableStatus}`;
+            const body = [
+                `Hello ${context.recipientName || 'Alumni'},`,
+                '',
+                `Your ${context.emailType.toLowerCase()} has been marked as ${normalizedStatus} by the admin.`,
+                '',
+                'Submission details:',
+                ...Object.entries(context.details).map(([label, value]) => `${label}: ${value || '-'}`),
+                '',
+                'Regards,',
+                'CCIS Admin'
+            ].join('\n');
+
+            const modalEl = document.getElementById('submissionDetailsModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+
+            context.reloadFn();
+
+            const gmailUrl = buildGmailLink(context.recipientEmail, subject, body);
+            window.open(gmailUrl, '_blank', 'noopener');
+
+            showNotification('success', `Status updated to ${readableStatus}. Gmail compose opened.`);
+        }, 'json').fail(function(xhr) {
+            const msg = xhr.responseJSON?.message || 'Failed to update status';
+            showNotification('error', msg);
+        });
     }
 
     // ==================== LOADERS ====================
@@ -61,13 +171,12 @@ $(document).ready(function () {
             data.forEach(row => {
                 body.append(`
                     <tr>
-                        <td>${row.name}</td>
-                        <td>${row.email}</td>
-                        <td>${row.expertise}</td>
+                        <td>${escapeHtml(row.name)}</td>
+                        <td>${escapeHtml(row.email)}</td>
+                        <td>${escapeHtml(row.expertise)}</td>
                         <td>${statusBadge(row.status)}</td>
                         <td>
-                            <button class="btn btn-sm btn-success btn-mentor-status" data-id="${row.id}" data-status="approved">Approve</button>
-                            <button class="btn btn-sm btn-danger btn-mentor-status" data-id="${row.id}" data-status="rejected">Reject</button>
+                            <button class="btn btn-sm btn-outline-primary btn-view-submission" data-type="mentor" data-payload="${encodeURIComponent(JSON.stringify(row))}">View</button>
                         </td>
                     </tr>
                 `);
@@ -91,9 +200,9 @@ $(document).ready(function () {
             data.forEach(row => {
                 body.append(`
                     <tr>
-                        <td>${row.name}</td>
-                        <td>${row.question}</td>
-                        <td>${row.category}</td>
+                        <td>${escapeHtml(row.name)}</td>
+                        <td>${escapeHtml(row.question)}</td>
+                        <td>${escapeHtml(row.category)}</td>
                         <td>${formatDate(row.inquiry_date)}</td>
                         <td>${statusBadge(row.status)}</td>
                     </tr>
@@ -118,11 +227,14 @@ $(document).ready(function () {
             data.forEach(row => {
                 body.append(`
                     <tr>
-                        <td>${row.from_name}</td>
-                        <td>${row.to_name}</td>
-                        <td>${row.message}</td>
+                        <td>${escapeHtml(row.from_name)}</td>
+                        <td>${escapeHtml(row.from_email)}</td>
+                        <td>${escapeHtml(row.to_name)}</td>
                         <td>${formatDate(row.request_date)}</td>
                         <td>${statusBadge(row.status)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary btn-view-submission" data-type="connection" data-payload="${encodeURIComponent(JSON.stringify(row))}">View</button>
+                        </td>
                     </tr>
                 `);
             });
@@ -145,13 +257,12 @@ $(document).ready(function () {
             data.forEach(row => {
                 body.append(`
                     <tr>
-                        <td>${row.author}</td>
-                        <td>${row.content}</td>
+                        <td>${escapeHtml(row.author)}</td>
+                        <td>${escapeHtml(row.content)}</td>
                         <td>${formatDate(row.update_date)}</td>
                         <td>${statusBadge(row.status)}</td>
                         <td>
-                            <button class="btn btn-sm btn-success btn-update-status" data-id="${row.id}" data-status="approved">Approve</button>
-                            <button class="btn btn-sm btn-danger btn-update-status" data-id="${row.id}" data-status="hidden">Hide</button>
+                            <button class="btn btn-sm btn-outline-primary btn-view-submission" data-type="update" data-payload="${encodeURIComponent(JSON.stringify(row))}">View</button>
                         </td>
                     </tr>
                 `);
@@ -175,11 +286,13 @@ $(document).ready(function () {
             data.forEach(row => {
                 body.append(`
                     <tr>
-                        <td>${row.author}</td>
-                        <td>${row.title}</td>
-                        <td>${row.description}</td>
+                        <td>${escapeHtml(row.author)}</td>
+                        <td>${escapeHtml(row.title)}</td>
                         <td>${formatDate(row.submission_date)}</td>
                         <td>${statusBadge(row.status)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary btn-view-submission" data-type="giveback" data-payload="${encodeURIComponent(JSON.stringify(row))}">View</button>
+                        </td>
                     </tr>
                 `);
             });
@@ -201,16 +314,16 @@ $(document).ready(function () {
 
             data.forEach(row => {
                 const photoHtml = row.photo
-                    ? `<div class="mb-2"><img src="${baseUrl + row.photo}" alt="${row.name}" style="width:100%;height:180px;object-fit:cover;border-radius:6px;"></div>`
+                    ? `<div class="mb-2"><img src="${baseUrl + row.photo}" alt="${escapeHtml(row.name)}" style="width:100%;height:180px;object-fit:cover;border-radius:6px;"></div>`
                     : '';
                 grid.append(`
                     <div class="col-md-4">
                         <div class="card h-100">
                             <div class="card-body">
                                 ${photoHtml}
-                                <h5 class="card-title">${row.name}</h5>
-                                <p class="text-muted mb-2">${row.position}</p>
-                                <p class="card-text">${row.bio}</p>
+                                <h5 class="card-title">${escapeHtml(row.name)}</h5>
+                                <p class="text-muted mb-2">${escapeHtml(row.position)}</p>
+                                <p class="card-text">${escapeHtml(row.bio)}</p>
                             </div>
                             <div class="card-footer text-end">
                                 <button class="btn btn-sm btn-outline-danger btn-delete-featured" data-id="${row.id}">Delete</button>
@@ -238,10 +351,10 @@ $(document).ready(function () {
             data.forEach(row => {
                 body.append(`
                     <tr>
-                        <td>${row.name}</td>
-                        <td>${row.batch}</td>
-                        <td>${row.email}</td>
-                        <td>${row.phone}</td>
+                        <td>${escapeHtml(row.name)}</td>
+                        <td>${escapeHtml(row.batch)}</td>
+                        <td>${escapeHtml(row.email)}</td>
+                        <td>${escapeHtml(row.phone)}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-danger btn-delete-directory" data-id="${row.id}">Delete</button>
                         </td>
@@ -266,16 +379,16 @@ $(document).ready(function () {
 
             data.forEach(row => {
                 const photoHtml = row.photo
-                    ? `<div class="mb-2"><img src="${baseUrl + row.photo}" alt="${row.title}" style="width:100%;height:180px;object-fit:cover;border-radius:6px;"></div>`
+                    ? `<div class="mb-2"><img src="${baseUrl + row.photo}" alt="${escapeHtml(row.title)}" style="width:100%;height:180px;object-fit:cover;border-radius:6px;"></div>`
                     : '';
                 grid.append(`
                     <div class="col-md-4">
                         <div class="card h-100">
                             <div class="card-body">
                                 ${photoHtml}
-                                <h5 class="card-title">${row.title}</h5>
-                                <p class="text-muted mb-2">By ${row.author}</p>
-                                <p class="card-text">${row.content}</p>
+                                <h5 class="card-title">${escapeHtml(row.title)}</h5>
+                                <p class="text-muted mb-2">By ${escapeHtml(row.author)}</p>
+                                <p class="card-text">${escapeHtml(row.content)}</p>
                             </div>
                             <div class="card-footer text-end">
                                 <button class="btn btn-sm btn-outline-danger btn-delete-story" data-id="${row.id}">Delete</button>
@@ -301,16 +414,16 @@ $(document).ready(function () {
 
             data.forEach(row => {
                 const photoHtml = row.photo
-                    ? `<div class="mb-2"><img src="${baseUrl + row.photo}" alt="${row.name}" style="width:100%;height:180px;object-fit:cover;border-radius:6px;"></div>`
+                    ? `<div class="mb-2"><img src="${baseUrl + row.photo}" alt="${escapeHtml(row.name)}" style="width:100%;height:180px;object-fit:cover;border-radius:6px;"></div>`
                     : '';
                 grid.append(`
                     <div class="col-md-4">
                         <div class="card h-100">
                             <div class="card-body">
                                 ${photoHtml}
-                                <h5 class="card-title">${row.name}</h5>
-                                <p class="text-muted mb-1">${formatDate(row.event_date)} | ${row.location}</p>
-                                <p class="card-text">${row.description}</p>
+                                <h5 class="card-title">${escapeHtml(row.name)}</h5>
+                                <p class="text-muted mb-1">${formatDate(row.event_date)} | ${escapeHtml(row.location)}</p>
+                                <p class="card-text">${escapeHtml(row.description)}</p>
                             </div>
                             <div class="card-footer text-end">
                                 <button class="btn btn-sm btn-outline-danger btn-delete-event" data-id="${row.id}">Delete</button>
@@ -323,28 +436,133 @@ $(document).ready(function () {
     }
 
     // ==================== ACTIONS ====================
-    $(document).on('click', '.btn-mentor-status', function () {
-        const id = $(this).data('id');
-        const status = $(this).data('status');
-        $.post(baseUrl + 'admin/manage/alumni/mentor_status', { id, status }, function(response) {
-            if (response.success) {
-                loadMentorRequests();
-            } else {
-                showNotification('error', response.message || 'Failed to update status');
-            }
-        }, 'json');
+    $(document).on('click', '.btn-view-submission', function () {
+        const type = $(this).data('type');
+        const payload = $(this).attr('data-payload') || '%7B%7D';
+        let row = {};
+
+        try {
+            row = JSON.parse(decodeURIComponent(payload));
+        } catch (e) {
+            showNotification('error', 'Failed to read submission details');
+            return;
+        }
+
+        const commonDetails = {
+            'Status': row.status || 'pending',
+            'Submitted': formatDate(row.created_at || row.request_date || row.update_date || row.submission_date)
+        };
+
+        if (type === 'mentor') {
+            openSubmissionModal({
+                id: row.id,
+                title: 'Mentor Request Details',
+                emailType: 'Mentor Request',
+                recipientEmail: row.email,
+                recipientName: row.name,
+                currentStatus: row.status,
+                statusPath: 'admin/manage/alumni/mentor_status',
+                reloadFn: loadMentorRequests,
+                approveStatus: 'approved',
+                disapproveStatus: 'rejected',
+                details: {
+                    'Name': row.name,
+                    'Email': row.email,
+                    'Expertise': row.expertise,
+                    ...commonDetails
+                }
+            });
+            return;
+        }
+
+        if (type === 'connection') {
+            openSubmissionModal({
+                id: row.id,
+                title: 'Connection Request Details',
+                emailType: 'Connection Request',
+                recipientEmail: row.from_email,
+                recipientName: row.from_name,
+                currentStatus: row.status,
+                statusPath: 'admin/manage/alumni/connection_status',
+                reloadFn: loadConnectionRequests,
+                approveStatus: 'approved',
+                disapproveStatus: 'rejected',
+                details: {
+                    'From Name': row.from_name,
+                    'From Email': row.from_email,
+                    'To Alumni': row.to_name,
+                    'Purpose': row.purpose,
+                    'Message': row.message,
+                    'Batch': row.batch,
+                    'Request Date': formatDate(row.request_date),
+                    ...commonDetails
+                }
+            });
+            return;
+        }
+
+        if (type === 'update') {
+            openSubmissionModal({
+                id: row.id,
+                title: 'Alumni Update Details',
+                emailType: 'Alumni Update',
+                recipientEmail: row.email,
+                recipientName: row.author,
+                currentStatus: row.status,
+                statusPath: 'admin/manage/alumni/update_status',
+                reloadFn: loadUpdates,
+                approveStatus: 'approved',
+                disapproveStatus: 'hidden',
+                details: {
+                    'Author': row.author,
+                    'Email': row.email,
+                    'Batch': row.batch,
+                    'Program': row.program,
+                    'Position': row.position,
+                    'Company': row.company,
+                    'Update': row.content,
+                    'Mentor': row.giveback_mentor ? 'Yes' : 'No',
+                    'Speaker': row.giveback_speaker ? 'Yes' : 'No',
+                    'Internship': row.giveback_internship ? 'Yes' : 'No',
+                    'Donation': row.giveback_donation ? 'Yes' : 'No',
+                    'Update Date': formatDate(row.update_date),
+                    ...commonDetails
+                }
+            });
+            return;
+        }
+
+        if (type === 'giveback') {
+            openSubmissionModal({
+                id: row.id,
+                title: 'Give Back Submission Details',
+                emailType: 'Give Back Submission',
+                recipientEmail: row.email,
+                recipientName: row.author,
+                currentStatus: row.status,
+                statusPath: 'admin/manage/alumni/giveback_status',
+                reloadFn: loadGiveback,
+                approveStatus: 'approved',
+                disapproveStatus: 'rejected',
+                details: {
+                    'Name': row.author,
+                    'Email': row.email,
+                    'Batch': row.batch,
+                    'Type': row.title,
+                    'Details': row.description,
+                    'Submission Date': formatDate(row.submission_date),
+                    ...commonDetails
+                }
+            });
+        }
     });
 
-    $(document).on('click', '.btn-update-status', function () {
-        const id = $(this).data('id');
-        const status = $(this).data('status');
-        $.post(baseUrl + 'admin/manage/alumni/update_status', { id, status }, function(response) {
-            if (response.success) {
-                loadUpdates();
-            } else {
-                showNotification('error', response.message || 'Failed to update status');
-            }
-        }, 'json');
+    $('#submission-approve-btn').on('click', function() {
+        performStatusAndCompose('approve');
+    });
+
+    $('#submission-disapprove-btn').on('click', function() {
+        performStatusAndCompose('disapprove');
     });
 
     $(document).on('submit', '#addFeaturedForm', function (e) {

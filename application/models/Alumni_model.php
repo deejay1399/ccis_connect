@@ -42,6 +42,10 @@ class Alumni_model extends CI_Model {
         return $this->db->order_by('created_at', 'DESC')->get($this->connection_table)->result_array();
     }
 
+    public function update_connection_status($id, $status) {
+        return $this->db->where('id', $id)->update($this->connection_table, ['status' => $status]);
+    }
+
     public function insert_connection_request($data) {
         $data['created_at'] = date('Y-m-d H:i:s');
         if ($this->db->insert($this->connection_table, $data)) {
@@ -68,6 +72,10 @@ class Alumni_model extends CI_Model {
 
     public function get_all_giveback() {
         return $this->db->order_by('created_at', 'DESC')->get($this->giveback_table)->result_array();
+    }
+
+    public function update_giveback_status($id, $status) {
+        return $this->db->where('id', $id)->update($this->giveback_table, ['status' => $status]);
     }
 
     public function insert_giveback($data) {

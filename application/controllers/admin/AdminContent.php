@@ -188,6 +188,30 @@ class AdminContent extends CI_Controller {
 		exit;
 	}
 
+	public function update_alumni_connection_status()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$id = (int) $this->input->post('id');
+			$status = trim((string) $this->input->post('status'));
+
+			if ($id <= 0 || $status === '') {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'ID and status are required']);
+				exit;
+			}
+
+			$result = $this->Alumni_model->update_connection_status($id, $status);
+			echo json_encode(['success' => (bool) $result]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
 	public function load_alumni_updates()
 	{
 		header('Content-Type: application/json');
@@ -235,6 +259,30 @@ class AdminContent extends CI_Controller {
 			$data = $this->Alumni_model->get_all_giveback();
 			echo json_encode(['success' => true, 'data' => $data]);
 		} catch (Exception $e) {
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function update_alumni_giveback_status()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$id = (int) $this->input->post('id');
+			$status = trim((string) $this->input->post('status'));
+
+			if ($id <= 0 || $status === '') {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'ID and status are required']);
+				exit;
+			}
+
+			$result = $this->Alumni_model->update_giveback_status($id, $status);
+			echo json_encode(['success' => (bool) $result]);
+		} catch (Exception $e) {
+			http_response_code(500);
 			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 		}
 		exit;

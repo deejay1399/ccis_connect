@@ -127,10 +127,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 <thead>
                                     <tr>
                                         <th>From</th>
+                                        <th>Email</th>
                                         <th>To</th>
-                                        <th>Message</th>
                                         <th>Date</th>
                                         <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="connection-table-body">
@@ -184,9 +185,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                     <tr>
                                         <th>Author</th>
                                         <th>Title</th>
-                                        <th>Description</th>
                                         <th>Date</th>
                                         <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="giveback-table-body">
@@ -283,6 +284,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 </div>
             </div>
         </main>
+    </div>
+</div>
+
+<!-- Modals -->
+<!-- Submission Details + Decision Modal -->
+<div class="modal fade" id="submissionDetailsModal" tabindex="-1" aria-labelledby="submissionDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="submissionDetailsModalLabel">Submission Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="submission-details-content">
+                <!-- Details rendered by JS -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="submission-disapprove-btn">Disapprove & Open Gmail</button>
+                <button type="button" class="btn btn-success" id="submission-approve-btn">Approve & Open Gmail</button>
+            </div>
+        </div>
     </div>
 </div>
 
