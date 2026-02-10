@@ -7,8 +7,8 @@ class AdminUsers extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->helper('url');
-		// Add authentication check here if needed
-		// $this->load->library('session');
+		$this->load->helper(['auth', 'string']);
+		require_superadmin();
 	}
 
 	public function create()
@@ -56,7 +56,7 @@ class AdminUsers extends CI_Controller {
 		
 		$this->load->view('superadmin/layouts/header', $data);
 		$this->load->view('superadmin/layouts/navigation');
-		$this->load->view('superadmin/users/edit_user', $data);
+		$this->load->view('superadmin/pages/list_users', $data);
 		$this->load->view('superadmin/layouts/footer');
 	}
 
@@ -121,8 +121,8 @@ class AdminUsers extends CI_Controller {
 		}
 
 		try {
-			// Use default password
-			$password = 'pass1234';
+			// Generate one-time temporary password.
+			$password = random_string('alnum', 14);
 
 			// Create user - User_model will hash the password
 			$userData = [
@@ -164,7 +164,6 @@ class AdminUsers extends CI_Controller {
 				'success' => true,
 				'message' => 'User created successfully',
 				'user_id' => $userId,
-				'password' => $password,
 				'email' => $email
 			]);
 

@@ -98,10 +98,10 @@
                     Here are some quick questions:
                 </div>
                 <div class="quick-questions">
-                    <button class="quick-question" data-question="Where can I find curriculum?">📚 Curriculum</button>
-                    <button class="quick-question" data-question="What are the office hours?">⏰ Office Hours</button>
-                    <button class="quick-question" data-question="How to contact faculty?">👨‍🏫 Faculty Contact</button>
-                    <button class="quick-question" data-question="Where is the alumni section?">🎓 Alumni Info</button>
+                    <button class="quick-question" data-question="What programs are offered in CCIS?">Programs Offered</button>
+                    <button class="quick-question" data-question="Where can I find the curriculum?">Find Curriculum</button>
+                    <button class="quick-question" data-question="Where can I download forms?">Download Forms</button>
+                    <button class="quick-question" data-question="What are the office hours?">Office Hours</button>
                 </div>
             </div>
         </div>
@@ -128,6 +128,107 @@
     <script>
         // Set global base URL for all pages
         window.BASE_URL = '<?php echo base_url(); ?>';
+        window.CSRF_TOKEN_NAME = '<?php echo $this->security->get_csrf_token_name(); ?>';
+        window.CSRF_TOKEN_VALUE = '<?php echo $this->security->get_csrf_hash(); ?>';
+    </script>
+    <script>
+        (function attachCsrfHandlers() {
+            function injectCsrfIntoForms() {
+                document.querySelectorAll('form').forEach(function(form) {
+                    const method = (form.getAttribute('method') || 'get').toLowerCase();
+                    if (method !== 'post') {
+                        return;
+                    }
+                    let hidden = form.querySelector('input[name="' + window.CSRF_TOKEN_NAME + '"]');
+                    if (!hidden) {
+                        hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = window.CSRF_TOKEN_NAME;
+                        form.appendChild(hidden);
+                    }
+                    hidden.value = window.CSRF_TOKEN_VALUE;
+                });
+            }
+
+            injectCsrfIntoForms();
+            document.addEventListener('submit', injectCsrfIntoForms, true);
+
+            if (window.jQuery) {
+                $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                        const method = ((settings.type || 'GET') + '').toUpperCase();
+                        if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
+                            return;
+                        }
+
+                        if (settings.data instanceof FormData) {
+                            if (!settings.data.has(window.CSRF_TOKEN_NAME)) {
+                                settings.data.append(window.CSRF_TOKEN_NAME, window.CSRF_TOKEN_VALUE);
+                            }
+                            return;
+                        }
+
+                        const csrfPair = encodeURIComponent(window.CSRF_TOKEN_NAME) + '=' + encodeURIComponent(window.CSRF_TOKEN_VALUE);
+                        if (typeof settings.data === 'string') {
+                            if (settings.data.indexOf(window.CSRF_TOKEN_NAME + '=') === -1) {
+                                settings.data = settings.data ? settings.data + '&' + csrfPair : csrfPair;
+                            }
+                        } else if (settings.data && typeof settings.data === 'object') {
+                            settings.data[window.CSRF_TOKEN_NAME] = window.CSRF_TOKEN_VALUE;
+                        } else if (!settings.data) {
+                            settings.data = csrfPair;
+                        }
+                    }
+                });
+            }
+
+            if (window.fetch) {
+                const nativeFetch = window.fetch.bind(window);
+                window.fetch = function(resource, init) {
+                    const options = init ? Object.assign({}, init) : {};
+                    const method = ((options.method || 'GET') + '').toUpperCase();
+                    if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
+                        return nativeFetch(resource, options);
+                    }
+
+                    if (options.body instanceof FormData) {
+                        if (!options.body.has(window.CSRF_TOKEN_NAME)) {
+                            options.body.append(window.CSRF_TOKEN_NAME, window.CSRF_TOKEN_VALUE);
+                        }
+                        return nativeFetch(resource, options);
+                    }
+
+                    if (typeof options.body === 'string') {
+                        const hasToken = options.body.indexOf(window.CSRF_TOKEN_NAME + '=') !== -1;
+                        if (!hasToken) {
+                            const joiner = options.body.length ? '&' : '';
+                            options.body += joiner + encodeURIComponent(window.CSRF_TOKEN_NAME) + '=' + encodeURIComponent(window.CSRF_TOKEN_VALUE);
+                        }
+                        return nativeFetch(resource, options);
+                    }
+
+                    const headers = new Headers(options.headers || {});
+                    const contentType = (headers.get('Content-Type') || '').toLowerCase();
+                    if (contentType.indexOf('application/json') !== -1) {
+                        let payload = {};
+                        if (options.body) {
+                            try {
+                                payload = JSON.parse(options.body);
+                            } catch (e) {
+                                payload = {};
+                            }
+                        }
+                        payload[window.CSRF_TOKEN_NAME] = window.CSRF_TOKEN_VALUE;
+                        options.body = JSON.stringify(payload);
+                    } else {
+                        headers.set('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                        options.body = encodeURIComponent(window.CSRF_TOKEN_NAME) + '=' + encodeURIComponent(window.CSRF_TOKEN_VALUE);
+                    }
+                    options.headers = headers;
+                    return nativeFetch(resource, options);
+                };
+            }
+        })();
     </script>
     
     <!-- Session Data Bridge: PHP Session -> JavaScript localStorage -->

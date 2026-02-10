@@ -67,6 +67,14 @@ function has_role($role_id)
 }
 
 /**
+ * Check if current user is superadmin.
+ */
+function is_superadmin()
+{
+    return has_role(1);
+}
+
+/**
  * Get role name by ID
  */
 function get_role_name($role_id)
@@ -121,6 +129,14 @@ function redirect_by_role($role_id = null)
 
     $redirect_path = isset($redirect_paths[$role_id]) ? $redirect_paths[$role_id] : 'login';
     redirect($redirect_path);
+}
+
+/**
+ * Require a logged-in superadmin account.
+ */
+function require_superadmin()
+{
+    require_role(1);
 }
 
 /**

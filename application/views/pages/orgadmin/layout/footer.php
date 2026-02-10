@@ -47,6 +47,61 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+window.CSRF_TOKEN_NAME = '<?php echo $this->security->get_csrf_token_name(); ?>';
+window.CSRF_TOKEN_VALUE = '<?php echo $this->security->get_csrf_hash(); ?>';
+
+(function attachCsrfHandlers() {
+    function injectCsrfIntoForms() {
+        document.querySelectorAll('form').forEach(function(form) {
+            const method = (form.getAttribute('method') || 'get').toLowerCase();
+            if (method !== 'post') {
+                return;
+            }
+            let hidden = form.querySelector('input[name="' + window.CSRF_TOKEN_NAME + '"]');
+            if (!hidden) {
+                hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = window.CSRF_TOKEN_NAME;
+                form.appendChild(hidden);
+            }
+            hidden.value = window.CSRF_TOKEN_VALUE;
+        });
+    }
+
+    injectCsrfIntoForms();
+    document.addEventListener('submit', injectCsrfIntoForms, true);
+
+    if (window.jQuery) {
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                const method = ((settings.type || 'GET') + '').toUpperCase();
+                if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
+                    return;
+                }
+
+                if (settings.data instanceof FormData) {
+                    if (!settings.data.has(window.CSRF_TOKEN_NAME)) {
+                        settings.data.append(window.CSRF_TOKEN_NAME, window.CSRF_TOKEN_VALUE);
+                    }
+                    return;
+                }
+
+                const csrfPair = encodeURIComponent(window.CSRF_TOKEN_NAME) + '=' + encodeURIComponent(window.CSRF_TOKEN_VALUE);
+                if (typeof settings.data === 'string') {
+                    if (settings.data.indexOf(window.CSRF_TOKEN_NAME + '=') === -1) {
+                        settings.data = settings.data ? settings.data + '&' + csrfPair : csrfPair;
+                    }
+                } else if (settings.data && typeof settings.data === 'object') {
+                    settings.data[window.CSRF_TOKEN_NAME] = window.CSRF_TOKEN_VALUE;
+                } else if (!settings.data) {
+                    settings.data = csrfPair;
+                }
+            }
+        });
+    }
+})();
+</script>
 <script src="<?php echo base_url('assets/js/org_dashboard.js'); ?>"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@ $(document).ready(function () {
     // -----------------------------
 
     function checkSuperAdminSession() {
-        const session = window.checkUserSession ? window.checkUserSession() : (window.sessionData || { isValid: true, user: { role: 'superadmin', name: 'superadmin' } })
+        const session = window.checkUserSession ? window.checkUserSession() : (window.sessionData || { isValid: false, user: null })
 
         if (!session.isValid) {
             showStatusModal('Session Required', 'Please login to access Super Admin dashboard.', 'error')

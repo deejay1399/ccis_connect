@@ -53,44 +53,6 @@ class LoginController extends CI_Controller {
         redirect('login');
     }
 
-    /*
-    |--------------------------------------------------
-    | TEMPORARY TEST ACCOUNTS (REMOVE AFTER SETUP)
-    |--------------------------------------------------
-    */
-    // SUPER ADMIN
-    if ($email === 'admin@email.com' && $password === 'pass1234') {
-        $token = bin2hex(random_bytes(32));
-        $session_data = [
-            'user_id'    => 0,
-            'email'      => $email,
-            'first_name' => 'Super',
-            'last_name'  => 'Admin',
-            'role_id'    => 1, // SUPER ADMIN
-            'token'      => $token,
-            'logged_in'  => true
-        ];
-        $this->session->set_userdata($session_data);
-        redirect('admin/dashboard');
-    }
-
-    // STUDENT TEST ACCOUNT
-    if ($email === 'student@email.com' && $password === 'pass1234') {
-        $token = bin2hex(random_bytes(32));
-        $session_data = [
-            'user_id'    => 1,
-            'email'      => $email,
-            'first_name' => 'John',
-            'last_name'  => 'Student',
-            'role_id'    => 3, // STUDENT
-            'token'      => $token,
-            'logged_in'  => true
-        ];
-        $this->session->set_userdata($session_data);
-        redirect('homepage');
-    }
-    /* ---------- END TEST ACCOUNTS ---------- */
-
     // NORMAL DATABASE LOGIN FLOW
     $user = $this->User_model->get_by_email($email);
 
@@ -111,7 +73,8 @@ class LoginController extends CI_Controller {
         redirect('login');
     }
 
-    $token = bin2hex(random_bytes(32));
+    $role_name = $this->_get_role_name($role_id);
+    $token = $this->_generate_token();
 
     $this->Session_model->create_session($user->id, $token);
     $this->User_model->update_last_activity($user->id);
@@ -122,6 +85,7 @@ class LoginController extends CI_Controller {
         'first_name' => $user->first_name,
         'last_name'  => $user->last_name,
         'role_id'    => $role_id,
+        'role'       => $role_name,
         'token'      => $token,
         'logged_in'  => true
     ];
@@ -153,64 +117,30 @@ class LoginController extends CI_Controller {
 		$email = $this->input->post('email', true);
 		$password = $this->input->post('password', true);
 
-		error_log('API Auth attempt - Email: ' . $email);
-
 		if (empty($email) || empty($password)) {
 			http_response_code(400);
 			echo json_encode(['success' => false, 'message' => 'Email and password are required']);
 			exit;
 		}
 
-		// Check super admin hardcoded account
-		if ($email === 'admin@email.com' && $password === 'pass1234') {
-			error_log('Super admin login successful: ' . $email);
-			$user_data = [
-				'user_id'    => 0,
-				'email'      => $email,
-				'first_name' => 'Super',
-				'last_name'  => 'Admin',
-				'role_id'    => 1,
-				'role'       => 'superadmin',
-				'name'       => 'Super Admin'
-			];
-
-			http_response_code(200);
-			echo json_encode([
-				'success' => true,
-				'message' => 'Login successful',
-				'user' => $user_data
-			]);
-			exit;
-		}
-
 		// NORMAL DATABASE LOGIN FLOW
-		error_log('Checking database for user: ' . $email);
 		$user = $this->User_model->get_by_email($email);
 
 		if (!$user) {
-			error_log('User not found: ' . $email);
 			http_response_code(401);
 			echo json_encode(['success' => false, 'message' => 'Invalid email or password']);
 			exit;
 		}
 
-		error_log('User found: ' . $user->email . ', checking password');
-		
 		if (!$this->User_model->verify_password($password, $user->password_hash)) {
-			error_log('Password verification failed for: ' . $email);
-			error_log('Provided password: ' . $password);
-			error_log('Stored hash: ' . substr($user->password_hash, 0, 20) . '...');
 			http_response_code(401);
 			echo json_encode(['success' => false, 'message' => 'Invalid email or password']);
 			exit;
 		}
-
-		error_log('Password verified for: ' . $email);
 
 		$role_id = $this->UserRole_model->get_role_id($user->id);
 
 		if (!$role_id) {
-			error_log('No role assigned for user: ' . $email);
 			http_response_code(400);
 			echo json_encode(['success' => false, 'message' => 'User role not assigned']);
 			exit;
@@ -219,7 +149,7 @@ class LoginController extends CI_Controller {
 		// Map role_id to role name
 		$role_name = $this->_get_role_name($role_id);
 
-		$token = bin2hex(random_bytes(32));
+		$token = $this->_generate_token();
 
 		// Save session
 		$this->Session_model->create_session($user->id, $token);
@@ -244,8 +174,6 @@ class LoginController extends CI_Controller {
 		}
 
 		$this->session->set_userdata($session_data);
-
-		error_log('Login successful for: ' . $email . ' (Role: ' . $role_name . ')');
 
 		http_response_code(200);
 		echo json_encode([

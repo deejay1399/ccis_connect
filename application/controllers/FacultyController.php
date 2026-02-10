@@ -9,8 +9,6 @@ class FacultyController extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->helper('auth');
 		$this->load->library('session');
-		// Add authentication check here if needed
-		// $this->load->helper('auth');
 	}
 
 	/**
@@ -18,6 +16,8 @@ class FacultyController extends CI_Controller {
 	 */
 	public function dashboard()
 	{
+		require_role(2);
+
 		$data['page_title'] = 'Dashboard';
 		$data['page_type'] = 'faculty_dashboard';
 		

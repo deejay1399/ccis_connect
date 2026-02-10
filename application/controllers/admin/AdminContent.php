@@ -8,9 +8,9 @@ class AdminContent extends CI_Controller {
 		parent::__construct();
 		$this->load->helper('url');
 		$this->load->helper('string');
+		$this->load->helper('auth');
 		$this->load->model('Faculty_users_model');
-		// Add authentication check here if needed
-		// $this->load->library('session');
+		require_superadmin();
 	}
 
 	public function homepage()

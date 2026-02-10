@@ -7,8 +7,8 @@ class AdminDashboard extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->helper('url');
-		// Add authentication check here if needed
-		// $this->load->library('session');
+		$this->load->helper('auth');
+		require_superadmin();
 	}
 
 	public function index()

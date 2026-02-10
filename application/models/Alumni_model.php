@@ -38,6 +38,48 @@ class Alumni_model extends CI_Model {
         return $this->db->order_by('created_at', 'DESC')->get($this->chatbot_table)->result_array();
     }
 
+    public function insert_chatbot_inquiry($data) {
+        if (!$this->db->table_exists($this->chatbot_table)) {
+            return false;
+        }
+
+        $payload = array();
+
+        // Support flexible schemas by only inserting columns that exist.
+        $columns = $this->db->list_fields($this->chatbot_table);
+
+        if (in_array('name', $columns)) {
+            $payload['name'] = isset($data['name']) ? $data['name'] : 'Website Visitor';
+        }
+        if (in_array('question', $columns)) {
+            $payload['question'] = isset($data['question']) ? $data['question'] : '';
+        }
+        if (in_array('category', $columns)) {
+            $payload['category'] = isset($data['category']) ? $data['category'] : 'general';
+        }
+        if (in_array('status', $columns)) {
+            $payload['status'] = isset($data['status']) ? $data['status'] : 'pending';
+        }
+        if (in_array('inquiry_date', $columns)) {
+            $payload['inquiry_date'] = date('Y-m-d');
+        }
+        if (in_array('created_at', $columns)) {
+            $payload['created_at'] = date('Y-m-d H:i:s');
+        }
+        if (in_array('updated_at', $columns)) {
+            $payload['updated_at'] = date('Y-m-d H:i:s');
+        }
+
+        if (empty($payload)) {
+            return false;
+        }
+
+        if ($this->db->insert($this->chatbot_table, $payload)) {
+            return $this->db->insert_id();
+        }
+        return false;
+    }
+
     public function get_all_connection_requests() {
         return $this->db->order_by('created_at', 'DESC')->get($this->connection_table)->result_array();
     }

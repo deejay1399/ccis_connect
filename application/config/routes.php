@@ -38,6 +38,10 @@ $route['updates/api/announcements'] = 'UpdatesController/api_announcements';
 $route['updates/api/events_achievements'] = 'UpdatesController/api_events_achievements';
 $route['updates/api/deans_list'] = 'UpdatesController/api_deans_list';
 
+// ==================== CHATBOT ====================
+$route['chatbot/api/faq'] = 'ChatbotController/faq';
+$route['chatbot/api/ask'] = 'ChatbotController/ask';
+
 // ==================== FORMS ====================
 $route['forms'] = 'FormsController/view_forms';
 
@@ -138,19 +142,19 @@ $route['admin/content/api_update_program'] = 'admin/AdminContent/api_update_prog
 $route['admin/content/api_delete_program'] = 'admin/AdminContent/api_delete_program';
 
 // Curriculum Management API Endpoints
-$route['admin/content/api_upload_curriculum'] = 'AdminContent/api_upload_curriculum';
-$route['admin/content/api_get_curriculums'] = 'AdminContent/api_get_curriculums';
-$route['admin/content/api_delete_curriculum'] = 'AdminContent/api_delete_curriculum';
+$route['admin/content/api_upload_curriculum'] = 'admin/AdminContent/api_upload_curriculum';
+$route['admin/content/api_get_curriculums'] = 'admin/AdminContent/api_get_curriculums';
+$route['admin/content/api_delete_curriculum'] = 'admin/AdminContent/api_delete_curriculum';
 
 // Class Schedules Management API Endpoints
-$route['admin/content/api_upload_schedule'] = 'AdminContent/api_upload_schedule';
-$route['admin/content/api_get_schedules'] = 'AdminContent/api_get_schedules';
-$route['admin/content/api_delete_schedule'] = 'AdminContent/api_delete_schedule';
+$route['admin/content/api_upload_schedule'] = 'admin/AdminContent/api_upload_schedule';
+$route['admin/content/api_get_schedules'] = 'admin/AdminContent/api_get_schedules';
+$route['admin/content/api_delete_schedule'] = 'admin/AdminContent/api_delete_schedule';
 
 // Academic Calendars Management API Endpoints
-$route['admin/content/api_upload_calendar'] = 'AdminContent/api_upload_calendar';
-$route['admin/content/api_get_calendars'] = 'AdminContent/api_get_calendars';
-$route['admin/content/api_delete_calendar'] = 'AdminContent/api_delete_calendar';
+$route['admin/content/api_upload_calendar'] = 'admin/AdminContent/api_upload_calendar';
+$route['admin/content/api_get_calendars'] = 'admin/AdminContent/api_get_calendars';
+$route['admin/content/api_delete_calendar'] = 'admin/AdminContent/api_delete_calendar';
 
 // Admin User Management
 $route['admin/users/create'] = 'admin/AdminUsers/create';

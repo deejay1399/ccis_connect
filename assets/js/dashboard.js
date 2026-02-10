@@ -3,7 +3,7 @@ $(document).ready(function() {
     console.log('🔐 Super Admin Dashboard Loading...');
     
     // Enhanced session check for Super Admin
-    function checkSuperAdminSession() {
+    function checkDashboardSession() {
         const session = window.checkUserSession();
         
         console.log('Session check result:', session);
@@ -17,9 +17,10 @@ $(document).ready(function() {
             return false;
         }
         
-        if (session.user.role !== 'superadmin') {
-            console.warn('🚫 Unauthorized access attempt by:', session.user.role);
-            showNotification('Access denied. Super Admin privileges required.', 'error');
+        const allowedRoles = ['superadmin', 'faculty'];
+        if (!session.user || !allowedRoles.includes(session.user.role)) {
+            console.warn('Unauthorized access attempt by:', session.user ? session.user.role : 'unknown');
+            showNotification('Access denied. Authorized staff privileges required.', 'error');
             setTimeout(() => {
                 window.location.href = window.baseUrl ? window.baseUrl + 'login' : '/ccis_connect/login';
             }, 2000);
@@ -42,7 +43,8 @@ $(document).ready(function() {
         });
         
         // Update user role
-        $('#user-role').text('Super Admin');
+        const roleLabel = user.role === 'faculty' ? 'Faculty' : 'Super Admin';
+        $('#user-role').text(roleLabel);
         
         // Setup public site link to store return URL
         setupPublicSiteLink();
@@ -52,7 +54,7 @@ $(document).ready(function() {
     
     // Initialize dashboard
     function initializeDashboard() {
-        if (!checkSuperAdminSession()) {
+        if (!checkDashboardSession()) {
             return;
         }
         
@@ -73,18 +75,8 @@ $(document).ready(function() {
         
         // Remove any Return to Dashboard links
         removeReturnToDashboard();
-        
-        // Load and display notification counts
-        loadNotificationCounts();
-        displayNotificationBadges();
-        loadNotificationDropdown();
-        
-        // Setup notification bell functionality
+        // Keep notification icon visible but non-functional for now.
         setupNotificationBell();
-        
-        // Setup auto-refresh of notifications every 30 seconds
-        setInterval(loadNotificationCounts, 30000);
-        setInterval(loadNotificationDropdown, 30000);
         
         // Setup logout
         $('#logout-icon-link').on('click', function(e) {
@@ -102,38 +94,17 @@ $(document).ready(function() {
     
     // Setup Notification Bell Functionality
     function setupNotificationBell() {
-        const notificationBell = $('#notification-bell');
-        const notificationDropdown = $('#notification-dropdown');
-        
-        // Toggle dropdown on bell click
-        notificationBell.click(function(e) {
+        const notificationBell = $("#notification-bell");
+        const notificationDropdown = $("#notification-dropdown");
+
+        notificationDropdown.removeClass("show").hide();
+        $("#dashboard-notification-badge").hide();
+        $("#notification-count").text("0");
+
+        notificationBell.off("click").on("click", function(e) {
+            e.preventDefault();
             e.stopPropagation();
-            
-            // Add active class to notification bell
-            $(this).addClass('active');
-            
-            notificationDropdown.toggleClass('show');
-            
-            console.log('🔔 Notification bell clicked');
-        });
-        
-        // Close dropdown when clicking outside
-        $(document).click(function(e) {
-            if (!$(e.target).closest('#notification-wrapper').length) {
-                notificationDropdown.removeClass('show');
-                notificationBell.removeClass('active');
-            }
-        });
-        
-        // Mark all notifications as read
-        $('#mark-all-notifications').click(function(e) {
-            e.stopPropagation();
-            markAllNotificationsAsRead();
-        });
-        
-        // Prevent dropdown from closing when clicking inside
-        notificationDropdown.click(function(e) {
-            e.stopPropagation();
+            showNotification("Notifications are not available yet.", "info");
         });
     }
     
@@ -626,3 +597,4 @@ $(document).ready(function() {
     setTimeout(removeReturnToDashboard, 1000);
     setTimeout(removeReturnToDashboard, 2000);
 });
+

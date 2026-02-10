@@ -6,18 +6,24 @@ class AdminContent extends CI_Controller {
 	public function __construct() {
 		parent::__construct();
 		$this->load->model('Faculty_users_model');
-		$this->load->helper('url');
-		
-		// Skip session check for API endpoints
-		$current_method = $this->router->fetch_method();
-		if (strpos($current_method, 'api_') === 0) {
-			return; // Allow API endpoints without session check
+		$this->load->helper(['url', 'auth']);
+		require_superadmin();
+	}
+
+	private function is_valid_pdf_upload($tmpPath)
+	{
+		if (empty($tmpPath) || !is_file($tmpPath)) {
+			return false;
 		}
-		
-		// Check if user is logged in and is superadmin
-		if (!$this->session->userdata('logged_in') || $this->session->userdata('role') !== 'superadmin') {
-			redirect('login');
+
+		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		if (!$finfo) {
+			return false;
 		}
+
+		$mime = finfo_file($finfo, $tmpPath);
+		finfo_close($finfo);
+		return $mime === 'application/pdf';
 	}
 
 	// Faculty Management
@@ -433,13 +439,12 @@ class AdminContent extends CI_Controller {
 				return;
 			}
 
-			// Validate file is PDF
-			if ($file['type'] !== 'application/pdf') {
-				error_log('Invalid file type: ' . $file['type']);
+			// Validate file is PDF (detected from uploaded bytes)
+			if (!$this->is_valid_pdf_upload($file['tmp_name'])) {
 				http_response_code(400);
 				echo json_encode([
 					'success' => false,
-					'message' => 'Only PDF files are allowed. Got: ' . $file['type']
+					'message' => 'Only PDF files are allowed.'
 				]);
 				return;
 			}
@@ -712,13 +717,12 @@ class AdminContent extends CI_Controller {
 				return;
 			}
 
-			// Validate file is PDF
-			if ($file['type'] !== 'application/pdf') {
-				error_log('Invalid file type: ' . $file['type']);
+			// Validate file is PDF (detected from uploaded bytes)
+			if (!$this->is_valid_pdf_upload($file['tmp_name'])) {
 				http_response_code(400);
 				echo json_encode([
 					'success' => false,
-					'message' => 'Only PDF files are allowed. Got: ' . $file['type']
+					'message' => 'Only PDF files are allowed.'
 				]);
 				return;
 			}
@@ -908,10 +912,9 @@ class AdminContent extends CI_Controller {
 		}
 		
 		// Validate file type and size
-		$allowed_types = ['application/pdf'];
 		$max_size = 52428800; // 50MB
 		
-		if (!in_array($file['type'], $allowed_types)) {
+		if (!$this->is_valid_pdf_upload($file['tmp_name'])) {
 			echo json_encode(['success' => false, 'message' => 'Only PDF files are allowed']);
 			return;
 		}
@@ -1034,7 +1037,7 @@ class AdminContent extends CI_Controller {
 			$this->load->dbforge();
 			
 			$this->dbforge->add_field(array(
-				'id' => array(
+				'schedule_id' => array(
 					'type' => 'INT',
 					'constraint' => 11,
 					'auto_increment' => TRUE
@@ -1049,18 +1052,18 @@ class AdminContent extends CI_Controller {
 					'constraint' => '50',
 					'null' => FALSE
 				),
-				'file_url' => array(
+				'pdf_file' => array(
 					'type' => 'VARCHAR',
 					'constraint' => '255',
 					'null' => FALSE
 				),
-				'created_at' => array(
+				'uploaded_at' => array(
 					'type' => 'TIMESTAMP',
 					'default' => 'CURRENT_TIMESTAMP'
 				)
 			));
 			
-			$this->dbforge->add_key('id', TRUE);
+			$this->dbforge->add_key('schedule_id', TRUE);
 			$this->dbforge->create_table('class_schedules');
 			error_log('✅ Class schedules table created successfully');
 			return TRUE;

@@ -62,6 +62,34 @@ class FormsController extends CI_Controller {
 		}
 	}
 
+	private function _require_superadmin_json()
+	{
+		if (!$this->session->userdata('logged_in') || (int) $this->session->userdata('role_id') !== 1) {
+			http_response_code(403);
+			echo json_encode(['success' => false, 'message' => 'Forbidden']);
+			return false;
+		}
+
+		return true;
+	}
+
+	private function _is_pdf_file($tmpPath)
+	{
+		if (empty($tmpPath) || !is_file($tmpPath)) {
+			return false;
+		}
+
+		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		if (!$finfo) {
+			return false;
+		}
+
+		$mime = finfo_file($finfo, $tmpPath);
+		finfo_close($finfo);
+
+		return $mime === 'application/pdf';
+	}
+
 	public function index()
 	{
 		$data['page_type'] = 'forms';
@@ -100,6 +128,9 @@ class FormsController extends CI_Controller {
 	public function upload_form()
 	{
 		header('Content-Type: application/json');
+		if (!$this->_require_superadmin_json()) {
+			return;
+		}
 		
 		if ($this->input->method() !== 'post') {
 			http_response_code(405);
@@ -127,15 +158,14 @@ class FormsController extends CI_Controller {
 			}
 
 			$file = $_FILES['file'];
-			$allowed_types = array('application/pdf');
 			$max_size = 10 * 1024 * 1024; // 10MB
 
 			log_message('debug', 'File details - Name: ' . $file['name'] . ', Type: ' . $file['type'] . ', Size: ' . $file['size']);
 
-			// Validate file type
-			if (!in_array($file['type'], $allowed_types)) {
+			// Validate file signature/MIME from the uploaded bytes.
+			if (!$this->_is_pdf_file($file['tmp_name'])) {
 				http_response_code(400);
-				echo json_encode(['success' => false, 'message' => 'Only PDF files are allowed. Type: ' . $file['type']]);
+				echo json_encode(['success' => false, 'message' => 'Only PDF files are allowed']);
 				return;
 			}
 
@@ -218,6 +248,9 @@ class FormsController extends CI_Controller {
 	public function update_form()
 	{
 		header('Content-Type: application/json');
+		if (!$this->_require_superadmin_json()) {
+			return;
+		}
 		
 		if ($this->input->method() !== 'post') {
 			http_response_code(405);
@@ -240,11 +273,10 @@ class FormsController extends CI_Controller {
 			// Handle file update if new file is provided
 			if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
 				$file = $_FILES['file'];
-				$allowed_types = array('application/pdf');
 				$max_size = 10 * 1024 * 1024; // 10MB
 
-				// Validate file type
-				if (!in_array($file['type'], $allowed_types)) {
+				// Validate file signature/MIME from the uploaded bytes.
+				if (!$this->_is_pdf_file($file['tmp_name'])) {
 					http_response_code(400);
 					echo json_encode(['success' => false, 'message' => 'Only PDF files are allowed']);
 					return;
@@ -318,6 +350,9 @@ class FormsController extends CI_Controller {
 	public function delete_form()
 	{
 		header('Content-Type: application/json');
+		if (!$this->_require_superadmin_json()) {
+			return;
+		}
 		
 		if ($this->input->method() !== 'post') {
 			http_response_code(405);
