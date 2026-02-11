@@ -434,7 +434,7 @@ function initializeAll() {
 function redirectBasedOnRole(user) {
     console.log('🎯 Redirecting user based on role:', user.role, user.organization);
     
-    if (user.role === 'superadmin') {
+    if (['superadmin', 'faculty'].includes(user.role)) {
         console.log('🚀 Redirecting to Super Admin Dashboard');
         window.location.replace('super_admin/index.html');
     } else if (user.role === 'orgadmin') {
@@ -715,7 +715,7 @@ function hasAccess(requiredRole) {
     const roleHierarchy = {
         'superadmin': 4,
         'orgadmin': 3,
-        'faculty': 2,
+        'faculty': 4,
         'student': 1
     };
     

@@ -18,8 +18,8 @@ $(document).ready(function () {
             return false
         }
 
-        if (!session.user || session.user.role !== 'superadmin') {
-            showStatusModal('Access Denied', 'Super Admin privileges required.', 'error')
+        if (!session.user || !['superadmin', 'faculty'].includes(session.user.role)) {
+            showStatusModal('Access Denied', 'Super Admin or Faculty privileges required.', 'error')
             setTimeout(() => {
                 window.location.href = (window.baseUrl || window.BASE_URL || '/')
             }, 1500)
@@ -670,3 +670,4 @@ $(document).ready(function () {
 
     loadAll()
 })
+

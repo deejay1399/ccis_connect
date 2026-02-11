@@ -132,11 +132,24 @@ function redirect_by_role($role_id = null)
 }
 
 /**
- * Require a logged-in superadmin account.
+ * Require a logged-in superadmin or faculty account.
  */
 function require_superadmin()
 {
-    require_role(1);
+    require_login();
+
+    $role_id = (int) get_user_role();
+    if ($role_id !== 1 && $role_id !== 2) {
+        show_error('You do not have permission to access this page', 403);
+    }
+}
+
+/**
+ * Require a logged-in account with superadmin/faculty privileges.
+ */
+function require_admin_or_faculty()
+{
+    require_superadmin();
 }
 
 /**

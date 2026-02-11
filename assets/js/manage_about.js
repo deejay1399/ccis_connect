@@ -71,8 +71,8 @@ $(document).ready(function() {
             return false;
         }
         
-        if (session.user.role !== 'superadmin') {
-            showNotification('Access denied. Super Admin privileges required.', 'error');
+        if (!['superadmin', 'faculty'].includes(session.user.role)) {
+            showNotification('Access denied. Super Admin or Faculty privileges required.', 'error');
             setTimeout(() => {
                 window.location.href = '../index.html';
             }, 2000);

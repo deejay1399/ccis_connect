@@ -64,7 +64,8 @@ class FormsController extends CI_Controller {
 
 	private function _require_superadmin_json()
 	{
-		if (!$this->session->userdata('logged_in') || (int) $this->session->userdata('role_id') !== 1) {
+		$roleId = (int) $this->session->userdata('role_id');
+		if (!$this->session->userdata('logged_in') || !in_array($roleId, [1, 2], true)) {
 			http_response_code(403);
 			echo json_encode(['success' => false, 'message' => 'Forbidden']);
 			return false;

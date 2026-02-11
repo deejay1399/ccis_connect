@@ -31,7 +31,7 @@ function checkAndShowReturnButton(user) {
     }
     
     // Dili admin? Dili gihapon magpakita og button
-    if (user.role !== 'orgadmin' && user.role !== 'superadmin') {
+    if (!['orgadmin', 'superadmin', 'faculty'].includes(user.role)) {
         console.log('❌ User is not admin, no return button');
         return;
     }
@@ -57,7 +57,7 @@ function checkAndShowReturnButton(user) {
             } else if (user.organization && user.organization.includes('The Legion')) {
                 returnUrl = 'legion_admin/index.html';
             }
-        } else if (user.role === 'superadmin') {
+        } else if (['superadmin', 'faculty'].includes(user.role)) {
             returnUrl = 'super_admin/index.html';
         }
         
@@ -82,7 +82,7 @@ function addFloatingReturnButton(user, orgParam = null) {
         existingBtn.remove();
     }
     
-    if (user && (user.role === 'orgadmin' || user.role === 'superadmin')) {
+    if (user && (user.role === 'orgadmin' || ['superadmin', 'faculty'].includes(user.role))) {
         let dashboardUrl = '';
         let buttonText = 'Return to Dashboard';
         
@@ -113,7 +113,7 @@ function addFloatingReturnButton(user, orgParam = null) {
         
         // Priority 3: Fallback based on user role/organization
         if (!dashboardUrl) {
-            if (user.role === 'superadmin') {
+            if (['superadmin', 'faculty'].includes(user.role)) {
                 dashboardUrl = 'super_admin/index.html';
                 buttonText = 'Return to Super Admin';
             } else if (user.role === 'orgadmin') {
@@ -455,6 +455,7 @@ function getCurrentUser() {
 function getRoleDisplayName(role) {
     const roleNames = {
         'superadmin': 'Super Admin',
+        'faculty': 'Faculty',
         'student': 'Student',
         'orgadmin': 'Organization Admin',
         'guest': 'Guest'
@@ -467,7 +468,7 @@ function hasAccess(requiredRole) {
     const roleHierarchy = {
         'guest': 0,
         'student': 1,
-        'faculty': 2,
+        'faculty': 3,
         'orgadmin': 2,
         'superadmin': 3
     };
@@ -861,3 +862,4 @@ window.getCurrentUser = getCurrentUser;
 window.getCurrentUserRole = getCurrentUserRole;
 window.hasAccess = hasAccess;
 window.filterContentByRole = filterContentByRole;
+
