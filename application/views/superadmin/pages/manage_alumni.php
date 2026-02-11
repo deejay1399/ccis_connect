@@ -13,27 +13,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <ul class="nav nav-tabs" id="alumniTabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="mentor-tab" data-bs-toggle="tab" data-bs-target="#mentor-content" type="button" role="tab">
-                            <i class="fas fa-handshake me-2"></i>Mentor Requests
+                            <i class="fas fa-handshake me-2"></i>Mentor Volunteers
+                            <span class="badge bg-danger ms-2" id="mentor-badge">0</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="chatbot-tab" data-bs-toggle="tab" data-bs-target="#chatbot-content" type="button" role="tab">
                             <i class="fas fa-robot me-2"></i>Chatbot Inquiries
+                            <span class="badge bg-danger ms-2" id="chatbot-tab-badge">0</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="connection-tab" data-bs-toggle="tab" data-bs-target="#connection-content" type="button" role="tab">
                             <i class="fas fa-user-friends me-2"></i>Connection Requests
+                            <span class="badge bg-danger ms-2" id="connection-badge">0</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="updates-tab" data-bs-toggle="tab" data-bs-target="#updates-content" type="button" role="tab">
-                            <i class="fas fa-newspaper me-2"></i>Alumni Updates
+                            <i class="fas fa-user-edit me-2"></i>Alumni Updates
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="giveback-tab" data-bs-toggle="tab" data-bs-target="#giveback-content" type="button" role="tab">
-                            <i class="fas fa-heart me-2"></i>Give Back
+                            <i class="fas fa-donate me-2"></i>Give Back Submissions
+                            <span class="badge bg-danger ms-2" id="giveback-badge">0</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
@@ -43,7 +47,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="directory-tab" data-bs-toggle="tab" data-bs-target="#directory-content" type="button" role="tab">
-                            <i class="fas fa-address-book me-2"></i>Directory
+                            <i class="fas fa-address-book me-2"></i>Alumni Directory
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
@@ -53,38 +57,42 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="events-tab" data-bs-toggle="tab" data-bs-target="#events-content" type="button" role="tab">
-                            <i class="fas fa-calendar me-2"></i>Events
+                            <i class="fas fa-calendar-alt me-2"></i>Events
                         </button>
                     </li>
                 </ul>
 
                 <!-- Tab Content -->
                 <div class="tab-content" id="alumniTabContent">
-                    <!-- Mentor Requests Tab -->
+                    <!-- Mentor Volunteers Tab -->
                     <div class="tab-pane fade show active" id="mentor-content" role="tabpanel">
-                        <div class="tab-header mt-4 mb-4">
-                            <h4><i class="fas fa-handshake me-2"></i>Mentor Volunteers</h4>
-                            <p class="text-muted">Alumni willing to mentor current students</p>
+                        <div class="tab-header">
+                            <h4><i class="fas fa-handshake me-2"></i>Mentor Volunteer Submissions</h4>
+                            <button class="btn btn-sm btn-outline-primary" id="mark-all-mentor-read">
+                                <i class="fas fa-check-double me-1"></i>Mark All as Read
+                            </button>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Field of Expertise</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
+                                        <th width="20%">Name</th>
+                                        <th width="15%">Batch</th>
+                                        <th width="20%">Email</th>
+                                        <th width="20%">Area of Interest</th>
+                                        <th width="15%">Submitted</th>
+                                        <th width="10%">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="mentor-table-body">
-                                    <!-- Mentor records will be loaded here -->
+                                    <!-- Data will be loaded here -->
                                 </tbody>
                             </table>
                         </div>
                         <div class="no-data" id="no-mentor-data">
-                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                            <p>No mentor requests yet</p>
+                            <i class="fas fa-handshake fa-3x mb-3"></i>
+                            <h5>No Mentor Submissions Yet</h5>
+                            <p>When alumni submit mentor volunteer forms, they will appear here.</p>
                         </div>
                     </div>
 

@@ -20,6 +20,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <?php if(isset($content_type) && $content_type === 'faculty'): ?>
         <link rel="stylesheet" href="<?php echo base_url('assets/css/manage_faculty.css'); ?>">
     <?php endif; ?>
+    <?php if(isset($content_type) && $content_type === 'academics'): ?>
+        <?php
+            $academics_css_path = FCPATH . 'assets/css/manage_academics.css';
+            $academics_css_version = file_exists($academics_css_path) ? filemtime($academics_css_path) : time();
+        ?>
+        <link rel="stylesheet" href="<?php echo base_url('assets/css/manage_academics.css?v=' . $academics_css_version); ?>">
+    <?php endif; ?>
+    <?php if(isset($content_type) && $content_type === 'alumni'): ?>
+        <?php
+            $alumni_css_path = FCPATH . 'assets/css/manage_alumni.css';
+            $alumni_css_version = file_exists($alumni_css_path) ? filemtime($alumni_css_path) : time();
+        ?>
+        <link rel="stylesheet" href="<?php echo base_url('assets/css/manage_alumni.css?v=' . $alumni_css_version); ?>">
+    <?php endif; ?>
     <?php if(isset($content_type) && $content_type === 'updates'): ?>
         <?php
             $updates_css_path = FCPATH . 'assets/css/manage_updates.css';

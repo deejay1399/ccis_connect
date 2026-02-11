@@ -153,24 +153,12 @@ function require_admin_or_faculty()
 }
 
 /**
- * Restrict public-side access for roles that must stay in dashboards.
- * Currently: superadmin (1), faculty (2)
+ * Public pages are accessible to all logged-in roles.
+ * Kept for backward compatibility where controllers still call this helper.
  */
 function restrict_public_for_admin_roles()
 {
-    $CI = &get_instance();
-
-    if (!$CI->session->userdata('logged_in')) {
-        return;
-    }
-
-    $role_id = (int) $CI->session->userdata('role_id');
-    if ($role_id === 1) {
-        redirect('admin/dashboard');
-    }
-    if ($role_id === 2) {
-        redirect('faculty/dashboard');
-    }
+    return;
 }
 
 /**

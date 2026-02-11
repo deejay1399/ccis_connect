@@ -52,11 +52,33 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Your donation helps support scholarships, equipment, and learning resources for CCIS students.</p>
-                <p>Please contact the CCIS Alumni Office for donation details.</p>
+                <h6>Bank Transfer Details:</h6>
+                <div class="bank-details">
+                    <p><strong>Bank:</strong> Bank of the Philippine Islands (BPI)</p>
+                    <p><strong>Account Name:</strong> BISU-CCIS Alumni Fund</p>
+                    <p><strong>Account Number:</strong> 1234-5678-90</p>
+                    <p><strong>Branch:</strong> Tagbilaran City, Bohol</p>
+                </div>
+                <hr>
+                <h6>GCash/Maya:</h6>
+                <div class="digital-payment">
+                    <p><strong>GCash Number:</strong> 0917-123-4567</p>
+                    <p><strong>Maya Number:</strong> 0918-765-4321</p>
+                    <p><strong>Account Name:</strong> BISU CCIS Alumni</p>
+                </div>
+                <hr>
+                <div class="important-notes">
+                    <p><strong>Important:</strong></p>
+                    <ul>
+                        <li>Please take a screenshot of your transaction</li>
+                        <li>Email the screenshot to: <strong>ccis.donations@bisu.edu.ph</strong></li>
+                        <li>Include your name and contact information</li>
+                        <li>Official receipt will be issued within 3 working days</li>
+                    </ul>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Okay</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Understood</button>
             </div>
         </div>
     </div>

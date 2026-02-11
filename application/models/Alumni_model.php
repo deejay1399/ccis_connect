@@ -19,11 +19,39 @@ class Alumni_model extends CI_Model {
     }
 
     public function get_all_mentor_requests() {
-        return $this->db->order_by('created_at', 'DESC')->get($this->mentor_table)->result_array();
+        $mentorRows = $this->db
+            ->select("id, name, email, expertise, status, created_at, NULL AS batch, 'mentor_requests' AS source", false)
+            ->get($this->mentor_table)
+            ->result_array();
+
+        $givebackMentorRows = $this->db
+            ->select("id, author AS name, email, description AS expertise, status, COALESCE(created_at, submission_date) AS created_at, batch, 'giveback' AS source", false)
+            ->where("LOWER(title) = 'mentor'", null, false)
+            ->get($this->giveback_table)
+            ->result_array();
+
+        $merged = array_merge($mentorRows, $givebackMentorRows);
+
+        usort($merged, function ($a, $b) {
+            $aTime = isset($a['created_at']) ? strtotime($a['created_at']) : 0;
+            $bTime = isset($b['created_at']) ? strtotime($b['created_at']) : 0;
+            return $bTime <=> $aTime;
+        });
+
+        return $merged;
     }
 
-    public function update_mentor_status($id, $status) {
-        return $this->db->where('id', $id)->update($this->mentor_table, ['status' => $status]);
+    public function update_mentor_status($id, $status, $source = 'mentor_requests') {
+        if ($source === 'giveback') {
+            return $this->db
+                ->where('id', $id)
+                ->where("LOWER(title) = 'mentor'", null, false)
+                ->update($this->giveback_table, ['status' => $status]);
+        }
+
+        return $this->db
+            ->where('id', $id)
+            ->update($this->mentor_table, ['status' => $status]);
     }
 
     public function insert_mentor_request($data) {
@@ -113,7 +141,11 @@ class Alumni_model extends CI_Model {
     }
 
     public function get_all_giveback() {
-        return $this->db->order_by('created_at', 'DESC')->get($this->giveback_table)->result_array();
+        return $this->db
+            ->where("LOWER(title) <> 'mentor'", null, false)
+            ->order_by('created_at', 'DESC')
+            ->get($this->giveback_table)
+            ->result_array();
     }
 
     public function update_giveback_status($id, $status) {

@@ -144,6 +144,7 @@ class AdminContent extends CI_Controller {
 		try {
 			$id = (int) $this->input->post('id');
 			$status = trim((string) $this->input->post('status'));
+			$source = trim((string) $this->input->post('source'));
 
 			if ($id <= 0 || $status === '') {
 				http_response_code(400);
@@ -151,7 +152,11 @@ class AdminContent extends CI_Controller {
 				exit;
 			}
 
-			$result = $this->Alumni_model->update_mentor_status($id, $status);
+			if ($source === '') {
+				$source = 'mentor_requests';
+			}
+
+			$result = $this->Alumni_model->update_mentor_status($id, $status, $source);
 			echo json_encode(['success' => (bool) $result]);
 		} catch (Exception $e) {
 			http_response_code(500);

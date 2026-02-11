@@ -13,10 +13,27 @@ body {
 }
 
 .university-header {
-    background: linear-gradient(135deg, rgba(75, 0, 130, 0.9), rgba(106, 13, 173, 0.85));
+    background:
+        linear-gradient(135deg, rgba(75, 0, 130, 0.9), rgba(106, 13, 173, 0.85)),
+        url('../images/Building.jpg') center/cover no-repeat;
     color: #fff;
     padding: 1rem 0;
     border-bottom: 4px solid var(--accent);
+    position: relative;
+    overflow: hidden;
+}
+
+.university-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.university-header .container {
+    position: relative;
+    z-index: 2;
 }
 
 .college-logo {
@@ -102,9 +119,26 @@ body {
 }
 
 .admin-footer {
-    background: linear-gradient(135deg, rgba(75, 0, 130, 0.95), rgba(106, 13, 173, 0.9));
+    background:
+        linear-gradient(135deg, rgba(75, 0, 130, 0.95), rgba(106, 13, 173, 0.9)),
+        url('../images/Building.jpg') center/cover no-repeat;
     color: #fff;
     padding: 1rem 0 .5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-footer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.admin-footer .container {
+    position: relative;
+    z-index: 2;
 }
 
 .footer-university-name,

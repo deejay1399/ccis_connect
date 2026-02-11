@@ -416,8 +416,12 @@ $(document).ready(function() {
     function setupPublicSiteLink() {
         const publicSiteLink = $('#view-public-site-link');
         if (publicSiteLink.length) {
-            // Determine the relative path to the admin dashboard for the return button
-            const dashboardUrl = 'super_admin/index.html';
+            const session = window.checkUserSession ? window.checkUserSession() : null;
+            const role = session && session.isValid && session.user ? session.user.role : null;
+            const base = window.BASE_URL || window.baseUrl || '/';
+            const dashboardUrl = role === 'faculty'
+                ? base + 'index.php/faculty/dashboard'
+                : base + 'index.php/admin/dashboard';
                                 
             publicSiteLink.on('click', function(e) {
                 // Store the current dashboard URL in local storage

@@ -353,8 +353,11 @@ const sectionTemplates = {
             eventCards = `<p class="text-muted text-center">No alumni events yet.</p>`;
         } else {
             events.forEach(event => {
+                const eventTitle = event.name || event.title || 'Alumni Event';
+                const eventLocation = event.location || event.venue || '';
+                const eventDescription = event.description || event.details || '';
                 const photoHtml = event.photo
-                    ? `<img src="${baseUrl + event.photo}" alt="${event.name}">`
+                    ? `<img src="${baseUrl + event.photo}" alt="${eventTitle}">`
                     : '';
                 const dateObj = event.event_date ? new Date(event.event_date) : null;
                 const month = dateObj ? dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase() : '';
@@ -370,9 +373,9 @@ const sectionTemplates = {
                             <div class="event-year">${year}</div>
                         </div>
                         <div class="event-details">
-                            <h3>${event.name}</h3>
-                            <p class="event-location"><i class="fas fa-map-marker-alt"></i> ${event.location}</p>
-                            <p class="event-description">${event.description}</p>
+                            <h3>${eventTitle}</h3>
+                            ${eventLocation ? `<p class="event-location"><i class="fas fa-map-marker-alt"></i> ${eventLocation}</p>` : ''}
+                            ${eventDescription ? `<p class="event-description">${eventDescription}</p>` : ''}
                         </div>
                     </div>
                 `;
@@ -736,7 +739,9 @@ function setupFeaturedAlumni() {
 function showAlumniDetails(alumniId) {
     console.log(`??? Showing alumni details for ID: ${alumniId}`);
 
-    const alumni = (alumniPublicData.featured || []).find(a => String(a.id) === String(alumniId));
+    const featuredAlumni = (alumniPublicData.featured || []).find(a => String(a.id) === String(alumniId));
+    const directoryAlumni = (alumniPublicData.directory || []).find(a => String(a.id) === String(alumniId));
+    const alumni = featuredAlumni || directoryAlumni;
 
     if (!alumni) {
         $('#alumniModalContent').html('<p class="text-muted">Alumni details not available.</p>');
@@ -748,11 +753,21 @@ function showAlumniDetails(alumniId) {
         ? `<img src="${baseUrl + alumni.photo}" alt="${alumni.name}" class="img-fluid rounded mb-3">`
         : '';
 
+    const title = alumni.position || alumni.company || alumni.program || '';
+    const details = [];
+    if (alumni.program) details.push(`<p class="mb-1"><strong>Program:</strong> ${alumni.program}</p>`);
+    if (alumni.batch) details.push(`<p class="mb-1"><strong>Batch:</strong> ${alumni.batch}</p>`);
+    if (alumni.company) details.push(`<p class="mb-1"><strong>Company:</strong> ${alumni.company}</p>`);
+    if (alumni.email) details.push(`<p class="mb-1"><strong>Email:</strong> ${alumni.email}</p>`);
+    if (alumni.phone) details.push(`<p class="mb-1"><strong>Phone:</strong> ${alumni.phone}</p>`);
+    const description = alumni.bio || alumni.achievement || alumni.position || '';
+
     const modalContent = `
         ${photoHtml}
         <h4>${alumni.name}</h4>
-        <p class="text-muted mb-2">${alumni.position}</p>
-        <p>${alumni.bio}</p>
+        ${title ? `<p class="text-muted mb-2">${title}</p>` : ''}
+        ${details.join('')}
+        ${description ? `<p class="mt-2">${description}</p>` : ''}
     `;
 
     $('#alumniModalContent').html(modalContent);

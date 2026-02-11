@@ -42,54 +42,60 @@ document.addEventListener('DOMContentLoaded', function() {
         'the-legion': 'the-legion',
         'cs-guild': 'cs-guild'
     };
-
     // Create and manage floating return to dashboard button
     function initializeFloatingReturnButton() {
-        console.log('🚀 Initializing floating return button...');
-        
-        // Get existing button or create a new one
-        let floatingBtn = document.getElementById('floatingReturnBtn');
-        
-        if (!floatingBtn) {
-            console.log('🛠️ Creating new floating button...');
-            floatingBtn = document.createElement('a');
-            floatingBtn.className = 'floating-return-btn';
-            floatingBtn.href = 'dashboard.html'; // Or the actual dashboard page
-            floatingBtn.id = 'floatingReturnBtn';
-            floatingBtn.innerHTML = '<i class="fas fa-tachometer-alt me-1"></i>Return to Dashboard';
-            document.body.appendChild(floatingBtn);
+        const sharedBtn = document.getElementById('floating-return-btn');
+        if (sharedBtn) return sharedBtn;
+
+        const legacyBtn = document.getElementById('floatingReturnBtn');
+        if (legacyBtn) legacyBtn.remove();
+
+        let user = null;
+        try {
+            user = JSON.parse(localStorage.getItem('ccis_user') || 'null');
+        } catch (e) {
+            user = null;
         }
-        
-        // Show the button based on user role
-        const userRole = localStorage.getItem('userRole');
-        const userName = localStorage.getItem('userName');
-        
-        console.log('👤 Checking user role for floating button:', { userRole, userName });
-        
-        if (userRole && userName && (userRole === 'student' || userRole === 'admin')) {
-            setTimeout(() => {
-                floatingBtn.classList.add('show');
-                floatingBtn.style.display = 'flex';
-            }, 300);
-            console.log('✅ Floating return button shown for role:', userRole);
-        } else {
-            floatingBtn.classList.remove('show');
-            floatingBtn.style.display = 'none';
-            console.log('❌ No valid user role, hiding floating button');
+
+        if (!user || !['superadmin', 'faculty', 'orgadmin'].includes(user.role)) {
+            return null;
         }
-        
+
+        const base = (window.BASE_URL || (window.location.origin + '/'));
+        const routeMap = {
+            superadmin: 'index.php/admin/dashboard',
+            faculty: 'index.php/faculty/dashboard',
+            orgadmin: 'index.php/org/dashboard'
+        };
+
+        const floatingBtn = document.createElement('a');
+        floatingBtn.className = 'floating-return-btn';
+        floatingBtn.href = base + routeMap[user.role];
+        floatingBtn.id = 'floating-return-btn';
+        floatingBtn.innerHTML = '<i class="fas fa-tachometer-alt me-1"></i>Return to Dashboard';
+        document.body.appendChild(floatingBtn);
+
+        setTimeout(() => {
+            floatingBtn.classList.add('show');
+            floatingBtn.style.display = 'flex';
+        }, 300);
+
         return floatingBtn;
     }
 
     // Function to update floating button based on session changes
     function updateFloatingButtonVisibility() {
-        const floatingBtn = document.getElementById('floatingReturnBtn');
+        const floatingBtn = document.getElementById('floating-return-btn');
         if (!floatingBtn) return;
-        
-        const userRole = localStorage.getItem('userRole');
-        const userName = localStorage.getItem('userName');
-        
-        if (userRole && userName && (userRole === 'student' || userRole === 'admin')) {
+
+        let user = null;
+        try {
+            user = JSON.parse(localStorage.getItem('ccis_user') || 'null');
+        } catch (e) {
+            user = null;
+        }
+
+        if (user && ['superadmin', 'faculty', 'orgadmin'].includes(user.role)) {
             setTimeout(() => {
                 floatingBtn.classList.add('show');
                 floatingBtn.style.display = 'flex';
@@ -99,7 +105,6 @@ document.addEventListener('DOMContentLoaded', function() {
             floatingBtn.style.display = 'none';
         }
     }
-
     // Show specific section - FIXED VERSION
     function showSection(sectionId) {
         console.log('🎬 Showing section:', sectionId);

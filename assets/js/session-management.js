@@ -20,144 +20,90 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('📍 Current page:', window.location.pathname);
 });
 
+function getBaseUrl() {
+    if (window.BASE_URL) {
+        return window.BASE_URL;
+    }
+    const origin = window.location.origin || '';
+    return origin.endsWith('/') ? origin : origin + '/';
+}
+
+function buildDashboardReturnConfig(user) {
+    if (!user || !user.role) {
+        return null;
+    }
+
+    const base = getBaseUrl();
+
+    if (user.role === 'superadmin') {
+        return {
+            url: base + 'index.php/admin/dashboard',
+            text: 'Return to Dashboard'
+        };
+    }
+
+    if (user.role === 'faculty') {
+        return {
+            url: base + 'index.php/faculty/dashboard',
+            text: 'Return to Dashboard'
+        };
+    }
+
+    if (user.role === 'orgadmin') {
+        return {
+            url: base + 'index.php/org/dashboard',
+            text: 'Return to Dashboard'
+        };
+    }
+
+    return null;
+}
+
 // ENHANCED: Check and show return button for admin users on public pages
 function checkAndShowReturnButton(user) {
-    console.log('🔍 Checking return button for user:', user);
-    
-    // WALA'y USER? Dili magpakita og button
-    if (!user) {
-        console.log('❌ No user found, skipping return button');
+    console.log('Checking return button for user:', user);
+
+    const config = buildDashboardReturnConfig(user);
+    if (!config) {
+        console.log('User is not eligible for dashboard return button');
         return;
     }
-    
-    // Dili admin? Dili gihapon magpakita og button
-    if (!['orgadmin', 'superadmin', 'faculty'].includes(user.role)) {
-        console.log('❌ User is not admin, no return button');
-        return;
-    }
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const fromAdmin = urlParams.get('fromAdmin');
-    const orgParam = urlParams.get('org');
-    
-    console.log('📊 URL Params - fromAdmin:', fromAdmin, 'org:', orgParam);
-    
-    console.log('✅ User is admin, showing return button');
-    
-    // ALWAYS show return button for admin users on public pages
-    addFloatingReturnButton(user, orgParam);
-    
-    // Also store the return URL if not already set
-    if (!localStorage.getItem('admin_return_url') && !sessionStorage.getItem('admin_return_url')) {
-        let returnUrl = '';
-        
-        if (user.role === 'orgadmin') {
-            if (user.organization && user.organization.includes('CS Guild')) {
-                returnUrl = 'csguild_admin/index.html';
-            } else if (user.organization && user.organization.includes('The Legion')) {
-                returnUrl = 'legion_admin/index.html';
-            }
-        } else if (['superadmin', 'faculty'].includes(user.role)) {
-            returnUrl = 'super_admin/index.html';
-        }
-        
-        if (returnUrl) {
-            localStorage.setItem('admin_return_url', returnUrl);
-            console.log('💾 Stored admin return URL:', returnUrl);
-        }
-    } else {
-        console.log('📁 Existing admin return URL found:', 
-            localStorage.getItem('admin_return_url') || sessionStorage.getItem('admin_return_url'));
-    }
+
+    // Keep canonical URL so stale legacy values don't break navigation.
+    localStorage.setItem('admin_return_url', config.url);
+    sessionStorage.setItem('admin_return_url', config.url);
+
+    addFloatingReturnButton(config);
 }
 
-// ENHANCED FLOATING RETURN BUTTON FUNCTION - More reliable detection
-function addFloatingReturnButton(user, orgParam = null) {
-    console.log('🎯 Adding floating return button for:', user);
-    
-    // Remove existing button if any
+// ENHANCED FLOATING RETURN BUTTON FUNCTION - canonical role routes
+function addFloatingReturnButton(config) {
+    console.log('Adding floating return button with config:', config);
+
     const existingBtn = document.getElementById('floating-return-btn');
     if (existingBtn) {
-        console.log('🗑️ Removing existing button');
         existingBtn.remove();
     }
-    
-    if (user && (user.role === 'orgadmin' || ['superadmin', 'faculty'].includes(user.role))) {
-        let dashboardUrl = '';
-        let buttonText = 'Return to Dashboard';
-        
-        console.log('👤 User role:', user.role, 'Organization:', user.organization);
-        
-        // Priority 1: Check URL parameter for orgadmin
-        if (user.role === 'orgadmin') {
-            if (orgParam === 'csguild') {
-                dashboardUrl = 'csguild_admin/index.html';
-                buttonText = 'Return to CSG Admin';
-            } else if (orgParam === 'legion') {
-                dashboardUrl = 'legion_admin/index.html';
-                buttonText = 'Return to Legion Admin';
-            }
-            console.log('🔗 URL parameter result:', dashboardUrl);
-        }
-        
-        // Priority 2: Check stored return URLs
-        if (!dashboardUrl) {
-            if (localStorage.getItem('admin_return_url')) {
-                dashboardUrl = localStorage.getItem('admin_return_url');
-                console.log('💾 Found in localStorage:', dashboardUrl);
-            } else if (sessionStorage.getItem('admin_return_url')) {
-                dashboardUrl = sessionStorage.getItem('admin_return_url');
-                console.log('💾 Found in sessionStorage:', dashboardUrl);
-            }
-        }
-        
-        // Priority 3: Fallback based on user role/organization
-        if (!dashboardUrl) {
-            if (['superadmin', 'faculty'].includes(user.role)) {
-                dashboardUrl = 'super_admin/index.html';
-                buttonText = 'Return to Super Admin';
-            } else if (user.role === 'orgadmin') {
-                if (user.organization && user.organization.includes('CS Guild')) {
-                    dashboardUrl = 'csguild_admin/index.html';
-                    buttonText = 'Return to CSG Admin';
-                } else if (user.organization && user.organization.includes('The Legion')) {
-                    dashboardUrl = 'legion_admin/index.html';
-                    buttonText = 'Return to Legion Admin';
-                }
-            }
-            console.log('🔄 Fallback result:', dashboardUrl);
-        }
 
-        // If a dashboard URL is found, create the button
-        if (dashboardUrl) {
-            console.log('🎨 Creating button with URL:', dashboardUrl);
-            
-            // Add floating return button with accessibility attributes
-            const returnBtn = document.createElement('a');
-            returnBtn.href = dashboardUrl;
-            returnBtn.className = 'floating-return-btn';
-            returnBtn.id = 'floating-return-btn';
-            returnBtn.setAttribute('aria-label', buttonText);
-            returnBtn.setAttribute('title', buttonText);
-            returnBtn.innerHTML = `<i class="fas fa-tachometer-alt"></i>${buttonText}`;
-            
-            document.body.appendChild(returnBtn);
-            
-            console.log('✅ Floating return button added to body');
-            
-            // Add smooth animation
-            setTimeout(() => {
-                returnBtn.classList.add('show');
-                console.log('🎬 Button animation started');
-            }, 100);
-        } else {
-            console.log('❌ No dashboard URL found, cannot create button');
-        }
-    } else {
-        console.log('❌ User not eligible for return button');
+    if (!config || !config.url) {
+        console.log('Missing dashboard return config, cannot create button');
+        return;
     }
-}
 
+    const returnBtn = document.createElement('a');
+    returnBtn.href = config.url;
+    returnBtn.className = 'floating-return-btn';
+    returnBtn.id = 'floating-return-btn';
+    returnBtn.setAttribute('aria-label', config.text || 'Return to Dashboard');
+    returnBtn.setAttribute('title', config.text || 'Return to Dashboard');
+    returnBtn.innerHTML = `<i class="fas fa-tachometer-alt"></i>${config.text || 'Return to Dashboard'}`;
+
+    document.body.appendChild(returnBtn);
+
+    setTimeout(() => {
+        returnBtn.classList.add('show');
+    }, 100);
+}
 // ENHANCED: Update UI for logged in user - show floating button when appropriate
 function updateUIForLoggedInUser(user) {
     console.log('👤 Updating UI for logged in user:', user.name);
@@ -862,4 +808,5 @@ window.getCurrentUser = getCurrentUser;
 window.getCurrentUserRole = getCurrentUserRole;
 window.hasAccess = hasAccess;
 window.filterContentByRole = filterContentByRole;
+
 

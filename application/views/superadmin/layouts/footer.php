@@ -232,7 +232,11 @@
     <?php elseif(isset($content_type) && $content_type === 'forms'): ?>
         <script src="<?php echo base_url('assets/js/manage_forms.js'); ?>"></script>
     <?php elseif(isset($content_type) && $content_type === 'alumni'): ?>
-        <script src="<?php echo base_url('assets/js/manage_alumni.js'); ?>"></script>
+        <?php
+            $alumni_js_path = FCPATH . 'assets/js/manage_alumni.js';
+            $alumni_js_version = file_exists($alumni_js_path) ? filemtime($alumni_js_path) : time();
+        ?>
+        <script src="<?php echo base_url('assets/js/manage_alumni.js?v=' . $alumni_js_version); ?>"></script>
     <?php else: ?>
         <script src="<?php echo base_url('assets/js/dashboard.js'); ?>"></script>
     <?php endif; ?>

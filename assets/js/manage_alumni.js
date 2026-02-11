@@ -37,6 +37,14 @@ $(document).ready(function () {
         return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     }
 
+    function setTabBadge(selector, count) {
+        const badge = $(selector);
+        if (!badge.length) return;
+        const safeCount = Number.isFinite(Number(count)) ? Number(count) : 0;
+        badge.text(safeCount);
+        badge.toggle(safeCount > 0);
+    }
+
     function statusBadge(status) {
         const normalized = (status || '').toLowerCase();
         let cls = 'secondary';
@@ -115,7 +123,12 @@ $(document).ready(function () {
             return;
         }
 
-        $.post(baseUrl + context.statusPath, { id: recordId, status }, function(response) {
+        const payload = { id: recordId, status };
+        if (context.source) {
+            payload.source = context.source;
+        }
+
+        $.post(baseUrl + context.statusPath, payload, function(response) {
             if (!response.success) {
                 showNotification('error', response.message || 'Failed to update status');
                 return;
@@ -161,6 +174,7 @@ $(document).ready(function () {
             const data = response.data || [];
             const body = $('#mentor-table-body');
             body.empty();
+            setTabBadge('#mentor-badge', data.length);
 
             if (data.length === 0) {
                 $('#no-mentor-data').show();
@@ -172,9 +186,10 @@ $(document).ready(function () {
                 body.append(`
                     <tr>
                         <td>${escapeHtml(row.name)}</td>
+                        <td>${escapeHtml(row.batch || '-')}</td>
                         <td>${escapeHtml(row.email)}</td>
                         <td>${escapeHtml(row.expertise)}</td>
-                        <td>${statusBadge(row.status)}</td>
+                        <td>${formatDate(row.created_at || row.request_date)}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-primary btn-view-submission" data-type="mentor" data-payload="${encodeURIComponent(JSON.stringify(row))}">View</button>
                         </td>
@@ -190,6 +205,7 @@ $(document).ready(function () {
             const data = response.data || [];
             const body = $('#chatbot-table-body');
             body.empty();
+            setTabBadge('#chatbot-tab-badge', data.length);
 
             if (data.length === 0) {
                 $('#no-chatbot-data').show();
@@ -217,6 +233,7 @@ $(document).ready(function () {
             const data = response.data || [];
             const body = $('#connection-table-body');
             body.empty();
+            setTabBadge('#connection-badge', data.length);
 
             if (data.length === 0) {
                 $('#no-connection-data').show();
@@ -276,6 +293,7 @@ $(document).ready(function () {
             const data = response.data || [];
             const body = $('#giveback-table-body');
             body.empty();
+            setTabBadge('#giveback-badge', data.length);
 
             if (data.length === 0) {
                 $('#no-giveback-data').show();
@@ -460,6 +478,7 @@ $(document).ready(function () {
                 emailType: 'Mentor Request',
                 recipientEmail: row.email,
                 recipientName: row.name,
+                source: row.source || 'mentor_requests',
                 currentStatus: row.status,
                 statusPath: 'admin/manage/alumni/mentor_status',
                 reloadFn: loadMentorRequests,

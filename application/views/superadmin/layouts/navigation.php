@@ -48,14 +48,9 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo site_url('/'); ?>" id="view-public-site-link">
+                        <a class="nav-link" href="<?php echo site_url('home'); ?>" id="view-public-site-link">
                             <i class="fas fa-external-link-alt me-1"></i>View Public Site
                         </a>
-                    </li>
-                    <li class="nav-item" id="user-info-item">
-                        <span class="nav-link user-info-text" style="color: var(--primary-purple);">
-                            <i class="fas fa-user me-1"></i><span id="user-name"></span>
-                        </span>
                     </li>
                 </ul>
                 <!-- Date Display in Navigation -->
