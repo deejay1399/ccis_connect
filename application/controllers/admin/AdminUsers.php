@@ -121,8 +121,8 @@ class AdminUsers extends CI_Controller {
 		}
 
 		try {
-			// Generate one-time temporary password.
-			$password = random_string('alnum', 14);
+			// Default password for all newly created accounts.
+			$password = 'pass1234';
 
 			// Create user - User_model will hash the password
 			$userData = [
