@@ -1786,5 +1786,121 @@ class AdminContent extends CI_Controller {
 			'message' => $result ? 'Program deleted successfully' : 'Error deleting program'
 		]);
 	}
+
+	// ==================== ACADEMIC CALENDARS API ====================
+	
+	public function api_get_calendars() {
+		header('Content-Type: application/json');
+		$this->load->model('AcademicCalendars_model');
+		
+		try {
+			// Check if table exists
+			if (!$this->db->table_exists('academic_calendars')) {
+				error_log('Academic calendars table does not exist - creating it');
+				$this->create_academic_calendars_table();
+				error_log('Academic calendars table created');
+			}
+			
+			// Get calendars
+			$calendars = $this->AcademicCalendars_model->get_all();
+			error_log('Calendars retrieved: ' . count($calendars));
+			
+			http_response_code(200);
+			echo json_encode([
+				'success' => true,
+				'data' => $calendars,
+				'count' => count($calendars)
+			]);
+			exit;
+		} catch (Exception $e) {
+			error_log('Error in get_calendars: ' . $e->getMessage());
+			http_response_code(500);
+			echo json_encode([
+				'success' => false,
+				'message' => 'Error retrieving calendars: ' . $e->getMessage()
+			]);
+			exit;
+		}
+	}
+
+	// ==================== CURRICULUM API ====================
+	
+	public function api_get_curriculums() {
+		header('Content-Type: application/json');
+		error_log('=== Get Curriculums Started ===');
+		
+		try {
+			// Load model
+			$this->load->model('Curriculum_model');
+			error_log('Model loaded successfully');
+			
+			// Check if table exists
+			if (!$this->db->table_exists('curriculum')) {
+				error_log('Curriculum table does not exist - creating it');
+				$this->create_curriculum_table();
+				error_log('Curriculum table created');
+			}
+			
+			// Get curriculums
+			$curriculums = $this->Curriculum_model->get_all();
+			error_log('Curriculums retrieved: ' . count($curriculums));
+			
+			http_response_code(200);
+			echo json_encode([
+				'success' => true,
+				'data' => $curriculums,
+				'count' => count($curriculums)
+			]);
+			exit;
+		} catch (Exception $e) {
+			error_log('Error in get_curriculums: ' . $e->getMessage());
+			http_response_code(500);
+			echo json_encode([
+				'success' => false,
+				'message' => 'Error retrieving curriculums: ' . $e->getMessage()
+			]);
+			exit;
+		}
+	}
+
+	// ==================== CLASS SCHEDULES API ====================
+	
+	public function api_get_schedules() {
+		header('Content-Type: application/json');
+		error_log('=== Get Class Schedules Started ===');
+		
+		try {
+			// Load model
+			$this->load->model('ClassSchedules_model');
+			error_log('Model loaded successfully');
+			
+			// Check if table exists
+			if (!$this->db->table_exists('class_schedules')) {
+				error_log('Class schedules table does not exist - creating it');
+				$this->create_class_schedules_table();
+				error_log('Class schedules table created');
+			}
+			
+			// Get schedules
+			$schedules = $this->ClassSchedules_model->get_all();
+			error_log('Schedules retrieved: ' . count($schedules));
+			
+			http_response_code(200);
+			echo json_encode([
+				'success' => true,
+				'data' => $schedules,
+				'count' => count($schedules)
+			]);
+			exit;
+		} catch (Exception $e) {
+			error_log('Error in get_schedules: ' . $e->getMessage());
+			http_response_code(500);
+			echo json_encode([
+				'success' => false,
+				'message' => 'Error retrieving schedules: ' . $e->getMessage()
+			]);
+			exit;
+		}
+	}
 }
 ?>
