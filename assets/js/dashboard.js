@@ -97,15 +97,49 @@ $(document).ready(function() {
         const notificationBell = $("#notification-bell");
         const notificationDropdown = $("#notification-dropdown");
 
-        notificationDropdown.removeClass("show").hide();
-        $("#dashboard-notification-badge").hide();
-        $("#notification-count").text("0");
+        // Load notifications on initialization
+        loadNotificationCounts();
+        loadNotificationDropdown();
 
+        // Toggle dropdown on bell click
         notificationBell.off("click").on("click", function(e) {
             e.preventDefault();
             e.stopPropagation();
-            showNotification("Notifications are not available yet.", "info");
+            
+            // Toggle dropdown visibility
+            if (notificationDropdown.hasClass("show")) {
+                notificationDropdown.removeClass("show");
+                notificationBell.removeClass("active");
+            } else {
+                notificationDropdown.addClass("show");
+                notificationBell.addClass("active");
+                // Reload notifications when opening
+                loadNotificationDropdown();
+            }
         });
+
+        // Close dropdown when clicking outside
+        $(document).off("click.notification").on("click.notification", function(e) {
+            if (!$(e.target).closest("#notification-wrapper").length) {
+                notificationDropdown.removeClass("show");
+                notificationBell.removeClass("active");
+            }
+        });
+
+        // Mark all as read button
+        $(document).off("click", "#mark-all-notifications").on("click", "#mark-all-notifications", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            markAllNotificationsAsRead();
+        });
+
+        // Load notifications periodically (every 30 seconds)
+        setInterval(function() {
+            loadNotificationCounts();
+            if (notificationDropdown.hasClass("show")) {
+                loadNotificationDropdown();
+            }
+        }, 30000);
     }
     
     // Load Notification Counts for Dashboard Stats
@@ -267,24 +301,32 @@ $(document).ready(function() {
             
             notificationList.html(notificationsHtml);
             
-            // Add click handlers for notification items
-            $('.notification-item').click(function() {
-                const index = $(this).index();
-                const type = $(this).data('type');
-                handleNotificationClick(index, type);
+            // Use event delegation for click handlers (better for dynamic content)
+            notificationList.off('click').on('click', '.notification-item', function(e) {
+                if (!$(e.target).closest('.notification-mark-read').length) {
+                    const index = $(this).data('index');
+                    const type = $(this).data('type');
+                    handleNotificationClick(index, type);
+                }
             });
             
             // Add click handlers for mark as read buttons
-            $('.notification-mark-read').click(function(e) {
+            notificationList.off('click', '.notification-mark-read').on('click', '.notification-mark-read', function(e) {
+                e.preventDefault();
                 e.stopPropagation();
                 const item = $(this).closest('.notification-item');
-                const index = item.index();
+                const index = item.data('index');
                 const type = item.data('type');
                 markSingleNotificationAsRead(index, type);
-                item.remove();
-                
-                // Update counts
-                loadNotificationCounts();
+                item.fadeOut(300, function() {
+                    $(this).remove();
+                    // Update counts if no more notifications
+                    if ($('.notification-item').length === 0) {
+                        loadNotificationDropdown();
+                    } else {
+                        loadNotificationCounts();
+                    }
+                });
             });
             
         } catch (error) {
@@ -302,33 +344,12 @@ $(document).ready(function() {
     function handleNotificationClick(index, type) {
         console.log(`📨 Notification clicked: ${type}, index: ${index}`);
         
-        // Close dropdown
-        $('#notification-dropdown').removeClass('show');
-        $('#notification-bell').removeClass('active');
+        // Mark notification as read instead of navigating
+        markSingleNotificationAsRead(index, type);
         
-        // Redirect to appropriate page based on type
-        let targetPage = 'manage_alumni.html';
-        let targetTab = '';
-        
-        switch(type) {
-            case 'mentor':
-                targetTab = 'mentor-tab';
-                break;
-            case 'chatbot':
-                targetTab = 'chatbot-tab';
-                break;
-            case 'connection':
-                targetTab = 'connection-tab';
-                break;
-        }
-        
-        // Store target tab in session storage
-        if (targetTab) {
-            sessionStorage.setItem('alumni_target_tab', targetTab);
-        }
-        
-        // Redirect to alumni management page
-        window.location.href = targetPage;
+        // Reload the notification dropdown
+        loadNotificationDropdown();
+        loadNotificationCounts();
     }
     
     // Mark All Notifications as Read
@@ -419,8 +440,8 @@ $(document).ready(function() {
             const session = window.checkUserSession ? window.checkUserSession() : null;
             const role = session && session.isValid && session.user ? session.user.role : null;
             const base = window.BASE_URL || window.baseUrl || '/';
-            const dashboardUrl = role === 'faculty'
-                ? base + 'index.php/faculty/dashboard'
+            const dashboardUrl = (role === 'faculty' || role === 'superadmin')
+                ? base + 'index.php/admin/dashboard'
                 : base + 'index.php/admin/dashboard';
                                 
             publicSiteLink.on('click', function(e) {

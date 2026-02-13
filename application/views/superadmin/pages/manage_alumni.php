@@ -110,7 +110,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <th>Question</th>
                                         <th>Category</th>
                                         <th>Date</th>
-                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="chatbot-table-body">

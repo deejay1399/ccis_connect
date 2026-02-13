@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <footer class="admin-footer">
@@ -102,7 +102,63 @@ window.CSRF_TOKEN_VALUE = '<?php echo $this->security->get_csrf_hash(); ?>';
     }
 })();
 </script>
+
+<!-- Global Configuration -->
+<script>
+    // Set global base URL for all pages
+    window.BASE_URL = '<?php echo base_url(); ?>';
+</script>
+
+<!-- Session management and logout modal -->
+<script src="<?php echo base_url('assets/js/session-management.js'); ?>"></script>
 <script src="<?php echo base_url('assets/js/org_dashboard.js'); ?>"></script>
+
+<!-- Global (org admin) logout handler -->
+<script>
+    (function() {
+        function clearClientAuthState() {
+            try {
+                // Admin/legacy keys
+                localStorage.removeItem('userSession');
+                sessionStorage.removeItem('userSession');
+
+                // Public-site session keys
+                localStorage.removeItem('ccis_user');
+                localStorage.removeItem('ccis_login_time');
+                localStorage.removeItem('ccis_session_id');
+
+                // Admin return URL (floating return button)
+                localStorage.removeItem('admin_return_url');
+                sessionStorage.removeItem('admin_return_url');
+            } catch (e) {
+                // Intentionally ignore storage errors (e.g., private mode / disabled)
+            }
+        }
+
+        $(function() {
+            // Keep logout affordance visible on org admin pages.
+            $('#logout-icon-link').css('display', 'flex');
+
+            // Force a single, authoritative handler (some page scripts bind their own logout logic)
+            $(document)
+                .off('click', '#logout-icon-link, #logout-nav-link')
+                .on('click', '#logout-icon-link, #logout-nav-link', function(e) {
+                    e.preventDefault();
+                    
+                    // Show logout modal with admin-specific cleanup
+                    if (typeof showLogoutModalWithAdminCleanup === 'function') {
+                        showLogoutModalWithAdminCleanup();
+                    } else if (typeof logoutUser === 'function') {
+                        // Fallback: use standard logout
+                        logoutUser();
+                    } else {
+                        // Final fallback if session-management.js hasn't loaded
+                        clearClientAuthState();
+                        window.location.href = window.BASE_URL + 'index.php/logout?logout=true';
+                    }
+                });
+        });
+    })();
+</script>
 </body>
 </html>
-

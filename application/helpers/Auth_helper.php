@@ -122,7 +122,7 @@ function redirect_by_role($role_id = null)
 
     $redirect_paths = [
         1 => 'admin/dashboard',      // Super Admin
-        2 => 'faculty/dashboard',    // Faculty
+        2 => 'admin/dashboard',      // Faculty - same access as superadmin
         3 => 'student/dashboard',    // Student
         4 => 'org/dashboard'         // Organization Admin
     ];

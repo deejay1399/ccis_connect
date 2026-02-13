@@ -264,13 +264,105 @@
             }
 
             $(function() {
-                // Force a single, authoritative handler (some page scripts bind their own logout logic)
-                $(document)
-                    .off('click', '#logout-icon-link')
-                    .on('click', '#logout-icon-link', function(e) {
-                        e.preventDefault();
+                $('#logout-icon-link').css('display', 'flex');
+
+                function showAdminLogoutConfirm() {
+                    const existingModal = document.getElementById('adminLogoutModal');
+                    if (existingModal) {
+                        existingModal.remove();
+                    }
+
+                    const modalDiv = document.createElement('div');
+                    modalDiv.className = 'modal fade';
+                    modalDiv.id = 'adminLogoutModal';
+                    modalDiv.setAttribute('tabindex', '-1');
+                    modalDiv.setAttribute('aria-hidden', 'true');
+                    modalDiv.innerHTML = `
+                        <div class="modal-dialog modal-dialog-centered modal-md">
+                            <div class="modal-content" style="border-radius: 12px; border: 4px solid var(--accent); box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                                <div class="modal-body text-center p-5">
+                                    <div class="mb-4">
+                                        <i class="fas fa-sign-out-alt" style="font-size: 3rem; color: #dc3545;"></i>
+                                    </div>
+                                    <h5 class="mb-5" style="color: var(--primary-purple); font-weight: 700; font-size: 1.5rem;">
+                                        Are you sure you want to logout?
+                                    </h5>
+                                    <div class="d-flex gap-3 justify-content-center">
+                                        <button type="button" class="btn btn-secondary cancel-btn" data-bs-dismiss="modal"
+                                            style="border-radius: 50px; padding: 10px 30px; font-weight: 600;
+                                            background: #f8f9fa; color: #6c757d; border: 2px solid #dee2e6;
+                                            box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                            Cancel
+                                        </button>
+                                        <button type="button" class="btn btn-danger logout-btn" id="confirmAdminLogoutBtn"
+                                            style="border-radius: 50px; padding: 10px 30px; font-weight: 600;
+                                            background: #f8f9fa; color: #6c757d; border: 2px solid #dee2e6;
+                                            box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                            Logout
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    document.body.appendChild(modalDiv);
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalDiv);
+                    modal.show();
+
+                    const cancelBtn = modalDiv.querySelector('.cancel-btn');
+                    const logoutBtn = modalDiv.querySelector('.logout-btn');
+
+                    cancelBtn.addEventListener('mouseenter', function() {
+                        this.style.background = 'var(--primary-purple)';
+                        this.style.color = 'white';
+                        this.style.borderColor = 'var(--primary-purple)';
+                        this.style.boxShadow = '0 4px 10px rgba(75, 0, 130, 0.3)';
+                    });
+
+                    cancelBtn.addEventListener('mouseleave', function() {
+                        this.style.background = '#f8f9fa';
+                        this.style.color = '#6c757d';
+                        this.style.borderColor = '#dee2e6';
+                        this.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+                    });
+
+                    logoutBtn.addEventListener('mouseenter', function() {
+                        this.style.background = 'var(--logout-color)';
+                        this.style.color = 'white';
+                        this.style.borderColor = 'var(--logout-color)';
+                        this.style.boxShadow = '0 4px 10px rgba(220, 53, 69, 0.3)';
+                    });
+
+                    logoutBtn.addEventListener('mouseleave', function() {
+                        this.style.background = '#f8f9fa';
+                        this.style.color = '#6c757d';
+                        this.style.borderColor = '#dee2e6';
+                        this.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+                    });
+
+                    modalDiv.querySelector('#confirmAdminLogoutBtn').addEventListener('click', function() {
+                        this.innerHTML = '<span class="logout-loading-spinner" style="border-top-color: white;"></span>Logging out...';
+                        this.disabled = true;
                         clearClientAuthState();
-                        window.location.href = window.BASE_URL + 'index.php/logout?logout=true';
+                        setTimeout(function() {
+                            window.location.href = window.BASE_URL + 'index.php/logout?logout=true';
+                        }, 500);
+                    });
+
+                    modalDiv.addEventListener('hidden.bs.modal', function() {
+                        modalDiv.remove();
+                    });
+                }
+
+                // Force a single, authoritative handler (some page scripts bind their own logout logic)
+                $('#logout-icon-link')
+                    .off('click')
+                    .on('click', function(e) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        showAdminLogoutConfirm();
+                        return false;
                     });
             });
         })();

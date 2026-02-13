@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <nav class="admin-nav">
@@ -22,6 +22,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <li class="nav-item ms-auto">
                 <a class="nav-link return-btn" href="<?php echo site_url('organization#' . str_replace('_', '-', $organization_slug)); ?>">
                     <i class="fas fa-globe me-2"></i>View Public Site
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="logout-nav-link">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
                 </a>
             </li>
         </ul>

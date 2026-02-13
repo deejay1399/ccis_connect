@@ -69,9 +69,17 @@ $route['organization/csguild'] = 'OrganizationController/csguild';
 // ==================== ORG ADMIN ====================
 $route['org/dashboard'] = 'Org/dashboard';
 $route['org/officers/create'] = 'Org/add_officer';
+$route['org/officers/update/(:num)'] = 'Org/update_officer/$1';
+$route['org/officers/delete/(:num)'] = 'Org/delete_officer/$1';
 $route['org/advisers/create'] = 'Org/add_adviser';
+$route['org/advisers/update/(:num)'] = 'Org/update_adviser/$1';
+$route['org/advisers/delete/(:num)'] = 'Org/delete_adviser/$1';
 $route['org/announcements/create'] = 'Org/add_announcement';
+$route['org/announcements/update/(:num)'] = 'Org/update_announcement/$1';
+$route['org/announcements/delete/(:num)'] = 'Org/delete_announcement/$1';
 $route['org/happenings/create'] = 'Org/add_happening';
+$route['org/happenings/update/(:num)'] = 'Org/update_happening/$1';
+$route['org/happenings/delete/(:num)'] = 'Org/delete_happening/$1';
 // ==================== SUPER ADMIN ====================
 $route['admin'] = 'admin/AdminDashboard/index';
 $route['admin/dashboard'] = 'admin/AdminDashboard/index';

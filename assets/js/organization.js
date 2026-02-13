@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const base = (window.BASE_URL || (window.location.origin + '/'));
         const routeMap = {
             superadmin: 'index.php/admin/dashboard',
-            faculty: 'index.php/faculty/dashboard',
+            faculty: 'index.php/admin/dashboard',
             orgadmin: 'index.php/org/dashboard'
         };
 

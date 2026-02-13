@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Org extends CI_Controller {
@@ -81,6 +81,49 @@ class Org extends CI_Controller {
         redirect('org/dashboard#officers');
     }
 
+    public function update_officer($id = null)
+    {
+        if ($this->input->method() !== 'post' || !$id) {
+            redirect('org/dashboard#officers');
+        }
+
+        $name = trim((string) $this->input->post('full_name', true));
+        $position = trim((string) $this->input->post('position', true));
+
+        if ($name === '' || $position === '') {
+            $this->session->set_flashdata('error', 'Officer name and position are required.');
+            redirect('org/dashboard#officers');
+        }
+
+        $photo = null;
+        if (!empty($_FILES['officer_photo']['name'])) {
+            $photo = $this->upload_image('officer_photo', 'uploads/org/officers');
+            if ($photo === null) {
+                redirect('org/dashboard#officers');
+            }
+        }
+
+        $this->OrgAdmin_model->update_officer((int) $id, $this->org['organization_slug'], [
+            'full_name' => $name,
+            'position' => $position,
+            'photo' => $photo,
+        ]);
+
+        $this->session->set_flashdata('success', 'Officer updated successfully.');
+        redirect('org/dashboard#officers');
+    }
+
+    public function delete_officer($id = null)
+    {
+        if ($this->input->method() !== 'post' || !$id) {
+            redirect('org/dashboard#officers');
+        }
+
+        $this->OrgAdmin_model->delete_officer((int) $id, $this->org['organization_slug']);
+        $this->session->set_flashdata('success', 'Officer deleted successfully.');
+        redirect('org/dashboard#officers');
+    }
+
     public function add_adviser()
     {
         if ($this->input->method() !== 'post') {
@@ -111,6 +154,51 @@ class Org extends CI_Controller {
         ]);
 
         $this->session->set_flashdata('success', 'Adviser added successfully.');
+        redirect('org/dashboard#advisers');
+    }
+
+    public function update_adviser($id = null)
+    {
+        if ($this->input->method() !== 'post' || !$id) {
+            redirect('org/dashboard#advisers');
+        }
+
+        $name = trim((string) $this->input->post('full_name', true));
+        $email = trim((string) $this->input->post('email', true));
+        $position = trim((string) $this->input->post('position', true));
+
+        if ($name === '' || $position === '') {
+            $this->session->set_flashdata('error', 'Adviser name and position are required.');
+            redirect('org/dashboard#advisers');
+        }
+
+        $photo = null;
+        if (!empty($_FILES['adviser_photo']['name'])) {
+            $photo = $this->upload_image('adviser_photo', 'uploads/org/advisers');
+            if ($photo === null) {
+                redirect('org/dashboard#advisers');
+            }
+        }
+
+        $this->OrgAdmin_model->update_adviser((int) $id, $this->org['organization_slug'], [
+            'full_name' => $name,
+            'email' => $email,
+            'position' => $position,
+            'photo' => $photo,
+        ]);
+
+        $this->session->set_flashdata('success', 'Adviser updated successfully.');
+        redirect('org/dashboard#advisers');
+    }
+
+    public function delete_adviser($id = null)
+    {
+        if ($this->input->method() !== 'post' || !$id) {
+            redirect('org/dashboard#advisers');
+        }
+
+        $this->OrgAdmin_model->delete_adviser((int) $id, $this->org['organization_slug']);
+        $this->session->set_flashdata('success', 'Adviser deleted successfully.');
         redirect('org/dashboard#advisers');
     }
 
@@ -146,6 +234,51 @@ class Org extends CI_Controller {
         redirect('org/dashboard#announcements');
     }
 
+    public function update_announcement($id = null)
+    {
+        if ($this->input->method() !== 'post' || !$id) {
+            redirect('org/dashboard#announcements');
+        }
+
+        $title = trim((string) $this->input->post('title', true));
+        $content = trim((string) $this->input->post('content', true));
+        $event_date = $this->input->post('event_date', true);
+
+        if ($title === '' || $content === '') {
+            $this->session->set_flashdata('error', 'Announcement title and content are required.');
+            redirect('org/dashboard#announcements');
+        }
+
+        $image = null;
+        if (!empty($_FILES['announcement_image']['name'])) {
+            $image = $this->upload_image('announcement_image', 'uploads/org/announcements');
+            if ($image === null) {
+                redirect('org/dashboard#announcements');
+            }
+        }
+
+        $this->OrgAdmin_model->update_announcement((int) $id, $this->org['organization_slug'], [
+            'title' => $title,
+            'content' => $content,
+            'event_date' => $event_date,
+            'image' => $image,
+        ]);
+
+        $this->session->set_flashdata('success', 'Announcement updated successfully.');
+        redirect('org/dashboard#announcements');
+    }
+
+    public function delete_announcement($id = null)
+    {
+        if ($this->input->method() !== 'post' || !$id) {
+            redirect('org/dashboard#announcements');
+        }
+
+        $this->OrgAdmin_model->delete_announcement((int) $id, $this->org['organization_slug']);
+        $this->session->set_flashdata('success', 'Announcement deleted successfully.');
+        redirect('org/dashboard#announcements');
+    }
+
     public function add_happening()
     {
         if ($this->input->method() !== 'post') {
@@ -176,6 +309,51 @@ class Org extends CI_Controller {
         ]);
 
         $this->session->set_flashdata('success', 'Happening saved successfully.');
+        redirect('org/dashboard#happenings');
+    }
+
+    public function update_happening($id = null)
+    {
+        if ($this->input->method() !== 'post' || !$id) {
+            redirect('org/dashboard#happenings');
+        }
+
+        $title = trim((string) $this->input->post('title', true));
+        $description = trim((string) $this->input->post('description', true));
+        $event_date = $this->input->post('event_date', true);
+
+        if ($title === '' || $description === '') {
+            $this->session->set_flashdata('error', 'Happening title and description are required.');
+            redirect('org/dashboard#happenings');
+        }
+
+        $image = null;
+        if (!empty($_FILES['happening_image']['name'])) {
+            $image = $this->upload_image('happening_image', 'uploads/org/happenings');
+            if ($image === null) {
+                redirect('org/dashboard#happenings');
+            }
+        }
+
+        $this->OrgAdmin_model->update_happening((int) $id, $this->org['organization_slug'], [
+            'title' => $title,
+            'description' => $description,
+            'event_date' => $event_date,
+            'image' => $image,
+        ]);
+
+        $this->session->set_flashdata('success', 'Happening updated successfully.');
+        redirect('org/dashboard#happenings');
+    }
+
+    public function delete_happening($id = null)
+    {
+        if ($this->input->method() !== 'post' || !$id) {
+            redirect('org/dashboard#happenings');
+        }
+
+        $this->OrgAdmin_model->delete_happening((int) $id, $this->org['organization_slug']);
+        $this->session->set_flashdata('success', 'Happening deleted successfully.');
         redirect('org/dashboard#happenings');
     }
 

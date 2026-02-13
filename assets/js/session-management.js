@@ -44,7 +44,7 @@ function buildDashboardReturnConfig(user) {
 
     if (user.role === 'faculty') {
         return {
-            url: base + 'index.php/faculty/dashboard',
+            url: base + 'index.php/admin/dashboard',
             text: 'Return to Dashboard'
         };
     }
@@ -359,6 +359,153 @@ function showLogoutModal(user) {
         
         if (e.key === 'Enter' && !document.getElementById('confirmLogoutBtn').disabled) {
             document.getElementById('confirmLogoutBtn').click();
+        }
+    });
+
+    // Clean up modal after it's hidden
+    $modalElement.on('hidden.bs.modal', function() {
+        modalDiv.remove();
+    });
+}
+
+// Admin-specific logout modal handler
+function showLogoutModalWithAdminCleanup() {
+    console.log('🔄 Showing admin logout modal with cleanup');
+    
+    const user = JSON.parse(localStorage.getItem('ccis_user') || '{}');
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('logoutModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Create modal elements using pure JavaScript
+    const modalDiv = document.createElement('div');
+    modalDiv.className = 'modal fade';
+    modalDiv.id = 'logoutModal';
+    modalDiv.setAttribute('tabindex', '-1');
+    modalDiv.setAttribute('aria-labelledby', 'logoutModalLabel');
+    modalDiv.setAttribute('aria-hidden', 'true');
+    modalDiv.setAttribute('data-bs-backdrop', 'static'); 
+    
+    // Updated HTML structure with your requirements
+    modalDiv.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content" style="border-radius: 12px; border: 4px solid var(--accent); box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                <div class="modal-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="fas fa-sign-out-alt" style="font-size: 3rem; color: #dc3545;"></i>
+                    </div>
+                    <h5 class="mb-5" style="color: var(--primary-purple); font-weight: 700; font-size: 1.5rem;">
+                        Are you sure you want to logout?
+                    </h5>
+                    <div class="d-flex gap-3 justify-content-center">
+                        <button type="button" class="btn btn-secondary cancel-btn" data-bs-dismiss="modal" 
+                            style="border-radius: 50px; padding: 10px 30px; font-weight: 600; 
+                            background: #f8f9fa; color: #6c757d; border: 2px solid #dee2e6;
+                            box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            Cancel
+                        </button>
+                        
+                        <button type="button" class="btn btn-danger logout-btn" id="confirmAdminLogoutBtn" 
+                            style="border-radius: 50px; padding: 10px 30px; font-weight: 600; 
+                            background: #f8f9fa; color: #6c757d; border: 2px solid #dee2e6;
+                            box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modalDiv);
+
+    // Initialize Bootstrap Modal
+    const $modalElement = $(modalDiv);
+    $modalElement.modal('show');
+
+    // Add hover effects for buttons
+    const cancelBtn = modalDiv.querySelector('.cancel-btn');
+    const logoutBtn = modalDiv.querySelector('.logout-btn');
+
+    // Cancel button hover effects
+    cancelBtn.addEventListener('mouseenter', function() {
+        this.style.background = 'var(--primary-purple)';
+        this.style.color = 'white';
+        this.style.borderColor = 'var(--primary-purple)';
+        this.style.boxShadow = '0 4px 10px rgba(75, 0, 130, 0.3)';
+    });
+
+    cancelBtn.addEventListener('mouseleave', function() {
+        this.style.background = '#f8f9fa';
+        this.style.color = '#6c757d';
+        this.style.borderColor = '#dee2e6';
+        this.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+    });
+
+    // Logout button hover effects
+    logoutBtn.addEventListener('mouseenter', function() {
+        this.style.background = 'var(--logout-color)';
+        this.style.color = 'white';
+        this.style.borderColor = 'var(--logout-color)';
+        this.style.boxShadow = '0 4px 10px rgba(220, 53, 69, 0.3)';
+    });
+
+    logoutBtn.addEventListener('mouseleave', function() {
+        this.style.background = '#f8f9fa';
+        this.style.color = '#6c757d';
+        this.style.borderColor = '#dee2e6';
+        this.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+    });
+
+    // Focus management and event listeners
+    $modalElement.on('shown.bs.modal', function() {
+        document.getElementById('confirmAdminLogoutBtn').focus();
+    });
+
+    document.getElementById('confirmAdminLogoutBtn').addEventListener('click', function() {
+        const btn = this;
+        
+        // Show loading state
+        btn.innerHTML = '<span class="logout-loading-spinner" style="border-top-color: white;"></span>Logging out...';
+        btn.disabled = true;
+        
+        // Log logout activity
+        logLogoutActivity(user);
+        
+        // Clear session (both standard and admin-specific)
+        setTimeout(() => {
+                clearUserSession();
+                // Clear admin-specific auth state
+                try {
+                    localStorage.removeItem('userSession');
+                    sessionStorage.removeItem('userSession');
+                    localStorage.removeItem('admin_return_url');
+                    sessionStorage.removeItem('admin_return_url');
+                } catch (e) {
+                    // Intentionally ignore storage errors (e.g., private mode / disabled)
+                }
+                
+                $modalElement.modal('hide'); 
+                
+                setTimeout(() => {
+                    // Redirect to root logout using global BASE_URL
+                    window.location.href = window.BASE_URL + 'index.php/logout?logout=true';
+                }, 500);
+        }, 1000);
+    });
+
+    // Keyboard navigation
+    modalDiv.addEventListener('keydown', function(e) {
+        // Close modal on Escape key, since 'X' button is removed
+        if (e.key === 'Escape') {
+            $modalElement.modal('hide');
+        }
+        
+        if (e.key === 'Enter' && !document.getElementById('confirmAdminLogoutBtn').disabled) {
+            document.getElementById('confirmAdminLogoutBtn').click();
         }
     });
 

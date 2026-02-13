@@ -275,8 +275,8 @@ class LoginController extends CI_Controller {
 				redirect('admin/dashboard');
 				break;
 			case 2:
-				// Faculty
-				redirect('faculty/dashboard');
+				// Faculty - same access as superadmin
+				redirect('admin/dashboard');
 				break;
 			case 3:
 				// Student - redirect to homepage with full features unlocked

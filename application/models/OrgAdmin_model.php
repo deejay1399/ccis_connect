@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class OrgAdmin_model extends CI_Model {
@@ -182,6 +182,31 @@ class OrgAdmin_model extends CI_Model {
         return $this->db->insert('org_officers', $payload);
     }
 
+    public function update_officer($id, $organization_slug, $data)
+    {
+        $payload = [
+            'full_name' => trim((string) $data['full_name']),
+            'position' => trim((string) $data['position']),
+        ];
+
+        if (array_key_exists('photo', $data) && $data['photo'] !== null) {
+            $payload['photo'] = $data['photo'];
+        }
+
+        return $this->db
+            ->where('id', (int) $id)
+            ->where('organization_slug', (string) $organization_slug)
+            ->update('org_officers', $payload);
+    }
+
+    public function delete_officer($id, $organization_slug)
+    {
+        return $this->db
+            ->where('id', (int) $id)
+            ->where('organization_slug', (string) $organization_slug)
+            ->delete('org_officers');
+    }
+
     public function get_advisers($organization_slug)
     {
         return $this->db->where('organization_slug', $organization_slug)
@@ -202,6 +227,32 @@ class OrgAdmin_model extends CI_Model {
         ];
 
         return $this->db->insert('org_advisers', $payload);
+    }
+
+    public function update_adviser($id, $organization_slug, $data)
+    {
+        $payload = [
+            'full_name' => trim((string) $data['full_name']),
+            'email' => trim((string) $data['email']),
+            'position' => trim((string) $data['position']),
+        ];
+
+        if (array_key_exists('photo', $data) && $data['photo'] !== null) {
+            $payload['photo'] = $data['photo'];
+        }
+
+        return $this->db
+            ->where('id', (int) $id)
+            ->where('organization_slug', (string) $organization_slug)
+            ->update('org_advisers', $payload);
+    }
+
+    public function delete_adviser($id, $organization_slug)
+    {
+        return $this->db
+            ->where('id', (int) $id)
+            ->where('organization_slug', (string) $organization_slug)
+            ->delete('org_advisers');
     }
 
     public function get_announcements($organization_slug)
@@ -226,6 +277,32 @@ class OrgAdmin_model extends CI_Model {
         return $this->db->insert('org_announcements', $payload);
     }
 
+    public function update_announcement($id, $organization_slug, $data)
+    {
+        $payload = [
+            'title' => trim((string) $data['title']),
+            'content' => trim((string) $data['content']),
+            'event_date' => !empty($data['event_date']) ? $data['event_date'] : null,
+        ];
+
+        if (array_key_exists('image', $data) && $data['image'] !== null) {
+            $payload['image'] = $data['image'];
+        }
+
+        return $this->db
+            ->where('id', (int) $id)
+            ->where('organization_slug', (string) $organization_slug)
+            ->update('org_announcements', $payload);
+    }
+
+    public function delete_announcement($id, $organization_slug)
+    {
+        return $this->db
+            ->where('id', (int) $id)
+            ->where('organization_slug', (string) $organization_slug)
+            ->delete('org_announcements');
+    }
+
     public function get_happenings($organization_slug)
     {
         return $this->db->where('organization_slug', $organization_slug)
@@ -246,6 +323,32 @@ class OrgAdmin_model extends CI_Model {
         ];
 
         return $this->db->insert('org_happenings', $payload);
+    }
+
+    public function update_happening($id, $organization_slug, $data)
+    {
+        $payload = [
+            'title' => trim((string) $data['title']),
+            'description' => trim((string) $data['description']),
+            'event_date' => !empty($data['event_date']) ? $data['event_date'] : null,
+        ];
+
+        if (array_key_exists('image', $data) && $data['image'] !== null) {
+            $payload['image'] = $data['image'];
+        }
+
+        return $this->db
+            ->where('id', (int) $id)
+            ->where('organization_slug', (string) $organization_slug)
+            ->update('org_happenings', $payload);
+    }
+
+    public function delete_happening($id, $organization_slug)
+    {
+        return $this->db
+            ->where('id', (int) $id)
+            ->where('organization_slug', (string) $organization_slug)
+            ->delete('org_happenings');
     }
 }
 

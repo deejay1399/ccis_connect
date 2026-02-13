@@ -256,6 +256,10 @@ body {
     color: #666 !important; /* Force gray on hover */
 }
 
+.navbar-main .notification-wrapper .auth-icon-link.active i {
+    color: var(--primary-purple) !important; /* Purple when active */
+}
+
 /* Navbar Toggler */
 .navbar-toggler {
     margin-left: auto;

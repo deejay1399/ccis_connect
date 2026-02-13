@@ -1014,13 +1014,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-close {
-    background: none;
-    color: var(--primary-purple);
+    background-color: transparent;
     opacity: 0.8;
 }
 
 .btn-close:hover {
     opacity: 1;
+}
+
+/* Ensure modal close icon is always visible */
+.modal-header .btn-close {
+    opacity: 1;
+    filter: invert(18%) sepia(92%) saturate(4666%) hue-rotate(347deg) brightness(91%) contrast(99%);
+}
+
+.modal-header .btn-close:hover {
+    filter: invert(12%) sepia(98%) saturate(5236%) hue-rotate(356deg) brightness(92%) contrast(115%);
 }
 
 /* ======================================== */

@@ -220,7 +220,6 @@ $(document).ready(function () {
                         <td>${escapeHtml(row.question)}</td>
                         <td>${escapeHtml(row.category)}</td>
                         <td>${formatDate(row.inquiry_date)}</td>
-                        <td>${statusBadge(row.status)}</td>
                     </tr>
                 `);
             });
