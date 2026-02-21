@@ -141,8 +141,8 @@ window.CSRF_TOKEN_VALUE = '<?php echo $this->security->get_csrf_hash(); ?>';
 
             // Force a single, authoritative handler (some page scripts bind their own logout logic)
             $(document)
-                .off('click', '#logout-icon-link, #logout-nav-link')
-                .on('click', '#logout-icon-link, #logout-nav-link', function(e) {
+                .off('click', '#logout-icon-link')
+                .on('click', '#logout-icon-link', function(e) {
                     e.preventDefault();
                     
                     // Show logout modal with admin-specific cleanup

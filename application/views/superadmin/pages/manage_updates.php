@@ -13,7 +13,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <ul class="nav nav-tabs nav-updates" id="updatesTab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="announcements-tab" data-bs-toggle="tab" data-bs-target="#announcements" type="button" role="tab" aria-controls="announcements" aria-selected="true">
-                            <i class="fas fa-megaphone me-2"></i>Announcements
+                            <i class="fas fa-bullhorn me-2"></i>Announcements
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">

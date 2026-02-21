@@ -1,29 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-main">
         <div class="container">
-            <!-- Notification Bell on LEFT SIDE of navbar -->
-            <div class="notification-wrapper me-2" id="notification-wrapper">
-                <a href="javascript:void(0)" class="nav-link auth-icon-link" id="notification-bell" title="Notifications">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge" id="dashboard-notification-badge" style="display: none;">0</span>
-                </a>
-                <div class="notification-dropdown" id="notification-dropdown">
-                    <div class="notification-header">
-                        <h6><i class="fas fa-bell me-2"></i>Notifications</h6>
-                        <button class="btn btn-sm btn-outline-primary" id="mark-all-notifications">Mark All Read</button>
-                    </div>
-                    <div class="notification-list" id="notification-list">
-                        <!-- Notifications will be loaded here -->
-                        <div class="notification-empty">
-                            <i class="fas fa-bell-slash"></i>
-                            <p>No new notifications</p>
-                        </div>
-                    </div>
-                    <div class="notification-footer">
-                        <a href="<?php echo site_url('admin'); ?>" class="view-all-link">View All Notifications</a>
-                    </div>
-                </div>
-            </div>
-            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" 
                     aria-label="Toggle navigation menu" aria-controls="mainNav" aria-expanded="false">
                 <span class="navbar-toggler-icon"></span>

@@ -41,29 +41,90 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         ?>
         <link rel="stylesheet" href="<?php echo base_url('assets/css/manage_updates.css?v=' . $updates_css_version); ?>">
     <?php endif; ?>
+    <style>
+        .superadmin-header-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+        .superadmin-header-text {
+            flex: 1;
+            min-width: 0;
+        }
+        .superadmin-header-text .college-title,
+        .superadmin-header-text .college-subtitle {
+            text-align: left !important;
+        }
+        .superadmin-header-row .header-auth-icon {
+            margin-left: auto;
+        }
+        .superadmin-header-bisu-logo,
+        .superadmin-header-ccis-logo {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            border-radius: 50%;
+            background-color: #fff;
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+        }
+        @media (min-width: 769px) {
+            .superadmin-header-row {
+                min-height: 70px;
+                justify-content: center;
+                padding-right: 64px;
+            }
+            .superadmin-header-text {
+                position: static;
+                transform: none;
+                width: auto;
+                pointer-events: auto;
+                flex: 0 1 auto;
+                max-width: min(900px, calc(100% - 270px));
+            }
+            .superadmin-header-row .header-auth-icon {
+                position: absolute;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                margin-left: 0 !important;
+            }
+        }
+        @media (max-width: 768px) {
+            .superadmin-header-row { gap: 0.6rem; }
+            .superadmin-header-bisu-logo,
+            .superadmin-header-ccis-logo {
+                width: 48px;
+                height: 48px;
+            }
+            .superadmin-header-row .header-auth-icon {
+                justify-content: flex-end !important;
+                margin-top: 0 !important;
+            }
+        }
+        @media (max-width: 576px) {
+            .superadmin-header-bisu-logo,
+            .superadmin-header-ccis-logo {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Updated Header without BISU logo and notification -->
     <header class="university-header">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-1 text-center">
-                    <!-- BISU Logo removed as requested -->
-                </div>
-                <div class="col-md-1 text-center">
-                    <img src="<?php echo base_url('assets/images/ccis.png'); ?>" alt="CCIS Logo" class="college-logo">
-                </div>
-                <div class="col-md-9">
+            <div class="superadmin-header-row">
+                <img src="<?php echo base_url('assets/images/bisu1.png'); ?>" alt="BISU Logo" class="superadmin-header-bisu-logo">
+                <div class="superadmin-header-text">
                     <h1 class="college-title">COLLEGE OF COMPUTING AND INFORMATION SCIENCES</h1>
                     <p class="college-subtitle">Super Admin Control Panel</p>
                 </div>
-                <div class="col-md-1">
-                    <div class="header-auth-icon">
-                        <!-- LOGOUT BUTTON ONLY in header -->
-                        <a href="<?php echo base_url('index.php/logout?logout=true'); ?>" id="logout-icon-link" class="auth-icon-link" title="Logout">
-                            <i class="fas fa-user-circle"></i>
-                        </a>
-                    </div>
+                <img src="<?php echo base_url('assets/images/ccis.png'); ?>" alt="CCIS Logo" class="superadmin-header-ccis-logo">
+                <div class="header-auth-icon">
+                    <a href="<?php echo base_url('index.php/logout?logout=true'); ?>" id="logout-icon-link" class="auth-icon-link" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
                 </div>
             </div>
         </div>

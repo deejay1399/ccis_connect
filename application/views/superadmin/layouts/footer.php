@@ -231,6 +231,10 @@
         <script src="<?php echo base_url('assets/js/manage_academics_calendar.js?v=' . time()); ?>"></script>
     <?php elseif(isset($content_type) && $content_type === 'forms'): ?>
         <script src="<?php echo base_url('assets/js/manage_forms.js'); ?>"></script>
+    <?php elseif(isset($content_type) && $content_type === 'about'): ?>
+        <script src="<?php echo base_url('assets/js/manage_about.js'); ?>"></script>
+    <?php elseif(isset($content_type) && $content_type === 'organizations'): ?>
+        <script src="<?php echo base_url('assets/js/manage_organizations.js'); ?>"></script>
     <?php elseif(isset($content_type) && $content_type === 'alumni'): ?>
         <?php
             $alumni_js_path = FCPATH . 'assets/js/manage_alumni.js';

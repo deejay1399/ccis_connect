@@ -10,22 +10,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <p class="card-subtitle">Edit programs, upload curriculum PDFs, class schedules, and academic calendar.</p>
                 <hr>
 
-                <ul class="nav nav-tabs nav-academics" id="academicsTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="programs-tab" data-bs-toggle="tab" data-bs-target="#programs" type="button" role="tab" aria-controls="programs" aria-selected="true">
-                            <i class="fas fa-book me-2"></i>Programs
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="curriculum-tab" data-bs-toggle="tab" data-bs-target="#curriculum" type="button" role="tab" aria-controls="curriculum" aria-selected="false">
-                            <i class="fas fa-file-pdf me-2"></i>Curriculum
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab" aria-controls="schedule" aria-selected="false">
-                            <i class="fas fa-table me-2"></i>Class Schedule
-                        </button>
-                    </li>
+                    <ul class="nav nav-tabs nav-academics" id="academicsTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="programs-tab" data-bs-toggle="tab" data-bs-target="#programs" type="button" role="tab" aria-controls="programs" aria-selected="true">
+                                <i class="fas fa-list-check me-2"></i>Programs Offered
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="curriculum-tab" data-bs-toggle="tab" data-bs-target="#curriculum" type="button" role="tab" aria-controls="curriculum" aria-selected="false">
+                                <i class="fas fa-book-open me-2"></i>Curriculum PDFs
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab" aria-controls="schedule" aria-selected="false">
+                                <i class="fas fa-calendar-alt me-2"></i>Class Schedules
+                            </button>
+                        </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar" type="button" role="tab" aria-controls="calendar" aria-selected="false">
                             <i class="fas fa-calendar me-2"></i>Academic Calendar

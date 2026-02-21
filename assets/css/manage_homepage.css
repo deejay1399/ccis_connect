@@ -361,6 +361,85 @@ body {
     transform: scale(1.1) rotate(5deg);
 }
 
+.upload-zone-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-purple);
+    margin-bottom: 0.35rem;
+    letter-spacing: 0.2px;
+}
+
+.upload-zone-subtext {
+    margin: 0 0 1rem 0;
+    color: #5f6673;
+    font-size: 1.05rem;
+}
+
+.upload-zone-meta {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.upload-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(106, 13, 173, 0.12);
+    color: var(--primary-purple);
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: 1px solid rgba(106, 13, 173, 0.22);
+}
+
+.preview-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.65rem;
+}
+
+.preview-heading h5 {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    color: #2f3240;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.preview-count-badge {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(146, 41, 245, 0.16), rgba(106, 13, 173, 0.14));
+    color: var(--primary-purple);
+    border: 1px solid rgba(106, 13, 173, 0.24);
+    border-radius: 999px;
+    padding: 0.3rem 0.7rem;
+    font-weight: 700;
+    font-size: 0.82rem;
+}
+
+.preview-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 86px;
+    border: 1px dashed rgba(106, 13, 173, 0.28);
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(241, 236, 250, 0.75), rgba(255, 255, 255, 0.95));
+    color: #6a6f7e;
+    font-weight: 600;
+}
+
+.preview-empty i {
+    color: var(--secondary-purple);
+}
+
 /* Carousel Images Grid - MODERN */
 .images-grid {
     display: grid;
@@ -1387,8 +1466,21 @@ a:contains("Return to Dashboard") {
         padding: 2rem 1rem;
     }
 
+    .upload-zone-title {
+        font-size: 1.45rem;
+    }
+
+    .upload-zone-subtext {
+        font-size: 0.95rem;
+    }
+
     .upload-icon {
         font-size: 3rem;
+    }
+
+    .preview-heading {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .images-grid {

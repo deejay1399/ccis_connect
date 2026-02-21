@@ -1,20 +1,26 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
-<div class="container-fluid dashboard-bg py-4">
-    <div class="container">
-        <div class="dashboard-card">
+<div class="container py-4 py-md-5 dashboard-bg">
+    <div class="row g-4">
+        <main class="col-12">
+            <div class="dashboard-card">
+                <h1 class="card-title"><i class="fas fa-chalkboard-teacher me-2"></i>Manage Faculty</h1>
+                <p class="card-subtitle">Add, edit, and remove faculty members from the college directory.</p>
+                <hr>
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="card-title">Manage Faculty</h3>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFacultyModal">
-                    + Add Faculty
-                </button>
+                <div class="mb-4 text-end">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFacultyModal">
+                        <i class="fas fa-plus me-2"></i>Add New Faculty Member
+                    </button>
+                </div>
+
+                <div class="forms-management-section">
+                    <h4 class="mb-3"><i class="fas fa-list-ul me-2"></i>Current Faculty Members</h4>
+                    <div class="row g-4" id="faculty-list">
+                        <!-- Faculty cards injected here -->
+                    </div>
+                </div>
             </div>
-
-            <div class="row g-4" id="faculty-list">
-                <!-- Faculty cards injected here -->
-            </div>
-
-        </div>
+        </main>
     </div>
 </div>
 

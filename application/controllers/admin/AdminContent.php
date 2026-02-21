@@ -651,6 +651,28 @@ class AdminContent extends CI_Controller {
 		exit;
 	}
 
+	// AJAX: Load all homepage records (carousel + welcome source)
+	public function load_homepage_all()
+	{
+		header('Content-Type: application/json');
+
+		try {
+			$this->load->model('Homepage_model');
+			$data = $this->Homepage_model->get_all();
+
+			echo json_encode([
+				'success' => true,
+				'data' => $data
+			]);
+		} catch (Exception $e) {
+			echo json_encode([
+				'success' => false,
+				'message' => 'Error: ' . $e->getMessage()
+			]);
+		}
+		exit;
+	}
+
 	// AJAX: Save homepage data with file upload
 	public function save_homepage()
 	{
@@ -729,6 +751,88 @@ class AdminContent extends CI_Controller {
 		exit;
 	}
 
+	// AJAX: Replace homepage data in one operation (welcome + carousel)
+	public function replace_homepage()
+	{
+		header('Content-Type: application/json');
+
+		try {
+			$this->load->model('Homepage_model');
+
+			$title = trim((string) $this->input->post('title'));
+			$content = trim((string) $this->input->post('content'));
+			$existing_images = $this->input->post('existing_images');
+			if (!is_array($existing_images)) {
+				$existing_images = [];
+			}
+
+			// Keep only non-empty relative paths and avoid duplicates.
+			$kept_images = [];
+			foreach ($existing_images as $path) {
+				$clean = trim((string) $path);
+				if ($clean !== '') {
+					$kept_images[$clean] = true;
+				}
+			}
+			$kept_images = array_keys($kept_images);
+
+			$new_images = $this->_upload_multiple_banners('banner_images');
+			if ($new_images === false) {
+				echo json_encode([
+					'success' => false,
+					'message' => 'Failed to upload one or more images. Check file format/size.'
+				]);
+				exit;
+			}
+
+			$current_records = $this->Homepage_model->get_all();
+			$all_images = array_merge($kept_images, $new_images);
+
+			// Remove old files that are no longer referenced.
+			foreach ($current_records as $record) {
+				if (empty($record['banner_image'])) {
+					continue;
+				}
+				if (!in_array($record['banner_image'], $kept_images, true)) {
+					$this->Homepage_model->delete_banner_file($record['banner_image']);
+				}
+			}
+
+			// Rebuild homepage rows.
+			$this->db->empty_table('homepage');
+
+			if (empty($all_images)) {
+				// Keep welcome content even without carousel images.
+				$this->Homepage_model->save_homepage([
+					'title' => $title,
+					'content' => $content
+				]);
+			} else {
+				// Preserve front-end order while public homepage reads records in DESC id.
+				$insert_images = array_reverse($all_images);
+				foreach ($insert_images as $image_path) {
+					$this->Homepage_model->save_homepage([
+						'title' => $title,
+						'content' => $content,
+						'banner_image' => $image_path
+					]);
+				}
+			}
+
+			echo json_encode([
+				'success' => true,
+				'message' => 'Homepage updated successfully',
+				'image_count' => count($all_images)
+			]);
+		} catch (Exception $e) {
+			echo json_encode([
+				'success' => false,
+				'message' => 'Error: ' . $e->getMessage()
+			]);
+		}
+		exit;
+	}
+
 	// Helper: Upload banner image
 	private function _upload_banner()
 	{
@@ -741,8 +845,8 @@ class AdminContent extends CI_Controller {
 		// Configure upload settings
 		$config = [
 			'upload_path' => $upload_dir,
-			'allowed_types' => 'gif|jpg|png|jpeg',
-			'max_size' => 5120, // 5MB
+			'allowed_types' => 'gif|jpg|png|jpeg|webp',
+			'max_size' => 20480, // 20MB
 			'file_name' => 'banner_' . time() . '_' . random_string('alnum', 8),
 			'overwrite' => false,
 			'encrypt_name' => false
@@ -758,6 +862,72 @@ class AdminContent extends CI_Controller {
 		// Return relative path for database storage
 		$upload_data = $this->upload->data();
 		return 'uploads/dashboard/' . $upload_data['file_name'];
+	}
+
+	private function _upload_multiple_banners($input_name = 'banner_images')
+	{
+		if (
+			!isset($_FILES[$input_name]) ||
+			!isset($_FILES[$input_name]['name']) ||
+			empty($_FILES[$input_name]['name'])
+		) {
+			return [];
+		}
+
+		$names = $_FILES[$input_name]['name'];
+		if (!is_array($names)) {
+			$names = [$names];
+			$_FILES[$input_name]['type'] = [$_FILES[$input_name]['type']];
+			$_FILES[$input_name]['tmp_name'] = [$_FILES[$input_name]['tmp_name']];
+			$_FILES[$input_name]['error'] = [$_FILES[$input_name]['error']];
+			$_FILES[$input_name]['size'] = [$_FILES[$input_name]['size']];
+		}
+
+		$paths = [];
+		$count = count($names);
+
+		for ($i = 0; $i < $count; $i++) {
+			if (empty($names[$i])) {
+				continue;
+			}
+
+			$_FILES['__banner_tmp'] = [
+				'name' => $_FILES[$input_name]['name'][$i],
+				'type' => $_FILES[$input_name]['type'][$i],
+				'tmp_name' => $_FILES[$input_name]['tmp_name'][$i],
+				'error' => $_FILES[$input_name]['error'][$i],
+				'size' => $_FILES[$input_name]['size'][$i],
+			];
+
+			$upload_dir = FCPATH . 'uploads/dashboard';
+			if (!is_dir($upload_dir)) {
+				@mkdir($upload_dir, 0755, true);
+			}
+
+			$config = [
+				'upload_path' => $upload_dir,
+				'allowed_types' => 'gif|jpg|png|jpeg|webp',
+				'max_size' => 20480, // 20MB per image
+				'file_name' => 'banner_' . time() . '_' . random_string('alnum', 8),
+				'overwrite' => false,
+				'encrypt_name' => false
+			];
+
+			$this->load->library('upload');
+			$this->upload->initialize($config);
+
+			if (!$this->upload->do_upload('__banner_tmp')) {
+				log_message('error', 'Multi Banner Upload Error: ' . $this->upload->display_errors('', ''));
+				unset($_FILES['__banner_tmp']);
+				return false;
+			}
+
+			$upload_data = $this->upload->data();
+			$paths[] = 'uploads/dashboard/' . $upload_data['file_name'];
+			unset($_FILES['__banner_tmp']);
+		}
+
+		return $paths;
 	}
 
 	// ==================== UPDATES MANAGEMENT (ANNOUNCEMENTS / EVENTS / DEAN'S LIST) ====================
