@@ -200,33 +200,48 @@ class AdminUsers extends CI_Controller {
 	 */
 	private function _saveStudentData($userId)
 	{
-		$organization = $this->input->post('student_organization', true);
-		$organizationCustom = $this->input->post('student_organization_custom', true);
-		$course = $this->input->post('course', true);
-		if (empty($organization) && !empty($course)) {
-			$course_upper = strtoupper((string) $course);
-			if (strpos($course_upper, 'BSIT') !== false || strpos($course_upper, 'INFORMATION TECHNOLOGY') !== false) {
-				$organization = 'the_legion';
-			} elseif (strpos($course_upper, 'BSCS') !== false || strpos($course_upper, 'COMPUTER SCIENCE') !== false) {
-				$organization = 'csguild';
-			}
+		$course = trim((string) $this->input->post('course', true));
+		$mapped = $this->_mapCourseToOrganization($course);
+		if ($mapped === null) {
+			throw new Exception('Invalid course. Please select BSIT or BSCS.');
 		}
-		$org = $this->OrgAdmin_model->normalize_organization($organization, $organizationCustom);
 
 		$studentData = [
 			'user_id' => $userId,
 			'student_number' => $this->input->post('student_number', true),
-			'course' => $course,
+			'course' => $mapped['course'],
 			'year_level' => $this->input->post('year_level', true),
 			'section' => $this->input->post('section', true),
-			'organization_slug' => $org['slug'],
-			'organization_name' => $org['name']
+			'organization_slug' => $mapped['organization_slug'],
+			'organization_name' => $mapped['organization_name']
 		];
 
 		if (!$this->Student_model->create($studentData)) {
 			throw new Exception('Failed to save student data');
 		}
 		log_message('info', "Student data saved for user: $userId");
+	}
+
+	private function _mapCourseToOrganization($course)
+	{
+		$normalized = strtoupper(trim((string) $course));
+		if ($normalized === 'BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY' || $normalized === 'BSIT') {
+			return [
+				'course' => 'Bachelor of Science in Information Technology',
+				'organization_slug' => 'the_legion',
+				'organization_name' => 'The Legion'
+			];
+		}
+
+		if ($normalized === 'BACHELOR OF SCIENCE IN COMPUTER SCIENCE' || $normalized === 'BSCS') {
+			return [
+				'course' => 'Bachelor of Science in Computer Science',
+				'organization_slug' => 'csguild',
+				'organization_name' => 'CS Guild'
+			];
+		}
+
+		return null;
 	}
 
 	/**

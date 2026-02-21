@@ -51,11 +51,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="stories-tab" data-bs-toggle="tab" data-bs-target="#stories-content" type="button" role="tab">
-                            <i class="fas fa-book me-2"></i>Success Stories
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
                         <button class="nav-link" id="events-tab" data-bs-toggle="tab" data-bs-target="#events-content" type="button" role="tab">
                             <i class="fas fa-calendar-alt me-2"></i>Events
                         </button>
@@ -257,24 +252,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         </div>
                     </div>
 
-                    <!-- Success Stories Tab -->
-                    <div class="tab-pane fade" id="stories-content" role="tabpanel">
-                        <div class="tab-header mt-4 mb-4">
-                            <h4><i class="fas fa-book me-2"></i>Success Stories</h4>
-                            <p class="text-muted">Inspiring stories from alumni</p>
-                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStoryModal">
-                                <i class="fas fa-plus me-1"></i>Add Success Story
-                            </button>
-                        </div>
-                        <div class="row g-3" id="stories-grid">
-                            <!-- Success story cards will be loaded here -->
-                        </div>
-                        <div class="no-data" id="no-stories-data">
-                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                            <p>No success stories yet</p>
-                        </div>
-                    </div>
-
                     <!-- Alumni Events Tab -->
                     <div class="tab-pane fade" id="events-content" role="tabpanel">
                         <div class="tab-header mt-4 mb-4">
@@ -387,42 +364,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" form="addDirectoryForm" class="btn btn-primary">Add Entry</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Add Success Story Modal -->
-<div class="modal fade" id="addStoryModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-book me-2"></i>Add Success Story</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="addStoryForm">
-                    <div class="mb-3">
-                        <label for="storyTitle" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="storyTitle" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="storyPhoto" class="form-label">Photo (optional)</label>
-                        <input type="file" class="form-control" id="storyPhoto" accept="image/*">
-                    </div>
-                    <div class="mb-3">
-                        <label for="storyAuthor" class="form-label">Author</label>
-                        <input type="text" class="form-control" id="storyAuthor" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="storyContent" class="form-label">Story</label>
-                        <textarea class="form-control" id="storyContent" rows="5" required></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" form="addStoryForm" class="btn btn-primary">Add Story</button>
             </div>
         </div>
     </div>

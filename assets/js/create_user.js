@@ -109,15 +109,14 @@ $(document).ready(function() {
             $('#orgAdminFields').slideUp(300);
             
             // Clear validation for hidden fields
-            $('#studentFields input, #studentFields select, #facultyFields input, #facultyFields textarea, #orgAdminFields select, #organizationCustom, #studentOrganizationCustom').removeAttr('required');
+            $('#studentFields input, #studentFields select, #facultyFields input, #facultyFields textarea, #orgAdminFields select, #organizationCustom').removeAttr('required');
             $('#organizationCustomWrapper').hide();
-            $('#studentOrganizationCustomWrapper').hide();
             
             // Show appropriate section based on selection
             if (selectedRole === '3') {
                 // Student
                 $('#studentFields').slideDown(300);
-                $('#studentNumber, #course, #yearLevel, #section, #studentOrganization').attr('required', 'required');
+                $('#studentNumber, #course, #yearLevel, #section').attr('required', 'required');
                 console.log('?? Student fields displayed');
             } else if (selectedRole === '2') {
                 // Faculty
@@ -145,16 +144,6 @@ $(document).ready(function() {
             }
         });
 
-        $('#studentOrganization').on('change', function() {
-            if ($(this).val() === 'other') {
-                $('#studentOrganizationCustomWrapper').slideDown(200);
-                $('#studentOrganizationCustom').attr('required', 'required');
-            } else {
-                $('#studentOrganizationCustomWrapper').slideUp(200);
-                $('#studentOrganizationCustom').removeAttr('required').val('');
-            }
-        });
-        
         console.log('? Conditional fields handler attached');
     }
     function setupPublicSiteLink() {
@@ -356,8 +345,6 @@ $(document).ready(function() {
             userData.course = $('#course').val().trim();
             userData.year_level = $('#yearLevel').val();
             userData.section = $('#section').val().trim();
-            userData.student_organization = $('#studentOrganization').val();
-            userData.student_organization_custom = $('#studentOrganizationCustom').val().trim();
         } else if (roleId === '2') {
             // Faculty
             userData.position = $('#position').val().trim();

@@ -95,8 +95,6 @@
                                 Alumni</a></li>
                         <li><a class="dropdown-item" href="<?php echo site_url('alumni'); ?>#directory-section">Alumni
                                 Directory</a></li>
-                        <li><a class="dropdown-item" href="<?php echo site_url('alumni'); ?>#success-section">Success
-                                Stories</a></li>
                         <li><a class="dropdown-item" href="<?php echo site_url('alumni'); ?>#events-section">Alumni
                                 Events</a></li>
                         <li>

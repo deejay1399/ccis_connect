@@ -27,12 +27,10 @@ let currentSection = null;
 const alumniPublicData = {
     featured: [],
     directory: [],
-    stories: [],
     events: [],
     loaded: {
         featured: false,
         directory: false,
-        stories: false,
         events: false
     }
 };
@@ -109,14 +107,6 @@ function prefetchPublicAlumniData() {
             alumniPublicData.directory = response.data || [];
             alumniPublicData.loaded.directory = true;
             refreshIfActive('directory-section');
-        }
-    });
-
-    $.getJSON(alumniApiBase + 'stories', function(response) {
-        if (response.success) {
-            alumniPublicData.stories = response.data || [];
-            alumniPublicData.loaded.stories = true;
-            refreshIfActive('success-section');
         }
     });
 
@@ -275,58 +265,6 @@ const sectionTemplates = {
                         <button id="clear-filters" class="btn btn-sm btn-outline-primary mt-2">
                             Clear Filters
                         </button>
-                    </div>
-                </div>
-            </section>
-        `;
-    },
-    
-    // Success Stories Template
-    'success-section': function() {
-        if (!alumniPublicData.loaded.stories) {
-            return `
-                <section class="success-stories-section">
-                    <div class="container">
-                        <h2 class="section-title">Success Stories</h2>
-                        <p class="section-subtitle">Loading success stories...</p>
-                    </div>
-                </section>
-            `;
-        }
-
-        const stories = alumniPublicData.stories || [];
-        let storyCards = '';
-
-        if (stories.length === 0) {
-            storyCards = `<p class="text-muted text-center">No success stories yet.</p>`;
-        } else {
-            stories.forEach(story => {
-                const photoHtml = story.photo
-                    ? `<img src="${baseUrl + story.photo}" alt="${story.author}">`
-                    : '';
-                storyCards += `
-                    <div class="story-card">
-                        ${photoHtml ? `<div class=\"story-image\">${photoHtml}</div>` : ''}
-                        <div class="story-content">
-                            <h3>${story.title}</h3>
-                            <p class="story-text">${story.content}</p>
-                            <div class="story-author-info">
-                                <p class="story-author">${story.author}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        return `
-            <section class="success-stories-section">
-                <div class="container">
-                    <h2 class="section-title">Success Stories</h2>
-                    <p class="section-subtitle">Inspiring journeys of CCIS graduates who made it big</p>
-                    
-                    <div class="success-stories">
-                        ${storyCards}
                     </div>
                 </div>
             </section>
@@ -1339,7 +1277,7 @@ function setupAlumniChatbotResponses() {
         window.addChatbotResponse('alumni_info', 
             ['alumni', 'graduates', 'featured alumni', 'alumni directory'],
             [
-                "You can find alumni information by clicking the 'Alumni' dropdown menu. Choose from Featured Alumni, Alumni Directory, Success Stories, Alumni Events, How to Give Back, or Update Your Information.",
+                "You can find alumni information by clicking the 'Alumni' dropdown menu. Choose from Featured Alumni, Alumni Directory, Alumni Events, How to Give Back, or Update Your Information.",
                 "Use the Alumni dropdown menu to navigate between different alumni sections. Each section shows only one type of content at a time.",
                 "Select a section from the Alumni dropdown menu to view specific alumni information."
             ]
@@ -1358,14 +1296,6 @@ function setupAlumniChatbotResponses() {
             [
                 "To connect with alumni, view their details from Featured Alumni or Directory, then click 'Connect with Alumni' button.",
                 "Use the Alumni Directory to search for specific alumni by name, batch, or program, then connect with them through our system."
-            ]
-        );
-        
-        window.addChatbotResponse('success_stories',
-            ['success stories', 'inspirational stories', 'alumni achievements'],
-            [
-                "Read inspiring Success Stories of our alumni in the 'Success Stories' section.",
-                "Our alumni have amazing journeys! Check the Success Stories section for their inspiring stories."
             ]
         );
         

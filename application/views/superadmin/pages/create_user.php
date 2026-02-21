@@ -99,7 +99,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 </div>
                                 <div class="mb-3">
                                     <label for="course" class="form-label">Course <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="course" placeholder="e.g. Bachelor of Science in Computer Science">
+                                    <select class="form-select" id="course">
+                                        <option value="" selected disabled>Select course...</option>
+                                        <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
+                                        <option value="Bachelor of Science in Computer Science">Bachelor of Science in Computer Science</option>
+                                    </select>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
@@ -118,17 +122,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                     </div>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="studentOrganization" class="form-label">Student Organization <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="studentOrganization">
-                                        <option value="" selected disabled>Select organization...</option>
-                                        <option value="the_legion">The Legion</option>
-                                        <option value="csguild">CS Guild</option>
-                                        <option value="other">Other Organization</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3" id="studentOrganizationCustomWrapper" style="display: none;">
-                                    <label for="studentOrganizationCustom" class="form-label">Organization Name</label>
-                                    <input type="text" class="form-control" id="studentOrganizationCustom" placeholder="Type organization name">
+                                    <label class="form-label">Organization</label>
+                                    <input type="text" class="form-control" value="Auto-assigned based on course (BSIT = The Legion, BSCS = CS Guild)" readonly>
                                 </div>
                             </div>
                         </div>

@@ -381,42 +381,6 @@ $(document).ready(function () {
         });
     }
 
-    function loadStories() {
-        $.getJSON(baseUrl + 'admin/manage/alumni/stories', function(response) {
-            if (!response.success) return;
-            const data = response.data || [];
-            const grid = $('#stories-grid');
-            grid.empty();
-
-            if (data.length === 0) {
-                $('#no-stories-data').show();
-                return;
-            }
-            $('#no-stories-data').hide();
-
-            data.forEach(row => {
-                const photoHtml = row.photo
-                    ? `<div class="mb-2"><img src="${baseUrl + row.photo}" alt="${escapeHtml(row.title)}" style="width:100%;height:180px;object-fit:cover;border-radius:6px;"></div>`
-                    : '';
-                grid.append(`
-                    <div class="col-md-4">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                ${photoHtml}
-                                <h5 class="card-title">${escapeHtml(row.title)}</h5>
-                                <p class="text-muted mb-2">By ${escapeHtml(row.author)}</p>
-                                <p class="card-text">${escapeHtml(row.content)}</p>
-                            </div>
-                            <div class="card-footer text-end">
-                                <button class="btn btn-sm btn-outline-danger btn-delete-story" data-id="${row.id}">Delete</button>
-                            </div>
-                        </div>
-                    </div>
-                `);
-            });
-        });
-    }
-
     function loadEvents() {
         $.getJSON(baseUrl + 'admin/manage/alumni/events', function(response) {
             if (!response.success) return;
@@ -680,54 +644,6 @@ $(document).ready(function () {
         }, 'json');
     });
 
-    $(document).on('submit', '#addStoryForm', function (e) {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('title', $('#storyTitle').val().trim());
-        formData.append('author', $('#storyAuthor').val().trim());
-        formData.append('content', $('#storyContent').val().trim());
-        const photoFile = $('#storyPhoto')[0].files[0];
-        if (photoFile) {
-            formData.append('photo', photoFile);
-        }
-
-        $.ajax({
-            url: baseUrl + 'admin/manage/alumni/stories/create',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    $('#addStoryModal').modal('hide');
-                    $('#addStoryForm')[0].reset();
-                    loadStories();
-                    showNotification('success', 'Success story added');
-                } else {
-                    showNotification('error', response.message || 'Failed to add story');
-                }
-            },
-            error: function(xhr) {
-                const msg = xhr.responseJSON?.message || 'Failed to add story';
-                showNotification('error', msg);
-            }
-        });
-    });
-
-    $(document).on('click', '.btn-delete-story', function () {
-        const id = $(this).data('id');
-        if (!confirm('Delete this success story?')) return;
-
-        $.post(baseUrl + 'admin/manage/alumni/stories/delete', { id }, function(response) {
-            if (response.success) {
-                loadStories();
-            } else {
-                showNotification('error', response.message || 'Failed to delete story');
-            }
-        }, 'json');
-    });
-
     $(document).on('submit', '#addEventForm', function (e) {
         e.preventDefault();
         const formData = new FormData();
@@ -785,6 +701,5 @@ $(document).ready(function () {
     loadGiveback();
     loadFeatured();
     loadDirectory();
-    loadStories();
     loadEvents();
 });

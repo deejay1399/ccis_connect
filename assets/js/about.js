@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 initVmgoTabs();
                 break;
             case 'hymn-section':
-                initHymnAudio();
+                initHymnMedia();
                 break;
         }
     }
@@ -175,15 +175,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Hymn Audio functionality
-    function initHymnAudio() {
-        const audioPlayer = document.querySelector('audio');
-        if (audioPlayer) {
-            audioPlayer.addEventListener('play', function() {
+    // Hymn media functionality (video)
+    function initHymnMedia() {
+        const mediaPlayer = document.querySelector('#hymn-section video');
+        if (mediaPlayer) {
+            mediaPlayer.addEventListener('play', function() {
                 document.querySelector('.hymn-audio .card').classList.add('border-primary');
             });
             
-            audioPlayer.addEventListener('pause', function() {
+            mediaPlayer.addEventListener('pause', function() {
                 document.querySelector('.hymn-audio .card').classList.remove('border-primary');
             });
         }
@@ -434,7 +434,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Initialize components
         initVmgoTabs();
-        initHymnAudio();
+        initHymnMedia();
         initDropdownHover(); // ADDED: Dropdown hover functionality
         
         // Initialize homepage-style functionality
@@ -453,7 +453,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('✅ About Page Loaded Successfully');
         console.log('📖 History, VMGO, and Hymn sections initialized');
-        console.log('🎵 Audio player ready for BISU Hymn');
+        console.log('🎵 Video player ready for BISU Hymn');
         console.log('🎯 All homepage functionality integrated');
     }
 

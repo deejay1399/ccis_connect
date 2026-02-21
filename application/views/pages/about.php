@@ -28,32 +28,17 @@
             <div class="content-card">
                 <h3><i class="fas fa-bullseye me-3"></i>Vision, Mission, Goals, and Core Values</h3>
 
-                <!-- VMGO Tabs Navigation -->
                 <div class="vmgo-tabs">
-                    <div class="vmgo-tab-nav">
-                        <button class="vmgo-tab-btn active" data-tab="vision">
-                            <i class="fas fa-eye me-2"></i>Vision
-                        </button>
-                        <button class="vmgo-tab-btn" data-tab="mission">
-                            <i class="fas fa-rocket me-2"></i>Mission
-                        </button>
-                        <button class="vmgo-tab-btn" data-tab="goals">
-                            <i class="fas fa-flag me-2"></i>Goals
-                        </button>
-                        <button class="vmgo-tab-btn" data-tab="core-values">
-                            <i class="fas fa-heart me-2"></i>Core Values
-                        </button>
-                    </div>
-
-                    <!-- VMGO Tab Contents -->
+                    <!-- VMGO Content (single page view) -->
                     <div class="vmgo-tab-content">
-                        <!-- Vision Tab -->
+                        <!-- Vision -->
                         <div class="vmgo-tab-pane active" id="vision-tab">
                             <div class="vmgo-horizontal-card">
                                 <div class="vmgo-icon-horizontal">
                                     <i class="fas fa-eye"></i>
                                 </div>
                                 <div class="vmgo-text-horizontal">
+                                    <h4 class="mb-3">Vision</h4>
                                     <p>To become the leading college of computing and information sciences in Southeast
                                         Asia, recognized for excellence in education, research, and innovation that
                                         transforms society through technology.</p>
@@ -61,13 +46,14 @@
                             </div>
                         </div>
 
-                        <!-- Mission Tab -->
-                        <div class="vmgo-tab-pane" id="mission-tab">
+                        <!-- Mission -->
+                        <div class="vmgo-tab-pane active" id="mission-tab">
                             <div class="vmgo-horizontal-card">
                                 <div class="vmgo-icon-horizontal">
                                     <i class="fas fa-rocket"></i>
                                 </div>
                                 <div class="vmgo-text-horizontal">
+                                    <h4 class="mb-3">Mission</h4>
                                     <p>To provide quality education in computing and information sciences, develop
                                         competent professionals who advance technology, and foster innovation and
                                         research that contribute to sustainable development and social progress.</p>
@@ -75,13 +61,14 @@
                             </div>
                         </div>
 
-                        <!-- Goals Tab -->
-                        <div class="vmgo-tab-pane" id="goals-tab">
+                        <!-- Goals -->
+                        <div class="vmgo-tab-pane active" id="goals-tab">
                             <div class="vmgo-horizontal-card">
                                 <div class="vmgo-icon-horizontal">
                                     <i class="fas fa-flag"></i>
                                 </div>
                                 <div class="vmgo-text-horizontal">
+                                    <h4 class="mb-3">Goals</h4>
                                     <ul class="goals-list">
                                         <li>Deliver globally competitive computing education aligned with international
                                             standards</li>
@@ -94,8 +81,8 @@
                             </div>
                         </div>
 
-                        <!-- Core Values Tab -->
-                        <div class="vmgo-tab-pane" id="core-values-tab">
+                        <!-- Core Values -->
+                        <div class="vmgo-tab-pane active" id="core-values-tab">
                             <div class="vmgo-horizontal-card">
                                 <div class="vmgo-icon-horizontal">
                                     <i class="fas fa-heart"></i>
@@ -150,25 +137,23 @@
                         <p class="hymn-subtitle">Official University Anthem</p>
                     </div>
 
-                    <!-- AUDIO PLAYER -->
+                    <!-- HYMN VIDEO PLAYER -->
                     <div class="hymn-audio mb-5">
                         <div class="audio-player">
                             <div class="card">
                                 <div class="card-body">
                                     <h5 class="card-title text-center">
-                                        <i class="fas fa-play-circle text-primary me-2"></i>
-                                        Listen to BISU Hymn
+                                        <i class="fas fa-video text-primary me-2"></i>
+                                        Watch BISU Hymn Lyric Video
                                     </h5>
-                                    <audio controls style="width: 100%" class="mt-2">
-                                        <source src="<?php echo base_url('assets/sounds/bisu_hymn.mp3'); ?>"
-                                            type="audio/mpeg">
-                                        <source src="<?php echo base_url('assets/sounds/bisu_hymn.ogg'); ?>"
-                                            type="audio/ogg">
-                                        Your browser does not support the audio element.
-                                    </audio>
+                                    <video controls style="width: 100%" class="mt-2" preload="metadata">
+                                        <source src="<?php echo base_url('assets/sounds/bisu_hymn_lyric_video.mp4'); ?>"
+                                            type="video/mp4">
+                                        Your browser does not support the video element.
+                                    </video>
                                     <p class="text-center mt-2 text-muted">
-                                        <small><i class="fas fa-headphones me-1"></i>Click play to listen to the
-                                            official BISU Hymn</small>
+                                        <small><i class="fas fa-play-circle me-1"></i>Click play to watch the
+                                            official BISU Hymn lyric video</small>
                                     </p>
                                 </div>
                             </div>
