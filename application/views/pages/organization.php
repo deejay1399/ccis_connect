@@ -4,6 +4,7 @@
         <?php
             $org_panels = isset($organizations) && is_array($organizations) ? $organizations : [];
         ?>
+        <?php $panel_index = 0; ?>
         <?php foreach ($org_panels as $panel): ?>
             <?php
                 $advisers = isset($panel['advisers']) && is_array($panel['advisers']) ? $panel['advisers'] : [];
@@ -13,8 +14,9 @@
                 $is_member = !empty($panel['is_member']);
                 $ann_count = count($announcements);
                 $hap_count = count($happenings);
+                $section_class = $panel_index === 0 ? 'content-section active-section' : 'content-section';
             ?>
-            <section id="<?php echo html_escape($panel['section_id']); ?>" class="content-section active-section">
+            <section id="<?php echo html_escape($panel['section_id']); ?>" class="<?php echo $section_class; ?>">
                 <div class="content-card mb-4">
                     <div class="organization-header">
                         <div class="org-logo-container">
@@ -22,9 +24,6 @@
                         </div>
                         <div class="org-title-container">
                             <h3><i class="fas <?php echo html_escape($panel['icon_class']); ?> me-3"></i><?php echo html_escape($panel['title']); ?></h3>
-                            <?php if (!$is_member): ?>
-                                <p class="text-muted mb-0">Member-only updates are hidden for non-members.</p>
-                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -141,6 +140,7 @@
                     </div>
                 </div>
             </section>
+            <?php $panel_index++; ?>
         <?php endforeach; ?>
     </div>
 </section>

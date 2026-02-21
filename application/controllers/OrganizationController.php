@@ -85,7 +85,7 @@ class OrganizationController extends CI_Controller {
 			return [
 				'name' => 'The Legion',
 				'section_id' => 'the-legion',
-				'title' => 'The Legion - BSIT Student Organization',
+				'title' => 'The Legion',
 				'icon_class' => 'fa-users',
 				'logo' => base_url('assets/images/legion.jpg'),
 				'about_heading' => 'About The Legion',
@@ -97,9 +97,9 @@ class OrganizationController extends CI_Controller {
 			return [
 				'name' => 'CS Guild',
 				'section_id' => 'cs-guild',
-				'title' => 'CS Guild - BSCS Student Organization',
+				'title' => 'CS Guild',
 				'icon_class' => 'fa-code',
-				'logo' => base_url('assets/images/cs.jpg'),
+				'logo' => base_url('assets/images/csguild.jpg'),
 				'about_heading' => 'About CS Guild',
 				'about_text' => 'The CS Guild is the newest organization for computer science students. It is a student-led group that focuses on learning, collaboration, and knowledge-sharing in programming. The organization provides peer tutoring, coding assistance, and activities designed to support students in their computer science subjects. By fostering a culture of teamwork and continuous learning, the CS Guild helps members strengthen their skills and gain confidence in both academic and real-world programming challenges.',
 			];

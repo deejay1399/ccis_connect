@@ -301,10 +301,28 @@
         <?php elseif ($page_type === 'organization_student'): ?>
             <script>
                 (function () {
-                    var hash = window.location.hash || '';
-                    if (hash === '#the-legion' || hash === '#cs-guild') {
-                        history.replaceState(null, '', '<?php echo site_url('organization'); ?>');
+                    var validSections = ['the-legion', 'cs-guild'];
+
+                    function showOnly(sectionId) {
+                        var sections = document.querySelectorAll('.organization-section .content-section');
+                        sections.forEach(function (section) {
+                            var isActive = section.id === sectionId;
+                            section.classList.toggle('active-section', isActive);
+                            section.style.display = isActive ? 'block' : 'none';
+                        });
                     }
+
+                    function resolveSection() {
+                        var hash = (window.location.hash || '').replace('#', '');
+                        return validSections.indexOf(hash) !== -1 ? hash : 'the-legion';
+                    }
+
+                    function syncView() {
+                        showOnly(resolveSection());
+                    }
+
+                    document.addEventListener('DOMContentLoaded', syncView);
+                    window.addEventListener('hashchange', syncView);
                 })();
             </script>
         <?php endif; ?>

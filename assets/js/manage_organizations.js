@@ -180,6 +180,11 @@ function initializeOrganizationManagement() {
 }
 
 function initializeOrganizationsData() {
+    const defaultLogos = {
+        legion: (window.BASE_URL || '/') + 'assets/images/legion.jpg',
+        csguild: (window.BASE_URL || '/') + 'assets/images/csguild.jpg'
+    };
+
     // Initialize organizations list if not exists
     if (!localStorage.getItem('ccis_organizations')) {
         const defaultOrganizations = [
@@ -188,7 +193,7 @@ function initializeOrganizationsData() {
                 name: 'The Legion',
                 shortName: 'Legion',
                 description: 'BSIT Student Organization - Leading organization for IT enthusiasts providing technical support for campus events.',
-                logo: '',
+                logo: defaultLogos.legion,
                 program: 'BSIT',
                 color: '#4b0082',
                 createdAt: new Date().toISOString(),
@@ -199,7 +204,7 @@ function initializeOrganizationsData() {
                 name: 'CS Guild',
                 shortName: 'CS Guild',
                 description: 'BSCS Student Organization - Student-led group focusing on programming, peer tutoring, and coding assistance.',
-                logo: '',
+                logo: defaultLogos.csguild,
                 program: 'BSCS',
                 color: '#4b0082',
                 createdAt: new Date().toISOString(),
@@ -207,6 +212,25 @@ function initializeOrganizationsData() {
             }
         ];
         localStorage.setItem('ccis_organizations', JSON.stringify(defaultOrganizations));
+        return;
+    }
+
+    // Backfill logos for existing organizations with empty logo values.
+    const organizations = JSON.parse(localStorage.getItem('ccis_organizations') || '[]');
+    let changed = false;
+    const patched = organizations.map(org => {
+        if (!org || !org.id || org.logo) {
+            return org;
+        }
+        if (defaultLogos[org.id]) {
+            changed = true;
+            return { ...org, logo: defaultLogos[org.id] };
+        }
+        return org;
+    });
+
+    if (changed) {
+        localStorage.setItem('ccis_organizations', JSON.stringify(patched));
     }
 }
 
