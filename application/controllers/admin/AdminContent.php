@@ -108,6 +108,193 @@ class AdminContent extends CI_Controller {
 		$this->load->view('superadmin/layouts/footer');
 	}
 
+	public function load_organizations_overview()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('OrgAdmin_model');
+
+		try {
+			$slugRows = $this->db->query("
+				SELECT organization_slug FROM org_announcements
+				UNION
+				SELECT organization_slug FROM org_happenings
+				UNION
+				SELECT organization_slug FROM org_officers
+				UNION
+				SELECT organization_slug FROM org_advisers
+				UNION
+				SELECT organization_slug FROM org_admin_profiles
+			")->result_array();
+
+			$slugs = [];
+			foreach ($slugRows as $row) {
+				$slug = trim((string) ($row['organization_slug'] ?? ''));
+				if ($slug !== '' && $slug !== 'unassigned') {
+					$slugs[$slug] = true;
+				}
+			}
+
+			// Keep the known organizations visible even if they have no activity yet.
+			$slugs['the_legion'] = true;
+			$slugs['csguild'] = true;
+			$slugs = array_keys($slugs);
+
+			$organizations = [];
+			$totalPosts = 0;
+			$totalLegionPosts = 0;
+			$totalCSGuildPosts = 0;
+
+			foreach ($slugs as $slug) {
+				$meta = $this->organization_meta_from_slug($slug);
+				$stats = $this->OrgAdmin_model->get_dashboard_stats($slug);
+				$announcements = $this->OrgAdmin_model->get_announcements($slug);
+				$happenings = $this->OrgAdmin_model->get_happenings($slug);
+
+				$postCount = (int) $stats['announcements'] + (int) $stats['happenings'];
+				$totalPosts += $postCount;
+				if ($slug === 'the_legion') {
+					$totalLegionPosts = $postCount;
+				}
+				if ($slug === 'csguild') {
+					$totalCSGuildPosts = $postCount;
+				}
+
+				$lastActivity = null;
+				if (!empty($announcements) && !empty($announcements[0]['created_at'])) {
+					$lastActivity = $announcements[0]['created_at'];
+				}
+				if (!empty($happenings) && !empty($happenings[0]['created_at'])) {
+					$happeningDate = $happenings[0]['created_at'];
+					if ($lastActivity === null || strtotime($happeningDate) > strtotime($lastActivity)) {
+						$lastActivity = $happeningDate;
+					}
+				}
+
+				$organizations[] = [
+					'id' => $slug,
+					'name' => $meta['name'],
+					'shortName' => $meta['short_name'],
+					'description' => $meta['description'],
+					'logo' => $meta['logo'],
+					'program' => $meta['program'],
+					'announcement_count' => (int) $stats['announcements'],
+					'happening_count' => (int) $stats['happenings'],
+					'post_count' => $postCount,
+					'member_count' => (int) $stats['officers'],
+					'adviser_count' => (int) $stats['advisers'],
+					'last_activity' => $lastActivity,
+					'announcements' => array_slice($announcements, 0, 2),
+					'happenings' => array_slice($happenings, 0, 1),
+				];
+			}
+
+			$activityRows = $this->db->query("
+				SELECT
+					a.id,
+					a.organization_slug,
+					'announcement' AS activity_type,
+					a.title,
+					a.content AS body,
+					a.event_date,
+					a.created_at,
+					u.first_name,
+					u.last_name
+				FROM org_announcements a
+				LEFT JOIN users u ON u.id = a.created_by
+				UNION ALL
+				SELECT
+					h.id,
+					h.organization_slug,
+					'happening' AS activity_type,
+					h.title,
+					h.description AS body,
+					h.event_date,
+					h.created_at,
+					u2.first_name,
+					u2.last_name
+				FROM org_happenings h
+				LEFT JOIN users u2 ON u2.id = h.created_by
+				ORDER BY created_at DESC
+				LIMIT 150
+			")->result_array();
+
+			$activities = [];
+			foreach ($activityRows as $row) {
+				$slug = trim((string) ($row['organization_slug'] ?? ''));
+				$meta = $this->organization_meta_from_slug($slug);
+				$postedBy = trim((string) (($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? '')));
+				if ($postedBy === '') {
+					$postedBy = 'Organization Admin';
+				}
+
+				$activities[] = [
+					'id' => (int) $row['id'],
+					'organization_slug' => $slug,
+					'organization_name' => $meta['name'],
+					'activity_type' => $row['activity_type'],
+					'title' => (string) $row['title'],
+					'body' => (string) $row['body'],
+					'event_date' => $row['event_date'],
+					'created_at' => $row['created_at'],
+					'posted_by' => $postedBy,
+				];
+			}
+
+			echo json_encode([
+				'success' => true,
+				'data' => [
+					'stats' => [
+						'total_legion_posts' => $totalLegionPosts,
+						'total_csguild_posts' => $totalCSGuildPosts,
+						'total_organizations' => count($organizations),
+						'total_posts' => $totalPosts
+					],
+					'organizations' => $organizations,
+					'activities' => $activities
+				]
+			]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode([
+				'success' => false,
+				'message' => 'Failed to load organization overview: ' . $e->getMessage()
+			]);
+		}
+		exit;
+	}
+
+	private function organization_meta_from_slug($slug)
+	{
+		$normalized = strtolower(trim((string) $slug));
+		if ($normalized === 'the_legion') {
+			return [
+				'name' => 'The Legion',
+				'short_name' => 'Legion',
+				'program' => 'BSIT',
+				'logo' => base_url('assets/images/legion.jpg'),
+				'description' => 'BSIT student organization focused on technical support and student activities.'
+			];
+		}
+		if ($normalized === 'csguild' || $normalized === 'cs_guild') {
+			return [
+				'name' => 'CS Guild',
+				'short_name' => 'CS Guild',
+				'program' => 'BSCS',
+				'logo' => base_url('assets/images/csguild.jpg'),
+				'description' => 'BSCS student organization focused on coding, peer mentoring, and CS community work.'
+			];
+		}
+
+		$name = ucwords(str_replace('_', ' ', $normalized));
+		return [
+			'name' => $name,
+			'short_name' => $name,
+			'program' => 'Organization',
+			'logo' => base_url('assets/images/ccis.png'),
+			'description' => 'Student organization'
+		];
+	}
+
 	public function alumni()
 	{
 		$data['page_title'] = 'Manage Alumni';
@@ -647,6 +834,30 @@ class AdminContent extends CI_Controller {
 				'success' => false,
 				'message' => 'Error: ' . $e->getMessage()
 			]);
+		}
+		exit;
+	}
+
+	public function update_alumni_chatbot_status()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_model');
+
+		try {
+			$id = (int) $this->input->post('id');
+			$status = trim((string) $this->input->post('status'));
+
+			if ($id <= 0 || $status === '') {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'ID and status are required']);
+				exit;
+			}
+
+			$result = $this->Alumni_model->update_chatbot_status($id, $status);
+			echo json_encode(['success' => (bool) $result]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 		}
 		exit;
 	}
@@ -1270,38 +1481,51 @@ class AdminContent extends CI_Controller {
 
 		try {
 			$academic_year = trim((string) $this->input->post('academic_year'));
-			$semester = $this->input->post('semester');
+			$full_name = trim((string) $this->input->post('full_name'));
+			$program = trim((string) $this->input->post('program'));
+			$year_level = trim((string) $this->input->post('year_level'));
+			$honors = trim((string) $this->input->post('honors'));
+			$gwa = trim((string) $this->input->post('gwa'));
+			$achievements = trim((string) $this->input->post('achievements'));
 
-			if ($academic_year === '' || empty($semester)) {
+			if ($academic_year === '' || $full_name === '' || $program === '' || $year_level === '' || $honors === '' || $gwa === '') {
 				http_response_code(400);
-				echo json_encode(['success' => false, 'message' => 'Academic year and semester are required']);
+				echo json_encode(['success' => false, 'message' => 'Academic year, name, program, year level, honors, and GWA are required']);
 				exit;
 			}
 
-			if (empty($_FILES['pdf_file']['name'])) {
+			if (!is_numeric($gwa)) {
 				http_response_code(400);
-				echo json_encode(['success' => false, 'message' => 'PDF file is required']);
+				echo json_encode(['success' => false, 'message' => 'GWA must be a valid number']);
 				exit;
 			}
 
-			$pdf = $this->_upload_file_to('uploads/deans_list', 'pdf_file', 'pdf', 'deanslist', 10240);
-			if ($pdf === false) {
-				http_response_code(400);
-				echo json_encode(['success' => false, 'message' => 'Failed to upload PDF.']);
-				exit;
+			$image = null;
+			if (!empty($_FILES['achiever_image']['name'])) {
+				$image = $this->_upload_file_to('uploads/deans_list', 'achiever_image', 'gif|jpg|png|jpeg|jpe', 'deans_achiever', 5120);
+				if ($image === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload achiever image.']);
+					exit;
+				}
 			}
 
 			$id = $this->Deans_list_model->insert_deans_list([
 				'academic_year' => $academic_year,
-				'semester' => $semester,
-				'pdf_file' => $pdf,
+				'full_name' => $full_name,
+				'program' => $program,
+				'year_level' => $year_level,
+				'honors' => $honors,
+				'gwa' => $gwa,
+				'achievements' => $achievements !== '' ? $achievements : null,
+				'image' => $image,
 			]);
 
 			if ($id) {
-				echo json_encode(['success' => true, 'message' => "Dean's List uploaded successfully", 'id' => $id]);
+				echo json_encode(['success' => true, 'message' => "Dean's List achiever added successfully", 'id' => $id]);
 			} else {
 				http_response_code(500);
-				echo json_encode(['success' => false, 'message' => 'Failed to save dean\'s list: ' . $this->db->error()['message']]);
+				echo json_encode(['success' => false, 'message' => 'Failed to save dean\'s list achiever: ' . $this->db->error()['message']]);
 			}
 		} catch (Exception $e) {
 			http_response_code(500);
@@ -1561,6 +1785,94 @@ class AdminContent extends CI_Controller {
 		}
 	}
 
+	private function faculty_position_config()
+	{
+		return [
+			'president' => ['label' => 'President', 'limit' => 1],
+			'vice president' => ['label' => 'Vice President', 'limit' => 4],
+			'campus director' => ['label' => 'Campus Director', 'limit' => 1],
+			'dean' => ['label' => 'Dean', 'limit' => 1],
+			'chairperson' => ['label' => 'Chairperson', 'limit' => 2],
+			'instructor' => ['label' => 'Instructor', 'limit' => null]
+		];
+	}
+
+	private function normalize_manage_faculty_input($position, $vpType, $course, $advisory, $excludeId = null)
+	{
+		$position = trim((string) $position);
+		$vpType = trim((string) $vpType);
+		$course = trim((string) $course);
+		$advisory = trim((string) $advisory);
+
+		if ($position === '') {
+			return ['success' => false, 'message' => 'Position is required'];
+		}
+
+		$normalized = strtolower(preg_replace('/\s+/', ' ', $position));
+		$config = $this->faculty_position_config();
+		if (!isset($config[$normalized])) {
+			return ['success' => false, 'message' => 'Invalid position selected'];
+		}
+
+		$rule = $config[$normalized];
+		$this->load->model('Faculty_users_model');
+
+		if ($rule['limit'] !== null) {
+			$current = $this->Faculty_users_model->count_by_position($normalized, $excludeId);
+			if ($current >= (int) $rule['limit']) {
+				return ['success' => false, 'message' => $rule['label'] . ' limit reached (' . $rule['limit'] . ')'];
+			}
+		}
+
+		$finalAdvisory = $advisory;
+		$finalVpType = null;
+		$finalCourse = null;
+
+		if ($normalized === 'vice president') {
+			$allowedVpTypes = [
+				'VP for Academics and Quality Assurance',
+				'VP for Research, Development and Extension',
+				'VP for Administration and Finance',
+				'VP for Student Affairs and Services'
+			];
+			if (!in_array($vpType, $allowedVpTypes, true)) {
+				return ['success' => false, 'message' => 'Please select a valid Vice President type'];
+			}
+			$vpCount = $this->Faculty_users_model->count_by_position_and_vp_type($normalized, $vpType, $excludeId);
+			if ($vpCount >= 1) {
+				return ['success' => false, 'message' => $vpType . ' is already assigned'];
+			}
+			$finalVpType = $vpType;
+			$finalAdvisory = '';
+		} elseif ($normalized === 'chairperson') {
+			$allowedCourses = [
+				'Bachelor of Science in Information Technology',
+				'Bachelor of Science in Computer Science'
+			];
+			if (!in_array($course, $allowedCourses, true)) {
+				return ['success' => false, 'message' => 'Please select a valid Chairperson course'];
+			}
+			$courseCount = $this->Faculty_users_model->count_by_position_and_course($normalized, $course, $excludeId);
+			if ($courseCount >= 1) {
+				return ['success' => false, 'message' => 'Chairperson for ' . $course . ' already exists'];
+			}
+			$finalCourse = $course;
+			$finalAdvisory = '';
+		} elseif ($normalized !== 'instructor') {
+			$finalAdvisory = '';
+		}
+
+		return [
+			'success' => true,
+			'data' => [
+				'position' => $rule['label'],
+				'advisory' => $finalAdvisory,
+				'vp_type' => $finalVpType,
+				'course' => $finalCourse
+			]
+		];
+	}
+
 	/**
 	 * AJAX: Load faculty data
 	 */
@@ -1599,14 +1911,16 @@ class AdminContent extends CI_Controller {
 		header('Content-Type: application/json');
 
 		try {
-			$id = $this->input->post('id');
-			$firstname = $this->input->post('firstname');
-			$lastname = $this->input->post('lastname');
-			$position = $this->input->post('position');
-			$advisory = $this->input->post('advisory');
+			$id = (int) $this->input->post('id');
+			$firstname = trim((string) $this->input->post('firstname'));
+			$lastname = trim((string) $this->input->post('lastname'));
+			$position = trim((string) $this->input->post('position'));
+			$advisory = trim((string) $this->input->post('advisory'));
+			$vpType = trim((string) $this->input->post('vp_type'));
+			$course = trim((string) $this->input->post('course'));
 
 			// Validate inputs
-			if (empty($id) || empty($firstname) || empty($lastname) || empty($position)) {
+			if ($id <= 0 || $firstname === '' || $lastname === '' || $position === '') {
 				http_response_code(400);
 				echo json_encode([
 					'success' => false,
@@ -1615,12 +1929,21 @@ class AdminContent extends CI_Controller {
 				exit;
 			}
 
+			$normalized = $this->normalize_manage_faculty_input($position, $vpType, $course, $advisory, $id);
+			if (!$normalized['success']) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => $normalized['message']]);
+				exit;
+			}
+
 			// Prepare update data
 			$update_data = [
 				'firstname' => $firstname,
 				'lastname' => $lastname,
-				'position' => $position,
-				'advisory' => $advisory
+				'position' => $normalized['data']['position'],
+				'advisory' => $normalized['data']['advisory'],
+				'vp_type' => $normalized['data']['vp_type'],
+				'course' => $normalized['data']['course']
 			];
 
 			// Handle image upload if provided
@@ -1737,18 +2060,27 @@ class AdminContent extends CI_Controller {
 		header('Content-Type: application/json');
 
 		try {
-			$firstname = $this->input->post('firstname');
-			$lastname = $this->input->post('lastname');
-			$position = $this->input->post('position');
-			$advisory = $this->input->post('advisory');
+			$firstname = trim((string) $this->input->post('firstname'));
+			$lastname = trim((string) $this->input->post('lastname'));
+			$position = trim((string) $this->input->post('position'));
+			$advisory = trim((string) $this->input->post('advisory'));
+			$vpType = trim((string) $this->input->post('vp_type'));
+			$course = trim((string) $this->input->post('course'));
 
 			// Validate inputs
-			if (empty($firstname) || empty($lastname) || empty($position)) {
+			if ($firstname === '' || $lastname === '' || $position === '') {
 				http_response_code(400);
 				echo json_encode([
 					'success' => false,
 					'message' => 'Firstname, lastname, and position are required'
 				]);
+				exit;
+			}
+
+			$normalized = $this->normalize_manage_faculty_input($position, $vpType, $course, $advisory, null);
+			if (!$normalized['success']) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => $normalized['message']]);
 				exit;
 			}
 
@@ -1784,8 +2116,10 @@ class AdminContent extends CI_Controller {
 			$save_data = [
 				'firstname' => $firstname,
 				'lastname' => $lastname,
-				'position' => $position,
-				'advisory' => $advisory,
+				'position' => $normalized['data']['position'],
+				'advisory' => $normalized['data']['advisory'],
+				'vp_type' => $normalized['data']['vp_type'],
+				'course' => $normalized['data']['course'],
 				'image' => $image_filename
 			];
 

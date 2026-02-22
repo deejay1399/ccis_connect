@@ -12,11 +12,11 @@
                                 
                                 <div class="core-values-footer">
                                     <span class="value-item">BALANCE</span>
-                                    <span class="value-separator">•</span>
+                                    <span class="value-separator">&bull;</span>
                                     <span class="value-item">INTEGRITY</span>
-                                    <span class="value-separator">•</span>
+                                    <span class="value-separator">&bull;</span>
                                     <span class="value-item">STEWARDSHIP</span>
-                                    <span class="value-separator">•</span>
+                                    <span class="value-separator">&bull;</span>
                                     <span class="value-item">UPRIGHTNESS</span>
                                 </div>
                             </div>
@@ -234,7 +234,11 @@
     <?php elseif(isset($content_type) && $content_type === 'about'): ?>
         <script src="<?php echo base_url('assets/js/manage_about.js'); ?>"></script>
     <?php elseif(isset($content_type) && $content_type === 'organizations'): ?>
-        <script src="<?php echo base_url('assets/js/manage_organizations.js'); ?>"></script>
+        <?php
+            $organizations_js_path = FCPATH . 'assets/js/manage_organizations.js';
+            $organizations_js_version = file_exists($organizations_js_path) ? filemtime($organizations_js_path) : time();
+        ?>
+        <script src="<?php echo base_url('assets/js/manage_organizations.js?v=' . $organizations_js_version); ?>"></script>
     <?php elseif(isset($content_type) && $content_type === 'alumni'): ?>
         <?php
             $alumni_js_path = FCPATH . 'assets/js/manage_alumni.js';
@@ -243,6 +247,13 @@
         <script src="<?php echo base_url('assets/js/manage_alumni.js?v=' . $alumni_js_version); ?>"></script>
     <?php else: ?>
         <script src="<?php echo base_url('assets/js/dashboard.js'); ?>"></script>
+    <?php endif; ?>
+    <?php if (!(isset($page_type) && $page_type === 'admin_dashboard')): ?>
+        <?php
+            $admin_notifications_path = FCPATH . 'assets/js/admin_notifications.js';
+            $admin_notifications_version = file_exists($admin_notifications_path) ? filemtime($admin_notifications_path) : time();
+        ?>
+        <script src="<?php echo base_url('assets/js/admin_notifications.js?v=' . $admin_notifications_version); ?>"></script>
     <?php endif; ?>
 
     <!-- Global (superadmin) logout handler: ensures server session logout is called -->

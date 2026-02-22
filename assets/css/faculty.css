@@ -514,6 +514,116 @@ body {
     margin-bottom: 0.5rem;
 }
 
+/* Public Org Chart */
+.org-chart {
+    margin-top: 2rem;
+}
+
+.org-level {
+    position: relative;
+    padding: 1rem 0 2rem;
+}
+
+.org-level:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0.5rem;
+    width: 2px;
+    height: 1.5rem;
+    background: rgba(106, 13, 173, 0.25);
+    transform: translateX(-50%);
+}
+
+.org-level-title {
+    margin: 0 0 1rem;
+    text-align: center;
+    color: var(--primary-purple);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.org-row {
+    display: grid;
+    gap: 1.1rem;
+    justify-content: center;
+}
+
+.org-row-center {
+    grid-template-columns: minmax(260px, 320px);
+}
+
+.org-row-four {
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+}
+
+.org-row-two {
+    grid-template-columns: repeat(2, minmax(220px, 300px));
+}
+
+.org-row-many {
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.org-node {
+    background: linear-gradient(180deg, #ffffff 0%, #faf7ff 100%);
+    border: 1px solid rgba(106, 13, 173, 0.18);
+    border-top: 3px solid var(--primary-purple);
+    border-radius: 14px;
+    padding: 1rem 0.9rem 1.1rem;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(106, 13, 173, 0.08);
+}
+
+.org-node-lg {
+    padding-top: 1.2rem;
+}
+
+.org-avatar {
+    width: 86px;
+    height: 86px;
+    border-radius: 12px;
+    margin: 0 auto 0.7rem;
+    overflow: hidden;
+    background: #ede3ff;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.org-node-lg .org-avatar {
+    width: 96px;
+    height: 96px;
+}
+
+.org-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.org-node h4 {
+    margin: 0;
+    color: #1f2a3d;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.org-role {
+    margin: 0.35rem 0 0;
+    color: var(--primary-purple);
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.org-subrole {
+    margin: 0.3rem 0 0;
+    color: #435369;
+    font-size: 0.78rem;
+    line-height: 1.35;
+}
+
 /* ========================================
    FOOTER STYLES - SAME AS HOMEPAGE
    ======================================== */
@@ -1138,6 +1248,10 @@ body {
     .faculty-grid {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     }
+
+    .org-row-four {
+        grid-template-columns: repeat(2, minmax(190px, 1fr));
+    }
 }
 
 @media (max-width: 768px) {
@@ -1225,6 +1339,17 @@ body {
     
     .faculty-grid {
         grid-template-columns: 1fr;
+    }
+
+    .org-row-center,
+    .org-row-two,
+    .org-row-four,
+    .org-row-many {
+        grid-template-columns: 1fr;
+    }
+
+    .org-level {
+        padding-bottom: 1.6rem;
     }
     
     /* Mobile notification adjustment */

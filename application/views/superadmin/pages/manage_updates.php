@@ -111,36 +111,68 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <!-- DEAN'S LIST TAB -->
                     <div class="tab-pane fade" id="deanslist" role="tabpanel" aria-labelledby="deanslist-tab">
                         <div class="card p-4 mb-4">
-                            <h4 class="mb-3"><i class="fas fa-plus-circle me-2"></i>Create New Dean's List Entry</h4>
-                            <form id="createDeansListForm">
+                            <h4 class="mb-3"><i class="fas fa-plus-circle me-2"></i>Add Dean's List Achiever</h4>
+                            <form id="addAchieverForm">
                                 <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label for="deansListYear" class="form-label">Academic Year</label>
-                                        <input type="text" class="form-control" id="deansListYear" placeholder="e.g., 2023-2024" required>
+                                    <div class="col-md-6">
+                                        <label for="deanlistAcademicYear" class="form-label">Academic Year</label>
+                                        <input type="text" class="form-control" id="deanlistAcademicYear" placeholder="e.g., 2024-2025" required>
                                     </div>
-                                    <div class="col-md-4">
-                                        <label for="deansListSemester" class="form-label">Semester</label>
-                                        <select class="form-select" id="deansListSemester" required>
-                                            <option value="">Select semester...</option>
-                                            <option value="1st Semester">1st Semester</option>
-                                            <option value="2nd Semester">2nd Semester</option>
-                                            <option value="Summer">Summer</option>
+                                    <div class="col-md-6">
+                                        <label for="achieverName" class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" id="achieverName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="achieverProgram" class="form-label">Program</label>
+                                        <select class="form-select" id="achieverProgram" required>
+                                            <option value="">Select program...</option>
+                                            <option value="BSCS">BSCS</option>
+                                            <option value="BSIT">BSIT</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-4">
-                                        <label for="deansListFile" class="form-label">Upload PDF</label>
-                                        <input type="file" class="form-control" id="deansListFile" accept=".pdf" required>
+                                    <div class="col-md-6">
+                                        <label for="achieverYear" class="form-label">Year Level</label>
+                                        <select class="form-select" id="achieverYear" required>
+                                            <option value="">Select year...</option>
+                                            <option value="First Year">First Year</option>
+                                            <option value="Second Year">Second Year</option>
+                                            <option value="Third Year">Third Year</option>
+                                            <option value="Fourth Year">Fourth Year</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="achieverHonors" class="form-label">Honors</label>
+                                        <select class="form-select" id="achieverHonors" required>
+                                            <option value="">Select honors...</option>
+                                            <option value="Cum Laude">Cum Laude</option>
+                                            <option value="Magna Cum Laude">Magna Cum Laude</option>
+                                            <option value="Summa Cum Laude">Summa Cum Laude</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="achieverGWA" class="form-label">GWA</label>
+                                        <input type="number" step="0.01" min="1" max="5" class="form-control" id="achieverGWA" placeholder="e.g., 1.25" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="achieverAchievements" class="form-label">Notable Achievements (Optional)</label>
+                                        <textarea class="form-control" id="achieverAchievements" rows="3" placeholder="Separate multiple achievements with commas"></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="achieverImage" class="form-label">Upload Image (Optional)</label>
+                                        <input type="file" class="form-control" id="achieverImage" accept="image/*">
+                                    </div>
+                                    <div class="col-12 text-end">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-2"></i>Add Achiever
+                                        </button>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary mt-3">
-                                    <i class="fas fa-upload me-2"></i>Upload Dean's List
-                                </button>
                             </form>
                         </div>
                         <div class="forms-management-section">
-                            <h4 class="mb-3"><i class="fas fa-list-ul me-2"></i>Dean's List Entries</h4>
-                            <div id="deanslist-list" class="row row-cols-1 row-cols-md-2 g-3">
-                                <!-- Dean's lists will be loaded here -->
+                            <h4 class="mb-3"><i class="fas fa-list-ul me-2"></i>Dean's List</h4>
+                            <div id="academicYearsList" class="row g-4">
+                                <!-- Dean's list achievers will be loaded here -->
                             </div>
                         </div>
                     </div>

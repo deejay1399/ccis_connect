@@ -209,36 +209,62 @@ $(document).ready(function () {
     }
 
     function renderDeansList(list) {
-        const container = $('#deanslist-list')
+        const container = $('#academicYearsList')
         container.empty()
 
         if (!list || list.length === 0) {
-            container.append('<div class="col-12 text-center text-muted py-4">No Dean\'s List entries found.</div>')
+            container.append('<div class="col-12 text-center text-muted py-4">No Dean\'s List achievers found.</div>')
             return
         }
 
-        list.forEach((d) => {
-            const pdfUrl = d.pdf_file ? (baseURL + d.pdf_file) : '#'
+        const grouped = {}
+        list.forEach((item) => {
+            const year = item.academic_year || 'Unspecified'
+            if (!grouped[year]) grouped[year] = []
+            grouped[year].push(item)
+        })
 
-            const card = `
-                <div class="col">
-                    <div class="updates-list-card">
-                        <div class="card-body">
-                            <h5 class="card-title">Academic Year ${escapeHtml(d.academic_year)}</h5>
-                            <div class="meta-info">
-                                <span><i class="fas fa-tag me-1"></i> ${escapeHtml(d.semester)}</span>
-                                <span><i class="fas fa-upload me-1"></i> ${formatDate(d.uploaded_at)}</span>
-                            </div>
-                            <div class="mt-2">
-                                <a class="btn btn-sm btn-outline-primary" href="${pdfUrl}" target="_blank" rel="noopener">View PDF</a>
-                                <button class="btn btn-sm btn-danger ms-2 delete-deanslist-btn" data-id="${d.id}" data-title="${escapeHtml(d.academic_year)} ${escapeHtml(d.semester)}">Remove</button>
+        Object.keys(grouped).sort().reverse().forEach((year) => {
+            const achieversHtml = grouped[year].map((d) => {
+                const imageHtml = d.image ? `<img src="${baseURL + d.image}" class="event-image-preview" alt="${escapeHtml(d.full_name)}">` : ''
+                const achievementsHtml = d.achievements
+                    ? `<p class="card-text mb-2"><strong>Notable Achievements:</strong> ${escapeHtml(d.achievements)}</p>`
+                    : ''
+
+                return `
+                    <div class="col-md-6">
+                        <div class="updates-list-card h-100">
+                            ${imageHtml}
+                            <div class="card-body">
+                                <h5 class="card-title">${escapeHtml(d.full_name)}</h5>
+                                <div class="meta-info">
+                                    <span><i class="fas fa-graduation-cap me-1"></i> ${escapeHtml(d.program)}</span>
+                                    <span><i class="fas fa-layer-group me-1"></i> ${escapeHtml(d.year_level)}</span>
+                                </div>
+                                <div class="meta-info mt-1">
+                                    <span><i class="fas fa-award me-1"></i> ${escapeHtml(d.honors)}</span>
+                                    <span><i class="fas fa-percent me-1"></i> GWA: ${escapeHtml(d.gwa)}</span>
+                                </div>
+                                ${achievementsHtml}
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-danger delete-deanslist-btn" data-id="${d.id}" data-title="${escapeHtml(d.full_name)} (${escapeHtml(year)})">Remove</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `
+                `
+            }).join('')
 
-            container.append(card)
+            container.append(`
+                <div class="col-12">
+                    <div class="updates-list-card">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3"><i class="fas fa-calendar-alt me-2"></i>Academic Year ${escapeHtml(year)}</h4>
+                            <div class="row g-3">${achieversHtml}</div>
+                        </div>
+                    </div>
+                </div>
+            `)
         })
     }
 
@@ -406,22 +432,32 @@ $(document).ready(function () {
         })
     })
 
-    $('#createDeansListForm').on('submit', function (e) {
+    $('#addAchieverForm').on('submit', function (e) {
         e.preventDefault()
 
-        const academicYear = $('#deansListYear').val().trim()
-        const semester = $('#deansListSemester').val()
-        const file = $('#deansListFile')[0]?.files?.[0] || null
+        const academicYear = $('#deanlistAcademicYear').val().trim()
+        const fullName = $('#achieverName').val().trim()
+        const program = $('#achieverProgram').val()
+        const yearLevel = $('#achieverYear').val()
+        const honors = $('#achieverHonors').val()
+        const gwa = $('#achieverGWA').val().trim()
+        const achievements = $('#achieverAchievements').val().trim()
+        const image = $('#achieverImage')[0]?.files?.[0] || null
 
-        if (!academicYear || !semester || !file) {
-            showStatusModal('Validation Error', 'Academic year, semester, and a PDF file are required.', 'error')
+        if (!academicYear || !fullName || !program || !yearLevel || !honors || !gwa) {
+            showStatusModal('Validation Error', 'Academic year, name, program, year level, honors, and GWA are required.', 'error')
             return
         }
 
         const fd = new FormData()
         fd.append('academic_year', academicYear)
-        fd.append('semester', semester)
-        fd.append('pdf_file', file)
+        fd.append('full_name', fullName)
+        fd.append('program', program)
+        fd.append('year_level', yearLevel)
+        fd.append('honors', honors)
+        fd.append('gwa', gwa)
+        fd.append('achievements', achievements)
+        if (image) fd.append('achiever_image', image)
 
         $.ajax({
             url: API.deansList.create,
@@ -432,15 +468,15 @@ $(document).ready(function () {
             dataType: 'json',
             success: function (res) {
                 if (res && res.success) {
-                    showStatusModal('Success', res.message || "Dean's List uploaded.", 'success')
-                    $('#createDeansListForm')[0].reset()
+                    showStatusModal('Success', res.message || "Dean's List achiever added.", 'success')
+                    $('#addAchieverForm')[0].reset()
                     loadDeansList()
                 } else {
-                    showStatusModal('Failed', (res && res.message) ? res.message : "Failed to upload Dean's List.", 'error')
+                    showStatusModal('Failed', (res && res.message) ? res.message : "Failed to add Dean's List achiever.", 'error')
                 }
             },
             error: function (xhr) {
-                const msg = xhr.responseJSON?.message || "Failed to upload Dean's List."
+                const msg = xhr.responseJSON?.message || "Failed to add Dean's List achiever."
                 showStatusModal('Failed', msg, 'error')
                 console.error(xhr)
             }

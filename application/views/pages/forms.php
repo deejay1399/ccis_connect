@@ -5,16 +5,25 @@
         <div class="forms-grid">
             <?php if (!empty($forms)): ?>
                 <?php foreach ($forms as $form): ?>
+                    <?php
+                        $file_ext = strtolower(pathinfo((string) $form['file_url'], PATHINFO_EXTENSION));
+                        $is_pdf = $file_ext === 'pdf';
+                    ?>
                     <div class="form-card" id="form-<?php echo $form['id']; ?>">
                         <div class="form-content">
                             <h3><?php echo htmlspecialchars($form['title']); ?></h3>
                         </div>
                         <div class="form-actions">
-                            <a href="<?php echo base_url($form['file_url']); ?>" class="btn-download-pdf" download>
-                                Download PDF
+                            <a href="<?php echo base_url($form['file_url']); ?>" class="btn-download-pdf" download="<?php echo html_escape($form['original_filename']); ?>">
+                                Download File
                             </a>
-                            <button class="btn-preview" data-form-id="<?php echo $form['id']; ?>" data-form-url="<?php echo base_url($form['file_url']); ?>">
-                                Preview
+                            <button class="btn-preview"
+                                data-form-id="<?php echo $form['id']; ?>"
+                                data-form-url="<?php echo base_url($form['file_url']); ?>"
+                                data-file-ext="<?php echo html_escape($file_ext); ?>"
+                                data-is-pdf="<?php echo $is_pdf ? '1' : '0'; ?>"
+                                data-download-name="<?php echo html_escape($form['original_filename']); ?>">
+                                <?php echo $is_pdf ? 'Preview' : 'Open'; ?>
                             </button>
                         </div>
                     </div>
@@ -37,52 +46,14 @@
         </div>
         <div class="modal-body">
             <iframe id="pdfFrame" style="width: 100%; height: 600px; border: none;"></iframe>
+            <div id="docxPreviewContainer" style="display:none; width:100%; height:600px; overflow:auto; background:#fff; border:1px solid #eee; border-radius:6px; padding:16px;"></div>
         </div>
         <div class="modal-footer">
             <button id="downloadFromPreview" class="btn-download-pdf">
-                Download PDF
+                Download File
             </button>
         </div>
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle preview buttons
-    document.querySelectorAll('.btn-preview').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const formUrl = this.getAttribute('data-form-url');
-            const formTitle = this.closest('.form-card').querySelector('h3').textContent;
-            
-            document.getElementById('modalFormTitle').textContent = formTitle + ' Preview';
-            document.getElementById('pdfFrame').src = formUrl;
-            document.getElementById('pdfPreviewModal').style.display = 'block';
-        });
-    });
-
-    // Handle modal close
-    document.querySelector('.close-modal').addEventListener('click', function() {
-        document.getElementById('pdfPreviewModal').style.display = 'none';
-        document.getElementById('pdfFrame').src = '';
-    });
-
-    // Close modal when clicking outside
-    window.addEventListener('click', function(e) {
-        const modal = document.getElementById('pdfPreviewModal');
-        if (e.target === modal) {
-            modal.style.display = 'none';
-            document.getElementById('pdfFrame').src = '';
-        }
-    });
-
-    // Handle download from preview
-    document.getElementById('downloadFromPreview').addEventListener('click', function() {
-        const pdfUrl = document.getElementById('pdfFrame').src;
-        const a = document.createElement('a');
-        a.href = pdfUrl;
-        a.download = true;
-        a.click();
-    });
-});
-</script>
 

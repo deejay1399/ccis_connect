@@ -129,32 +129,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         </div>
                     </div>
 
-                    <!-- FACULTY FIELDS - Hidden by default -->
-                    <div id="facultyFields" style="display: none;">
-                        <div class="card card-light mb-4">
-                            <div class="card-body">
-                                <h6 class="card-title"><i class="fas fa-chalkboard-teacher me-2"></i>Faculty Information</h6>
-                                <hr>
-                                <div class="mb-3">
-                                    <label for="position" class="form-label">Position <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="position" placeholder="e.g. Associate Professor, Instructor">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="department" placeholder="e.g. College of Computer Science">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="bio" class="form-label">Bio <span class="text-danger">*</span></label>
-                                    <textarea class="form-control" id="bio" rows="3" placeholder="Brief bio or credentials..."></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="officeLocation" class="form-label">Office Location <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="officeLocation" placeholder="e.g. Building A, Room 201">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- ORGANIZATION ADMIN FIELDS - Hidden by default -->
                     <div id="orgAdminFields" style="display: none;">
                         <div class="card card-light mb-4">

@@ -9,28 +9,22 @@ class OrganizationController extends CI_Controller {
 		$this->load->helper(['url', 'auth']);
 		$this->load->model('Student_model');
 		$this->load->model('OrgAdmin_model');
-
-		if (!$this->session->userdata('logged_in')) {
-			redirect('login');
-		}
-
-		$role_id = (int) $this->session->userdata('role_id');
-		if (!in_array($role_id, [3, 4], true)) {
-			redirect_by_role($role_id);
-		}
 	}
 
 	public function index()
 	{
+		$is_logged_in = (bool) $this->session->userdata('logged_in');
 		$user_id = (int) $this->session->userdata('user_id');
 		$role_id = (int) $this->session->userdata('role_id');
+		$is_public_view = true;
 
-		if ($role_id === 4) {
+		if ($is_logged_in && $role_id === 4) {
 			$org = $this->OrgAdmin_model->get_user_organization($user_id);
 			$org_slug = !empty($org['organization_slug']) ? $org['organization_slug'] : 'unassigned';
 			$org_name = !empty($org['organization_name']) ? $org['organization_name'] : 'Unassigned Organization';
 			$organizations = [$this->build_organization_panel($org_slug, $org_slug)];
-		} else {
+			$is_public_view = false;
+		} elseif ($is_logged_in && $role_id === 3) {
 			$student = $this->Student_model->get_by_user_id($user_id);
 			$resolved_org = $this->resolve_student_organization($student);
 			$org_slug = $resolved_org['organization_slug'];
@@ -39,9 +33,17 @@ class OrganizationController extends CI_Controller {
 				$this->build_organization_panel('the_legion', $org_slug),
 				$this->build_organization_panel('csguild', $org_slug),
 			];
+			$is_public_view = false;
+		} else {
+			$org_slug = 'the_legion';
+			$org_name = 'Organizations';
+			$organizations = [
+				$this->build_organization_panel('the_legion', 'the_legion', true),
+				$this->build_organization_panel('csguild', 'csguild', true),
+			];
 		}
 
-		$data['page_type'] = 'organization_student';
+		$data['page_type'] = $is_public_view ? 'organization' : 'organization_student';
 		$data['organization_slug'] = $org_slug;
 		$data['organization_name'] = $org_name;
 		$data['organizations'] = $organizations;
@@ -56,10 +58,10 @@ class OrganizationController extends CI_Controller {
 		$this->load->view('layouts/footer');
 	}
 
-	private function build_organization_panel($organization_slug, $member_slug)
+	private function build_organization_panel($organization_slug, $member_slug, $force_show_content = false)
 	{
 		$slug = (string) $organization_slug;
-		$is_member = ($slug === (string) $member_slug);
+		$is_member = $force_show_content || ($slug === (string) $member_slug);
 		$meta = $this->get_organization_meta($slug);
 
 		return [
@@ -152,11 +154,11 @@ class OrganizationController extends CI_Controller {
 
 	public function legion()
 	{
-		redirect('organization');
+		redirect('organization#the-legion');
 	}
 
 	public function csguild()
 	{
-		redirect('organization');
+		redirect('organization#cs-guild');
 	}
 }

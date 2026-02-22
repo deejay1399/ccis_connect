@@ -627,7 +627,7 @@ function getAccessibleContent(userRole = 'guest') {
         'guest': [
             'home', 'history', 'vmgo', 'faculty', 'hymn', 
             'programs', 'subjects', 'announcements', 'news', 
-            'events', 'deanslist', 'achievements'
+            'events', 'deanslist', 'achievements', 'forms', 'curriculum'
         ],
         'student': [
             'home', 'history', 'vmgo', 'faculty', 'hymn',
@@ -684,17 +684,22 @@ function filterContentByRole() {
     const userRole = getCurrentUserRole();
     const user = getCurrentUser();
     
+    // Ensure links now public (Curriculum and Forms) are never left in blocked style.
+    const alwaysPublicLinks = document.querySelectorAll('.dropdown-item[href*="curriculum"], a[href*="forms"]');
+    alwaysPublicLinks.forEach(link => {
+        link.classList.remove('blocked-nav-item');
+        link.style.opacity = '1';
+        link.style.cursor = 'pointer';
+        link.style.transform = '';
+        link.style.backgroundColor = '';
+        link.removeAttribute('title');
+    });
+    
     console.log(`🔐 Current user role: ${userRole}`);
     
     // Role-based navigation filtering - BLOCK instead of HIDE
     if (!hasAccess('student')) {
         console.log('🚫 User is guest - blocking restricted content');
-        
-        // Block Forms link for guests
-        const formsLink = document.querySelector('a[href="forms.html"]');
-        if (formsLink && !formsLink.classList.contains('blocked-nav-item')) {
-            blockNavigationItem(formsLink, 'You need to login as a student to access forms.');
-        }
         
         // Block Organization dropdown for GUESTS only
         const orgDropdown = document.getElementById('organizationDropdown');
@@ -707,14 +712,6 @@ function filterContentByRole() {
         orgLinks.forEach(link => {
             if (!link.classList.contains('blocked-nav-item')) {
                 blockNavigationItem(link, 'You need to login as a student to view organizations.');
-            }
-        });
-        
-        // BLOCK CURRICULUM for guests
-        const curriculumLinks = document.querySelectorAll('.dropdown-item[href*="curriculum"]');
-        curriculumLinks.forEach(link => {
-            if (!link.classList.contains('blocked-nav-item')) {
-                blockNavigationItem(link, 'You need to login as a student to view curriculum.');
             }
         });
         
@@ -739,19 +736,6 @@ function filterContentByRole() {
         
         // USER IS LOGGED IN - REMOVE ALL BLOCKING
         
-        // Remove blocking from Forms link
-        const formsLink = document.querySelector('a[href="forms.html"]');
-        if (formsLink && formsLink.classList.contains('blocked-nav-item')) {
-            formsLink.classList.remove('blocked-nav-item');
-            formsLink.style.opacity = '1';
-            formsLink.style.cursor = 'pointer';
-            formsLink.removeAttribute('title');
-            
-            // Remove the click event listener that was blocking it
-            const newFormsLink = formsLink.cloneNode(true);
-            formsLink.parentNode.replaceChild(newFormsLink, formsLink);
-        }
-        
         // Remove blocking from Organization dropdown
         const orgDropdown = document.getElementById('organizationDropdown');
         if (orgDropdown && orgDropdown.classList.contains('blocked-nav-item')) {
@@ -775,20 +759,6 @@ function filterContentByRole() {
                 link.removeAttribute('title');
                 
                 // Remove the click event listener that was blocking it
-                const newLink = link.cloneNode(true);
-                link.parentNode.replaceChild(newLink, link);
-            }
-        });
-        
-        // Remove blocking from curriculum links
-        const curriculumLinks = document.querySelectorAll('.dropdown-item[href*="curriculum"]');
-        curriculumLinks.forEach(link => {
-            if (link.classList.contains('blocked-nav-item')) {
-                link.classList.remove('blocked-nav-item');
-                link.style.opacity = '1';
-                link.style.cursor = 'pointer';
-                link.removeAttribute('title');
-                
                 const newLink = link.cloneNode(true);
                 link.parentNode.replaceChild(newLink, link);
             }
@@ -845,14 +815,6 @@ function filterPageContent(userRole) {
     // Special handling for different pages
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     
-    if (currentPage === 'forms.html' && !hasAccess('student')) {
-        // Redirect guests away from forms page
-        window.showNotification('You need to login as a student to access forms.', 'error');
-        setTimeout(() => {
-            window.location.href = './index.php/login';
-        }, 2000);
-    }
-    
     // Allow students to access organization page, only block guests
     if (currentPage === 'organization.html' && !hasAccess('student')) {
         // Redirect GUESTS away from organization page (but allow students)
@@ -862,22 +824,6 @@ function filterPageContent(userRole) {
         }, 2000);
     }
     
-    // Block curriculum page for guests
-    if (currentPage === 'academics.html' && window.location.hash.includes('curriculum') && !hasAccess('student')) {
-        // Redirect to programs section if user attempts to access curriculum directly
-        if (document.getElementById('programs-section')) {
-            window.showNotification('You need to login as a student to view curriculum.', 'error');
-            setTimeout(() => {
-                 // Change hash back to programs or home
-                window.location.hash = 'programs-section';
-            }, 1000);
-        } else {
-             window.showNotification('You need to login as a student to view curriculum.', 'error');
-             setTimeout(() => {
-                 window.location.href = './index.php/login';
-            }, 2000);
-        }
-    }
 }
 
 // NAVIGATION ACTIVE STATE MANAGEMENT

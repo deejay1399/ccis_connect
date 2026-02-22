@@ -45,6 +45,13 @@ $(document).ready(function () {
         badge.toggle(safeCount > 0);
     }
 
+    function isUnreadNotification(row) {
+        const status = String(row?.status || '').trim().toLowerCase();
+        const isPending = status === '' || status === 'pending';
+        const isUnread = Number(row?.notification_read || 0) !== 1;
+        return isPending && isUnread;
+    }
+
     function statusBadge(status) {
         const normalized = (status || '').toLowerCase();
         let cls = 'secondary';
@@ -174,7 +181,7 @@ $(document).ready(function () {
             const data = response.data || [];
             const body = $('#mentor-table-body');
             body.empty();
-            setTabBadge('#mentor-badge', data.length);
+            setTabBadge('#mentor-badge', data.filter(isUnreadNotification).length);
 
             if (data.length === 0) {
                 $('#no-mentor-data').show();
@@ -205,7 +212,7 @@ $(document).ready(function () {
             const data = response.data || [];
             const body = $('#chatbot-table-body');
             body.empty();
-            setTabBadge('#chatbot-tab-badge', data.length);
+            setTabBadge('#chatbot-tab-badge', data.filter(isUnreadNotification).length);
 
             if (data.length === 0) {
                 $('#no-chatbot-data').show();
@@ -232,7 +239,7 @@ $(document).ready(function () {
             const data = response.data || [];
             const body = $('#connection-table-body');
             body.empty();
-            setTabBadge('#connection-badge', data.length);
+            setTabBadge('#connection-badge', data.filter(isUnreadNotification).length);
 
             if (data.length === 0) {
                 $('#no-connection-data').show();
@@ -292,7 +299,7 @@ $(document).ready(function () {
             const data = response.data || [];
             const body = $('#giveback-table-body');
             body.empty();
-            setTabBadge('#giveback-badge', data.length);
+            setTabBadge('#giveback-badge', data.filter(isUnreadNotification).length);
 
             if (data.length === 0) {
                 $('#no-giveback-data').show();
@@ -416,19 +423,24 @@ $(document).ready(function () {
         });
     }
 
-    // ==================== ACTIONS ====================
-    $(document).on('click', '.btn-view-submission', function () {
-        const type = $(this).data('type');
-        const payload = $(this).attr('data-payload') || '%7B%7D';
-        let row = {};
+    function activateRequestedTab() {
+        const params = new URLSearchParams(window.location.search);
+        const requestedTabId = (params.get('tab') || window.location.hash.replace('#', '') || '').trim();
+        if (!requestedTabId) return;
 
-        try {
-            row = JSON.parse(decodeURIComponent(payload));
-        } catch (e) {
-            showNotification('error', 'Failed to read submission details');
-            return;
+        const tabButton = document.getElementById(requestedTabId);
+        if (!tabButton) return;
+
+        const tabInstance = bootstrap.Tab.getOrCreateInstance(tabButton);
+        tabInstance.show();
+
+        const tabsContainer = document.getElementById('alumniTabs');
+        if (tabsContainer) {
+            tabsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+    }
 
+    function openSubmissionByType(type, row) {
         const commonDetails = {
             'Status': row.status || 'pending',
             'Submitted': formatDate(row.created_at || row.request_date || row.update_date || row.submission_date)
@@ -454,7 +466,7 @@ $(document).ready(function () {
                     ...commonDetails
                 }
             });
-            return;
+            return true;
         }
 
         if (type === 'connection') {
@@ -480,7 +492,7 @@ $(document).ready(function () {
                     ...commonDetails
                 }
             });
-            return;
+            return true;
         }
 
         if (type === 'update') {
@@ -511,7 +523,7 @@ $(document).ready(function () {
                     ...commonDetails
                 }
             });
-            return;
+            return true;
         }
 
         if (type === 'giveback') {
@@ -536,7 +548,69 @@ $(document).ready(function () {
                     ...commonDetails
                 }
             });
+            return true;
         }
+
+        return false;
+    }
+
+    function autoOpenRequestedSubmission() {
+        const params = new URLSearchParams(window.location.search);
+        const kind = (params.get('notif_kind') || '').trim().toLowerCase();
+        const id = Number(params.get('notif_id'));
+        const source = (params.get('notif_source') || '').trim().toLowerCase();
+
+        if (!kind || !id) return;
+
+        const endpointByKind = {
+            mentor: 'admin/manage/alumni/mentor_requests',
+            connection: 'admin/manage/alumni/connection_requests',
+            giveback: 'admin/manage/alumni/giveback',
+            update: 'admin/manage/alumni/updates'
+        };
+
+        const endpoint = endpointByKind[kind];
+        if (!endpoint) return;
+
+        $.getJSON(baseUrl + endpoint, function(response) {
+            if (!response.success) return;
+            const rows = response.data || [];
+            const row = rows.find(item => {
+                const matchesId = Number(item.id) === id;
+                if (!matchesId) return false;
+                if (kind === 'mentor' && source) {
+                    return String(item.source || '').toLowerCase() === source;
+                }
+                return true;
+            });
+
+            if (!row) return;
+            openSubmissionByType(kind, row);
+
+            // Prevent reopening modal on page refresh.
+            params.delete('notif_kind');
+            params.delete('notif_id');
+            params.delete('notif_source');
+            const nextQuery = params.toString();
+            const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash || ''}`;
+            window.history.replaceState({}, document.title, nextUrl);
+        });
+    }
+
+    // ==================== ACTIONS ====================
+    $(document).on('click', '.btn-view-submission', function () {
+        const type = $(this).data('type');
+        const payload = $(this).attr('data-payload') || '%7B%7D';
+        let row = {};
+
+        try {
+            row = JSON.parse(decodeURIComponent(payload));
+        } catch (e) {
+            showNotification('error', 'Failed to read submission details');
+            return;
+        }
+
+        openSubmissionByType(type, row);
     });
 
     $('#submission-approve-btn').on('click', function() {
@@ -702,4 +776,6 @@ $(document).ready(function () {
     loadFeatured();
     loadDirectory();
     loadEvents();
+    activateRequestedTab();
+    autoOpenRequestedSubmission();
 });

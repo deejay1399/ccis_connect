@@ -109,12 +109,12 @@
                 }
 
                 if (!file) {
-                    showNotification('Please select a PDF file', 'warning');
+                    showNotification('Please select a file', 'warning');
                     return;
                 }
 
-                if (file.type !== 'application/pdf') {
-                    showNotification('Only PDF files are allowed', 'error');
+                if (!isAllowedDocumentFile(file)) {
+                    showNotification('Only PDF, DOC, and DOCX files are allowed', 'error');
                     return;
                 }
 
@@ -190,8 +190,8 @@
 
                 // Validate file if provided
                 if (file) {
-                    if (file.type !== 'application/pdf') {
-                        showNotification('Only PDF files are allowed', 'error');
+                    if (!isAllowedDocumentFile(file)) {
+                        showNotification('Only PDF, DOC, and DOCX files are allowed', 'error');
                         return;
                     }
 
@@ -383,6 +383,26 @@
                 "'": '&#039;'
             };
             return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function isAllowedDocumentFile(file) {
+            if (!file || !file.name) return false;
+
+            const allowedMimes = [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.ms-word',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ];
+            const mime = (file.type || '').toLowerCase();
+            const extension = file.name.split('.').pop().toLowerCase();
+            const allowedExtensions = ['pdf', 'doc', 'docx'];
+
+            if (allowedMimes.includes(mime)) {
+                return true;
+            }
+
+            return allowedExtensions.includes(extension);
         }
 
         console.log('✅ Manage Forms Page initialized successfully');

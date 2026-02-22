@@ -99,6 +99,7 @@ $route['admin/manage/load_homepage'] = 'admin/AdminContent/load_homepage';
 $route['admin/manage/load_homepage_all'] = 'admin/AdminContent/load_homepage_all';
 $route['admin/manage/save_homepage'] = 'admin/AdminContent/save_homepage';
 $route['admin/manage/replace_homepage'] = 'admin/AdminContent/replace_homepage';
+$route['admin/manage/organizations/overview'] = 'admin/AdminContent/load_organizations_overview';
 
 // Admin Content Management - UPDATES (Announcements / Events & Achievements / Dean's List)
 $route['admin/manage/load_announcements'] = 'admin/AdminContent/load_announcements';
@@ -119,6 +120,7 @@ $route['admin/manage/delete_deans_list'] = 'admin/AdminContent/delete_deans_list
 $route['admin/manage/alumni/mentor_requests'] = 'admin/AdminContent/load_alumni_mentor_requests';
 $route['admin/manage/alumni/mentor_status'] = 'admin/AdminContent/update_alumni_mentor_status';
 $route['admin/manage/alumni/chatbot_inquiries'] = 'admin/AdminContent/load_alumni_chatbot_inquiries';
+$route['admin/manage/alumni/chatbot_status'] = 'admin/AdminContent/update_alumni_chatbot_status';
 $route['admin/manage/alumni/connection_requests'] = 'admin/AdminContent/load_alumni_connection_requests';
 $route['admin/manage/alumni/connection_status'] = 'admin/AdminContent/update_alumni_connection_status';
 $route['admin/manage/alumni/updates'] = 'admin/AdminContent/load_alumni_updates';

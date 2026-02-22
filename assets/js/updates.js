@@ -1,7 +1,7 @@
 // UPDATES PAGE JAVASCRIPT - COMPLETE FUNCTIONALITY WITH FLOATING BUTTON
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔄 Initializing Updates Page...');
+    console.log('ðŸ”„ Initializing Updates Page...');
     
     // Global variables for image gallery navigation
     let currentGalleryImages = [];
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Show specific section - FIXED VERSION
     function showSection(sectionId) {
-        console.log('🎬 Showing section:', sectionId);
+        console.log('ðŸŽ¬ Showing section:', sectionId);
         
         const sections = document.querySelectorAll('.content-section');
         sections.forEach(section => {
@@ -84,19 +84,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Load section-specific content with better timing
-            console.log('🕒 Loading content for:', sectionId);
+            console.log('ðŸ•’ Loading content for:', sectionId);
             setTimeout(() => {
                 loadSectionContent(sectionId);
             }, 150);
         } else {
-            console.warn('❌ Section not found:', sectionId);
+            console.warn('âŒ Section not found:', sectionId);
             showSection('announcements-section');
         }
     }
 
     // Load section-specific content - IMPROVED VERSION
     function loadSectionContent(sectionId) {
-        console.log('📦 Loading content for section:', sectionId);
+        console.log('ðŸ“¦ Loading content for section:', sectionId);
         
         switch(sectionId) {
             case 'announcements-section':
@@ -108,18 +108,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
                 
             case 'deanslist-section':
-                console.log('🏆 Loading Dean\'s List section');
+                console.log('ðŸ† Loading Dean\'s List section');
                 initializeDeansListContent();
                 break;
                 
             default:
-                console.warn('❌ Unknown section:', sectionId);
+                console.warn('âŒ Unknown section:', sectionId);
         }
     }
 
     // Initialize Announcements Content
     function initializeAnnouncementsContent() {
-        console.log('📢 Initializing announcements content...');
+        console.log('ðŸ“¢ Initializing announcements content...');
         
         // Initialize Read More buttons for announcements
         initializeReadMoreButtons();
@@ -133,12 +133,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize image gallery functionality
         initializeImageGallery();
         
-        console.log('✅ Announcements content initialized');
+        console.log('âœ… Announcements content initialized');
     }
 
     // Initialize Events & Achievements Content
     function initializeEventsContent() {
-        console.log('🎉 Initializing events content...');
+        console.log('ðŸŽ‰ Initializing events content...');
         
         // Initialize Read More buttons for events
         initializeReadMoreButtons();
@@ -149,12 +149,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize image gallery functionality
         initializeImageGallery();
         
-        console.log('✅ Events content initialized');
+        console.log('âœ… Events content initialized');
     }
 
     // Initialize Dean's List Content
     function initializeDeansListContent() {
-        console.log('🏆 Initializing Dean\'s List content...');
+        console.log('ðŸ† Initializing Dean\'s List content...');
         
         // Remove semester filter if it exists
         const semesterFilter = document.querySelector('.semester-filter');
@@ -168,12 +168,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Load Dean's List data
         loadDeansListData();
         
-        console.log('✅ Dean\'s List content initialized');
+        console.log('âœ… Dean\'s List content initialized');
     }
 
     // Initialize Read More buttons with light gray to purple styling
     function initializeReadMoreButtons() {
-        console.log('📖 Initializing Read More buttons...');
+        console.log('ðŸ“– Initializing Read More buttons...');
         
         // Remove existing listeners to prevent duplicates
         $(document).off('click.readMore');
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add event delegation for Read More buttons
         $(document).on('click.readMore', '.btn-read-more', function(e) {
             e.preventDefault();
-            console.log('📖 Read More button clicked!');
+            console.log('ðŸ“– Read More button clicked!');
             
             const $btn = $(this);
             const $container = $btn.closest('.announcement-content-container, .event-description-container, .achievement-description-container');
@@ -246,12 +246,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        console.log('✅ Read More buttons initialized');
+        console.log('âœ… Read More buttons initialized');
     }
 
     // Initialize PDF buttons with light gray to purple styling
     function initializePDFButtons() {
-        console.log('📄 Initializing PDF buttons...');
+        console.log('ðŸ“„ Initializing PDF buttons...');
         
         // Remove existing listeners to prevent duplicates
         $(document).off('click.pdfButtons');
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add event delegation for PDF buttons
         $(document).on('click.pdfButtons', '.btn-view-pdf, .btn-download-pdf', function(e) {
             e.preventDefault();
-            console.log('📄 PDF button clicked!');
+            console.log('ðŸ“„ PDF button clicked!');
             
             const $btn = $(this);
             const isViewBtn = $btn.hasClass('btn-view-pdf');
@@ -300,12 +300,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         });
         
-        console.log('✅ PDF buttons initialized');
+        console.log('âœ… PDF buttons initialized');
     }
 
     // Initialize view buttons for sorting
     function initializeViewButtons() {
-        console.log('🔍 Initializing view buttons...');
+        console.log('ðŸ” Initializing view buttons...');
         
         // Remove existing listeners to prevent duplicates
         $(document).off('click.viewButtons');
@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add event delegation for view buttons
         $(document).on('click.viewButtons', '.view-btn', function(e) {
             e.preventDefault();
-            console.log('🔍 View button clicked!');
+            console.log('ðŸ” View button clicked!');
             
             const $btn = $(this);
             const type = $btn.data('type');
@@ -333,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateViewButtonsStyling();
         });
         
-        console.log('✅ View buttons initialized');
+        console.log('âœ… View buttons initialized');
     }
 
     // Update view buttons styling
@@ -354,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize image gallery functionality with navigation - FIXED VERSION
     function initializeImageGallery() {
-        console.log('🖼️ Initializing image gallery...');
+        console.log('ðŸ–¼ï¸ Initializing image gallery...');
         
         // Remove existing listeners to prevent duplicates
         $(document).off('click.imageGallery');
@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add event delegation for image gallery
         $(document).on('click.imageGallery', '.gallery-image, .achievement-gallery-image, .event-gallery-image', function(e) {
             e.preventDefault();
-            console.log('🖼️ Image clicked!');
+            console.log('ðŸ–¼ï¸ Image clicked!');
             
             const $clickedImage = $(this);
             const galleryContainer = $clickedImage.closest('.images-gallery, .achievement-gallery, .event-gallery');
@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize modal navigation buttons
         initializeModalNavigation();
         
-        console.log('✅ Image gallery initialized');
+        console.log('âœ… Image gallery initialized');
     }
 
     // Show image in modal - FIXED VERSION
@@ -496,38 +496,126 @@ document.addEventListener('DOMContentLoaded', function() {
             modalCaption.textContent = image.caption;
         }
     }
-
     // ===============================
-    // Dean's List (PDF list, DB-backed)
+    // Dean's List (Achiever list, DB-backed)
     // ===============================
 
     let cachedDeansListRows = [];
+    let selectedAcademicYear = 'all';
+    let selectedProgram = 'all';
+    let selectedYearLevel = 'all';
 
     function getBaseURL() {
         const b = window.baseUrl || window.BASE_URL;
         if (b) return b.endsWith('/') ? b : (b + '/');
-        // Fallback (repo is under /ccis_connect/ in this environment)
         return window.location.origin + '/ccis_connect/';
     }
 
-    function renderAcademicYearFilter(years) {
-        const filterContainer = document.querySelector('.academic-year-filter');
-        if (!filterContainer) return;
+    function toYearLevelDisplay(value) {
+        const v = String(value || '').trim().toLowerCase();
+        if (v === 'first year' || v === '1st year') return '1st Year';
+        if (v === 'second year' || v === '2nd year') return '2nd Year';
+        if (v === 'third year' || v === '3rd year') return '3rd Year';
+        if (v === 'fourth year' || v === '4th year') return '4th Year';
+        return value || 'Unknown';
+    }
 
-        const opts = ['<option value="all">All</option>']
-            .concat(years.map(y => `<option value="${y}">${y}</option>`));
+    function toProgramDisplay(value) {
+        const p = String(value || '').trim();
+        if (p === '') return 'Unknown Program';
+        if (p.toLowerCase().includes('program')) return p;
+        return `${p} Program`;
+    }
 
-        filterContainer.innerHTML = `
-            <div class="academic-year-select-wrapper">
-                <label class="form-label" for="academicYearSelect">Academic Year</label>
-                <select id="academicYearSelect" class="form-select academic-year-select">${opts.join('')}</select>
+    function getUniqueAcademicYears(rows) {
+        const set = new Set();
+        rows.forEach(r => {
+            if (r && r.academic_year) set.add(r.academic_year);
+        });
+        return Array.from(set).sort().reverse();
+    }
+
+    function getUniquePrograms(rows) {
+        const set = new Set();
+        rows.forEach(r => {
+            if (r && r.program) set.add(r.program);
+        });
+        return Array.from(set).sort();
+    }
+
+    function getUniqueYearLevels(rows) {
+        const set = new Set();
+        rows.forEach(r => {
+            if (r && r.year_level) set.add(r.year_level);
+        });
+
+        return Array.from(set).sort((a, b) => {
+            const map = {
+                'First Year': 1, '1st Year': 1,
+                'Second Year': 2, '2nd Year': 2,
+                'Third Year': 3, '3rd Year': 3,
+                'Fourth Year': 4, '4th Year': 4
+            };
+            return (map[a] || 99) - (map[b] || 99);
+        });
+    }
+
+    function renderDeansFilters(years, programs, yearLevels) {
+        const filtersContainer = document.querySelector('.deanslist-filters') || document.querySelector('.academic-year-filter');
+        if (!filtersContainer) return;
+
+        const academicYearOptions = ['<option value="all">All</option>']
+            .concat(years.map(y => `<option value="${y}">Academic Year ${y}</option>`))
+            .join('');
+
+        const programOptions = ['<option value="all">All</option>']
+            .concat(programs.map(p => `<option value="${p}">${toProgramDisplay(p)}</option>`))
+            .join('');
+
+        const yearOptions = ['<option value="all">All</option>']
+            .concat(yearLevels.map(y => `<option value="${y}">${toYearLevelDisplay(y)}</option>`))
+            .join('');
+
+        filtersContainer.style.display = 'block';
+        filtersContainer.innerHTML = `
+            <div class="deanslist-filters-container">
+                <div class="filter-group-dropdown">
+                    <label class="filter-label" for="academicYearSelect"><i class="fas fa-calendar-alt me-1"></i>Academic Year</label>
+                    <select id="academicYearSelect" class="filter-select">${academicYearOptions}</select>
+                </div>
+                <div class="filter-group-dropdown">
+                    <label class="filter-label" for="programSelect"><i class="fas fa-graduation-cap me-1"></i>Program</label>
+                    <select id="programSelect" class="filter-select">${programOptions}</select>
+                </div>
+                <div class="filter-group-dropdown">
+                    <label class="filter-label" for="yearLevelSelect"><i class="fas fa-user-graduate me-1"></i>Year Level</label>
+                    <select id="yearLevelSelect" class="filter-select">${yearOptions}</select>
+                </div>
             </div>
         `;
 
         const academicYearSelect = document.getElementById('academicYearSelect');
+        const programSelect = document.getElementById('programSelect');
+        const yearLevelSelect = document.getElementById('yearLevelSelect');
+
         if (academicYearSelect) {
             academicYearSelect.addEventListener('change', function() {
-                updateDeansListContent(this.value);
+                selectedAcademicYear = this.value;
+                updateDeansListContent();
+            });
+        }
+
+        if (programSelect) {
+            programSelect.addEventListener('change', function() {
+                selectedProgram = this.value;
+                updateDeansListContent();
+            });
+        }
+
+        if (yearLevelSelect) {
+            yearLevelSelect.addEventListener('change', function() {
+                selectedYearLevel = this.value;
+                updateDeansListContent();
             });
         }
     }
@@ -550,31 +638,38 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function getUniqueAcademicYears(rows) {
-        const set = new Set();
-        rows.forEach(r => {
-            if (r && r.academic_year) set.add(r.academic_year);
-        });
-        return Array.from(set).sort().reverse();
+    function parseAchievements(raw) {
+        const text = String(raw || '').trim();
+        if (!text) return [];
+        return text.split(',').map(x => x.trim()).filter(Boolean);
     }
 
-    function updateDeansListContent(academicYear) {
+    function getHonorsClass(honors) {
+        const v = String(honors || '').toLowerCase();
+        if (v.indexOf('summa') !== -1) return 'summa';
+        if (v.indexOf('magna') !== -1) return 'magna';
+        return 'cum-laude';
+    }
+
+    function updateDeansListContent() {
         const deansListContent = document.getElementById('deanslist-content');
         if (!deansListContent) return;
 
         const baseURL = getBaseURL();
+        const rows = cachedDeansListRows.filter(r => {
+            if (selectedAcademicYear !== 'all' && r.academic_year !== selectedAcademicYear) return false;
+            if (selectedProgram !== 'all' && r.program !== selectedProgram) return false;
+            if (selectedYearLevel !== 'all' && r.year_level !== selectedYearLevel) return false;
+            return true;
+        });
 
-        const rows = (academicYear && academicYear !== 'all')
-            ? cachedDeansListRows.filter(r => r.academic_year === academicYear)
-            : cachedDeansListRows;
-
-        const subtitle = (academicYear && academicYear !== 'all')
-            ? `Academic Year ${academicYear}`
+        const subtitle = (selectedAcademicYear && selectedAcademicYear !== 'all')
+            ? `Academic Year ${selectedAcademicYear}`
             : 'All Academic Years';
 
         deansListContent.innerHTML = `
             <div class="deanslist-header">
-                <h4>Dean's List</h4>
+                <h4>Dean's List Achievers</h4>
                 <p class="text-muted">${subtitle}</p>
             </div>
         `;
@@ -583,71 +678,114 @@ document.addEventListener('DOMContentLoaded', function() {
             deansListContent.innerHTML += `
                 <div class="empty-state">
                     <i class="fas fa-award fa-3x mb-3"></i>
-                    <h5>No Dean's List PDFs</h5>
-                    <p>No Dean's List files found for this selection.</p>
+                    <h5>No Dean's List Entries</h5>
+                    <p>No Dean's List data found for this selection.</p>
                 </div>
             `;
             return;
         }
 
-        const cards = rows.map(r => {
-            const pdfUrl = r.pdf_file ? (baseURL + r.pdf_file) : '#';
-            const title = `Dean's List - ${r.semester || ''}`.trim();
-            const uploaded = r.uploaded_at ? formatDate(r.uploaded_at) : '';
+        const groupedByProgram = {};
+        rows.forEach(r => {
+            const key = r.program || 'Unspecified Program';
+            if (!groupedByProgram[key]) groupedByProgram[key] = [];
+            groupedByProgram[key].push(r);
+        });
 
-            return `
-                <div class="announcement-card general">
-                    <div class="announcement-header">
-                        <h3 class="announcement-title">${title}</h3>
-                        <div class="announcement-meta">
-                            <span><i class="fas fa-calendar me-1"></i>${r.academic_year || ''}</span>
-                            ${uploaded ? `<span><i class="fas fa-upload me-1"></i>${uploaded}</span>` : ''}
-                        </div>
-                    </div>
-                    <div class="announcement-body">
-                        <div class="announcement-content">Official Dean's List PDF file.</div>
-                        <div class="announcement-pdf mt-3">
-                            <div class="button-group-tapad">
-                                <button class="btn btn-view-pdf me-2" data-pdf-url="${pdfUrl}">
-                                    <i class="fas fa-eye me-1"></i>View PDF
-                                </button>
-                                <button class="btn btn-download-pdf" data-pdf-url="${pdfUrl}" data-pdf-title="${(r.academic_year || 'deans_list') + '_' + (r.semester || '')}">
-                                    <i class="fas fa-download me-1"></i>Download
-                                </button>
+        const sectionsHtml = Object.keys(groupedByProgram).sort().map(program => {
+            const achievers = groupedByProgram[program];
+
+            const achieversHtml = achievers.map(r => {
+                const honorsClass = getHonorsClass(r.honors);
+                const imageUrl = r.image ? (baseURL + r.image) : (baseURL + 'assets/images/ccis.png');
+                const achievements = parseAchievements(r.achievements);
+
+                return `
+                    <div class="achiever-card ${honorsClass}">
+                        <div class="achiever-header">
+                            <div class="achiever-image">
+                                <img src="${imageUrl}" alt="${r.full_name || 'Achiever'}" onerror="this.onerror=null;this.src='${baseURL + 'assets/images/ccis.png'}';">
+                            </div>
+                            <div class="achiever-info">
+                                <h6 class="achiever-name">${r.full_name || 'Unnamed Achiever'}</h6>
+                                <span class="achiever-year">${toYearLevelDisplay(r.year_level || '-')}</span>
+                                <div class="achiever-gwa">GWA: ${r.gwa || '-'}</div>
                             </div>
                         </div>
+                        <div class="achiever-honors">
+                            <span class="honors-badge ${honorsClass}">${r.honors || '-'}</span>
+                        </div>
+                        ${achievements.length ? `
+                            <div class="achiever-achievements">
+                                <h6><i class="fas fa-trophy me-2"></i>Notable Achievements:</h6>
+                                <ul>${achievements.map(item => `<li>${item}</li>`).join('')}</ul>
+                            </div>
+                        ` : ''}
                     </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="program-section">
+                    <div class="program-header">
+                        <h5>
+                            <i class="fas fa-graduation-cap me-2"></i>${toProgramDisplay(program)}
+                            <span class="badge bg-primary">${achievers.length} Achiever${achievers.length > 1 ? 's' : ''}</span>
+                        </h5>
+                    </div>
+                    <div class="achievers-grid">${achieversHtml}</div>
                 </div>
             `;
         }).join('');
 
-        // Reuse the existing grid styling
-        const grid = document.createElement('div');
-        grid.className = 'announcements-container';
-        grid.innerHTML = cards;
-        deansListContent.appendChild(grid);
+        deansListContent.innerHTML += sectionsHtml + `
+            <div class="congratulations-message">
+                <i class="fas fa-trophy"></i>
+                <h5>Congratulations to All Dean's List Achievers!</h5>
+                <p>Your hard work, dedication, and academic excellence inspire the entire CCIS community. Continue to strive for excellence and make us proud!</p>
+            </div>
+        `;
     }
 
     async function initializeDeansListContent() {
-        console.log('🏆 Initializing Dean\'s List content (PDF list)...');
+        console.log('🏆 Initializing Dean\'s List content...');
 
         await loadDeansListFromDB();
 
         const years = getUniqueAcademicYears(cachedDeansListRows);
-        renderAcademicYearFilter(years);
+        const programs = getUniquePrograms(cachedDeansListRows);
+        const yearLevels = getUniqueYearLevels(cachedDeansListRows);
 
-        // Hide legacy filters container if it exists
-        const legacyFilters = document.querySelector('.deanslist-filters');
-        if (legacyFilters) legacyFilters.style.display = 'none';
+        const academicYearHost = document.querySelector('.academic-year-filter');
+        const hasDedicatedFiltersHost = !!document.querySelector('.deanslist-filters');
+        if (academicYearHost) {
+            academicYearHost.style.display = hasDedicatedFiltersHost ? 'none' : 'block';
+        }
+        renderDeansFilters(years, programs, yearLevels);
 
-        updateDeansListContent(years[0] || 'all');
+        selectedAcademicYear = years[0] || 'all';
+        selectedProgram = 'all';
+        selectedYearLevel = 'all';
 
+        const academicYearSelect = document.getElementById('academicYearSelect');
+        if (academicYearSelect && selectedAcademicYear !== 'all') {
+            academicYearSelect.value = selectedAcademicYear;
+        }
+        const programSelect = document.getElementById('programSelect');
+        if (programSelect) {
+            programSelect.value = selectedProgram;
+        }
+        const yearLevelSelect = document.getElementById('yearLevelSelect');
+        if (yearLevelSelect) {
+            yearLevelSelect.value = selectedYearLevel;
+        }
+
+        updateDeansListContent();
         console.log('✅ Dean\'s List content initialized');
     }
-
     // Initialize dropdown hover functionality
     function initializeDropdownHover() {
-        console.log('🔄 Initializing dropdown hover functionality...');
+        console.log('ðŸ”„ Initializing dropdown hover functionality...');
         
         // Desktop hover functionality
         if (window.innerWidth >= 992) {
@@ -672,25 +810,25 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        console.log('✅ Dropdown hover functionality initialized');
+        console.log('âœ… Dropdown hover functionality initialized');
     }
 
     // Handle navigation from dropdown menu - FIXED VERSION
     function setupDropdownNavigation() {
-        console.log('🔗 Setting up dropdown navigation...');
+        console.log('ðŸ”— Setting up dropdown navigation...');
         
         document.querySelectorAll('.section-link').forEach(item => {
             item.addEventListener('click', function(e) {
                 e.preventDefault();
                 const targetId = this.getAttribute('data-section');
-                console.log('🔗 Navigation clicked:', targetId);
+                console.log('ðŸ”— Navigation clicked:', targetId);
                 
                 if (this.classList.contains('blocked-nav-item')) {
-                    console.log('🚫 Item is blocked, skipping navigation');
+                    console.log('ðŸš« Item is blocked, skipping navigation');
                     return;
                 }
                 
-                console.log('🎯 Showing section:', targetId);
+                console.log('ðŸŽ¯ Showing section:', targetId);
                 showSection(targetId);
                 
                 if (window.innerWidth < 992) {
@@ -702,7 +840,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        console.log('✅ Dropdown navigation setup completed');
+        console.log('âœ… Dropdown navigation setup completed');
     }
 
     // Handle browser back/forward buttons
@@ -736,19 +874,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const updatesPageSections = document.querySelectorAll('.updates-section .content-section');
         if (updatesPageSections.length === 0) {
             // Not on the updates page, don't modify the URL
-            console.log('🚫 Not on updates page, skipping hash navigation');
+            console.log('ðŸš« Not on updates page, skipping hash navigation');
             return;
         }
         
         let hash = window.location.hash.substring(1);
         const validSections = ['announcements-section', 'events-achievements-section', 'deanslist-section'];
         
-        console.log('🔗 Initial hash:', hash);
+        console.log('ðŸ”— Initial hash:', hash);
         
         // Map hash to actual section IDs
         if (hashMapping[hash]) {
             hash = hashMapping[hash];
-            console.log('🔗 Mapped hash to:', hash);
+            console.log('ðŸ”— Mapped hash to:', hash);
         }
         
         // Determine which section to show
@@ -758,11 +896,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (hash) {
             // If there's a hash but it's not valid, show announcements
             targetSection = 'announcements-section';
-            console.log('🔗 Invalid hash, defaulting to:', targetSection);
+            console.log('ðŸ”— Invalid hash, defaulting to:', targetSection);
         } else {
             // No hash at all - just show announcements without modifying URL
             targetSection = 'announcements-section';
-            console.log('🔗 No hash, showing default section');
+            console.log('ðŸ”— No hash, showing default section');
             // Don't add hash to URL when coming from other pages
             setTimeout(() => {
                 showSection(targetSection);
@@ -770,7 +908,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        console.log('🎯 Final target section:', targetSection);
+        console.log('ðŸŽ¯ Final target section:', targetSection);
         
         // Show the target section with a small delay to ensure DOM is ready
         setTimeout(() => {
@@ -842,7 +980,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // Back to Top functionality
     function initBackToTop() {
-        console.log('⬆️ Initializing back to top button...');
+        console.log('â¬†ï¸ Initializing back to top button...');
         
         const backToTopBtn = document.getElementById('backToTop');
         if (!backToTopBtn) return;
@@ -865,7 +1003,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleBackToTop();
         window.addEventListener('scroll', toggleBackToTop);
         
-        console.log('✅ Back to top button initialized');
+        console.log('âœ… Back to top button initialized');
     }
 
     // Create back to top button if not exists
@@ -925,7 +1063,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Setup blocked navigation notifications
     function setupBlockedNavigationNotifications() {
-        console.log('🚫 Setting up blocked navigation notifications...');
+        console.log('ðŸš« Setting up blocked navigation notifications...');
         
         // Block specific dropdown items from Academics
         const blockedItems = [
@@ -969,12 +1107,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        console.log('✅ Navigation blocking setup completed');
+        console.log('âœ… Navigation blocking setup completed');
     }
 
     // Initialize everything - COMPLETE VERSION
     function initializeAll() {
-        console.log('🚀 Initializing Updates Page Complete System...');
+        console.log('ðŸš€ Initializing Updates Page Complete System...');
         
         // Create back to top button
         createBackToTopButton();
@@ -1001,7 +1139,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Force re-apply role filter
         if (typeof window.filterContentByRole === 'function') {
             window.filterContentByRole(); 
-            console.log('✅ Role-based blocking re-applied.');
+            console.log('âœ… Role-based blocking re-applied.');
         }
         
         // Double-check that only the correct section is visible
@@ -1021,8 +1159,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 100);
         
-        console.log('✅ Updates Page Fully Initialized');
-        console.log('📢 All features loaded: Section switching, Read More buttons, PDF buttons, Dropdown hover, Floating button');
+        console.log('âœ… Updates Page Fully Initialized');
+        console.log('ðŸ“¢ All features loaded: Section switching, Read More buttons, PDF buttons, Dropdown hover, Floating button');
     }
 
     // Scroll event listener
@@ -1059,5 +1197,5 @@ document.addEventListener('DOMContentLoaded', function() {
     // Start the application
     initializeAll();
 
-    console.log('🎉 Updates Page JavaScript Loaded Successfully!');
+    console.log('ðŸŽ‰ Updates Page JavaScript Loaded Successfully!');
 });

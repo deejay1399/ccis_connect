@@ -92,33 +92,168 @@ $(document).ready(function() {
         console.log('🎯 Super Admin Dashboard initialized successfully');
     }
     
+    const NOTIFICATION_API = {
+        mentor: 'admin/manage/alumni/mentor_requests',
+        chatbot: 'admin/manage/alumni/chatbot_inquiries',
+        connection: 'admin/manage/alumni/connection_requests',
+        giveback: 'admin/manage/alumni/giveback'
+    };
+    const NOTIFICATION_STATUS_API = {
+        mentor: 'admin/manage/alumni/mentor_status',
+        chatbot: 'admin/manage/alumni/chatbot_status',
+        connection: 'admin/manage/alumni/connection_status',
+        giveback: 'admin/manage/alumni/giveback_status'
+    };
+    let latestNotifications = [];
+
+    function getBaseUrl() {
+        return window.baseUrl || window.BASE_URL || '/ccis_connect/';
+    }
+
+    function apiGet(path) {
+        return $.getJSON(getBaseUrl() + path);
+    }
+
+    function apiPost(path, payload) {
+        return $.ajax({
+            url: getBaseUrl() + path,
+            type: 'POST',
+            data: payload,
+            dataType: 'json'
+        });
+    }
+
+    function normalizeStatus(status) {
+        return String(status || '').trim().toLowerCase();
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function isPending(item) {
+        const status = normalizeStatus(item.status);
+        const isUnread = Number(item.notification_read || 0) !== 1;
+        return (status === '' || status === 'pending') && isUnread;
+    }
+
+    function formatRelativeTime(value) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return 'just now';
+        const diffMs = Date.now() - date.getTime();
+        const diffMins = Math.max(0, Math.floor(diffMs / 60000));
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        return `${diffDays}d ago`;
+    }
+
+    async function fetchNotificationData() {
+        const fallback = { success: false, data: [] };
+        const [mentorRes, chatbotRes, connectionRes, givebackRes] = await Promise.all([
+            apiGet(NOTIFICATION_API.mentor).catch(() => fallback),
+            apiGet(NOTIFICATION_API.chatbot).catch(() => fallback),
+            apiGet(NOTIFICATION_API.connection).catch(() => fallback),
+            apiGet(NOTIFICATION_API.giveback).catch(() => fallback)
+        ]);
+
+        return {
+            mentor: mentorRes.success ? (mentorRes.data || []) : [],
+            chatbot: chatbotRes.success ? (chatbotRes.data || []) : [],
+            connection: connectionRes.success ? (connectionRes.data || []) : [],
+            giveback: givebackRes.success ? (givebackRes.data || []) : []
+        };
+    }
+
+    function buildNotificationItems(data) {
+        const mentorItems = (data.mentor || [])
+            .filter(isPending)
+            .map(row => ({
+                kind: 'mentor',
+                id: row.id,
+                source: row.source || 'mentor_requests',
+                tab: 'mentor-tab',
+                icon: 'fa-handshake',
+                text: `${row.name || 'Someone'} submitted a mentor request`,
+                createdAt: row.created_at
+            }));
+
+        const chatbotItems = (data.chatbot || [])
+            .filter(isPending)
+            .map(row => {
+                const question = String(row.question || '');
+                const shortQuestion = question.length > 40 ? `${question.substring(0, 40)}...` : question;
+                return {
+                    kind: 'chatbot',
+                    id: row.id,
+                    tab: 'chatbot-tab',
+                    icon: 'fa-robot',
+                    text: `New chatbot inquiry: "${shortQuestion}"`,
+                    createdAt: row.created_at || row.inquiry_date
+                };
+            });
+
+        const connectionItems = (data.connection || [])
+            .filter(isPending)
+            .map(row => ({
+                kind: 'connection',
+                id: row.id,
+                tab: 'connection-tab',
+                icon: 'fa-user-friends',
+                text: `${row.from_name || 'Someone'} wants to connect with ${row.to_name || 'an alumni'}`,
+                createdAt: row.created_at || row.request_date
+            }));
+
+        const givebackItems = (data.giveback || [])
+            .filter(isPending)
+            .map(row => ({
+                kind: 'giveback',
+                id: row.id,
+                tab: 'giveback-tab',
+                icon: 'fa-donate',
+                text: `${row.author || 'Someone'} submitted a Give Back form (${row.title || 'submission'})`,
+                createdAt: row.created_at || row.submission_date
+            }));
+
+        return [...mentorItems, ...chatbotItems, ...connectionItems, ...givebackItems]
+            .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    }
+
     // Setup Notification Bell Functionality
     function setupNotificationBell() {
         const notificationBell = $("#notification-bell");
         const notificationDropdown = $("#notification-dropdown");
+        const notificationList = $("#notification-list");
 
-        // Load notifications on initialization
+        if (!notificationBell.length || !notificationDropdown.length || !notificationList.length) {
+            console.warn('Notification UI not found on this page; skipping bell setup.');
+            return;
+        }
+
         loadNotificationCounts();
         loadNotificationDropdown();
 
-        // Toggle dropdown on bell click
         notificationBell.off("click").on("click", function(e) {
             e.preventDefault();
             e.stopPropagation();
-            
-            // Toggle dropdown visibility
+
             if (notificationDropdown.hasClass("show")) {
                 notificationDropdown.removeClass("show");
                 notificationBell.removeClass("active");
-            } else {
-                notificationDropdown.addClass("show");
-                notificationBell.addClass("active");
-                // Reload notifications when opening
-                loadNotificationDropdown();
+                return;
             }
+
+            notificationDropdown.addClass("show");
+            notificationBell.addClass("active");
+            loadNotificationDropdown();
         });
 
-        // Close dropdown when clicking outside
         $(document).off("click.notification").on("click.notification", function(e) {
             if (!$(e.target).closest("#notification-wrapper").length) {
                 notificationDropdown.removeClass("show");
@@ -126,14 +261,12 @@ $(document).ready(function() {
             }
         });
 
-        // Mark all as read button
         $(document).off("click", "#mark-all-notifications").on("click", "#mark-all-notifications", function(e) {
             e.preventDefault();
             e.stopPropagation();
             markAllNotificationsAsRead();
         });
 
-        // Load notifications periodically (every 30 seconds)
         setInterval(function() {
             loadNotificationCounts();
             if (notificationDropdown.hasClass("show")) {
@@ -141,98 +274,54 @@ $(document).ready(function() {
             }
         }, 30000);
     }
-    
+
     // Load Notification Counts for Dashboard Stats
-    function loadNotificationCounts() {
+    async function loadNotificationCounts() {
         try {
-            // Get all unread counts
-            const mentorRequests = JSON.parse(localStorage.getItem('giveback_interests') || '[]')
-                .filter(item => (item.type === 'Mentor' || item.type === 'Speaker' || item.type === 'Internship') && item.status !== 'read');
-            
-            const chatbotInquiries = JSON.parse(localStorage.getItem('chatbot_inquiries') || '[]')
-                .filter(item => item.status !== 'read');
-            
-            const connectionRequests = JSON.parse(localStorage.getItem('connection_requests') || '[]')
-                .filter(item => item.status !== 'read');
-            
-            // Get total counts (including read)
-            const totalMentor = JSON.parse(localStorage.getItem('giveback_interests') || '[]')
-                .filter(item => item.type === 'Mentor' || item.type === 'Speaker' || item.type === 'Internship').length;
-            
-            const totalChatbot = JSON.parse(localStorage.getItem('chatbot_inquiries') || '[]').length;
-            const totalConnection = JSON.parse(localStorage.getItem('connection_requests') || '[]').length;
-            
-            // Update quick stats
-            $('#stat-mentor-count').text(totalMentor);
-            $('#stat-mentor-new').text(`${mentorRequests.length} new`);
-            $('#stat-chatbot-count').text(totalChatbot);
-            $('#stat-chatbot-new').text(`${chatbotInquiries.length} new`);
-            $('#stat-connection-count').text(totalConnection);
-            $('#stat-connection-new').text(`${connectionRequests.length} new`);
-            
-            // Store counts for badge
-            const totalUnread = mentorRequests.length + chatbotInquiries.length + connectionRequests.length;
-            localStorage.setItem('notification_counts', JSON.stringify({
-                mentor: mentorRequests.length,
-                chatbot: chatbotInquiries.length,
-                connection: connectionRequests.length,
-                total: totalUnread
-            }));
-            
-            console.log(`📊 Notification counts updated - Total unread: ${totalUnread}`);
-            
-            // Update badge
-            displayNotificationBadges();
-            
+            const data = await fetchNotificationData();
+            const notifications = buildNotificationItems(data);
+
+            const mentorTotal = (data.mentor || []).length;
+            const mentorNew = (data.mentor || []).filter(isPending).length;
+            const chatbotTotal = (data.chatbot || []).length;
+            const chatbotNew = (data.chatbot || []).filter(isPending).length;
+            const connectionTotal = (data.connection || []).length;
+            const connectionNew = (data.connection || []).filter(isPending).length;
+
+            $('#stat-mentor-count').text(mentorTotal);
+            $('#stat-mentor-new').text(`${mentorNew} new`);
+            $('#stat-chatbot-count').text(chatbotTotal);
+            $('#stat-chatbot-new').text(`${chatbotNew} new`);
+            $('#stat-connection-count').text(connectionTotal);
+            $('#stat-connection-new').text(`${connectionNew} new`);
+
+            displayNotificationBadges(notifications.length);
         } catch (error) {
             console.error('❌ Error loading notification counts:', error);
         }
     }
-    
+
     // Display Notification Badges
-    function displayNotificationBadges() {
-        try {
-            const counts = JSON.parse(localStorage.getItem('notification_counts') || '{}');
-            const total = counts.total || 0;
-            const notificationBadge = $('#dashboard-notification-badge');
-            
-            if (total > 0) {
-                notificationBadge.text(total).show();
-                // Add pulse animation
-                notificationBadge.addClass('pulse');
-            } else {
-                notificationBadge.hide();
-                notificationBadge.removeClass('pulse');
-            }
-            
-        } catch (error) {
-            console.error('❌ Error displaying notification badges:', error);
+    function displayNotificationBadges(total) {
+        const notificationBadge = $('#dashboard-notification-badge');
+        const safeTotal = Number(total) || 0;
+        if (safeTotal > 0) {
+            notificationBadge.text(safeTotal).show().addClass('pulse');
+            return;
         }
+        notificationBadge.hide().removeClass('pulse');
     }
-    
+
     // Load Notification Dropdown Content
-    function loadNotificationDropdown() {
+    async function loadNotificationDropdown() {
+        const notificationList = $('#notification-list');
+        if (!notificationList.length) return;
+
         try {
-            const notificationList = $('#notification-list');
-            
-            // Get latest unread notifications (max 5)
-            const mentorRequests = JSON.parse(localStorage.getItem('giveback_interests') || '[]')
-                .filter(item => (item.type === 'Mentor' || item.type === 'Speaker' || item.type === 'Internship') && item.status !== 'read')
-                .slice(0, 2);
-            
-            const chatbotInquiries = JSON.parse(localStorage.getItem('chatbot_inquiries') || '[]')
-                .filter(item => item.status !== 'read')
-                .slice(0, 2);
-            
-            const connectionRequests = JSON.parse(localStorage.getItem('connection_requests') || '[]')
-                .filter(item => item.status !== 'read')
-                .slice(0, 1);
-            
-            const allNotifications = [...mentorRequests, ...chatbotInquiries, ...connectionRequests]
-                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-                .slice(0, 5);
-            
-            if (allNotifications.length === 0) {
+            const data = await fetchNotificationData();
+            latestNotifications = buildNotificationItems(data);
+
+            if (latestNotifications.length === 0) {
                 notificationList.html(`
                     <div class="notification-empty">
                         <i class="fas fa-bell-slash"></i>
@@ -241,94 +330,49 @@ $(document).ready(function() {
                 `);
                 return;
             }
-            
-            let notificationsHtml = '';
-            
-            allNotifications.forEach((item, index) => {
-                let type = 'Mentor';
-                let icon = 'fa-handshake';
-                let message = '';
-                let time = '';
-                
-                if (item.type === 'Mentor' || item.type === 'Speaker' || item.type === 'Internship') {
-                    type = item.type;
-                    icon = item.type === 'Speaker' ? 'fa-chalkboard-teacher' : 
-                           item.type === 'Internship' ? 'fa-briefcase' : 'fa-handshake';
-                    message = `${item.name} submitted a ${item.type} volunteer form`;
-                } else if (item.question) {
-                    type = 'Chatbot';
-                    icon = 'fa-robot';
-                    const shortQuestion = item.question.length > 40 ? 
-                        item.question.substring(0, 40) + '...' : item.question;
-                    message = `New chatbot inquiry: "${shortQuestion}"`;
-                } else if (item.alumniName) {
-                    type = 'Connection';
-                    icon = 'fa-user-friends';
-                    message = `${item.userName} wants to connect with ${item.alumniName}`;
-                }
-                
-                // Format time
-                const now = new Date();
-                const itemTime = new Date(item.timestamp);
-                const diffMs = now - itemTime;
-                const diffMins = Math.floor(diffMs / 60000);
-                const diffHours = Math.floor(diffMs / 3600000);
-                const diffDays = Math.floor(diffMs / 86400000);
-                
-                if (diffMins < 60) {
-                    time = `${diffMins}m ago`;
-                } else if (diffHours < 24) {
-                    time = `${diffHours}h ago`;
-                } else {
-                    time = `${diffDays}d ago`;
-                }
-                
-                notificationsHtml += `
-                    <div class="notification-item" data-index="${index}" data-type="${type.toLowerCase()}">
-                        <div class="notification-icon">
-                            <i class="fas ${icon}"></i>
-                        </div>
-                        <div class="notification-content">
-                            <p class="notification-text">${message}</p>
-                            <small class="notification-time">${time}</small>
-                        </div>
-                        <button class="notification-mark-read" title="Mark as read">
-                            <i class="fas fa-check"></i>
-                        </button>
+
+            const notificationsHtml = latestNotifications.slice(0, 8).map((item, index) => `
+                <div class="notification-item" data-index="${index}">
+                    <div class="notification-icon">
+                        <i class="fas ${item.icon}"></i>
                     </div>
-                `;
-            });
-            
+                    <div class="notification-content">
+                        <p class="notification-text">${escapeHtml(item.text)}</p>
+                        <small class="notification-time">${formatRelativeTime(item.createdAt)}</small>
+                    </div>
+                    <button class="notification-mark-read" title="Mark as read">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>
+            `).join('');
+
             notificationList.html(notificationsHtml);
-            
-            // Use event delegation for click handlers (better for dynamic content)
+
             notificationList.off('click').on('click', '.notification-item', function(e) {
-                if (!$(e.target).closest('.notification-mark-read').length) {
-                    const index = $(this).data('index');
-                    const type = $(this).data('type');
-                    handleNotificationClick(index, type);
+                if ($(e.target).closest('.notification-mark-read').length) return;
+                const index = Number($(this).attr('data-index'));
+                const notification = latestNotifications[index];
+                if (notification) {
+                    handleNotificationClick(notification);
                 }
             });
-            
-            // Add click handlers for mark as read buttons
-            notificationList.off('click', '.notification-mark-read').on('click', '.notification-mark-read', function(e) {
+
+            notificationList.off('click', '.notification-mark-read').on('click', '.notification-mark-read', async function(e) {
                 e.preventDefault();
                 e.stopPropagation();
+
                 const item = $(this).closest('.notification-item');
-                const index = item.data('index');
-                const type = item.data('type');
-                markSingleNotificationAsRead(index, type);
-                item.fadeOut(300, function() {
+                const index = Number(item.attr('data-index'));
+                const notification = latestNotifications[index];
+                if (!notification) return;
+
+                await markSingleNotificationAsRead(notification);
+                item.fadeOut(250, function() {
                     $(this).remove();
-                    // Update counts if no more notifications
-                    if ($('.notification-item').length === 0) {
-                        loadNotificationDropdown();
-                    } else {
-                        loadNotificationCounts();
-                    }
                 });
+                await loadNotificationCounts();
+                await loadNotificationDropdown();
             });
-            
         } catch (error) {
             console.error('❌ Error loading notification dropdown:', error);
             notificationList.html(`
@@ -339,87 +383,67 @@ $(document).ready(function() {
             `);
         }
     }
-    
+
     // Handle Notification Click
-    function handleNotificationClick(index, type) {
-        console.log(`📨 Notification clicked: ${type}, index: ${index}`);
-        
-        // Mark notification as read instead of navigating
-        markSingleNotificationAsRead(index, type);
-        
-        // Reload the notification dropdown
-        loadNotificationDropdown();
-        loadNotificationCounts();
+    async function handleNotificationClick(notification) {
+        console.log(`📨 Notification clicked: ${notification.kind}, id: ${notification.id}`);
+
+        await markSingleNotificationAsRead(notification);
+        $('#notification-dropdown').removeClass('show');
+        $('#notification-bell').removeClass('active');
+
+        const base = window.BASE_URL || window.baseUrl || '/';
+        const normalizedBase = base.endsWith('/') ? base : `${base}/`;
+        const params = new URLSearchParams({
+            tab: notification.tab || 'mentor-tab',
+            notif_kind: notification.kind || '',
+            notif_id: String(notification.id || '')
+        });
+        if (notification.source) {
+            params.set('notif_source', notification.source);
+        }
+        window.location.href = `${normalizedBase}index.php/admin/content/alumni?${params.toString()}`;
     }
-    
+
     // Mark All Notifications as Read
-    function markAllNotificationsAsRead() {
+    async function markAllNotificationsAsRead() {
         try {
-            // Mark all mentor submissions as read
-            let mentorItems = JSON.parse(localStorage.getItem('giveback_interests') || '[]');
-            mentorItems.forEach(item => {
-                if (item.type === 'Mentor' || item.type === 'Speaker' || item.type === 'Internship') {
-                    item.status = 'read';
-                }
-            });
-            localStorage.setItem('giveback_interests', JSON.stringify(mentorItems));
-            
-            // Mark all chatbot inquiries as read
-            let chatbotItems = JSON.parse(localStorage.getItem('chatbot_inquiries') || '[]');
-            chatbotItems.forEach(item => {
-                item.status = 'read';
-            });
-            localStorage.setItem('chatbot_inquiries', JSON.stringify(chatbotItems));
-            
-            // Mark all connection requests as read
-            let connectionItems = JSON.parse(localStorage.getItem('connection_requests') || '[]');
-            connectionItems.forEach(item => {
-                item.status = 'read';
-            });
-            localStorage.setItem('connection_requests', JSON.stringify(connectionItems));
-            
-            // Update UI
+            const data = await fetchNotificationData();
+            const allPending = buildNotificationItems(data);
+            if (allPending.length === 0) {
+                showNotification('No pending notifications to mark', 'info');
+                return;
+            }
+
+            await Promise.all(allPending.map(item => markSingleNotificationAsRead(item)));
             showNotification('All notifications marked as read', 'success');
-            loadNotificationCounts();
-            loadNotificationDropdown();
-            
+            await loadNotificationCounts();
+            await loadNotificationDropdown();
         } catch (error) {
             console.error('❌ Error marking all notifications as read:', error);
             showNotification('Error marking notifications as read', 'error');
         }
     }
-    
+
     // Mark Single Notification as Read
-    function markSingleNotificationAsRead(index, type) {
+    async function markSingleNotificationAsRead(notification) {
         try {
-            let items, storageKey;
-            
-            switch(type) {
-                case 'mentor':
-                    storageKey = 'giveback_interests';
-                    items = JSON.parse(localStorage.getItem(storageKey) || '[]')
-                        .filter(item => item.type === 'Mentor' || item.type === 'Speaker' || item.type === 'Internship');
-                    if (items[index]) items[index].status = 'read';
-                    break;
-                case 'chatbot':
-                    storageKey = 'chatbot_inquiries';
-                    items = JSON.parse(localStorage.getItem(storageKey) || '[]');
-                    if (items[index]) items[index].status = 'read';
-                    break;
-                case 'connection':
-                    storageKey = 'connection_requests';
-                    items = JSON.parse(localStorage.getItem(storageKey) || '[]');
-                    if (items[index]) items[index].status = 'read';
-                    break;
+            const endpoint = NOTIFICATION_STATUS_API[notification.kind];
+            if (!endpoint || !notification.id) return false;
+
+            const payload = {
+                id: notification.id,
+                status: 'read'
+            };
+            if (notification.kind === 'mentor' && notification.source) {
+                payload.source = notification.source;
             }
-            
-            if (items) {
-                localStorage.setItem(storageKey, JSON.stringify(items));
-                console.log(`✅ Marked ${type} notification ${index} as read`);
-            }
-            
+
+            const response = await apiPost(endpoint, payload);
+            return !!(response && response.success);
         } catch (error) {
             console.error('❌ Error marking single notification as read:', error);
+            return false;
         }
     }
     

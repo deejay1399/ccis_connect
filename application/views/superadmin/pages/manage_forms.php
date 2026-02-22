@@ -20,8 +20,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 <input type="text" class="form-control" id="formTitle" placeholder="Enter form name" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="formFile" class="form-label">Select PDF File</label>
-                                <input type="file" class="form-control" id="formFile" accept=".pdf" required>
+                                <label for="formFile" class="form-label">Select File (PDF, DOC, DOCX)</label>
+                                <input type="file" class="form-control" id="formFile" accept=".pdf,.doc,.docx" required>
                             </div>
                             <div class="col-12 text-end">
                                 <button type="submit" class="btn btn-primary" id="uploadFormBtn">
@@ -60,8 +60,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <input type="text" class="form-control" id="editFormTitle" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editFormFile" class="form-label">Replace PDF File (Optional)</label>
-                        <input type="file" class="form-control" id="editFormFile" accept=".pdf">
+                        <label for="editFormFile" class="form-label">Replace File (PDF, DOC, DOCX) (Optional)</label>
+                        <input type="file" class="form-control" id="editFormFile" accept=".pdf,.doc,.docx">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

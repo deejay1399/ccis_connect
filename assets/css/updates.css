@@ -765,6 +765,52 @@
     margin-bottom: 1.5rem;
 }
 
+/* Dean's List extra filters (Program + Year Level) */
+.deanslist-filters {
+    margin-bottom: 1.5rem;
+}
+
+.deanslist-filters-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+}
+
+.filter-group-dropdown {
+    text-align: center;
+}
+
+.filter-group-dropdown .filter-label {
+    color: var(--primary-purple);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    font-size: 0.9rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.filter-select {
+    min-width: 170px;
+    border: 2px solid var(--primary-purple);
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem;
+    font-weight: 500;
+    color: var(--primary-purple);
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+}
+
+.filter-select:focus {
+    border-color: var(--secondary-purple);
+    box-shadow: 0 0 0 0.2rem rgba(106, 13, 173, 0.2);
+    outline: none;
+}
+
 .academic-year-select-wrapper {
     display: inline-block;
 }

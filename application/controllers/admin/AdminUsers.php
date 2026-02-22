@@ -120,6 +120,17 @@ class AdminUsers extends CI_Controller {
 			return;
 		}
 
+		$facultyData = null;
+		if ((int) $roleId === 2) {
+			$facultyValidation = $this->_validateFacultyInputAndLimits();
+			if (!$facultyValidation['success']) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => $facultyValidation['message']]);
+				return;
+			}
+			$facultyData = $facultyValidation['data'];
+		}
+
 		try {
 			// Default password for all newly created accounts.
 			$password = 'pass1234';
@@ -147,7 +158,7 @@ class AdminUsers extends CI_Controller {
 			// Save role-specific data
 			if ($roleId == 2) {
 				// Faculty
-				$this->_saveFacultyData($userId);
+				$this->_saveFacultyData($userId, $facultyData);
 			} elseif ($roleId == 3) {
 				// Student
 				$this->_saveStudentData($userId);
@@ -177,22 +188,44 @@ class AdminUsers extends CI_Controller {
 	/**
 	 * Save faculty-specific data
 	 */
-	private function _saveFacultyData($userId)
+	private function _saveFacultyData($userId, $facultyData = null)
 	{
 		$this->load->model('Faculty_model');
-		
-		$facultyData = [
-			'user_id' => $userId,
-			'position' => $this->input->post('position', true),
-			'department' => $this->input->post('department', true),
-			'bio' => $this->input->post('bio', true),
-			'office_location' => $this->input->post('office_location', true)
-		];
+
+		if ($facultyData === null) {
+			$facultyData = [
+				'position' => $this->input->post('position', true),
+				'department' => $this->input->post('department', true),
+				'vp_type' => $this->input->post('vp_type', true),
+				'course' => $this->input->post('chair_course', true),
+				'bio' => $this->input->post('bio', true),
+				'office_location' => $this->input->post('office_location', true)
+			];
+		}
+
+		$facultyData['user_id'] = $userId;
 
 		if (!$this->Faculty_model->create($facultyData)) {
 			throw new Exception('Failed to save faculty data');
 		}
 		log_message('info', "Faculty data saved for user: $userId");
+	}
+
+	private function _validateFacultyInputAndLimits()
+	{
+		$position = trim((string) $this->input->post('position', true));
+
+		return [
+			'success' => true,
+			'data' => [
+				'position' => $position,
+				'department' => '',
+				'vp_type' => null,
+				'course' => null,
+				'bio' => '',
+				'office_location' => ''
+			]
+		];
 	}
 
 	/**
@@ -309,6 +342,8 @@ class AdminUsers extends CI_Controller {
 								$additionalDetails = [
 									'position' => $faculty->position,
 									'department' => $faculty->department,
+									'vp_type' => isset($faculty->vp_type) ? $faculty->vp_type : null,
+									'course' => isset($faculty->course) ? $faculty->course : null,
 									'office_location' => $faculty->office_location,
 									'bio' => $faculty->bio
 								];
@@ -506,6 +541,8 @@ class AdminUsers extends CI_Controller {
 							$additionalDetails = [
 								'position' => $faculty->position,
 								'department' => $faculty->department,
+								'vp_type' => isset($faculty->vp_type) ? $faculty->vp_type : null,
+								'course' => isset($faculty->course) ? $faculty->course : null,
 								'office_location' => $faculty->office_location,
 								'bio' => $faculty->bio
 							];

@@ -274,7 +274,11 @@
         })();
     </script>
     
-    <script src="<?php echo base_url('assets/js/session-management.js'); ?>"></script>
+    <?php
+        $session_mgmt_js = FCPATH . 'assets/js/session-management.js';
+        $session_mgmt_ver = file_exists($session_mgmt_js) ? filemtime($session_mgmt_js) : time();
+    ?>
+    <script src="<?php echo base_url('assets/js/session-management.js?v=' . $session_mgmt_ver); ?>"></script>
     <script src="<?php echo base_url('assets/js/chatbot.js'); ?>"></script>
     <?php if (!empty($page_type)): ?>
         <?php if ($page_type === 'homepage'): ?>
@@ -287,9 +291,14 @@
             <script src="<?php echo base_url('assets/js/academics.js'); ?>"></script>
             <script src="<?php echo base_url('assets/js/program_offerings.js?v=' . time()); ?>"></script>
         <?php elseif ($page_type === 'updates'): ?>
-            <script src="<?php echo base_url('assets/js/updates.js'); ?>"></script>
-            <script src="<?php echo base_url('assets/js/updates-pagination.js'); ?>"></script>
-            <script src="<?php echo base_url('assets/js/deanslist.js'); ?>"></script>
+            <?php
+                $updates_js_path = FCPATH . 'assets/js/updates.js';
+                $updates_js_version = file_exists($updates_js_path) ? filemtime($updates_js_path) : time();
+                $updates_pagination_js_path = FCPATH . 'assets/js/updates-pagination.js';
+                $updates_pagination_js_version = file_exists($updates_pagination_js_path) ? filemtime($updates_pagination_js_path) : time();
+            ?>
+            <script src="<?php echo base_url('assets/js/updates.js?v=' . $updates_js_version); ?>"></script>
+            <script src="<?php echo base_url('assets/js/updates-pagination.js?v=' . $updates_pagination_js_version); ?>"></script>
         <?php elseif ($page_type === 'forms'): ?>
             <script src="<?php echo base_url('assets/js/forms.js'); ?>"></script>
         <?php elseif ($page_type === 'login'): ?>

@@ -41,6 +41,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         ?>
         <link rel="stylesheet" href="<?php echo base_url('assets/css/manage_updates.css?v=' . $updates_css_version); ?>">
     <?php endif; ?>
+    <?php if(isset($content_type) && $content_type === 'homepage'): ?>
+        <?php
+            $homepage_css_path = FCPATH . 'assets/css/manage_homepage.css';
+            $homepage_css_version = file_exists($homepage_css_path) ? filemtime($homepage_css_path) : time();
+        ?>
+        <link rel="stylesheet" href="<?php echo base_url('assets/css/manage_homepage.css?v=' . $homepage_css_version); ?>">
+    <?php endif; ?>
+    <?php if(isset($content_type) && $content_type === 'organizations'): ?>
+        <?php
+            $organizations_css_path = FCPATH . 'assets/css/manage_organizations.css';
+            $organizations_css_version = file_exists($organizations_css_path) ? filemtime($organizations_css_path) : time();
+        ?>
+        <link rel="stylesheet" href="<?php echo base_url('assets/css/manage_organizations.css?v=' . $organizations_css_version); ?>">
+    <?php endif; ?>
     <style>
         .superadmin-header-row {
             display: flex;

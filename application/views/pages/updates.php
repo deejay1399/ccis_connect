@@ -70,6 +70,10 @@
                     </div>
                 </div>
 
+                <div class="deanslist-filters">
+                    <!-- Program and Year Level filters will be populated by JS -->
+                </div>
+
                 <div class="deanslist-content" id="deanslist-content">
                     <!-- Dean's List PDFs will be loaded here -->
                 </div>

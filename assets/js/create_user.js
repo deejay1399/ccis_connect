@@ -97,7 +97,7 @@ $(document).ready(function() {
     // FUNCTION TO SETUP CONDITIONAL FIELDS DISPLAY
     function setupConditionalFields() {
         console.log('?? Setting up conditional fields handler...');
-        
+
         $('.user-type-radio').on('change', function() {
             const selectedRole = $(this).val();
             
@@ -105,11 +105,10 @@ $(document).ready(function() {
             
             // Hide all conditional field sections
             $('#studentFields').slideUp(300);
-            $('#facultyFields').slideUp(300);
             $('#orgAdminFields').slideUp(300);
             
             // Clear validation for hidden fields
-            $('#studentFields input, #studentFields select, #facultyFields input, #facultyFields textarea, #orgAdminFields select, #organizationCustom').removeAttr('required');
+            $('#studentFields input, #studentFields select, #orgAdminFields select, #organizationCustom').removeAttr('required');
             $('#organizationCustomWrapper').hide();
             
             // Show appropriate section based on selection
@@ -120,9 +119,7 @@ $(document).ready(function() {
                 console.log('?? Student fields displayed');
             } else if (selectedRole === '2') {
                 // Faculty
-                $('#facultyFields').slideDown(300);
-                $('#position, #department, #bio, #officeLocation').attr('required', 'required');
-                console.log('????? Faculty fields displayed');
+                console.log('????? Faculty selected (no additional fields required)');
             } else if (selectedRole === '4') {
                 // Organization Admin
                 $('#orgAdminFields').slideDown(300);
@@ -347,10 +344,7 @@ $(document).ready(function() {
             userData.section = $('#section').val().trim();
         } else if (roleId === '2') {
             // Faculty
-            userData.position = $('#position').val().trim();
-            userData.department = $('#department').val().trim();
-            userData.bio = $('#bio').val().trim();
-            userData.office_location = $('#officeLocation').val().trim();
+            // No extra fields needed on create user for faculty.
         } else if (roleId === '4') {
             // Organization Admin
             userData.organization = $('#organization').val();
@@ -397,7 +391,7 @@ $(document).ready(function() {
                     $('#create-user-form')[0].reset();
                     
                     // Hide conditional fields
-                    $('#studentFields, #facultyFields, #orgAdminFields').slideUp(300);
+                    $('#studentFields, #orgAdminFields').slideUp(300);
                     
                     // Reload the form after 2 seconds
                     setTimeout(() => {

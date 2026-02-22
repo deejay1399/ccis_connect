@@ -62,9 +62,30 @@
                                     <label class="form-label">Position <span class="text-danger">*</span></label>
                                     <select id="add-position" class="form-control" required>
                                         <option value="">-- Select Position --</option>
+                                        <option value="President">President</option>
+                                        <option value="Vice President">Vice President</option>
+                                        <option value="Campus Director">Campus Director</option>
                                         <option value="Dean">Dean</option>
                                         <option value="Chairperson">Chairperson</option>
                                         <option value="Instructor">Instructor</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12" id="add-vp-type-wrapper" style="display: none;">
+                                    <label class="form-label">Vice President Type <span class="text-danger">*</span></label>
+                                    <select id="add-vp-type" class="form-control">
+                                        <option value="">-- Select VP Type --</option>
+                                        <option value="VP for Academics and Quality Assurance">VP for Academics and Quality Assurance</option>
+                                        <option value="VP for Research, Development and Extension">VP for Research, Development and Extension</option>
+                                        <option value="VP for Administration and Finance">VP for Administration and Finance</option>
+                                        <option value="VP for Student Affairs and Services">VP for Student Affairs and Services</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12" id="add-course-wrapper" style="display: none;">
+                                    <label class="form-label">Course <span class="text-danger">*</span></label>
+                                    <select id="add-course" class="form-control">
+                                        <option value="">-- Select Course --</option>
+                                        <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
+                                        <option value="Bachelor of Science in Computer Science">Bachelor of Science in Computer Science</option>
                                     </select>
                                 </div>
                                 <div class="col-md-12">
@@ -148,9 +169,30 @@
                                     <label class="form-label">Position <span class="text-danger">*</span></label>
                                     <select id="edit-position" class="form-control" required>
                                         <option value="">-- Select Position --</option>
+                                        <option value="President">President</option>
+                                        <option value="Vice President">Vice President</option>
+                                        <option value="Campus Director">Campus Director</option>
                                         <option value="Dean">Dean</option>
                                         <option value="Chairperson">Chairperson</option>
                                         <option value="Instructor">Instructor</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12" id="edit-vp-type-wrapper" style="display: none;">
+                                    <label class="form-label">Vice President Type <span class="text-danger">*</span></label>
+                                    <select id="edit-vp-type" class="form-control">
+                                        <option value="">-- Select VP Type --</option>
+                                        <option value="VP for Academics and Quality Assurance">VP for Academics and Quality Assurance</option>
+                                        <option value="VP for Research, Development and Extension">VP for Research, Development and Extension</option>
+                                        <option value="VP for Administration and Finance">VP for Administration and Finance</option>
+                                        <option value="VP for Student Affairs and Services">VP for Student Affairs and Services</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12" id="edit-course-wrapper" style="display: none;">
+                                    <label class="form-label">Course <span class="text-danger">*</span></label>
+                                    <select id="edit-course" class="form-control">
+                                        <option value="">-- Select Course --</option>
+                                        <option value="Bachelor of Science in Information Technology">Bachelor of Science in Information Technology</option>
+                                        <option value="Bachelor of Science in Computer Science">Bachelor of Science in Computer Science</option>
                                     </select>
                                 </div>
                                 <div class="col-md-12">

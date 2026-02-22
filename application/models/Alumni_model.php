@@ -16,16 +16,41 @@ class Alumni_model extends CI_Model {
     public function __construct() {
         parent::__construct();
         $this->load->database();
+        $this->ensure_notification_read_columns();
+    }
+
+    private function ensure_notification_read_columns() {
+        $tables = [
+            $this->mentor_table,
+            $this->chatbot_table,
+            $this->connection_table,
+            $this->giveback_table
+        ];
+
+        $this->load->dbforge();
+
+        foreach ($tables as $table) {
+            if ($this->db->table_exists($table) && !$this->db->field_exists('notification_read', $table)) {
+                $this->dbforge->add_column($table, [
+                    'notification_read' => [
+                        'type' => 'TINYINT',
+                        'constraint' => 1,
+                        'default' => 0,
+                        'null' => false
+                    ]
+                ]);
+            }
+        }
     }
 
     public function get_all_mentor_requests() {
         $mentorRows = $this->db
-            ->select("id, name, email, expertise, status, created_at, NULL AS batch, 'mentor_requests' AS source", false)
+            ->select("id, name, email, expertise, status, created_at, NULL AS batch, 'mentor_requests' AS source, COALESCE(notification_read, 0) AS notification_read", false)
             ->get($this->mentor_table)
             ->result_array();
 
         $givebackMentorRows = $this->db
-            ->select("id, author AS name, email, description AS expertise, status, COALESCE(created_at, submission_date) AS created_at, batch, 'giveback' AS source", false)
+            ->select("id, author AS name, email, description AS expertise, status, COALESCE(created_at, submission_date) AS created_at, batch, 'giveback' AS source, COALESCE(notification_read, 0) AS notification_read", false)
             ->where("LOWER(title) = 'mentor'", null, false)
             ->get($this->giveback_table)
             ->result_array();
@@ -42,6 +67,19 @@ class Alumni_model extends CI_Model {
     }
 
     public function update_mentor_status($id, $status, $source = 'mentor_requests') {
+        if (strtolower((string) $status) === 'read') {
+            if ($source === 'giveback') {
+                return $this->db
+                    ->where('id', $id)
+                    ->where("LOWER(title) = 'mentor'", null, false)
+                    ->update($this->giveback_table, ['notification_read' => 1]);
+            }
+
+            return $this->db
+                ->where('id', $id)
+                ->update($this->mentor_table, ['notification_read' => 1]);
+        }
+
         if ($source === 'giveback') {
             return $this->db
                 ->where('id', $id)
@@ -64,6 +102,20 @@ class Alumni_model extends CI_Model {
 
     public function get_all_chatbot_inquiries() {
         return $this->db->order_by('created_at', 'DESC')->get($this->chatbot_table)->result_array();
+    }
+
+    public function update_chatbot_status($id, $status) {
+        if (strtolower((string) $status) === 'read') {
+            if ($this->db->field_exists('notification_read', $this->chatbot_table)) {
+                return $this->db->where('id', $id)->update($this->chatbot_table, ['notification_read' => 1]);
+            }
+            return false;
+        }
+
+        if (!$this->db->field_exists('status', $this->chatbot_table)) {
+            return false;
+        }
+        return $this->db->where('id', $id)->update($this->chatbot_table, ['status' => $status]);
     }
 
     public function insert_chatbot_inquiry($data) {
@@ -113,6 +165,9 @@ class Alumni_model extends CI_Model {
     }
 
     public function update_connection_status($id, $status) {
+        if (strtolower((string) $status) === 'read') {
+            return $this->db->where('id', $id)->update($this->connection_table, ['notification_read' => 1]);
+        }
         return $this->db->where('id', $id)->update($this->connection_table, ['status' => $status]);
     }
 
@@ -142,6 +197,7 @@ class Alumni_model extends CI_Model {
 
     public function get_all_giveback() {
         return $this->db
+            ->select('*, COALESCE(notification_read, 0) AS notification_read', false)
             ->where("LOWER(title) <> 'mentor'", null, false)
             ->order_by('created_at', 'DESC')
             ->get($this->giveback_table)
@@ -149,6 +205,9 @@ class Alumni_model extends CI_Model {
     }
 
     public function update_giveback_status($id, $status) {
+        if (strtolower((string) $status) === 'read') {
+            return $this->db->where('id', $id)->update($this->giveback_table, ['notification_read' => 1]);
+        }
         return $this->db->where('id', $id)->update($this->giveback_table, ['status' => $status]);
     }
 

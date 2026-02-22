@@ -195,10 +195,15 @@ const sectionTemplates = {
         }
 
         const alumniData = alumniPublicData.directory || [];
-        let directoryCards = '';
+        let directoryRows = '';
+        const batchSet = new Set();
 
         if (alumniData.length === 0) {
-            directoryCards = `<p class="text-muted text-center">No alumni directory entries yet.</p>`;
+            directoryRows = `
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">No alumni directory entries yet.</td>
+                </tr>
+            `;
         } else {
             alumniData.forEach(alumni => {
                 const program = alumni.program || '';
@@ -206,24 +211,38 @@ const sectionTemplates = {
                 const position = alumni.position || '';
                 const phone = alumni.phone || '';
                 const email = alumni.email || '';
+                const batch = alumni.batch || '';
+                const searchable = `${alumni.name || ''} ${email} ${phone} ${company} ${position}`.toLowerCase();
                 const photoHtml = alumni.photo
-                    ? `<img src="${baseUrl + alumni.photo}" alt="${alumni.name}" class="directory-photo">`
-                    : '';
+                    ? `<img src="${baseUrl + alumni.photo}" alt="${alumni.name}" class="directory-photo-thumb">`
+                    : `<div class="directory-photo-thumb directory-photo-placeholder"><i class="fas fa-user"></i></div>`;
 
-                directoryCards += `
-                    <div class="directory-card" data-id="${alumni.id}" data-program="${program}" data-batch="${alumni.batch}">
-                        ${photoHtml}
-                        <h4>${alumni.name}</h4>
-                        ${program ? `<p class="directory-program">${program} Graduate</p>` : ''}
-                        ${company ? `<p class="directory-company">${company}</p>` : ''}
-                        ${position ? `<p class="directory-position">${position}</p>` : ''}
-                        ${email ? `<p class="directory-company">${email}</p>` : ''}
-                        ${phone ? `<p class="directory-position">${phone}</p>` : ''}
-                        <p class="directory-batch">Batch ${alumni.batch}</p>
-                    </div>
+                if (batch) batchSet.add(batch);
+                directoryRows += `
+                    <tr class="directory-row" data-id="${alumni.id}" data-program="${program}" data-batch="${batch}" data-search="${searchable}">
+                        <td class="directory-name-cell">
+                            <div class="directory-name-wrap">
+                                ${photoHtml}
+                                <span class="directory-name-text">${alumni.name || '-'}</span>
+                            </div>
+                        </td>
+                        <td>${batch || '-'}</td>
+                        <td>${email || '-'}</td>
+                        <td>${phone || '-'}</td>
+                        <td class="directory-actions-cell">
+                            <button type="button" class="btn btn-sm btn-outline-primary directory-view-btn" data-id="${alumni.id}">
+                                <i class="fas fa-eye me-1"></i>View
+                            </button>
+                        </td>
+                    </tr>
                 `;
             });
         }
+
+        const batchOptions = Array.from(batchSet)
+            .sort((a, b) => String(b).localeCompare(String(a), undefined, { numeric: true }))
+            .map(batch => `<option value="${batch}">${batch}</option>`)
+            .join('');
 
         return `
             <section class="directory-section">
@@ -239,24 +258,25 @@ const sectionTemplates = {
                         
                         <select id="filter-batch" class="filter-select">
                             <option value="">All Batches</option>
-                            <option value="2020">2020</option>
-                            <option value="2019">2019</option>
-                            <option value="2018">2018</option>
-                            <option value="2017">2017</option>
-                            <option value="2016">2016</option>
-                            <option value="2015">2015</option>
-                        </select>
-                        
-                        <select id="filter-program" class="filter-select">
-                            <option value="">All Programs</option>
-                            <option value="BSCS">BSCS</option>
-                            <option value="BSIT">BSIT</option>
-                            <option value="BSIS">BSIS</option>
+                            ${batchOptions}
                         </select>
                     </div>
                     
-                    <div id="alumni-directory" class="alumni-directory">
-                        ${directoryCards}
+                    <div class="alumni-directory-table-wrapper" id="alumni-directory-wrapper">
+                        <table id="alumni-directory" class="alumni-directory-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Batch</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${directoryRows}
+                            </tbody>
+                        </table>
                     </div>
                     
                     <div id="no-results-message" class="no-results" style="display: none;">
@@ -640,11 +660,11 @@ function setupButtonEffects() {
     });
     
     // Card click effects
-    $(document).on('mousedown touchstart', '.featured-alumni-card, .directory-card, .story-card, .event-card, .giveback-card', function() {
+    $(document).on('mousedown touchstart', '.featured-alumni-card, .directory-row, .story-card, .event-card, .giveback-card', function() {
         $(this).addClass('card-pressed');
     });
     
-    $(document).on('mouseup touchend', '.featured-alumni-card, .directory-card, .story-card, .event-card, .giveback-card', function() {
+    $(document).on('mouseup touchend', '.featured-alumni-card, .directory-row, .story-card, .event-card, .giveback-card', function() {
         setTimeout(() => {
             $(this).removeClass('card-pressed');
         }, 150);
@@ -721,7 +741,6 @@ function setupSearchAndFilter() {
     setTimeout(() => {
         const searchInput = $('#search-alumni');
         const batchFilter = $('#filter-batch');
-        const programFilter = $('#filter-program');
         
         if (!searchInput.length) {
             console.warn('?? Search elements not found');
@@ -731,21 +750,17 @@ function setupSearchAndFilter() {
         function filterAlumni() {
             const searchTerm = searchInput.val().toLowerCase();
             const selectedBatch = batchFilter.val();
-            const selectedProgram = programFilter.val();
             
             let visibleCount = 0;
             
-            $('.directory-card').each(function() {
-                const $card = $(this);
-                const name = $card.find('h4').text().toLowerCase();
-                const program = $card.data('program');
-                const batch = $card.data('batch');
-                const company = $card.find('.directory-company').text().toLowerCase();
-                const position = $card.find('.directory-position').text().toLowerCase();
+            $('.directory-row').each(function() {
+                const $row = $(this);
+                const searchable = String($row.data('search') || '').toLowerCase();
+                const batch = String($row.data('batch') || '');
                 
                 let matches = true;
                 
-                if (searchTerm && !name.includes(searchTerm) && !company.includes(searchTerm) && !position.includes(searchTerm)) {
+                if (searchTerm && !searchable.includes(searchTerm)) {
                     matches = false;
                 }
                 
@@ -753,16 +768,8 @@ function setupSearchAndFilter() {
                     matches = false;
                 }
                 
-                if (selectedProgram && program !== selectedProgram) {
-                    matches = false;
-                }
-                
-                if (matches) {
-                    $card.show();
-                    visibleCount++;
-                } else {
-                    $card.hide();
-                }
+                $row.toggle(matches);
+                if (matches) visibleCount++;
             });
             
             const noResultsMsg = $('#no-results-message');
@@ -780,19 +787,29 @@ function setupSearchAndFilter() {
         // Event listeners for filtering
         searchInput.on('input', filterAlumni);
         batchFilter.on('change', filterAlumni);
-        programFilter.on('change', filterAlumni);
         
         // Setup clear filters button
-        $(document).on('click', '#clear-filters', function() {
+        $(document).off('click.directoryFilters', '#clear-filters');
+        $(document).on('click.directoryFilters', '#clear-filters', function() {
             searchInput.val('');
             batchFilter.val('');
-            programFilter.val('');
             filterAlumni();
             showNotification('Filters cleared', 'info');
         });
         
-        // Setup directory card click
-        $(document).on('click', '.directory-card', function() {
+        // Setup directory row click
+        $(document).off('click.directoryRow', '.directory-row');
+        $(document).on('click.directoryRow', '.directory-row', function(e) {
+            if ($(e.target).closest('.directory-view-btn').length) {
+                return;
+            }
+            const alumniId = $(this).data('id');
+            showAlumniDetails(alumniId);
+        });
+
+        $(document).off('click.directoryViewBtn', '.directory-view-btn');
+        $(document).on('click.directoryViewBtn', '.directory-view-btn', function(e) {
+            e.stopPropagation();
             const alumniId = $(this).data('id');
             showAlumniDetails(alumniId);
         });

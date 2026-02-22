@@ -205,12 +205,13 @@ $(document).ready(function() {
                 
                 // Otherwise it's a preview download button from the modal
                 e.preventDefault();
-                const pdfUrl = $('#pdfFrame').attr('src');
+                const downloadUrl = $('#downloadFromPreview').data('download-url') || $('#pdfFrame').attr('src');
+                const downloadName = $('#downloadFromPreview').data('download-name') || '';
                 
-                if (pdfUrl) {
+                if (downloadUrl) {
                     const link = document.createElement('a');
-                    link.href = pdfUrl;
-                    link.download = true;
+                    link.href = downloadUrl;
+                    link.download = downloadName;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -229,20 +230,89 @@ $(document).ready(function() {
         try {
             $('.btn-preview').off('click.preview').on('click.preview', function() {
                 const formUrl = $(this).data('form-url');
+                const isPdf = String($(this).data('is-pdf')) === '1';
+                const fileExt = String($(this).data('file-ext') || '').toLowerCase();
                 const formTitle = $(this).closest('.form-card').find('h3').text();
+                const downloadName = String($(this).data('download-name') || '').trim();
                 
                 if (formUrl) {
-                    // Direct preview from database forms
-                    $('#modalFormTitle').text(formTitle + ' Preview');
-                    $('#pdfFrame').attr('src', formUrl);
-                    $('#pdfPreviewModal').fadeIn(300);
-                    $('body').addClass('modal-open');
+                    const absoluteUrl = getAbsoluteUrl(formUrl);
+                    if (isPdf) {
+                        showIframePreview(formTitle, absoluteUrl, absoluteUrl, downloadName);
+                        return;
+                    }
+
+                    if (fileExt === 'docx') {
+                        showDocxPreview(formTitle, absoluteUrl, downloadName);
+                        return;
+                    }
+
+                    if (fileExt === 'doc') {
+                        // Try online Office viewer for legacy DOC files.
+                        if (canUseOnlineDocPreview()) {
+                            const officePreviewUrl = 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(absoluteUrl);
+                            showIframePreview(formTitle, officePreviewUrl, absoluteUrl, downloadName);
+                        } else {
+                            showError('DOC preview is not supported on localhost. Please use DOCX or PDF for in-page viewing.');
+                        }
+                        return;
+                    }
+
+                    showError('Preview is only available for PDF and DOCX files.');
                 } else {
                     showError('Preview not available for this form.');
                 }
             });
         } catch (error) {
             console.error('PDF previews init error:', error);
+        }
+    }
+
+    function showIframePreview(title, iframeUrl, downloadUrl, downloadName) {
+        $('#modalFormTitle').text(title + ' Preview');
+        $('#docxPreviewContainer').hide().empty();
+        $('#pdfFrame').show().attr('src', iframeUrl);
+        $('#downloadFromPreview').data('download-url', downloadUrl);
+        $('#downloadFromPreview').data('download-name', downloadName || '');
+        $('#pdfPreviewModal').fadeIn(300);
+        $('body').addClass('modal-open');
+    }
+
+    async function showDocxPreview(title, fileUrl, downloadName) {
+        try {
+            await ensureDocxPreviewLibrary();
+
+            const response = await fetch(fileUrl);
+            if (!response.ok) {
+                throw new Error(`Failed to load file (${response.status})`);
+            }
+
+            const arrayBuffer = await response.arrayBuffer();
+            if (!isZipBasedDocx(arrayBuffer)) {
+                throw new Error('Invalid DOCX file format');
+            }
+            const container = document.getElementById('docxPreviewContainer');
+            if (!container) {
+                throw new Error('DOCX preview container not found');
+            }
+
+            container.innerHTML = '';
+            await window.docx.renderAsync(arrayBuffer, container, null, {
+                className: 'docx-preview',
+                inWrapper: true,
+                breakPages: true
+            });
+
+            $('#modalFormTitle').text(title + ' Preview');
+            $('#pdfFrame').hide().attr('src', '');
+            $('#docxPreviewContainer').show();
+            $('#downloadFromPreview').data('download-url', fileUrl);
+            $('#downloadFromPreview').data('download-name', downloadName || '');
+            $('#pdfPreviewModal').fadeIn(300);
+            $('body').addClass('modal-open');
+        } catch (error) {
+            console.error('DOCX preview error:', error);
+            showError('Unable to preview DOCX file. Ensure it is a valid .docx, or download it.');
         }
     }
 
@@ -331,10 +401,82 @@ $(document).ready(function() {
         try {
             $('#pdfPreviewModal').fadeOut(300);
             $('body').removeClass('modal-open');
+            $('#pdfFrame').attr('src', '');
+            $('#docxPreviewContainer').hide().empty();
+            $('#downloadFromPreview').removeData('download-url');
+            $('#downloadFromPreview').removeData('download-name');
             $(document).off('keydown.modal');
         } catch (error) {
             console.error('Close modal error:', error);
         }
+    }
+
+    function getAbsoluteUrl(url) {
+        try {
+            return new URL(url, window.location.origin).href;
+        } catch (error) {
+            return url;
+        }
+    }
+
+    function canUseOnlineDocPreview() {
+        const host = (window.location.hostname || '').toLowerCase();
+        return host !== 'localhost' && host !== '127.0.0.1';
+    }
+
+    function ensureDocxPreviewLibrary() {
+        return new Promise((resolve, reject) => {
+            if (window.JSZip && window.docx && typeof window.docx.renderAsync === 'function') {
+                resolve();
+                return;
+            }
+
+            loadScriptOnce('jszip-lib', 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js')
+                .then(() => loadScriptOnce('docx-preview-lib', 'https://unpkg.com/docx-preview@0.3.3/dist/docx-preview.min.js'))
+                .then(() => {
+                    if (window.JSZip && window.docx && typeof window.docx.renderAsync === 'function') {
+                        resolve();
+                    } else {
+                        reject(new Error('DOCX preview dependencies did not initialize correctly'));
+                    }
+                })
+                .catch(reject);
+        });
+    }
+
+    function loadScriptOnce(id, src) {
+        return new Promise((resolve, reject) => {
+            const existing = document.getElementById(id);
+            if (existing) {
+                if (existing.getAttribute('data-loaded') === '1') {
+                    resolve();
+                    return;
+                }
+                existing.addEventListener('load', () => resolve(), { once: true });
+                existing.addEventListener('error', () => reject(new Error(`Failed to load script: ${src}`)), { once: true });
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.id = id;
+            script.src = src;
+            script.async = true;
+            script.onload = () => {
+                script.setAttribute('data-loaded', '1');
+                resolve();
+            };
+            script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+            document.head.appendChild(script);
+        });
+    }
+
+    function isZipBasedDocx(arrayBuffer) {
+        if (!arrayBuffer || arrayBuffer.byteLength < 4) {
+            return false;
+        }
+        const header = new Uint8Array(arrayBuffer, 0, 4);
+        // DOCX files are ZIP containers starting with PK\x03\x04.
+        return header[0] === 0x50 && header[1] === 0x4B && header[2] === 0x03 && header[3] === 0x04;
     }
 
     // Utility function to get key by value

@@ -74,7 +74,7 @@ class FormsController extends CI_Controller {
 		return true;
 	}
 
-	private function _is_pdf_file($tmpPath)
+	private function _is_allowed_document_file($tmpPath, $originalName = '')
 	{
 		if (empty($tmpPath) || !is_file($tmpPath)) {
 			return false;
@@ -85,10 +85,24 @@ class FormsController extends CI_Controller {
 			return false;
 		}
 
-		$mime = finfo_file($finfo, $tmpPath);
+		$mime = (string) finfo_file($finfo, $tmpPath);
 		finfo_close($finfo);
 
-		return $mime === 'application/pdf';
+		$allowedMimes = [
+			'application/pdf',
+			'application/msword',
+			'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+			'application/vnd.ms-word',
+			'application/octet-stream'
+		];
+
+		if (in_array($mime, $allowedMimes, true)) {
+			return true;
+		}
+
+		// Fallback to extension check for environments reporting unexpected MIME types.
+		$ext = strtolower(pathinfo((string) $originalName, PATHINFO_EXTENSION));
+		return in_array($ext, ['pdf', 'doc', 'docx'], true);
 	}
 
 	public function index()
@@ -164,9 +178,9 @@ class FormsController extends CI_Controller {
 			log_message('debug', 'File details - Name: ' . $file['name'] . ', Type: ' . $file['type'] . ', Size: ' . $file['size']);
 
 			// Validate file signature/MIME from the uploaded bytes.
-			if (!$this->_is_pdf_file($file['tmp_name'])) {
+			if (!$this->_is_allowed_document_file($file['tmp_name'], $file['name'])) {
 				http_response_code(400);
-				echo json_encode(['success' => false, 'message' => 'Only PDF files are allowed']);
+				echo json_encode(['success' => false, 'message' => 'Only PDF, DOC, and DOCX files are allowed']);
 				return;
 			}
 
@@ -277,9 +291,9 @@ class FormsController extends CI_Controller {
 				$max_size = 10 * 1024 * 1024; // 10MB
 
 				// Validate file signature/MIME from the uploaded bytes.
-				if (!$this->_is_pdf_file($file['tmp_name'])) {
+				if (!$this->_is_allowed_document_file($file['tmp_name'], $file['name'])) {
 					http_response_code(400);
-					echo json_encode(['success' => false, 'message' => 'Only PDF files are allowed']);
+					echo json_encode(['success' => false, 'message' => 'Only PDF, DOC, and DOCX files are allowed']);
 					return;
 				}
 

@@ -34,10 +34,10 @@
                         <li><a class="dropdown-item"
                                 href="<?php echo site_url('academics'); ?>#programs-section">Programs
                                 Offerings</a></li>
-                        <?php if ($this->session->userdata('logged_in')): ?>
                         <li><a class="dropdown-item"
                                 href="<?php echo site_url('academics'); ?>#curriculum-section">Curriculum</a>
                         </li>
+                        <?php if ($this->session->userdata('logged_in')): ?>
                         <li><a class="dropdown-item"
                                 href="<?php echo site_url('academics'); ?>#schedule-section">Class Schedule</a>
                         </li>
@@ -64,11 +64,9 @@
                     </ul>
                 </li>
 
-                <?php if ($this->session->userdata('logged_in')): ?>
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo site_url('forms'); ?>">Forms</a>
                 </li>
-                <?php endif; ?>
 
                 <?php if ($this->session->userdata('logged_in')): ?>
                 <li class="nav-item dropdown">

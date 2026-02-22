@@ -839,73 +839,91 @@
     box-shadow: 0 0 0 3px rgba(106, 13, 173, 0.1);
 }
 
-.alumni-directory {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+.alumni-directory-table-wrapper {
     margin-top: 2rem;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    overflow-x: auto;
 }
 
-.directory-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 12px;
-    border-left: 4px solid var(--accent);
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+.alumni-directory-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+}
+
+.alumni-directory-table thead th {
+    background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%);
+    color: white;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.85rem 1rem;
+    border-bottom: 2px solid var(--accent);
+    white-space: nowrap;
+}
+
+.alumni-directory-table tbody td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #eef1f4;
+    color: #30343a;
+    font-size: 0.95rem;
+    vertical-align: middle;
+}
+
+.alumni-directory-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.directory-row {
+    transition: background-color 0.2s ease, transform 0.2s ease;
     cursor: pointer;
 }
 
-.directory-photo {
-    width: 100%;
-    height: 180px;
-    max-height: 180px;
+.directory-row:hover {
+    background: #f8f2ff;
+}
+
+.directory-name-cell {
+    min-width: 250px;
+}
+
+.directory-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.directory-name-text {
+    color: var(--primary-purple);
+    font-weight: 600;
+}
+
+.directory-photo-thumb {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
     object-fit: cover;
     object-position: center;
-    border-radius: 10px;
-    display: block;
-    margin-bottom: 1rem;
+    border: 2px solid #efe1ff;
+    flex-shrink: 0;
 }
 
-.directory-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(106, 13, 173, 0.15);
-    border-left-color: var(--primary-purple);
-}
-
-.directory-card h4 {
-    color: var(--primary-purple);
-    margin-bottom: 0.5rem;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.directory-program {
+.directory-photo-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f2e9ff;
     color: var(--secondary-purple);
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
 }
 
-.directory-company {
-    color: var(--dark-gray);
-    font-size: 0.95rem;
-    margin-bottom: 0.3rem;
-    font-weight: 600;
-}
-
-.directory-position {
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-    line-height: 1.4;
-}
-
-.directory-batch {
-    color: #888;
-    font-size: 0.85rem;
-    font-style: italic;
-    margin-top: 0.5rem;
+.directory-actions-cell {
+    width: 110px;
+    white-space: nowrap;
 }
 
 /* Success Stories */
@@ -1305,6 +1323,21 @@
     padding: 2rem;
     max-height: 70vh;
     overflow-y: auto;
+}
+
+#alumniDetailsModal .modal-body {
+    max-height: 65vh;
+}
+
+#alumniModalContent img {
+    width: 140px;
+    max-width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+    margin: 0 auto 1rem auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 /* MODAL BACKDROP FIXES - IMPORTANT FOR NO GRAY SCREEN */
@@ -1843,6 +1876,16 @@ button:focus-visible,
         width: 100%;
         max-width: none;
     }
+
+    .alumni-directory-table {
+        min-width: 760px;
+    }
+
+    .alumni-directory-table thead th,
+    .alumni-directory-table tbody td {
+        padding: 0.65rem 0.75rem;
+        font-size: 0.88rem;
+    }
     
     .form-row {
         grid-template-columns: 1fr;
@@ -1894,7 +1937,7 @@ button:focus-visible,
     
     /* Mobile press effects */
     .featured-alumni-card:active,
-    .directory-card:active,
+    .directory-row:active,
     .story-card:active,
     .event-card:active,
     .giveback-card:active {
@@ -1921,9 +1964,16 @@ button:focus-visible,
     
     .featured-alumni-card,
     .story-card,
-    .directory-card,
     .giveback-card {
         padding: 1.5rem;
+    }
+
+    .alumni-directory-table {
+        min-width: 700px;
+    }
+
+    .directory-name-cell {
+        min-width: 220px;
     }
     
     .alumni-info h3 {
@@ -1946,7 +1996,7 @@ button:focus-visible,
 
 /* Hover effects for clickable elements */
 .featured-alumni-card:hover .alumni-view-details,
-.directory-card:hover,
+.directory-row:hover,
 .story-card:hover,
 .event-card:hover,
 .giveback-card:hover {
