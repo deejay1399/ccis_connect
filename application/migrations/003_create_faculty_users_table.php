@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Migration_Create_faculty_users_table extends CI_Migration {
 
     public function up() {
-        // Create faculty_users table if it doesn't exist
+        // Paghimo faculty_users table kung wala kini
         $this->dbforge->add_field(array(
             'id' => array(
                 'type' => 'INT',
@@ -48,7 +48,7 @@ class Migration_Create_faculty_users_table extends CI_Migration {
     }
 
     public function down() {
-        // Drop faculty_users table if it exists
+        // Paghulog sa faculty_lamesa sa mga ninggamit kung adunay kini
         $this->dbforge->drop_table('faculty_users', TRUE);
         log_message('info', 'Migration: Dropped faculty_users table');
     }

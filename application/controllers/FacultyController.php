@@ -12,7 +12,7 @@ class FacultyController extends CI_Controller {
 	}
 
 	/**
-	 * Faculty Dashboard - Main dashboard for faculty users
+	 * Faculty Dashboard - Panguna nga dashboard alang sa mga ninggamit sa faculty
 	 */
 	public function dashboard()
 	{
@@ -32,7 +32,7 @@ class FacultyController extends CI_Controller {
 		restrict_public_for_admin_roles();
 		$this->load->model('Faculty_users_model');
 
-		// Primary source: Manage Faculty entries.
+		// Panguna nga gigikanan: Pagdumala sa mga entry sa Faculty.
 		$allFaculty = $this->Faculty_users_model->get_all_faculty();
 		
 		$data['page_type'] = 'faculty';

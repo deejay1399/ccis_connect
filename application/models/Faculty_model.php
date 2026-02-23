@@ -14,7 +14,7 @@ class Faculty_model extends CI_Model {
     }
 
     /**
-     * Create faculty record
+     * Paghimo og rekord sa faculty
      */
     public function create($data)
     {
@@ -22,7 +22,7 @@ class Faculty_model extends CI_Model {
     }
 
     /**
-     * Get faculty by user ID
+     * Get faculty pinaagi sa user ID
      */
     public function get_by_user_id($user_id)
     {
@@ -32,7 +32,7 @@ class Faculty_model extends CI_Model {
     }
 
     /**
-     * Update faculty
+     * I-update ang faculty
      */
     public function update($user_id, $data)
     {
@@ -41,7 +41,7 @@ class Faculty_model extends CI_Model {
     }
 
     /**
-     * Count faculty members by normalized position label.
+     * Pag-ihap sa mga miyembro sa faculty pinaagi sa na-normalize nga label sa posisyon.
      */
     public function count_by_position($position)
     {
@@ -52,7 +52,7 @@ class Faculty_model extends CI_Model {
     }
 
     /**
-     * Count faculty members by normalized position and department.
+     * Pag-ihap sa mga miyembro sa faculty pinaagi sa na-normalize nga posisyon ug departamento.
      */
     public function count_by_position_and_department($position, $department)
     {
@@ -64,7 +64,7 @@ class Faculty_model extends CI_Model {
     }
 
     /**
-     * Count faculty members by normalized position and VP type.
+     * Pag-ihap sa mga miyembro sa faculty pinaagi sa na-normalize nga posisyon ug tipo sa VP.
      */
     public function count_by_position_and_vp_type($position, $vpType)
     {
@@ -76,7 +76,7 @@ class Faculty_model extends CI_Model {
     }
 
     /**
-     * Count faculty members by normalized position and course.
+     * Pag-ihap sa mga miyembro sa faculty pinaagi sa na-normalize nga posisyon ug kurso.
      */
     public function count_by_position_and_course($position, $course)
     {
@@ -88,7 +88,7 @@ class Faculty_model extends CI_Model {
     }
 
     /**
-     * Public org-chart members from created faculty user accounts.
+     * Publiko nga mga miyembro sa org-chart gikan sa gimugna nga mga account sa tiggamit sa faculty.
      */
     public function get_public_org_chart_members()
     {
@@ -147,7 +147,7 @@ class Faculty_model extends CI_Model {
             ]);
         }
 
-        // Backfill old records that stored VP/Course in department.
+        // Backfill daan nga mga rekord nga gitipigan VP/Kurso sa departamento.
         $this->db->query("
             UPDATE {$this->table}
             SET vp_type = department

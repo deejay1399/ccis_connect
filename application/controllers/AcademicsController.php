@@ -45,23 +45,23 @@ class AcademicsController extends CI_Controller {
 	}
 
 	/**
-	 * API endpoint to return programs as JSON
+	 * API endpoint sa pagbalik sa mga programa sama sa JSON
 	 */
 	public function get_programs_json()
 	{
 		header('Content-Type: application/json');
 		$programs = $this->Programs_model->get_all_programs();
 		
-		// Transform database data to match JavaScript format
+		// Pagbag-o sa datos sa database aron magkatugma sa format sa JavaScript
 		$formatted_programs = array();
 		foreach ($programs as $program) {
-			// Parse career opportunities into array
+			// Pag-parse sa mga oportunidad sa karera ngadto sa han-ay
 			$careers = array();
 			if (!empty($program['career_opportunities'])) {
 				$careers = array_map('trim', explode(',', $program['career_opportunities']));
 			}
 			
-			// Determine icon based on program name
+			// Tinoa ang icon nga gibase sa ngalan sa programa
 			$icon = 'fas fa-graduation-cap';
 			if (stripos($program['program_name'], 'BSCS') !== false || stripos($program['program_name'], 'Computer Science') !== false) {
 				$icon = 'fas fa-laptop-code';

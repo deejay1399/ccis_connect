@@ -26,7 +26,7 @@ class AdminContent extends CI_Controller {
 		return $mime === 'application/pdf';
 	}
 
-	// Faculty Management
+	// Pagdumala sa Faculty
 
 	public function manage_faculty() {
 		$data = array(
@@ -35,7 +35,7 @@ class AdminContent extends CI_Controller {
 		$this->load->view('superadmin/pages/manage_faculty', $data);
 	}
 
-	// API Endpoints for AJAX
+	// API Endpoints alang sa AJAX
 
 	public function api_get_faculty() {
 		header('Content-Type: application/json');
@@ -68,7 +68,7 @@ class AdminContent extends CI_Controller {
 		try {
 			$input = json_decode($this->input->raw_input_stream, true);
 
-			// Validate required fields
+			// I-validate ang gikinahanglan nga mga natad
 			if (empty($input['firstname']) || empty($input['lastname']) || empty($input['position'])) {
 				http_response_code(400);
 				echo json_encode(array(
@@ -78,7 +78,7 @@ class AdminContent extends CI_Controller {
 				return;
 			}
 
-			// Handle image upload if provided
+			// Pagdumala sa pag-upload sa imahe kung gihatag
 			$imageData = null;
 			if (!empty($input['image'])) {
 				$imageData = $this->handle_image_upload($input['image'], 'faculty');
@@ -137,7 +137,7 @@ class AdminContent extends CI_Controller {
 				return;
 			}
 
-			// Validate required fields
+			// I-validate ang gikinahanglan nga mga natad
 			if (empty($input['firstname']) || empty($input['lastname']) || empty($input['position'])) {
 				http_response_code(400);
 				echo json_encode(array(
@@ -154,7 +154,7 @@ class AdminContent extends CI_Controller {
 				'advisory' => isset($input['advisory']) ? $input['advisory'] : null
 			);
 
-			// Handle image update if provided
+			// Pagdumala sa pag-update sa imahe kung gihatag
 			if (!empty($input['image'])) {
 				$imageData = $this->handle_image_upload($input['image'], 'faculty');
 				$data['image'] = $imageData;
@@ -227,28 +227,28 @@ class AdminContent extends CI_Controller {
 		}
 	}
 
-	// Helper function to handle image uploads
+	// Ang function sa katabang sa pagdumala sa mga pag-upload sa imahe
 	private function handle_image_upload($imageData, $folder = 'faculty') {
 		try {
-			// Base64 encoded data comes as: data:image/png;base64,iVBORw0KGgo...
+			// Base64 nga naka-encode nga datos moabut ingon: datos:imahe/png;base64,iVBORw0KGgo...
 			if (strpos($imageData, ',') === false) {
-				return null; // Invalid format
+				return null; // Dili balido nga pormat
 			}
 
 			list($type, $data) = explode(',', $imageData);
 			$data = base64_decode($data);
 
-			// Create directory if it doesn't exist
+			// Paghimo usa ka direktoryo kung wala kini
 			$uploadDir = FCPATH . 'uploads/' . $folder;
 			if (!is_dir($uploadDir)) {
 				mkdir($uploadDir, 0755, true);
 			}
 
-			// Generate unique filename
+			// Paghimo talagsaon nga filename
 			$filename = $folder . '_' . time() . '_' . uniqid() . '.png';
 			$filepath = $uploadDir . '/' . $filename;
 
-			// Save file
+			// I-save ang file
 			if (file_put_contents($filepath, $data)) {
 				return 'uploads/' . $folder . '/' . $filename;
 			}
@@ -259,7 +259,7 @@ class AdminContent extends CI_Controller {
 		}
 	}
 
-	// Programs Management
+	// Pagdumala sa mga Programa
 
 	public function programs() {
 		$this->load->model('Programs_model');
@@ -288,7 +288,7 @@ class AdminContent extends CI_Controller {
 		$duration_years = $this->input->post('duration_years');
 		$career_opportunities = $this->input->post('career_opportunities');
 		
-		// Validate inputs
+		// I-validate ang mga input
 		if (empty($program_name) || empty($description) || empty($duration_years) || empty($career_opportunities)) {
 			echo json_encode([
 				'success' => false,
@@ -297,7 +297,7 @@ class AdminContent extends CI_Controller {
 			return;
 		}
 		
-		// Convert array to comma-separated string if needed
+		// I-convert ang array sa comma-separated string kung gikinahanglan
 		if (is_array($career_opportunities)) {
 			$career_opportunities = implode(', ', array_filter($career_opportunities));
 		}
@@ -338,7 +338,7 @@ class AdminContent extends CI_Controller {
 		$duration_years = $this->input->post('duration_years');
 		$career_opportunities = $this->input->post('career_opportunities');
 		
-		// Convert array to comma-separated string
+		// I-convert ang Array sa Coma-Separated String
 		if (is_array($career_opportunities)) {
 			$career_opportunities = implode(', ', array_filter($career_opportunities));
 		}
@@ -371,23 +371,23 @@ class AdminContent extends CI_Controller {
 		]);
 	}
 
-	// Curriculum Upload Handler
+	// Kurikulum Upload Handler
 	public function api_upload_curriculum() {
 		header('Content-Type: application/json');
 		error_log('=== Curriculum Upload Started ===');
 		
 		try {
-			// Load model
+			// Modelo sa pagkarga
 			$this->load->model('Curriculum_model');
 			error_log('Model loaded');
 			
-			// Create table if it doesn't exist
+			// Paghimo usa ka lamesa kung wala kini
 			if (!$this->db->table_exists('curriculum')) {
 				error_log('Creating curriculum table');
 				$this->create_curriculum_table();
 			}
 			
-			// Check for file
+			// Susiha alang sa file
 			if (!isset($_FILES['file'])) {
 				error_log('No file in $_FILES');
 				http_response_code(400);
@@ -407,7 +407,7 @@ class AdminContent extends CI_Controller {
 			error_log('File Size: ' . $file['size']);
 			error_log('File Error: ' . $file['error']);
 
-			// Validate inputs
+			// I-validate ang mga input
 			if (empty($curriculum_name)) {
 				error_log('Curriculum name is empty');
 				http_response_code(400);
@@ -418,7 +418,7 @@ class AdminContent extends CI_Controller {
 				return;
 			}
 
-			// Validate file upload error
+			// I-validate ang sayup sa pag-upload sa file
 			if ($file['error'] !== UPLOAD_ERR_OK) {
 				error_log('File upload error: ' . $file['error']);
 				http_response_code(400);
@@ -439,7 +439,7 @@ class AdminContent extends CI_Controller {
 				return;
 			}
 
-			// Validate file is PDF (detected from uploaded bytes)
+			// Ang balido nga file mao ang PDF (nakit-an gikan sa gi-upload nga mga byte)
 			if (!$this->is_valid_pdf_upload($file['tmp_name'])) {
 				http_response_code(400);
 				echo json_encode([
@@ -449,7 +449,7 @@ class AdminContent extends CI_Controller {
 				return;
 			}
 
-			// Create curriculum directory
+			// Paghimo og direktoryo sa kurikulum
 			$uploadDir = FCPATH . 'uploads/curriculum';
 			error_log('Upload directory: ' . $uploadDir);
 			
@@ -466,16 +466,16 @@ class AdminContent extends CI_Controller {
 				}
 			}
 
-			// Generate filename
+			// Genera filename
 			$filename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $curriculum_name) . '_' . time() . '.pdf';
 			$filepath = $uploadDir . '/' . $filename;
 			error_log('Generated filepath: ' . $filepath);
 
-			// Move uploaded file
+			// Pagbalhin sa gi-upload nga file
 			if (move_uploaded_file($file['tmp_name'], $filepath)) {
 				error_log('File moved successfully');
 				
-				// Save to database
+				// I-save sa database
 				$data = [
 					'program' => $curriculum_name,
 					'file_url' => 'uploads/curriculum/' . $filename
@@ -499,7 +499,7 @@ class AdminContent extends CI_Controller {
 					]);
 					exit;
 				} else {
-					// Delete file if database insert failed
+					// I-delete ang file kung napakyas ang pagsulud sa database
 					error_log('Database insert failed, deleting file');
 					unlink($filepath);
 					http_response_code(500);
@@ -529,24 +529,24 @@ class AdminContent extends CI_Controller {
 		}
 	}
 
-	// Get all curriculums
+	// Kuhaa ang tanan nga mga kurikulum
 	public function api_get_curriculums() {
 		header('Content-Type: application/json');
 		error_log('=== Get Curriculums Started ===');
 		
 		try {
-			// Load model
+			// Modelo sa pagkarga
 			$this->load->model('Curriculum_model');
 			error_log('Model loaded successfully');
 			
-			// Check if table exists
+			// Susihon kung adunay lamesa
 			if (!$this->db->table_exists('curriculum')) {
 				error_log('Curriculum table does not exist - creating it');
 				$this->create_curriculum_table();
 				error_log('Curriculum table created');
 			}
 			
-			// Get curriculums
+			// Kuhaa ang mga kurikulum
 			$curriculums = $this->Curriculum_model->get_all();
 			error_log('Curriculums retrieved: ' . count($curriculums));
 			
@@ -568,7 +568,7 @@ class AdminContent extends CI_Controller {
 		}
 	}
 	
-	// Helper function to create curriculum table if it doesn't exist
+	// Giunsa ang paghimo sa usa ka lamesa sa kurikulum kung wala kini
 	private function create_curriculum_table() {
 		try {
 			$this->load->dbforge();
@@ -603,7 +603,7 @@ class AdminContent extends CI_Controller {
 		}
 	}
 
-	// Delete curriculum
+	// I-delete ang kurikulum
 	public function api_delete_curriculum() {
 		header('Content-Type: application/json');
 		$this->load->model('Curriculum_model');
@@ -618,7 +618,7 @@ class AdminContent extends CI_Controller {
 			return;
 		}
 
-		// Get curriculum file path for deletion
+		// Kuhaa ang dalan sa file sa kurikulum alang sa pagtangtang
 		$curriculum = $this->Curriculum_model->get_by_id($id);
 		
 		if ($curriculum && !empty($curriculum['file_url'])) {
@@ -635,25 +635,25 @@ class AdminContent extends CI_Controller {
 		]);
 	}
 
-	// ==================== CLASS SCHEDULES ====================
+	// ==================== Mga eskedyul sa klase ====================
 
-	// Upload class schedule
+	// I-upload ang iskedyul sa klase
 	public function api_upload_schedule() {
 		header('Content-Type: application/json');
 		error_log('=== Class Schedule Upload Started ===');
 		
 		try {
-			// Load model
+			// Modelo sa pagkarga
 			$this->load->model('ClassSchedules_model');
 			error_log('Model loaded');
 			
-			// Create table if it doesn't exist
+			// Paghimo usa ka lamesa kung wala kini
 			if (!$this->db->table_exists('class_schedules')) {
 				error_log('Creating class_schedules table');
 				$this->create_class_schedules_table();
 			}
 			
-			// Check for file
+			// Susiha alang sa file
 			if (!isset($_FILES['file'])) {
 				error_log('No file in $_FILES');
 				http_response_code(400);
@@ -675,7 +675,7 @@ class AdminContent extends CI_Controller {
 			error_log('File Size: ' . $file['size']);
 			error_log('File Error: ' . $file['error']);
 
-			// Validate inputs
+			// I-validate ang mga input
 			if (empty($academic_year)) {
 				error_log('Academic year is empty');
 				http_response_code(400);
@@ -696,7 +696,7 @@ class AdminContent extends CI_Controller {
 				return;
 			}
 
-			// Validate file upload error
+			// I-validate ang sayup sa pag-upload sa file
 			if ($file['error'] !== UPLOAD_ERR_OK) {
 				error_log('File upload error: ' . $file['error']);
 				http_response_code(400);
@@ -717,7 +717,7 @@ class AdminContent extends CI_Controller {
 				return;
 			}
 
-			// Validate file is PDF (detected from uploaded bytes)
+			// Ang balido nga file mao ang PDF (nakit-an gikan sa gi-upload nga mga byte)
 			if (!$this->is_valid_pdf_upload($file['tmp_name'])) {
 				http_response_code(400);
 				echo json_encode([
@@ -727,7 +727,7 @@ class AdminContent extends CI_Controller {
 				return;
 			}
 
-			// Create schedules directory
+			// Paghimo og direktoryo sa mga eskedyul
 			$uploadDir = FCPATH . 'uploads/schedules';
 			error_log('Upload directory: ' . $uploadDir);
 			
@@ -744,16 +744,16 @@ class AdminContent extends CI_Controller {
 				}
 			}
 
-			// Generate filename
+			// Genera filename
 			$filename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $academic_year . '_' . $semester) . '_' . time() . '.pdf';
 			$filepath = $uploadDir . '/' . $filename;
 			error_log('Generated filepath: ' . $filepath);
 
-			// Move uploaded file
+			// Pagbalhin sa gi-upload nga file
 			if (move_uploaded_file($file['tmp_name'], $filepath)) {
 				error_log('File moved successfully');
 				
-				// Save to database
+				// I-save sa database
 				$data = [
 					'academic_year' => $academic_year,
 					'semester' => $semester,
@@ -763,7 +763,7 @@ class AdminContent extends CI_Controller {
 				error_log('Attempting to insert into database');
 				error_log('Data: ' . json_encode($data));
 
-				// Verify model is loaded and ready
+				// Verify modelo mao ang loaded ug andam na
 				if (!isset($this->ClassSchedules_model)) {
 					error_log('ERROR: ClassSchedules_model not loaded!');
 					throw new Exception('Model not loaded');
@@ -773,7 +773,7 @@ class AdminContent extends CI_Controller {
 				
 				error_log('Insert result: ' . ($result ? 'Success (ID: ' . $this->db->insert_id() . ')' : 'Failed'));
 				
-				// Check for database errors
+				// Susihon ang mga sayup sa database
 				$db_error = $this->db->error();
 				if (!empty($db_error['message'])) {
 					error_log('Database Error: ' . json_encode($db_error));
@@ -791,7 +791,7 @@ class AdminContent extends CI_Controller {
 					]);
 					exit;
 				} else {
-					// Delete file if database insert failed
+					// I-delete ang file kung napakyas ang pagsulud sa database
 					error_log('Database insert failed, deleting file');
 					unlink($filepath);
 					http_response_code(500);
@@ -821,24 +821,24 @@ class AdminContent extends CI_Controller {
 		}
 	}
 
-	// Get all class schedules
+	// Kuhaa ang tanan nga mga iskedyul sa klase
 	public function api_get_schedules() {
 		header('Content-Type: application/json');
 		error_log('=== Get Class Schedules Started ===');
 		
 		try {
-			// Load model
+			// Modelo sa pagkarga
 			$this->load->model('ClassSchedules_model');
 			error_log('Model loaded successfully');
 			
-			// Check if table exists
+			// Susihon kung adunay lamesa
 			if (!$this->db->table_exists('class_schedules')) {
 				error_log('Class schedules table does not exist - creating it');
 				$this->create_class_schedules_table();
 				error_log('Class schedules table created');
 			}
 			
-			// Get schedules
+			// Pagkuha mga iskedyul
 			$schedules = $this->ClassSchedules_model->get_all();
 			error_log('Schedules retrieved: ' . count($schedules));
 			
@@ -860,7 +860,7 @@ class AdminContent extends CI_Controller {
 		}
 	}
 
-	// Delete class schedule
+	// I-delete ang eskedyul sa klase
 	public function api_delete_schedule() {
 		header('Content-Type: application/json');
 		$this->load->model('ClassSchedules_model');
@@ -875,7 +875,7 @@ class AdminContent extends CI_Controller {
 			return;
 		}
 
-		// Get schedule file path for deletion
+		// Kuhaa ang agianan sa file sa iskedyul alang sa pagtangtang
 		$schedule = $this->ClassSchedules_model->get_by_id($id);
 		
 		if ($schedule && !empty($schedule['file_url'])) {
@@ -892,12 +892,12 @@ class AdminContent extends CI_Controller {
 		]);
 	}
 
-	// Academic Calendar Upload
+	// Kalendaryo sa Akademiko Pag-upload
 	public function api_upload_calendar() {
 		header('Content-Type: application/json');
 		$this->load->model('AcademicCalendars_model');
 		
-		// Validate inputs
+		// I-validate ang mga input
 		$academic_year = $this->input->post('academic_year');
 		$file = $_FILES['calendar_file'] ?? null;
 		
@@ -911,7 +911,7 @@ class AdminContent extends CI_Controller {
 			return;
 		}
 		
-		// Validate file type and size
+		// I-validate ang tipo ug gidak-on sa file
 		$max_size = 52428800; // 50MB
 		
 		if (!$this->is_valid_pdf_upload($file['tmp_name'])) {
@@ -924,13 +924,13 @@ class AdminContent extends CI_Controller {
 			return;
 		}
 		
-		// Create upload directory if it doesn't exist
+		// Paghimo usa ka direktoryo sa pag-upload kung wala kini
 		$upload_dir = FCPATH . 'uploads/academic_calendars/';
 		if (!is_dir($upload_dir)) {
 			mkdir($upload_dir, 0755, true);
 		}
 		
-		// Generate unique filename
+		// Paghimo talagsaon nga filename
 		$filename = 'calendar_' . time() . '_' . uniqid() . '.pdf';
 		$filepath = $upload_dir . $filename;
 		
@@ -939,7 +939,7 @@ class AdminContent extends CI_Controller {
 			return;
 		}
 		
-		// Save to database
+		// I-save sa database
 		$data = [
 			'academic_year' => $academic_year,
 			'file_url' => 'uploads/academic_calendars/' . $filename
@@ -958,20 +958,20 @@ class AdminContent extends CI_Controller {
 		]);
 	}
 
-	// Get all academic calendars
+	// Kuhaa ang tanan nga mga iskedyul sa akademiko
 	public function api_get_calendars() {
 		header('Content-Type: application/json');
 		$this->load->model('AcademicCalendars_model');
 		
 		try {
-			// Check if table exists
+			// Susihon kung adunay lamesa
 			if (!$this->db->table_exists('academic_calendars')) {
 				error_log('Academic calendars table does not exist - creating it');
 				$this->create_academic_calendars_table();
 				error_log('Academic calendars table created');
 			}
 			
-			// Get calendars
+			// Kuhaa ang mga kalendaryo
 			$calendars = $this->AcademicCalendars_model->get_all();
 			error_log('Calendars retrieved: ' . count($calendars));
 			
@@ -993,7 +993,7 @@ class AdminContent extends CI_Controller {
 		}
 	}
 
-	// Delete academic calendar
+	// I-delete ang kalendaryo sa akademiko
 	public function api_delete_calendar() {
 		header('Content-Type: application/json');
 		$this->load->model('AcademicCalendars_model');
@@ -1008,7 +1008,7 @@ class AdminContent extends CI_Controller {
 			return;
 		}
 
-		// Get calendar file path for deletion
+		// Kuhaa ang agianan sa file sa kalendaryo alang sa pagtangtang
 		$calendar = $this->AcademicCalendars_model->get_by_id($id);
 		
 		if ($calendar && !empty($calendar['file_url'])) {
@@ -1025,10 +1025,10 @@ class AdminContent extends CI_Controller {
 		]);
 	}
 
-	// Helper function to create class_schedules table if it doesn't exist
+	// Pag-andar sa katabang aron makahimo og lamesa sa class_schedules kung wala kini
 	private function create_class_schedules_table() {
 		try {
-			// Check if table already exists
+			// Susiha kon ang lamesa anaa na
 			if ($this->db->table_exists('class_schedules')) {
 				error_log('⚠️ Class schedules table already exists');
 				return TRUE;
@@ -1074,10 +1074,10 @@ class AdminContent extends CI_Controller {
 		}
 	}
 
-	// Helper function to create academic_calendars table if it doesn't exist
+	// Pag-andar sa katabang aron makahimo og lamesa sa akademiko_kalendaryo kung wala kini
 	private function create_academic_calendars_table() {
 		try {
-			// Check if table already exists
+			// Susiha kon ang lamesa anaa na
 			if ($this->db->table_exists('academic_calendars')) {
 				error_log('⚠️ Academic calendars table already exists');
 				return TRUE;

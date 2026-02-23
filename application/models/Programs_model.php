@@ -11,7 +11,7 @@ class Programs_model extends CI_Model {
     }
 
     /**
-     * Get all programs
+     * Kuhaa ang tanan nga mga programa
      */
     public function get_all_programs() {
         $query = $this->db->get($this->table);
@@ -19,7 +19,7 @@ class Programs_model extends CI_Model {
     }
 
     /**
-     * Get program by ID
+     * Get programa pinaagi sa ID
      */
     public function get_program_by_id($id) {
         $query = $this->db->where('program_id', $id)->get($this->table);
@@ -27,7 +27,7 @@ class Programs_model extends CI_Model {
     }
 
     /**
-     * Insert new program
+     * Isulud ang bag-ong programa
      */
     public function insert_program($data) {
         $data['created_at'] = date('Y-m-d H:i:s');
@@ -39,28 +39,28 @@ class Programs_model extends CI_Model {
     }
 
     /**
-     * Update program
+     * I-update ang programa
      */
     public function update_program($id, $data) {
         return $this->db->where('program_id', $id)->update($this->table, $data);
     }
 
     /**
-     * Delete program
+     * I-delete ang programa
      */
     public function delete_program($id) {
         return $this->db->where('program_id', $id)->delete($this->table);
     }
 
     /**
-     * Get program count
+     * Kuhaa ang programa nga ihap
      */
     public function count_programs() {
         return $this->db->count_all($this->table);
     }
 
     /**
-     * Search programs
+     * Mga programa sa pagpangita
      */
     public function search_programs($searchTerm) {
         $this->db->like('program_name', $searchTerm);

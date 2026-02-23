@@ -10,7 +10,7 @@ class Homepage_model extends CI_Model {
 	}
 
 	/**
-	 * Get the latest homepage data
+	 * Kuhaa ang labing kabag-o nga datos sa homepage
 	 * @return array|null
 	 */
 	public function get_latest()
@@ -30,8 +30,8 @@ class Homepage_model extends CI_Model {
 	}
 
 	/**
-	 * Get all homepage records for carousel
-	 * @return array
+	 * Kuhaa ang tanan nga mga rekord sa homepage alang sa carousel
+	 * @return tagaytay
 	 */
 	public function get_all()
 	{
@@ -49,13 +49,13 @@ class Homepage_model extends CI_Model {
 	}
 
 	/**
-	 * Save or update homepage data
-	 * @param array $data
-	 * @return bool
+	 * I-save o i-update ang datos sa homepage
+	 * @param array $data sa
+	 * @balik bool
 	 */
 	public function save_homepage($data)
 	{
-		// Always insert new record (this is an upload form, not edit)
+		// Kanunay nga isulud ang bag-ong rekord (kini usa ka porma sa pag-upload, dili pag-edit)
 		$insert_data = [
 			'title' => $data['title'],
 			'content' => $data['content'],
@@ -79,7 +79,7 @@ class Homepage_model extends CI_Model {
 	}
 
 	/**
-	 * Get homepage by ID
+	 * Get homepage pinaagi sa ID
 	 * @param int $id
 	 * @return array|null
 	 */
@@ -99,9 +99,9 @@ class Homepage_model extends CI_Model {
 	}
 
 	/**
-	 * Delete homepage record
+	 * I-delete ang rekord sa homepage
 	 * @param int $id
-	 * @return bool
+	 * @balik bool
 	 */
 	public function delete_homepage($id)
 	{
@@ -111,9 +111,9 @@ class Homepage_model extends CI_Model {
 	}
 
 	/**
-	 * Delete banner image file from server
-	 * @param string $image_path
-	 * @return bool
+	 * I-delete ang file sa imahe sa banner gikan sa server
+	 * @param string $image_pathway
+	 * @balik bool
 	 */
 	public function delete_banner_file($image_path)
 	{

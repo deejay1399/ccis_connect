@@ -35,7 +35,7 @@ class UpdatesController extends CI_Controller {
 		$this->index();
 	}
 
-	// ==================== PUBLIC JSON API (DB-backed) ====================
+	// ==================== PUBLIC JSON API (gisuportahan sa DB) ====================
 
 	public function api_announcements()
 	{

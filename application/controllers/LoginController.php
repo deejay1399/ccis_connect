@@ -16,16 +16,16 @@ class LoginController extends CI_Controller {
 	}
 
 	/**
-	 * Display login page
+	 * Ipakita ang panid sa pag-login
 	 */
 	public function index()
 	{
-		// Check if already logged in
+		// Susihon kung naka-log in na
 		if ($this->_is_logged_in()) {
 			$this->_redirect_by_role();
 		}
 
-		// Check for flashdata messages
+		// Susiha ang mga mensahe sa flashdata
 		$data['page_type'] = 'login';
 		$data['error'] = $this->session->flashdata('error');
 		$data['success'] = $this->session->flashdata('success');
@@ -37,7 +37,7 @@ class LoginController extends CI_Controller {
 	}
 
 	/**
-	 * Handle login form submission
+	 * Pagdumala sa pagsumite sa porma sa pag-login
 	 */
 	public function authenticate()
 {
@@ -53,7 +53,7 @@ class LoginController extends CI_Controller {
         redirect('login');
     }
 
-    // NORMAL DATABASE LOGIN FLOW
+    // NORMAL Database LOGIN Stream
     $user = $this->User_model->get_by_email($email);
 
     if (!$user) {
@@ -102,7 +102,7 @@ class LoginController extends CI_Controller {
 }
 
 	/**
-	 * API Endpoint for AJAX login (JSON response)
+	 * API Endpoint alang sa AJAX login (JSON tubag)
 	 */
 	public function api_authenticate()
 	{
@@ -123,7 +123,7 @@ class LoginController extends CI_Controller {
 			exit;
 		}
 
-		// NORMAL DATABASE LOGIN FLOW
+		// NORMAL Database LOGIN Stream
 		$user = $this->User_model->get_by_email($email);
 
 		if (!$user) {
@@ -146,16 +146,16 @@ class LoginController extends CI_Controller {
 			exit;
 		}
 
-		// Map role_id to role name
+		// Mapa role_id sa role name
 		$role_name = $this->_get_role_name($role_id);
 
 		$token = $this->_generate_token();
 
-		// Save session
+		// Luwasa ang sesyon
 		$this->Session_model->create_session($user->id, $token);
 		$this->User_model->update_last_activity($user->id);
 
-		// Set CodeIgniter session
+		// Itakda ang sesyon sa CodeIgniter
 		$session_data = [
 			'user_id'    => $user->id,
 			'email'      => $user->email,
@@ -195,7 +195,7 @@ class LoginController extends CI_Controller {
 	}
 
 	/**
-	 * Map role ID to role name
+	 * Mapa papel ID sa ngalan sa papel
 	 */
 	private function _get_role_name($role_id)
 	{
@@ -218,8 +218,8 @@ class LoginController extends CI_Controller {
 			$this->Session_model->delete_session($token);
 		}
 
-		// Clear CodeIgniter session data without destroying the session entirely,
-		// so flashdata can still be used for logout messaging.
+		// Tin-aw nga datos sa sesyon sa CodeIgniter nga wala gubaa sa bug-os ang sesyon,
+		// mahimo pa nga magamit ang flashdata alang sa pag-logout sa pagmemensahe.
 		$this->session->unset_userdata([
 			'user_id',
 			'email',
@@ -236,7 +236,7 @@ class LoginController extends CI_Controller {
 		$this->session->set_flashdata('success', 'You have been logged out successfully');
 		$this->session->sess_regenerate(true);
 
-		// If the client is explicitly requesting a post-logout login screen (used by JS), honor it.
+		// Kung ang kliyente tin-aw nga naghangyo usa ka post-logout login screen (gigamit sa JS), pasidunggi kini.
 		if ($this->input->get('logout') === 'true') {
 			redirect('login?logout=true');
 		}
@@ -245,7 +245,7 @@ class LoginController extends CI_Controller {
 	}
 
 	/**
-	 * Check if user is logged in
+	 * Susihon kung ang tiggamit naka-log in
 	 */
 	private function _is_logged_in()
 	{
@@ -256,12 +256,12 @@ class LoginController extends CI_Controller {
 			return false;
 		}
 
-		// Validate session in database
+		// Validate sesyon sa database
 		return $this->Session_model->validate_session($user_id, $token);
 	}
 
 	/**
-	 * Redirect user based on role
+	 * I-redirect ang tiggamit base sa papel
 	 */
 	private function _redirect_by_role($role_id = null)
 	{
@@ -275,15 +275,15 @@ class LoginController extends CI_Controller {
 				redirect('admin/dashboard');
 				break;
 			case 2:
-				// Faculty - same access as superadmin
+				// Faculty - parehas nga pag-access sa superadmin
 				redirect('admin/dashboard');
 				break;
 			case 3:
-				// Student - redirect to homepage with full features unlocked
+				// Estudyante - pag-redirect sa homepage nga adunay bug-os nga mga dagway nga wala ma-lock
 				redirect('homepage');
 				break;
 			case 4:
-				// Organization Admin
+				// Organisasyon Admin
 				redirect('org/dashboard');
 				break;
 			default:
@@ -292,7 +292,7 @@ class LoginController extends CI_Controller {
 	}
 
 	/**
-	 * Generate secure token
+	 * Makamugna og luwas nga token
 	 */
 	private function _generate_token()
 	{

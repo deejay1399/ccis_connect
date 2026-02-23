@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Migration_Create_forms_table extends CI_Migration {
 
     public function up() {
-        // Create forms table
+        // Paghimo og mga porma nga lamesa
         $this->dbforge->add_field(array(
             'id' => array(
                 'type' => 'INT',

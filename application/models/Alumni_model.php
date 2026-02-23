@@ -125,7 +125,7 @@ class Alumni_model extends CI_Model {
 
         $payload = array();
 
-        // Support flexible schemas by only inserting columns that exist.
+        // Pagsuporta sa mga nabag-o nga laraw pinaagi sa pagsulud ra sa mga kolum nga adunay.
         $columns = $this->db->list_fields($this->chatbot_table);
 
         if (in_array('name', $columns)) {

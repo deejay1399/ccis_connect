@@ -8,7 +8,7 @@
                         <!-- Programs loaded from database -->
                         <?php if (!empty($programs)): ?>
                             <?php 
-                                // Map program names to appropriate icons
+                                // Mga ngalan sa programa sa mapa sa angay nga mga icon
                                 $iconMap = array(
                                     'BSCS' => 'fas fa-laptop-code',
                                     'BSIT' => 'fas fa-network-wired',
@@ -17,7 +17,7 @@
                                 );
                                 
                                 foreach ($programs as $program): 
-                                    // Determine icon
+                                    // Tinoa ang icon
                                     $icon = 'fas fa-graduation-cap';
                                     foreach ($iconMap as $keyword => $iconClass) {
                                         if (stripos($program['program_name'], $keyword) !== false) {
@@ -26,7 +26,7 @@
                                         }
                                     }
                                     
-                                    // Parse career opportunities if it's a comma-separated string
+                                    // Mga oportunidad sa karera sa pag-parse kung kini usa ka pisi nga gibulag sa koma
                                     $careers = array();
                                     if (!empty($program['career_opportunities'])) {
                                         $careers = array_map('trim', explode(',', $program['career_opportunities']));

@@ -3,72 +3,72 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------
-| DATABASE CONNECTIVITY SETTINGS
+| System.Text.RegularExpressions.MatchEvaluator
 | -------------------------------------------------------------------
-| This file will contain the settings needed to access your database.
+| kini file will contain ang mga setting needed sa access imong database.
 |
-| For complete instructions please consult the 'Database Connection'
-| page of the User Guide.
+| System.Text.RegularExpressions.MatchEvaluator 'database koneksyon'
+| System.Text.RegularExpressions.MatchEvaluator
 |
 | -------------------------------------------------------------------
-| EXPLANATION OF VARIABLES
+| System.Text.RegularExpressions.MatchEvaluator
 | -------------------------------------------------------------------
 |
-|	['dsn']      The full DSN string describe a connection to the database.
-|	['hostname'] The hostname of your database server.
-|	['username'] The username used to connect to the database
-|	['password'] The password used to connect to the database
-|	['database'] The name of the database you want to connect to
-|	['dbdriver'] The database driver. e.g.: mysqli.
+|	['dsn']      System.Text.RegularExpressions.MatchEvaluator
+|	['hostname'] System.Text.RegularExpressions.MatchEvaluator
+|	['username'] System.Text.RegularExpressions.MatchEvaluator
+|	['password'] System.Text.RegularExpressions.MatchEvaluator
+|	['database'] System.Text.RegularExpressions.MatchEvaluator
+|	['dbdriver'] System.Text.RegularExpressions.MatchEvaluator e.g.: mysqli.
 |			Currently supported:
 |				 cubrid, ibase, mssql, mysql, mysqli, oci8,
 |				 odbc, pdo, postgre, sqlite, sqlite3, sqlsrv
-|	['dbprefix'] You can add an optional prefix, which will be added
-|				 to the table name when using the  Query Builder class
-|	['pconnect'] TRUE/FALSE - Whether to use a persistent connection
-|	['db_debug'] TRUE/FALSE - Whether database errors should be displayed.
-|	['cache_on'] TRUE/FALSE - Enables/disables query caching
-|	['cachedir'] The path to the folder where cache files should be stored
-|	['char_set'] The character set used in communicating with the database
-|	['dbcollat'] The character collation used in communicating with the database
-|				 NOTE: For MySQL and MySQLi databases, this setting is only used
-| 				 as a backup if your server is running PHP < 5.2.3 or MySQL < 5.0.7
-|				 (and in table creation queries made with DB Forge).
-| 				 There is an incompatibility in PHP with mysql_real_escape_string() which
-| 				 can make your site vulnerable to SQL injection if you are using a
-| 				 multi-byte character set and are running versions lower than these.
-| 				 Sites using Latin-1 or UTF-8 database character set and collation are unaffected.
-|	['swap_pre'] A default table prefix that should be swapped with the dbprefix
-|	['encrypt']  Whether or not to use an encrypted connection.
+|	['dbprefix'] System.Text.RegularExpressions.MatchEvaluator, which will be added
+|				 sa ang lamesa ngalan when using ang  query Builder klase
+|	['pconnect'] true/false - System.Text.RegularExpressions.MatchEvaluator
+|	['db_debug'] true/false - System.Text.RegularExpressions.MatchEvaluator
+|	['cache_on'] true/false - System.Text.RegularExpressions.MatchEvaluator
+|	['cachedir'] System.Text.RegularExpressions.MatchEvaluator
+|	['char_set'] System.Text.RegularExpressions.MatchEvaluator
+|	['dbcollat'] System.Text.RegularExpressions.MatchEvaluator
+|				 NOTE: para sa MySQL ug MySQLi databases, kini setting mao ra gigamit
+| 				 as a backup kung imong server mao running PHP < 5.2.3 o MySQL < 5.0.7
+|				 (ug in lamesa creation mga query made uban sa DB Forge).
+| 				 There mao an incompatibility in PHP uban sa mysql_real_escape_string() which
+| 				 can make imong site vulnerable sa SQL injection kung ikaw mao using a
+| 				 multi-byte character set ug mao running versions lower than these.
+| 				 Sites using Latin-1 o UTF-8 database character set ug collation mao unaffected.
+|	['swap_pre'] A default lamesa prefix nga should be swapped uban sa ang dbprefix
+|	['encrypt']  System.Text.RegularExpressions.MatchEvaluator
 |
-|			'mysql' (deprecated), 'sqlsrv' and 'pdo/sqlsrv' drivers accept TRUE/FALSE
-|			'mysqli' and 'pdo/mysql' drivers accept an array with the following options:
+|			'mysql' (deprecated), 'sqlsrv' ug 'pdo/sqlsrv' drivers accept true/false
+|			'mysqli' ug 'pdo/mysql' drivers accept an array uban sa ang following options:
 |
-|				'ssl_key'    - Path to the private key file
-|				'ssl_cert'   - Path to the public key certificate file
-|				'ssl_ca'     - Path to the certificate authority file
-|				'ssl_capath' - Path to a directory containing trusted CA certificates in PEM format
-|				'ssl_cipher' - List of *allowed* ciphers to be used for the encryption, separated by colons (':')
-|				'ssl_verify' - TRUE/FALSE; Whether verify the server certificate or not
+|				'ssl_key'    - path sa ang private key file
+|				'ssl_cert'   - path sa ang publiko key certificate file
+|				'ssl_ca'     - path sa ang certificate authority file
+|				'ssl_capath' - path sa a directory containing trusted CA certificates in PEM format
+|				'ssl_cipher' - List sa *allowed* ciphers sa be gigamit para sa ang encryption, separated by colons (':')
+|				'ssl_verify' - true/false; kung verify ang server certificate o dili
 |
-|	['compress'] Whether or not to use client compression (MySQL only)
-|	['stricton'] TRUE/FALSE - forces 'Strict Mode' connections
-|							- good for ensuring strict SQL while developing
-|	['ssl_options']	Used to set various SSL options that can be used when making SSL connections.
-|	['failover'] array - A array with 0 or more data for connections if the main should fail.
-|	['save_queries'] TRUE/FALSE - Whether to "save" all executed queries.
-| 				NOTE: Disabling this will also effectively disable both
-| 				$this->db->last_query() and profiling of DB queries.
-| 				When you run a query, with this setting set to TRUE (default),
-| 				CodeIgniter will store the SQL statement for debugging purposes.
-| 				However, this may cause high memory usage, especially if you run
-| 				a lot of SQL queries ... disable this to avoid that problem.
+|	['compress'] System.Text.RegularExpressions.MatchEvaluator (MySQL ra)
+|	['stricton'] true/false - forces 'Strict Mode' mga koneksyon
+|							- good para sa ensuring strict SQL while developing
+|	['ssl_options']	gigamit sa set various SSL options nga can be gigamit when making SSL mga koneksyon.
+|	['failover'] array - A array uban sa 0 o more data para sa mga koneksyon kung ang main should fail.
+|	['save_queries'] true/false - System.Text.RegularExpressions.MatchEvaluator
+| 				NOTE: Disabling kini will also effectively i-disable both
+| 				$kini->db->last_query() ug profiling sa DB mga query.
+| 				When ikaw run a query, uban sa kini setting set sa true (default),
+| 				CodeIgniter will store ang SQL statement para sa debugging purposes.
+| 				However, kini may cause high memory usage, especially kung ikaw run
+| 				a lot sa SQL mga query ... i-disable kini sa avoid nga problem.
 |
-| The $active_group variable lets you choose which connection group to
-| make active.  By default there is only one group (the 'default' group).
+| ang $active_group variable lets ikaw pilia which koneksyon grupo sa
+| make aktibo.  By default there mao ra one grupo (ang 'default' grupo).
 |
-| The $query_builder variables lets you determine whether or not to load
-| the query builder class.
+| ang $query_builder variables lets ikaw determine kung o dili sa load
+| System.Text.RegularExpressions.MatchEvaluator
 */
 $active_group = 'default';
 $query_builder = TRUE;

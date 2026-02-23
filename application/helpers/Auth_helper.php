@@ -2,11 +2,11 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Authentication Helper Functions
+ * Authentication Mga Function sa Magtatabang
  */
 
 /**
- * Check if user is logged in
+ * Susihon kung ang tiggamit naka-log in
  */
 function is_logged_in()
 {
@@ -15,7 +15,7 @@ function is_logged_in()
 }
 
 /**
- * Get current user ID
+ * Kuhaa ang kasamtangan nga user ID
  */
 function get_user_id()
 {
@@ -24,7 +24,7 @@ function get_user_id()
 }
 
 /**
- * Get current user role ID
+ * Get kasamtangan nga user papel ID
  */
 function get_user_role()
 {
@@ -33,7 +33,7 @@ function get_user_role()
 }
 
 /**
- * Get current user data
+ * Kuhaa ang kasamtangan nga datos sa tiggamit
  */
 function get_user_data()
 {
@@ -48,7 +48,7 @@ function get_user_data()
 }
 
 /**
- * Get user full name
+ * Get user bug-os nga ngalan
  */
 function get_user_name()
 {
@@ -59,7 +59,7 @@ function get_user_name()
 }
 
 /**
- * Check if user has specific role
+ * Susihon kung ang tiggamit adunay piho nga papel
  */
 function has_role($role_id)
 {
@@ -67,7 +67,7 @@ function has_role($role_id)
 }
 
 /**
- * Check if current user is superadmin.
+ * Susiha kon ang kasamtangan nga tiggamit mao ang superadmin.
  */
 function is_superadmin()
 {
@@ -75,7 +75,7 @@ function is_superadmin()
 }
 
 /**
- * Get role name by ID
+ * Get role name pinaagi sa ID
  */
 function get_role_name($role_id)
 {
@@ -90,7 +90,7 @@ function get_role_name($role_id)
 }
 
 /**
- * Require login - redirect to login if not authenticated
+ * Gikinahanglan ang pag-login - pag-redirect sa pag-login kung dili gipanghimatuud
  */
 function require_login()
 {
@@ -100,7 +100,7 @@ function require_login()
 }
 
 /**
- * Require specific role
+ * Nanginahanglan piho nga papel
  */
 function require_role($role_id)
 {
@@ -112,7 +112,7 @@ function require_role($role_id)
 }
 
 /**
- * Redirect based on role
+ * Redirect base sa papel
  */
 function redirect_by_role($role_id = null)
 {
@@ -122,9 +122,9 @@ function redirect_by_role($role_id = null)
 
     $redirect_paths = [
         1 => 'admin/dashboard',      // Super Admin
-        2 => 'admin/dashboard',      // Faculty - same access as superadmin
-        3 => 'student/dashboard',    // Student
-        4 => 'org/dashboard'         // Organization Admin
+        2 => 'admin/dashboard',      // Faculty - parehas nga pag-access sa superadmin
+        3 => 'student/dashboard',    // Estudyante
+        4 => 'org/dashboard'         // Organisasyon Admin
     ];
 
     $redirect_path = isset($redirect_paths[$role_id]) ? $redirect_paths[$role_id] : 'login';
@@ -132,7 +132,7 @@ function redirect_by_role($role_id = null)
 }
 
 /**
- * Require a logged-in superadmin or faculty account.
+ * Gikinahanglan ang usa ka naka-log-in nga superadmin o faculty account.
  */
 function require_superadmin()
 {
@@ -145,7 +145,7 @@ function require_superadmin()
 }
 
 /**
- * Require a logged-in account with superadmin/faculty privileges.
+ * Nanginahanglan usa ka naka-log in nga account nga adunay mga pribilehiyo sa superadmin/faculty.
  */
 function require_admin_or_faculty()
 {
@@ -153,8 +153,8 @@ function require_admin_or_faculty()
 }
 
 /**
- * Public pages are accessible to all logged-in roles.
- * Kept for backward compatibility where controllers still call this helper.
+ * Ang mga panid sa publiko ma-access sa tanan nga mga tahas nga naka-log in.
+ * Gipadayon alang sa backward compatibility diin ang mga controllers nagtawag gihapon niini nga katabang.
  */
 function restrict_public_for_admin_roles()
 {
@@ -162,7 +162,7 @@ function restrict_public_for_admin_roles()
 }
 
 /**
- * Require a logged-in student account.
+ * Kinahanglan nimo ang usa ka naka-log in nga account sa estudyante.
  */
 function require_student_only()
 {

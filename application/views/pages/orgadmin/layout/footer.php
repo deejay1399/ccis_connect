@@ -105,7 +105,7 @@ window.CSRF_TOKEN_VALUE = '<?php echo $this->security->get_csrf_hash(); ?>';
 
 <!-- Global Configuration -->
 <script>
-    // Set global base URL for all pages
+    // Itakda ang global base URL alang sa tanan nga mga panid
     window.BASE_URL = '<?php echo base_url(); ?>';
 </script>
 
@@ -118,41 +118,41 @@ window.CSRF_TOKEN_VALUE = '<?php echo $this->security->get_csrf_hash(); ?>';
     (function() {
         function clearClientAuthState() {
             try {
-                // Admin/legacy keys
+                // Mga yawi sa admin/panulundon
                 localStorage.removeItem('userSession');
                 sessionStorage.removeItem('userSession');
 
-                // Public-site session keys
+                // Public-site nga mga yawe sa sesyon
                 localStorage.removeItem('ccis_user');
                 localStorage.removeItem('ccis_login_time');
                 localStorage.removeItem('ccis_session_id');
 
-                // Admin return URL (floating return button)
+                // Admin pagbalik URL (naglutaw pagbalik button)
                 localStorage.removeItem('admin_return_url');
                 sessionStorage.removeItem('admin_return_url');
             } catch (e) {
-                // Intentionally ignore storage errors (e.g., private mode / disabled)
+                // Tinuyo nga gibaliwala ang mga sayup sa pagtipig (pananglitan, pribado nga mode / baldado)
             }
         }
 
         $(function() {
-            // Keep logout affordance visible on org admin pages.
+            // Padayon nga makita ang affordance sa logout sa mga panid sa admin sa org.
             $('#logout-icon-link').css('display', 'flex');
 
-            // Force a single, authoritative handler (some page scripts bind their own logout logic)
+            // Pagpugos sa usa ka single, authoritative handler (ang pipila nga mga script sa panid nagbugkos sa ilang kaugalingon nga lohika sa pag-logout)
             $(document)
                 .off('click', '#logout-icon-link')
                 .on('click', '#logout-icon-link', function(e) {
                     e.preventDefault();
                     
-                    // Show logout modal with admin-specific cleanup
+                    // Ipakita ang logout modal uban sa admin-piho nga pagpanglimpyo
                     if (typeof showLogoutModalWithAdminCleanup === 'function') {
                         showLogoutModalWithAdminCleanup();
                     } else if (typeof logoutUser === 'function') {
-                        // Fallback: use standard logout
+                        // Fallback: paggamit standard logout
                         logoutUser();
                     } else {
-                        // Final fallback if session-management.js hasn't loaded
+                        // Ang katapusan nga fallback kung ang session-management.js wala ma-load
                         clearClientAuthState();
                         window.location.href = window.BASE_URL + 'index.php/logout?logout=true';
                     }

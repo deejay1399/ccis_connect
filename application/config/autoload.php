@@ -5,34 +5,34 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | -------------------------------------------------------------------
 | AUTO-LOADER
 | -------------------------------------------------------------------
-| This file specifies which systems should be loaded by default.
+| Gitino sa kini nga file kung unsang mga sistema ang kinahanglan nga ma-load pinaagi sa default.
 |
-| In order to keep the framework as light-weight as possible only the
-| absolute minimal resources are loaded by default. For example,
-| the database is not connected to automatically since no assumption
-| is made regarding whether you intend to use it.  This file lets
-| you globally define which systems you would like loaded with every
-| request.
+| Aron sa pagpadayon sa gambalay nga ingon sa kahayag-timbang kutob sa mahimo lamang
+| hingpit nga minimum nga mga kapanguhaan gikarga pinaagi sa default. pananglitan,
+| ang database dili konektado sa awtomatikong tungod kay walay asumsyon
+| mao ang gihimo mahitungod sa kon ikaw nagtinguha sa paggamit niini.  Kini nga file lets
+| gihubit nimo sa tibuuk kalibutan kung unsang mga sistema ang gusto nimo nga ma-load sa matag
+| offset
 |
 | -------------------------------------------------------------------
-| Instructions
+| Mga Panudlo.
 | -------------------------------------------------------------------
 |
-| These are the things you can load automatically:
+| Kini ang mga butang nga mahimo nimo awtomatikong ma-load:
 |
-| 1. Packages
-| 2. Libraries
-| 3. Drivers
-| 4. Helper files
-| 5. Custom config files
-| 6. Language files
-| 7. Models
+| 1.Ang mga pakete
+| 2.Ang mga librarya
+| 3.Mga drayber
+| 4.Ang mga file sa katabang
+| 5.Ang mga file sa custom config
+| 6.Ang mga file sa sinultian
+| 7. Mga Modelo
 |
 */
 
 /*
 | -------------------------------------------------------------------
-|  Auto-load Packages
+|  Mga Pakete sa Auto-load
 | -------------------------------------------------------------------
 | Prototype:
 |
@@ -43,18 +43,18 @@ $autoload['packages'] = array();
 
 /*
 | -------------------------------------------------------------------
-|  Auto-load Libraries
+|  Auto-load Mga Librarya
 | -------------------------------------------------------------------
-| These are the classes located in system/libraries/ or your
-| application/libraries/ directory, with the addition of the
-| 'database' library, which is somewhat of a special case.
+| Kini mao ang mga klase nga nahimutang sa sistema/librarya/ o sa imong
+| application/libraries/ directory, uban sa pagdugang sa sa
+| 'database' librarya, nga mao ang usa ka gamay sa usa ka espesyal nga kaso.
 |
 | Prototype:
 |
-|	$autoload['libraries'] = array('database', 'email', 'session');
+|	$autoload['libraries'] = array('database', 'email', 'sesyon');
 |
-| You can also supply an alternative library name to be assigned
-| in the controller:
+| Mahimo ka usab maghatag usa ka alternatibo nga ngalan sa librarya nga itudlo
+| sa Controller:
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
@@ -62,9 +62,9 @@ $autoload['libraries'] = array('session');
 
 /*
 | -------------------------------------------------------------------
-|  Auto-load Drivers
+|  Mga Driver sa Auto-load
 | -------------------------------------------------------------------
-| These classes are located in system/libraries/ or in your
+| Kini nga mga klase nahimutang sa sistema/mga librarya/sa imong
 | application/libraries/ directory, but are also placed inside their
 | own subdirectory and they extend the CI_Driver_Library class. They
 | offer multiple interchangeable driver options.
@@ -128,7 +128,7 @@ $autoload['language'] = array();
 |	$autoload['model'] = array('first_model', 'second_model');
 |
 | You can also supply an alternative model name to be assigned
-| in the controller:
+| sa Controller:
 |
 |	$autoload['model'] = array('first_model' => 'first');
 */

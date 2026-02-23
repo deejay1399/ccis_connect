@@ -40,7 +40,7 @@ class Migration_Create_programs_table extends CI_Migration {
         $this->dbforge->add_key('program_id', TRUE);
         $this->dbforge->create_table('programs');
 
-        // Insert sample data
+        // Pagsulud sa sampol nga datos
         $sample_data = array(
             array(
                 'program_name' => 'Bachelor of Science in Computer Science (BSCS)',

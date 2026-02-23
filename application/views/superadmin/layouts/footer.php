@@ -109,9 +109,9 @@
         if (typeof baseUrl === 'undefined') {
             const baseUrl = '<?php echo base_url(); ?>';
         }
-        // API Base URL for admin controllers
+        // API Base URL alang sa mga Controller sa Admin
         window.API_BASE_URL = '<?php echo base_url('index.php/admin/content/api_'); ?>';
-        // Base URL for file access
+        // Base URL alang sa pag-access sa file
         window.BASE_URL = '<?php echo base_url(); ?>';
 
         (function attachCsrfHandlers() {
@@ -261,20 +261,20 @@
         (function() {
             function clearClientAuthState() {
                 try {
-                    // Admin/legacy keys
+                    // Mga yawi sa admin/panulundon
                     localStorage.removeItem('userSession');
                     sessionStorage.removeItem('userSession');
 
-                    // Public-site session keys
+                    // Public-site nga mga yawe sa sesyon
                     localStorage.removeItem('ccis_user');
                     localStorage.removeItem('ccis_login_time');
                     localStorage.removeItem('ccis_session_id');
 
-                    // Admin return URL (floating return button)
+                    // Admin pagbalik URL (naglutaw pagbalik button)
                     localStorage.removeItem('admin_return_url');
                     sessionStorage.removeItem('admin_return_url');
                 } catch (e) {
-                    // Intentionally ignore storage errors (e.g., private mode / disabled)
+                    // Tinuyo nga gibaliwala ang mga sayup sa pagtipig (pananglitan, pribado nga mode / baldado)
                 }
             }
 
@@ -370,7 +370,7 @@
                     });
                 }
 
-                // Force a single, authoritative handler (some page scripts bind their own logout logic)
+                // Pagpugos sa usa ka single, authoritative handler (ang pipila nga mga script sa panid nagbugkos sa ilang kaugalingon nga lohika sa pag-logout)
                 $('#logout-icon-link')
                     .off('click')
                     .on('click', function(e) {

@@ -21,7 +21,7 @@ class AlumniController extends CI_Controller {
 		$this->load->view('layouts/footer');
 	}
 
-	// ==================== PUBLIC API ====================
+	// ==================== Pampublikong API ====================
 
 	public function api_featured()
 	{
@@ -127,7 +127,7 @@ class AlumniController extends CI_Controller {
 
 			$id = $this->Alumni_model->insert_update($payload);
 
-			// If mentor checkbox checked, add mentor request
+			// Kung gisusi ang checkbox sa mentor, idugang ang hangyo sa mentor
 			if ($mentor) {
 				$this->Alumni_model->insert_mentor_request([
 					'name' => $name,

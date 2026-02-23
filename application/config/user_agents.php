@@ -56,14 +56,14 @@ $platforms = array(
 );
 
 
-// The order of this array should NOT be changed. Many browsers return
-// multiple browser types so we want to identify the sub-type first.
+// Ang han-ay sa kini nga han-ay kinahanglan dili mausab. Daghang mga browser ang mibalik
+// daghang mga tipo sa browser busa gusto namon mahibal-an una ang sub-type.
 $browsers = array(
 	'OPR'			=> 'Opera',
 	'Flock'			=> 'Flock',
 	'Edge'			=> 'Edge',
 	'Chrome'		=> 'Chrome',
-	// Opera 10+ always reports Opera/9.80 and appends Version/<real version> to the user agent string
+	// Ang Opera 10+ kanunay nga nagreport sa Opera/9.80 ug nagdugtong sa Bersyon/<real version>sa string sa ahente sa gumagamit
 	'Opera.*?Version'	=> 'Opera',
 	'Opera'			=> 'Opera',
 	'MSIE'			=> 'Internet Explorer',
@@ -91,23 +91,23 @@ $browsers = array(
 );
 
 $mobiles = array(
-	// legacy array, old values commented out
+	// previous articleLalaki, nagpakantot kay ex-boyfriend
 	'mobileexplorer'	=> 'Mobile Explorer',
-//  'openwave'			=> 'Open Wave',
-//	'opera mini'		=> 'Opera Mini',
-//	'operamini'			=> 'Opera Mini',
-//	'elaine'			=> 'Palm',
+//  + 'openwave'			=> 'Bukas nga Balod',
+//	+ 'opera mini'		=> 'Opera Mini',
+//	+ 'operamini'			=> 'Opera Mini',
+//	'elaine'			=> 'Palma',
 	'palmsource'		=> 'Palm',
-//	'digital paths'		=> 'Palm',
+//	- 'digital paths'		=> 'Palma',
 //	'avantgo'			=> 'Avantgo',
 //	'xiino'				=> 'Xiino',
 	'palmscape'			=> 'Palmscape',
 //	'nokia'				=> 'Nokia',
-//	'ericsson'			=> 'Ericsson',
+//	+ 'ericsson'			=> 'Ericsson',
 //	'blackberry'		=> 'BlackBerry',
 //	'motorola'			=> 'Motorola'
 
-	// Phones and Manufacturers
+	// Mga Telepono ug Tiggama
 	'motorola'		=> 'Motorola',
 	'nokia'			=> 'Nokia',
 	'nexus'			=> 'Nexus',
@@ -158,7 +158,7 @@ $mobiles = array(
 	'vivo'                  => 'Vivo',
 	'infinix'               => 'Infinix',
 
-	// Operating Systems
+	// Mga Operating System
 	'android'		=> 'Android',
 	'symbian'		=> 'Symbian',
 	'SymbianOS'		=> 'SymbianOS',
@@ -166,7 +166,7 @@ $mobiles = array(
 	'series60'		=> 'Symbian S60',
 	'windows ce'	=> 'Windows CE',
 
-	// Browsers
+	// Mga Browser
 	'obigo'			=> 'Obigo',
 	'netfront'		=> 'Netfront Browser',
 	'openwave'		=> 'Openwave Browser',
@@ -176,7 +176,7 @@ $mobiles = array(
 	'opera mobi'	=> 'Opera Mobile',
 	'fennec'		=> 'Firefox Mobile',
 
-	// Other
+	// Uban pa
 	'digital paths'	=> 'Digital Paths',
 	'avantgo'		=> 'AvantGo',
 	'xiino'			=> 'Xiino',
@@ -197,7 +197,7 @@ $mobiles = array(
 	'cellphone'		=> 'Generic Mobile'
 );
 
-// There are hundreds of bots but these are the most common.
+// Adunay gatusan nga mga bot apan kini ang labing kasagaran.
 $robots = array(
 	'googlebot'		=> 'Googlebot',
 	'msnbot'		=> 'MSNBot',

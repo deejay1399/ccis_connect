@@ -14,7 +14,7 @@ class FormsController extends CI_Controller {
 	}
 
 	/**
-	 * Ensure the forms table exists and has all required columns
+	 * Siguruha nga ang lamesa sa mga porma anaa ug adunay tanan nga gikinahanglan nga mga kolum
 	 */
 	private function _ensure_table_exists()
 	{
@@ -36,17 +36,17 @@ class FormsController extends CI_Controller {
 			$this->dbforge->add_key('id', TRUE);
 			$this->dbforge->create_table('forms', TRUE);
 			
-			// Now update the created_at and updated_at columns to use CURRENT_TIMESTAMP
+			// Karon i-update ang gilalang_at ug gi-update_sa mga haligi aron magamit ang karon_TIMESTAMP
 			$this->db->query("ALTER TABLE `forms` MODIFY `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
 			$this->db->query("ALTER TABLE `forms` MODIFY `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
 			
 			log_message('error', 'Forms table created successfully');
 		} else {
-			// Table exists, check for missing columns
+			// Naglungtad ang lamesa, susihon ang nawala nga mga kolum
 			$fields = $this->db->list_fields('forms');
 			$missing_columns = array();
 			
-			// Check which columns are missing
+			// Susihon kung unsang mga haligi ang nawala
 			if (!in_array('original_filename', $fields)) {
 				$this->dbforge->add_column('forms', array('original_filename' => array('type' => 'VARCHAR', 'constraint' => 255, 'null' => FALSE, 'after' => 'file_url')));
 				log_message('error', 'Added missing column to forms table: original_filename');
@@ -100,7 +100,7 @@ class FormsController extends CI_Controller {
 			return true;
 		}
 
-		// Fallback to extension check for environments reporting unexpected MIME types.
+		// Fallback sa extension check alang sa mga palibot nga nagtaho sa wala damha nga mga tipo sa MIME.
 		$ext = strtolower(pathinfo((string) $originalName, PATHINFO_EXTENSION));
 		return in_array($ext, ['pdf', 'doc', 'docx'], true);
 	}
@@ -115,7 +115,7 @@ class FormsController extends CI_Controller {
 	}
 
 	/**
-	 * API: Get all forms
+	 * API: Kuhaa ang tanan nga mga porma
 	 */
 	public function get_forms()
 	{
@@ -138,7 +138,7 @@ class FormsController extends CI_Controller {
 	}
 
 	/**
-	 * API: Upload new form
+	 * API: Pag-upload sa bag-ong porma
 	 */
 	public function upload_form()
 	{
@@ -163,7 +163,7 @@ class FormsController extends CI_Controller {
 				return;
 			}
 
-			// Handle file upload
+			// Hupti ang pag-upload sa file
 			if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
 				$error_code = isset($_FILES['file']) ? $_FILES['file']['error'] : 'No file provided';
 				log_message('debug', 'File upload error: ' . $error_code);
@@ -177,21 +177,21 @@ class FormsController extends CI_Controller {
 
 			log_message('debug', 'File details - Name: ' . $file['name'] . ', Type: ' . $file['type'] . ', Size: ' . $file['size']);
 
-			// Validate file signature/MIME from the uploaded bytes.
+			// I-validate ang pirma sa file/MIME gikan sa gi-upload nga mga byte.
 			if (!$this->_is_allowed_document_file($file['tmp_name'], $file['name'])) {
 				http_response_code(400);
 				echo json_encode(['success' => false, 'message' => 'Only PDF, DOC, and DOCX files are allowed']);
 				return;
 			}
 
-			// Validate file size
+			// I-validate ang gidak-on sa file
 			if ($file['size'] > $max_size) {
 				http_response_code(400);
 				echo json_encode(['success' => false, 'message' => 'File size exceeds 10MB limit']);
 				return;
 			}
 
-			// Create upload directory if it doesn't exist
+			// Paghimo usa ka direktoryo sa pag-upload kung wala kini
 			$upload_dir = dirname(__FILE__) . '/../../uploads/forms';
 			log_message('debug', 'Upload directory: ' . $upload_dir);
 			
@@ -204,12 +204,12 @@ class FormsController extends CI_Controller {
 				}
 			}
 
-			// Generate unique filename
+			// Paghimo talagsaon nga filename
 			$filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $file['name']);
 			$file_path = $upload_dir . '/' . $filename;
 			log_message('debug', 'File path: ' . $file_path);
 
-			// Move uploaded file
+			// Pagbalhin sa gi-upload nga file
 			if (!move_uploaded_file($file['tmp_name'], $file_path)) {
 				log_message('error', 'Failed to move uploaded file from ' . $file['tmp_name'] . ' to ' . $file_path);
 				http_response_code(500);
@@ -219,7 +219,7 @@ class FormsController extends CI_Controller {
 
 			log_message('debug', 'File moved successfully');
 
-			// Save to database
+			// I-save sa database
 			$form_data = array(
 				'title' => $title,
 				'file_url' => 'uploads/forms/' . $filename,
@@ -239,7 +239,7 @@ class FormsController extends CI_Controller {
 					'file_url' => $form_data['file_url']
 				]);
 			} else {
-				// Delete the uploaded file if DB insert fails
+				// I-delete ang gi-upload nga file kung napakyas ang pagsulud sa DB
 				@unlink($file_path);
 				http_response_code(500);
 				echo json_encode(['success' => false, 'message' => 'Failed to save form to database']);
@@ -258,7 +258,7 @@ class FormsController extends CI_Controller {
 	}
 
 	/**
-	 * API: Update form
+	 * API: Porma sa pag-update
 	 */
 	public function update_form()
 	{
@@ -285,29 +285,29 @@ class FormsController extends CI_Controller {
 
 			$update_data = array('title' => $title);
 
-			// Handle file update if new file is provided
+			// Pagdumala sa pag-update sa file kung gihatag ang bag-ong file
 			if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
 				$file = $_FILES['file'];
 				$max_size = 10 * 1024 * 1024; // 10MB
 
-				// Validate file signature/MIME from the uploaded bytes.
+				// I-validate ang pirma sa file/MIME gikan sa gi-upload nga mga byte.
 				if (!$this->_is_allowed_document_file($file['tmp_name'], $file['name'])) {
 					http_response_code(400);
 					echo json_encode(['success' => false, 'message' => 'Only PDF, DOC, and DOCX files are allowed']);
 					return;
 				}
 
-				// Validate file size
+				// I-validate ang gidak-on sa file
 				if ($file['size'] > $max_size) {
 					http_response_code(400);
 					echo json_encode(['success' => false, 'message' => 'File size exceeds 10MB limit']);
 					return;
 				}
 
-				// Get old form to delete old file
+				// Pagkuha daan nga porma aron mapapas ang daan nga file
 				$old_form = $this->Forms_model->get_form_by_id($form_id);
 				
-				// Create upload directory if it doesn't exist
+				// Paghimo usa ka direktoryo sa pag-upload kung wala kini
 				$upload_dir = realpath(dirname(__FILE__) . '/../../uploads/forms');
 				if (!$upload_dir) {
 					$upload_dir = dirname(__FILE__) . '/../../uploads/forms';
@@ -321,18 +321,18 @@ class FormsController extends CI_Controller {
 					}
 				}
 
-				// Generate unique filename
+				// Paghimo talagsaon nga filename
 				$filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $file['name']);
 				$file_path = $upload_dir . '/' . $filename;
 
-				// Move uploaded file
+				// Pagbalhin sa gi-upload nga file
 				if (!move_uploaded_file($file['tmp_name'], $file_path)) {
 					http_response_code(500);
 					echo json_encode(['success' => false, 'message' => 'Failed to save file']);
 					return;
 				}
 
-				// Delete old file if it exists
+				// I-delete ang daan nga file kung adunay kini
 				if ($old_form && file_exists($upload_dir . '/' . basename($old_form['file_url']))) {
 					@unlink($upload_dir . '/' . basename($old_form['file_url']));
 				}
@@ -360,7 +360,7 @@ class FormsController extends CI_Controller {
 	}
 
 	/**
-	 * API: Delete form
+	 * API: I-delete ang porma
 	 */
 	public function delete_form()
 	{
@@ -384,7 +384,7 @@ class FormsController extends CI_Controller {
 				return;
 			}
 
-			// Get form to delete file
+			// Get porma sa pagtangtang file
 			$form = $this->Forms_model->get_form_by_id($form_id);
 			
 			if (!$form) {
@@ -393,7 +393,7 @@ class FormsController extends CI_Controller {
 				return;
 			}
 
-			// Delete file from uploads directory
+			// I-delete ang file gikan sa direktoryo sa mga upload
 			$upload_dir = dirname(__FILE__) . '/../../uploads/forms';
 			$file_path = $upload_dir . '/' . basename($form['file_url']);
 			
@@ -401,7 +401,7 @@ class FormsController extends CI_Controller {
 				@unlink($file_path);
 			}
 
-			// Soft delete from database
+			// Soft delete gikan sa database
 			$this->Forms_model->delete_form($form_id);
 
 			echo json_encode([
@@ -420,7 +420,7 @@ class FormsController extends CI_Controller {
 }
 
 	/**
-	 * Public view to display all forms
+	 * Public panglantaw sa pagpakita sa tanan nga mga porma
 	 */
 	public function view_forms()
 	{

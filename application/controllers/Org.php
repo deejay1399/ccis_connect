@@ -299,7 +299,7 @@ class Org extends CI_Controller {
             redirect('org/dashboard#happenings');
         }
 
-        // Backward compatibility: accept old single field if present.
+        // Paatras pagkaangay: modawat daan nga single uma kon anaa.
         if (empty($images)) {
             $singleImage = $this->upload_image('happening_image', 'uploads/org/happenings');
             if ($singleImage === null) {
@@ -354,7 +354,7 @@ class Org extends CI_Controller {
             redirect('org/dashboard#happenings');
         }
 
-        // Backward compatibility: old single field.
+        // Balik nga pagkaangay: daan nga nag-inusara nga natad.
         if (empty($images) && !empty($_FILES['happening_image']['name'])) {
             $singleImage = $this->upload_image('happening_image', 'uploads/org/happenings');
             if ($singleImage === null) {

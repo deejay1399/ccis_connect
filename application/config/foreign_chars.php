@@ -5,8 +5,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | -------------------------------------------------------------------
 | Foreign Characters
 | -------------------------------------------------------------------
-| This file contains an array of foreign characters for transliteration
-| conversion used by the Text helper
+| kini file contains an array sa foreign characters para sa transliteration
+| conversion gigamit by ang Text helper
 |
 */
 $foreign_characters = array(

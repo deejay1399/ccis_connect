@@ -12,7 +12,7 @@ class User_model extends CI_Model {
     }
 
     /**
-     * Find user by email
+     * Pangitaa ang tiggamit pinaagi sa email
      */
     public function get_by_email($email)
     {
@@ -23,7 +23,7 @@ class User_model extends CI_Model {
     }
 
     /**
-     * Get user by ID
+     * Get user pinaagi sa ID
      */
     public function get_by_id($user_id)
     {
@@ -34,7 +34,7 @@ class User_model extends CI_Model {
     }
 
     /**
-     * Verify password
+     * I-verify ang password
      */
     public function verify_password($password, $hash)
     {
@@ -42,7 +42,7 @@ class User_model extends CI_Model {
     }
 
     /**
-     * Create user
+     * Paghimo sa tiggamit
      */
     public function create_user($data)
     {
@@ -62,7 +62,7 @@ class User_model extends CI_Model {
     }
 
     /**
-     * Update last login
+     * I-update ang katapusang pag-login
      */
     public function update_last_activity($user_id)
     {
@@ -71,7 +71,7 @@ class User_model extends CI_Model {
     }
 
     /**
-     * Get all users
+     * Kuhaa ang tanan nga mga tiggamit
      */
     public function get_all()
     {
@@ -79,7 +79,7 @@ class User_model extends CI_Model {
     }
 
     /**
-     * Update user
+     * I-update ang tiggamit
      */
     public function update_user($user_id, $data)
     {
@@ -88,7 +88,7 @@ class User_model extends CI_Model {
     }
 
     /**
-     * Delete user
+     * Hapus User
      */
     public function delete_user($user_id)
     {

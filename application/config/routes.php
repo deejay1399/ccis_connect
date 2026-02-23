@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-// Default route
+// Default nga agianan
 $route['default_controller'] = 'LandingController/homepage';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
@@ -12,14 +12,14 @@ $route['home'] = 'LandingController/homepage';
 $route['homepage'] = 'LandingController/homepage';
 $route['landing'] = 'LandingController/homepage';
 
-// ==================== ABOUT ====================
+// ==================== Mahitungod ====================
 $route['about'] = 'AboutController/index';
 
-// ==================== FACULTY ====================
+// ==================== Pundok sa mga magtutudlo ====================
 $route['faculty'] = 'FacultyController/faculty';
 $route['faculty/dashboard'] = 'FacultyController/dashboard';
 
-// ==================== ACADEMICS ====================
+// Mga ==================== akademiko ====================
 $route['academics'] = 'AcademicsController/index';
 $route['academics/programs'] = 'AcademicsController/programs';
 $route['academics/curriculum'] = 'AcademicsController/curriculum';
@@ -27,13 +27,13 @@ $route['academics/schedule'] = 'AcademicsController/schedule';
 $route['academics/calendar'] = 'AcademicsController/calendar';
 $route['academics/get_programs_json'] = 'AcademicsController/get_programs_json';
 
-// ==================== UPDATES ====================
+// ==================== Mga Update ====================
 $route['updates'] = 'UpdatesController/index';
 $route['updates/announcements'] = 'UpdatesController/announcements';
 $route['updates/events'] = 'UpdatesController/events';
 $route['updates/deanslist'] = 'UpdatesController/deanslist';
 
-// Updates - Public JSON API (DB-backed)
+// Mga Update - Public JSON API (gisuportahan sa DB)
 $route['updates/api/announcements'] = 'UpdatesController/api_announcements';
 $route['updates/api/events_achievements'] = 'UpdatesController/api_events_achievements';
 $route['updates/api/deans_list'] = 'UpdatesController/api_deans_list';
@@ -42,10 +42,10 @@ $route['updates/api/deans_list'] = 'UpdatesController/api_deans_list';
 $route['chatbot/api/faq'] = 'ChatbotController/faq';
 $route['chatbot/api/ask'] = 'ChatbotController/ask';
 
-// ==================== FORMS ====================
+// Mga porma
 $route['forms'] = 'FormsController/view_forms';
 
-// ==================== LOGIN ====================
+// Login
 $route['login'] = 'LoginController/index';
 $route['login/authenticate'] = 'LoginController/authenticate';
 $route['login/api_authenticate'] = 'LoginController/api_authenticate';
@@ -61,12 +61,12 @@ $route['alumni/api/submit_update'] = 'AlumniController/submit_update';
 $route['alumni/api/submit_giveback'] = 'AlumniController/submit_giveback';
 $route['alumni/api/submit_connection'] = 'AlumniController/submit_connection';
 
-// ==================== ORGANIZATION ====================
+// ==================== Organisasyon ====================
 $route['organization'] = 'OrganizationController/index';
 $route['organization/legion'] = 'OrganizationController/legion';
 $route['organization/csguild'] = 'OrganizationController/csguild';
 
-// ==================== ORG ADMIN ====================
+// Admin sa ==================== ORG ====================
 $route['org/dashboard'] = 'Org/dashboard';
 $route['org/officers/create'] = 'Org/add_officer';
 $route['org/officers/update/(:num)'] = 'Org/update_officer/$1';
@@ -84,7 +84,7 @@ $route['org/happenings/delete/(:num)'] = 'Org/delete_happening/$1';
 $route['admin'] = 'admin/AdminDashboard/index';
 $route['admin/dashboard'] = 'admin/AdminDashboard/index';
 
-// Admin Content Management
+// Pagdumala sa Sulud sa Admin
 $route['admin/content/homepage'] = 'admin/AdminContent/homepage';
 $route['admin/content/updates'] = 'admin/AdminContent/updates';
 $route['admin/content/academics'] = 'admin/AdminContent/academics';
@@ -94,14 +94,14 @@ $route['admin/content/forms'] = 'admin/AdminContent/forms';
 $route['admin/content/organizations'] = 'admin/AdminContent/organizations';
 $route['admin/content/alumni'] = 'admin/AdminContent/alumni';
 
-// Admin Content Management - AJAX
+// Pagdumala sa Sulud sa Admin - AJAX
 $route['admin/manage/load_homepage'] = 'admin/AdminContent/load_homepage';
 $route['admin/manage/load_homepage_all'] = 'admin/AdminContent/load_homepage_all';
 $route['admin/manage/save_homepage'] = 'admin/AdminContent/save_homepage';
 $route['admin/manage/replace_homepage'] = 'admin/AdminContent/replace_homepage';
 $route['admin/manage/organizations/overview'] = 'admin/AdminContent/load_organizations_overview';
 
-// Admin Content Management - UPDATES (Announcements / Events & Achievements / Dean's List)
+// Pagdumala sa Sulud sa Admin - Mga Update (Mga Pahibalo / Hitabo & Mga Nakab-ot/Lista sa Dean)
 $route['admin/manage/load_announcements'] = 'admin/AdminContent/load_announcements';
 $route['admin/manage/create_announcement'] = 'admin/AdminContent/create_announcement';
 $route['admin/manage/update_announcement'] = 'admin/AdminContent/update_announcement';
@@ -116,7 +116,7 @@ $route['admin/manage/load_deans_list'] = 'admin/AdminContent/load_deans_list';
 $route['admin/manage/create_deans_list'] = 'admin/AdminContent/create_deans_list';
 $route['admin/manage/delete_deans_list'] = 'admin/AdminContent/delete_deans_list';
 
-// Admin Content Management - ALUMNI
+// Admin Content Management - mga ALUMNI
 $route['admin/manage/alumni/mentor_requests'] = 'admin/AdminContent/load_alumni_mentor_requests';
 $route['admin/manage/alumni/mentor_status'] = 'admin/AdminContent/update_alumni_mentor_status';
 $route['admin/manage/alumni/chatbot_inquiries'] = 'admin/AdminContent/load_alumni_chatbot_inquiries';
@@ -140,35 +140,35 @@ $route['admin/manage/alumni/events'] = 'admin/AdminContent/load_alumni_events';
 $route['admin/manage/alumni/events/create'] = 'admin/AdminContent/create_alumni_event';
 $route['admin/manage/alumni/events/delete'] = 'admin/AdminContent/delete_alumni_event';
 
-// Faculty Management API Endpoints
+// Pagdumala sa Faculty API Endpoints
 $route['admin/api/get_faculty'] = 'admin/AdminContent/api_get_faculty';
 $route['admin/api/add_faculty'] = 'admin/AdminContent/api_add_faculty';
 $route['admin/api/update_faculty'] = 'admin/AdminContent/api_update_faculty';
 $route['admin/api/delete_faculty'] = 'admin/AdminContent/api_delete_faculty';
 
-// Programs Management API Endpoints
+// Mga Programa sa Pagdumala API Endpoints
 $route['admin/content/api_get_programs'] = 'admin/AdminContent/api_get_programs';
 $route['admin/content/api_save_program'] = 'admin/AdminContent/api_save_program';
 $route['admin/content/api_load_program'] = 'admin/AdminContent/api_load_program';
 $route['admin/content/api_update_program'] = 'admin/AdminContent/api_update_program';
 $route['admin/content/api_delete_program'] = 'admin/AdminContent/api_delete_program';
 
-// Curriculum Management API Endpoints
+// Mga Endpoint sa API sa Pagdumala sa Kurikulum
 $route['admin/content/api_upload_curriculum'] = 'AdminContent/api_upload_curriculum';
 $route['admin/content/api_get_curriculums'] = 'AdminContent/api_get_curriculums';
 $route['admin/content/api_delete_curriculum'] = 'AdminContent/api_delete_curriculum';
 
-// Class Schedules Management API Endpoints
+// Mga Iskedyul sa Klase Pagdumala API Endpoints
 $route['admin/content/api_upload_schedule'] = 'AdminContent/api_upload_schedule';
 $route['admin/content/api_get_schedules'] = 'AdminContent/api_get_schedules';
 $route['admin/content/api_delete_schedule'] = 'AdminContent/api_delete_schedule';
 
-// Academic Calendars Management API Endpoints
+// Mga Akademikong Pagdumala sa Kalendaryo API Endpoints
 $route['admin/content/api_upload_calendar'] = 'AdminContent/api_upload_calendar';
 $route['admin/content/api_get_calendars'] = 'AdminContent/api_get_calendars';
 $route['admin/content/api_delete_calendar'] = 'AdminContent/api_delete_calendar';
 
-// Admin User Management
+// Admin User Managment
 $route['admin/users/create'] = 'admin/AdminUsers/create';
 $route['admin/users/save'] = 'admin/AdminUsers/save';
 $route['admin/users/list'] = 'admin/AdminUsers/list_all';

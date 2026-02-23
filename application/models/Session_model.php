@@ -12,7 +12,7 @@ class Session_model extends CI_Model {
     }
 
     /**
-     * Create session
+     * Paghimo og sesyon
      */
     public function create_session($user_id, $token)
     {
@@ -27,7 +27,7 @@ class Session_model extends CI_Model {
     }
 
     /**
-     * Get session by token
+     * Kuhaa ang sesyon pinaagi sa token
      */
     public function get_by_token($token)
     {
@@ -38,7 +38,7 @@ class Session_model extends CI_Model {
     }
 
     /**
-     * Validate session
+     * I-validate ang sesyon
      */
     public function validate_session($user_id, $token)
     {
@@ -49,7 +49,7 @@ class Session_model extends CI_Model {
     }
 
     /**
-     * Delete session
+     * I-delete ang sesyon
      */
     public function delete_session($token)
     {
@@ -58,7 +58,7 @@ class Session_model extends CI_Model {
     }
 
     /**
-     * Delete all user sessions
+     * I-delete ang tanan nga mga sesyon sa gumagamit
      */
     public function delete_user_sessions($user_id)
     {

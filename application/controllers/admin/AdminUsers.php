@@ -29,9 +29,9 @@ class AdminUsers extends CI_Controller {
 		$data['page_type'] = 'list_users';
 		$data['action'] = 'list';
 		
-		// Optionally load admin users data from model
-		// $this->load->model('AdminUserModel');
-		// $data['users'] = $this->AdminUserModel->get_all();
+		// Opsyonal nga load admin tiggamit data gikan sa modelo
+		// $ni->load->model('AdminUserModel');
+		// $data['users'] = $kini->AdminUserModel->get_all();
 		
 		$this->load->view('superadmin/layouts/header', $data);
 		$this->load->view('superadmin/layouts/navigation');
@@ -50,9 +50,9 @@ class AdminUsers extends CI_Controller {
 		$data['action'] = 'edit';
 		$data['user_id'] = $user_id;
 		
-		// Optionally load specific user data from model
-		// $this->load->model('AdminUserModel');
-		// $data['user'] = $this->AdminUserModel->get_by_id($user_id);
+		// Opsyonal nga pag-load sa piho nga datos sa gumagamit gikan sa modelo
+		// $ni->load->model('AdminUserModel');
+		// $data['user'] = $kini->AdminUserModel->get_by_id($user_id);
 		
 		$this->load->view('superadmin/layouts/header', $data);
 		$this->load->view('superadmin/layouts/navigation');
@@ -66,15 +66,15 @@ class AdminUsers extends CI_Controller {
 			show_404();
 		}
 
-		// Handle deletion logic here
-		// $this->load->model('AdminUserModel');
-		// $this->AdminUserModel->delete($user_id);
+		// Pagdumala sa pagtangtang lohika dinhi
+		// $ni->load->model('AdminUserModel');
+		// $ni->AdminUserModel->delete($user_id);
 		
 		redirect('admin/users/list');
 	}
 
 	/**
-	 * Save new user (AJAX handler)
+	 * Luwasa ang bag-ong tiggamit (AJAX handler)
 	 */
 	public function save()
 	{
@@ -92,27 +92,27 @@ class AdminUsers extends CI_Controller {
 		$this->load->model('OrgAdmin_model');
 		$this->load->model('Student_model');
 
-		// Get form data
+		// Kuhaa ang datos sa porma
 		$firstName = $this->input->post('first_name', true);
 		$lastName = $this->input->post('last_name', true);
 		$email = $this->input->post('email', true);
 		$roleId = $this->input->post('role_id', true);
 
-		// Validate required fields
+		// I-validate ang gikinahanglan nga mga natad
 		if (empty($firstName) || empty($lastName) || empty($email) || empty($roleId)) {
 			http_response_code(400);
 			echo json_encode(['success' => false, 'message' => 'Missing required fields']);
 			return;
 		}
 
-		// Validate email format and domain
+		// I-validate ang format sa email ug domain
 		if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !preg_match('/@bisu\.edu\.ph$/', $email)) {
 			http_response_code(400);
 			echo json_encode(['success' => false, 'message' => 'Must use valid @bisu.edu.ph email']);
 			return;
 		}
 
-		// Check if email already exists
+		// Susihon kung adunay na ang email
 		$existingUser = $this->User_model->get_by_email($email);
 		if ($existingUser) {
 			http_response_code(409);
@@ -132,13 +132,13 @@ class AdminUsers extends CI_Controller {
 		}
 
 		try {
-			// Default password for all newly created accounts.
+			// Default nga password alang sa tanan nga bag-ong gihimo nga mga account.
 			$password = 'pass1234';
 
-			// Create user - User_model will hash the password
+			// Create User - User_model ang hash ang password
 			$userData = [
 				'email' => $email,
-				'password' => $password,  // Pass plain password, model will hash it
+				'password' => $password,  // Ipasa ang yano nga password, modelo ang hash niini
 				'first_name' => $firstName,
 				'last_name' => $lastName,
 				'is_active' => 1,
@@ -152,22 +152,22 @@ class AdminUsers extends CI_Controller {
 				throw new Exception('Failed to create user');
 			}
 
-			// Assign role to user
+			// I-assign ang papel sa tiggamit
 			$this->UserRole_model->assign_role($userId, $roleId);
 
-			// Save role-specific data
+			// I-save ang datos nga piho sa papel
 			if ($roleId == 2) {
-				// Faculty
+				// Pundok sa mga magtutudlo
 				$this->_saveFacultyData($userId, $facultyData);
 			} elseif ($roleId == 3) {
-				// Student
+				// Estudyante
 				$this->_saveStudentData($userId);
 			} elseif ($roleId == 4) {
-				// Organization Admin
+				// Organisasyon Admin
 				$this->_saveOrgAdminData($userId);
 			}
 
-			// Log success
+			// Log kalampusan
 			log_message('info', "New user created: $email (Role: $roleId) - UserID: $userId");
 
 			http_response_code(200);
@@ -186,7 +186,7 @@ class AdminUsers extends CI_Controller {
 	}
 
 	/**
-	 * Save faculty-specific data
+	 * I-save ang datos nga piho sa mga magtutudlo
 	 */
 	private function _saveFacultyData($userId, $facultyData = null)
 	{
@@ -229,7 +229,7 @@ class AdminUsers extends CI_Controller {
 	}
 
 	/**
-	 * Save student-specific data
+	 * I-save ang datos nga piho sa estudyante
 	 */
 	private function _saveStudentData($userId)
 	{
@@ -278,7 +278,7 @@ class AdminUsers extends CI_Controller {
 	}
 
 	/**
-	 * Save organization admin data
+	 * I-save ang datos sa admin sa organisasyon
 	 */
 	private function _saveOrgAdminData($userId)
 	{
@@ -289,7 +289,7 @@ class AdminUsers extends CI_Controller {
 	}
 
 	/**
-	 * Get all users (AJAX handler)
+	 * Kuhaa ang tanan nga mga tiggamit (AJAX handler)
 	 */
 	public function get_all_users()
 	{
@@ -320,7 +320,7 @@ class AdminUsers extends CI_Controller {
 					}
 				}
 				
-				// Fetch additional details based on role
+				// Pagkuha dugang nga mga detalye pinasukad sa papel
 				$additionalDetails = [];
 				if ($roles) {
 					foreach ($roles as $role) {
@@ -368,7 +368,7 @@ class AdminUsers extends CI_Controller {
 					'created_at' => $user->created_at
 				];
 				
-				// Merge additional details if they exist
+				// Paghiusa sa dugang nga mga detalye kung adunay sila
 				if (!empty($additionalDetails)) {
 					$userData = array_merge($userData, $additionalDetails);
 				}
@@ -391,7 +391,7 @@ class AdminUsers extends CI_Controller {
 	}
 
 	/**
-	 * Update user (AJAX handler)
+	 * Update nga tiggamit (AJAX handler)
 	 */
 	public function update_user()
 	{
@@ -440,7 +440,7 @@ class AdminUsers extends CI_Controller {
 	}
 
 	/**
-	 * Delete user (AJAX handler)
+	 * Hapus User (AJAX handler)
 	 */
 	public function delete_user()
 	{
@@ -479,7 +479,7 @@ class AdminUsers extends CI_Controller {
 	}
 
 	/**
-	 * Get user details (AJAX handler)
+	 * Kuhaa ang mga detalye sa gumagamit (AJAX handler)
 	 */
 	public function get_user_details($user_id = null)
 	{
@@ -510,7 +510,7 @@ class AdminUsers extends CI_Controller {
 				return;
 			}
 
-			// Get user roles
+			// Kuhaa ang mga tahas sa tiggamit
 			$roles = $this->UserRole_model->get_roles_by_user($user->id);
 			$roleNames = [];
 			if ($roles) {
@@ -519,7 +519,7 @@ class AdminUsers extends CI_Controller {
 				}
 			}
 
-			// Fetch additional details based on role
+			// Pagkuha dugang nga mga detalye pinasukad sa papel
 			$additionalDetails = [];
 			if ($roles) {
 				foreach ($roles as $role) {
@@ -567,7 +567,7 @@ class AdminUsers extends CI_Controller {
 				'created_at' => $user->created_at
 			];
 
-			// Merge additional details if they exist
+			// Paghiusa sa dugang nga mga detalye kung adunay sila
 			if (!empty($additionalDetails)) {
 				$userData = array_merge($userData, $additionalDetails);
 			}

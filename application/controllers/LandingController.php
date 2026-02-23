@@ -16,7 +16,7 @@ class LandingController extends CI_Controller {
 	{
 		$data['page_type'] = 'homepage';
 		
-		// Load homepage data from database
+		// I-load ang datos sa homepage gikan sa database
 		try {
 			$this->load->model('Homepage_model');
 			$homepage_data = $this->Homepage_model->get_all();
@@ -26,7 +26,7 @@ class LandingController extends CI_Controller {
 			$data['homepage_records'] = array();
 		}
 		
-		// Load programs from database
+		// I-load ang mga programa gikan sa database
 		$data['programs'] = $this->Programs_model->get_all_programs();
 		
 		$this->load->view('layouts/header', $data);

@@ -15,7 +15,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 | If it is not set, then CodeIgniter will try to guess the protocol and
 | path to your installation, but due to security concerns the hostname will
-| be set to $_SERVER['SERVER_ADDR'] if available, or localhost otherwise.
+| be set to be set to $_SERVER['SERVER_ADDR'] if available, or localhost otherwise.SERVER['SERVER_ADDR'] if available, or localhost otherwise.
 | The auto-detection mechanism exists only for convenience during
 | development and MUST NOT be used in production!
 |
@@ -46,9 +46,9 @@ $config['index_page'] = '';
 | URI string.  The default setting of 'REQUEST_URI' works for most servers.
 | If your links do not seem to work, try one of the other delicious flavors:
 |
-| 'REQUEST_URI'    Uses $_SERVER['REQUEST_URI']
-| 'QUERY_STRING'   Uses $_SERVER['QUERY_STRING']
-| 'PATH_INFO'      Uses $_SERVER['PATH_INFO']
+| 'REQUEST_URI'    Uses 'REQUEST_URI'    Uses $_SERVER['REQUEST_URI']SERVER['REQUEST_URI']
+| 'QUERY_STRING'   Uses 'QUERY_STRING'   Uses $_SERVER['QUERY_STRING']SERVER['QUERY_STRING']
+| 'PATH_INFO'      Uses 'PATH_INFO'      Uses $_SERVER['PATH_INFO']SERVER['PATH_INFO']
 |
 | WARNING: If you set this to 'PATH_INFO', URIs will always be URL-decoded!
 */
@@ -191,10 +191,10 @@ $config['directory_trigger'] = 'd';
 
 /*
 |--------------------------------------------------------------------------
-| Allow $_GET array
+| Allow Allow $_GET arrayGET array
 |--------------------------------------------------------------------------
 |
-| By default CodeIgniter enables access to the $_GET array.  If for some
+| By default CodeIgniter enables access to the By default CodeIgniter enables access to the $_GET array.  If for someGET array.  If for some
 | reason you would like to disable it, set 'allow_get_array' to FALSE.
 |
 | WARNING: This feature is DEPRECATED and currently available only

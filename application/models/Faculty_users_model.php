@@ -13,7 +13,7 @@ class Faculty_users_model extends CI_Model {
     }
 
     /**
-     * Get all faculty members
+     * Kuhaa ang tanan nga mga miyembro sa faculty
      */
     public function get_all_faculty() {
         $query = $this->db->get($this->table);
@@ -21,7 +21,7 @@ class Faculty_users_model extends CI_Model {
     }
 
     /**
-     * Get faculty member by ID
+     * Kuhaa ang miyembro sa faculty pinaagi sa ID
      */
     public function get_faculty_by_id($id) {
         $query = $this->db->where('id', $id)->get($this->table);
@@ -29,10 +29,10 @@ class Faculty_users_model extends CI_Model {
     }
 
     /**
-     * Insert new faculty member
+     * Pagsulud bag-ong myembro sa faculty
      */
     public function insert_faculty($data) {
-        // Add timestamp
+        // Idugang ang timestamp
         $data['created_at'] = date('Y-m-d H:i:s');
         
         if ($this->db->insert($this->table, $data)) {
@@ -42,28 +42,28 @@ class Faculty_users_model extends CI_Model {
     }
 
     /**
-     * Update faculty member
+     * I-update ang miyembro sa faculty
      */
     public function update_faculty($id, $data) {
         return $this->db->where('id', $id)->update($this->table, $data);
     }
 
     /**
-     * Delete faculty member
+     * I-delete ang miyembro sa faculty
      */
     public function delete_faculty($id) {
         return $this->db->where('id', $id)->delete($this->table);
     }
 
     /**
-     * Get faculty count
+     * Get fakultas count
      */
     public function count_faculty() {
         return $this->db->count_all($this->table);
     }
 
     /**
-     * Search faculty members
+     * Pangitaa ang mga miyembro sa faculty
      */
     public function search_faculty($searchTerm) {
         $this->db->like('firstname', $searchTerm);

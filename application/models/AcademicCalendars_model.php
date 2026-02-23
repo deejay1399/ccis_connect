@@ -9,7 +9,7 @@ class AcademicCalendars_model extends CI_Model {
         parent::__construct();
     }
     
-    // Get all academic calendars
+    // Kuhaa ang tanan nga mga iskedyul sa akademiko
     public function get_all() {
         $query = $this->db->select('calendar_id as id, academic_year, pdf_file as file_url, uploaded_at as created_at')
                           ->order_by('uploaded_at', 'DESC')
@@ -17,7 +17,7 @@ class AcademicCalendars_model extends CI_Model {
         return $query->result_array();
     }
     
-    // Get calendar by ID
+    // Kuhaa ang kalendaryo pinaagi sa ID
     public function get_by_id($id) {
         $query = $this->db->select('calendar_id as id, academic_year, pdf_file as file_url, uploaded_at as created_at')
                           ->where('calendar_id', $id)
@@ -25,7 +25,7 @@ class AcademicCalendars_model extends CI_Model {
         return $query->row_array();
     }
     
-    // Get calendars by academic year
+    // Pagkuha og mga kalendaryo pinaagi sa tuig sa akademiko
     public function get_by_year($academic_year) {
         $query = $this->db->select('calendar_id as id, academic_year, pdf_file as file_url, uploaded_at as created_at')
                           ->where('academic_year', $academic_year)
@@ -34,9 +34,9 @@ class AcademicCalendars_model extends CI_Model {
         return $query->result_array();
     }
     
-    // Insert new calendar record
+    // Pagsulud bag-ong rekord sa kalendaryo
     public function insert_calendar($data) {
-        // Map our data to actual database column names
+        // Mapa ang among datos sa tinuud nga mga ngalan sa kolum sa database
         $db_data = [
             'academic_year' => $data['academic_year'],
             'pdf_file' => $data['file_url']
@@ -44,7 +44,7 @@ class AcademicCalendars_model extends CI_Model {
         return $this->db->insert($this->table, $db_data);
     }
     
-    // Update calendar record
+    // I-update ang rekord sa kalendaryo
     public function update_calendar($id, $data) {
         $db_data = [];
         if (isset($data['academic_year'])) $db_data['academic_year'] = $data['academic_year'];
@@ -53,12 +53,12 @@ class AcademicCalendars_model extends CI_Model {
         return $this->db->where('calendar_id', $id)->update($this->table, $db_data);
     }
     
-    // Delete calendar record
+    // I-delete ang rekord sa kalendaryo
     public function delete_calendar($id) {
         return $this->db->where('calendar_id', $id)->delete($this->table);
     }
     
-    // Count calendar records
+    // Pag-ihap sa mga rekord sa kalendaryo
     public function count_calendars() {
         return $this->db->count_all($this->table);
     }

@@ -126,7 +126,7 @@
     
     <!-- Global Configuration -->
     <script>
-        // Set global base URL for all pages
+        // Itakda ang global base URL alang sa tanan nga mga panid
         window.BASE_URL = '<?php echo base_url(); ?>';
         window.CSRF_TOKEN_NAME = '<?php echo $this->security->get_csrf_token_name(); ?>';
         window.CSRF_TOKEN_VALUE = '<?php echo $this->security->get_csrf_hash(); ?>';
@@ -233,7 +233,7 @@
     
     <!-- Session Data Bridge: PHP Session -> JavaScript localStorage -->
     <script>
-        // Sync PHP session data to localStorage immediately on page load
+        // Pag-sync sa datos sa sesyon sa PHP sa localStorage diha-diha dayon sa pagkarga sa panid
         (function() {
             const sessionData = <?php 
                 $user_session = array();
@@ -255,9 +255,9 @@
                 echo json_encode($user_session);
             ?>;
 
-            // If user is logged in, sync to localStorage
+            // Kon ang user naka-log in, i-sync sa localStorage
             if (sessionData && sessionData.user_id) {
-                // Map role_id to role name
+                // Mapa role_id sa role name
                 const roleMap = {
                     1: 'superadmin',
                     2: 'faculty',

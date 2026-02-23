@@ -44,7 +44,7 @@ class Student_model extends CI_Model {
     }
 
     /**
-     * Create student record
+     * Paghimo og rekord sa estudyante
      */
     public function create($data)
     {
@@ -52,7 +52,7 @@ class Student_model extends CI_Model {
     }
 
     /**
-     * Get student by user ID
+     * Kuhaa ang estudyante pinaagi sa user ID
      */
     public function get_by_user_id($user_id)
     {
@@ -62,7 +62,7 @@ class Student_model extends CI_Model {
     }
 
     /**
-     * Update student
+     * I-update ang estudyante
      */
     public function update($user_id, $data)
     {

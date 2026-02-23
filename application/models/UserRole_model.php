@@ -12,7 +12,7 @@ class UserRole_model extends CI_Model {
     }
 
     /**
-     * Get user's role
+     * Kuhaa ang papel sa tiggamit
      */
     public function get_user_role($user_id)
     {
@@ -22,7 +22,7 @@ class UserRole_model extends CI_Model {
     }
 
     /**
-     * Get user's primary role ID
+     * Kuhaa ang ID sa Panguna nga Papel sa Gumagamit
      */
     public function get_role_id($user_id)
     {
@@ -35,7 +35,7 @@ class UserRole_model extends CI_Model {
     }
 
     /**
-     * Assign role to user
+     * I-assign ang papel sa tiggamit
      */
     public function assign_role($user_id, $role_id)
     {
@@ -48,7 +48,7 @@ class UserRole_model extends CI_Model {
     }
 
     /**
-     * Check if user has specific role
+     * Susihon kung ang tiggamit adunay piho nga papel
      */
     public function has_role($user_id, $role_id)
     {
@@ -58,7 +58,7 @@ class UserRole_model extends CI_Model {
     }
 
     /**
-     * Get all roles for a user
+     * Kuhaa ang tanan nga mga papel alang sa usa ka tiggamit
      */
     public function get_roles_by_user($user_id)
     {

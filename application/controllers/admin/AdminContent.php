@@ -75,14 +75,14 @@ class AdminContent extends CI_Controller {
 
 	public function forms()
 	{
-		// Access control - only superadmin can manage forms
+		// Kontrol sa pag-access - superadmin ra ang puwede mo-manage sa mga porma
 		if (!$this->session->userdata('logged_in')) {
 			redirect('login');
 		}
 		
 		$user_role = $this->session->userdata('role');
 		if ($user_role == 'student') {
-			// Redirect unauthorized users to public forms page
+			// I-redirect ang walay permiso ngadto sa publiko nga mga porma panid
 			redirect('forms');
 		}
 
@@ -134,7 +134,7 @@ class AdminContent extends CI_Controller {
 				}
 			}
 
-			// Keep the known organizations visible even if they have no activity yet.
+			// Ipakita gihapon ang mga organisasyon sa nailhang bisan wala pa silay kalihokan.
 			$slugs['the_legion'] = true;
 			$slugs['csguild'] = true;
 			$slugs = array_keys($slugs);
@@ -307,7 +307,7 @@ class AdminContent extends CI_Controller {
 		$this->load->view('superadmin/layouts/footer');
 	}
 
-	// ==================== ALUMNI MANAGEMENT (AJAX) ====================
+	// ==================== PAGDUMALA SA ALUMNI (AJAX) ====================
 
 	public function load_alumni_mentor_requests()
 	{
@@ -808,7 +808,7 @@ class AdminContent extends CI_Controller {
 		exit;
 	}
 
-	// AJAX: Load homepage data
+	// AJAX: I-load ang homepage data
 	public function load_homepage()
 	{
 		header('Content-Type: application/json');
@@ -862,7 +862,7 @@ class AdminContent extends CI_Controller {
 		exit;
 	}
 
-	// AJAX: Load all homepage records (carousel + welcome source)
+	// AJAX: I-load ang tanan nga mga rekord sa homepage (carousel + tinubdan sa welcome)
 	public function load_homepage_all()
 	{
 		header('Content-Type: application/json');
@@ -884,7 +884,7 @@ class AdminContent extends CI_Controller {
 		exit;
 	}
 
-	// AJAX: Save homepage data with file upload
+	// AJAX: I-save ang data sa homepage uban sa usa ka file upload
 	public function save_homepage()
 	{
 		header('Content-Type: application/json');
@@ -893,7 +893,7 @@ class AdminContent extends CI_Controller {
 			$title = $this->input->post('title');
 			$content = $this->input->post('content');
 
-			// Validate inputs
+			// Siguroa nga sakto ang mga inputs
 			if (empty($title) || empty($content)) {
 				echo json_encode([
 					'success' => false,
@@ -902,10 +902,10 @@ class AdminContent extends CI_Controller {
 				exit;
 			}
 
-			// Load the model
+			// I-load ang modelo
 			$this->load->model('Homepage_model');
 
-			// Handle file upload if present
+			// Asikasuha ang file upload kung naa
 			$banner_image = null;
 			if (!empty($_FILES['banner_image']['name'])) {
 				$banner_image = $this->_upload_banner();
@@ -919,7 +919,7 @@ class AdminContent extends CI_Controller {
 				}
 			}
 
-			// Prepare save data
+			// Andama ang data para i-save
 			$save_data = [
 				'title' => $title,
 				'content' => $content,
@@ -929,15 +929,15 @@ class AdminContent extends CI_Controller {
 				$save_data['banner_image'] = $banner_image;
 			}
 
-			// Save to database
+			// I-save sa database
 			$result = $this->Homepage_model->save_homepage($save_data);
 
-			// Log the result for debugging
+			// I-log ang resulta para sa debugging
 			log_message('info', 'Homepage save result: ' . ($result ? 'TRUE' : 'FALSE'));
 			log_message('info', 'Database error: ' . $this->db->error()['message']);
 
 			if ($result !== false) {
-				// Reload the data to confirm what's in database
+				// I-reload ang data aron makumpirma unsay naa sa database
 				$reload_data = $this->Homepage_model->get_latest();
 				
 				echo json_encode([
@@ -962,7 +962,7 @@ class AdminContent extends CI_Controller {
 		exit;
 	}
 
-	// AJAX: Replace homepage data in one operation (welcome + carousel)
+	// AJAX: Ilisan ang homepage data sa usa ka ka operasyon (welcome + carousel)
 	public function replace_homepage()
 	{
 		header('Content-Type: application/json');
@@ -977,7 +977,7 @@ class AdminContent extends CI_Controller {
 				$existing_images = [];
 			}
 
-			// Keep only non-empty relative paths and avoid duplicates.
+			// Tipigi lang ang relatibong mga agianan nga dili bakante ug likayi ang mga duplicate.
 			$kept_images = [];
 			foreach ($existing_images as $path) {
 				$clean = trim((string) $path);
@@ -999,7 +999,7 @@ class AdminContent extends CI_Controller {
 			$current_records = $this->Homepage_model->get_all();
 			$all_images = array_merge($kept_images, $new_images);
 
-			// Remove old files that are no longer referenced.
+			// Tanggala ang daang mga file nga wala na gigamit.
 			foreach ($current_records as $record) {
 				if (empty($record['banner_image'])) {
 					continue;
@@ -1009,17 +1009,17 @@ class AdminContent extends CI_Controller {
 				}
 			}
 
-			// Rebuild homepage rows.
+			// Tukora pag-usab ang mga laray sa homepage.
 			$this->db->empty_table('homepage');
 
 			if (empty($all_images)) {
-				// Keep welcome content even without carousel images.
+				// Ibilin ang welcome content bisan wala 'y mga imahe sa carousel.
 				$this->Homepage_model->save_homepage([
 					'title' => $title,
 					'content' => $content
 				]);
 			} else {
-				// Preserve front-end order while public homepage reads records in DESC id.
+				// Bantayi ang front-end order samtang ang publiko nga homepage mobasa ug mga rekord sa DESC id.
 				$insert_images = array_reverse($all_images);
 				foreach ($insert_images as $image_path) {
 					$this->Homepage_model->save_homepage([
@@ -1044,16 +1044,16 @@ class AdminContent extends CI_Controller {
 		exit;
 	}
 
-	// Helper: Upload banner image
+	// Tabang nga function: Upload sa banner image
 	private function _upload_banner()
 	{
-		// Create uploads directory if doesn't exist
+		// Himoa ang uploads directory kung wala pa
 		$upload_dir = FCPATH . 'uploads/dashboard';
 		if (!is_dir($upload_dir)) {
 			@mkdir($upload_dir, 0755, true);
 		}
 
-		// Configure upload settings
+		// I-set ang upload settings
 		$config = [
 			'upload_path' => $upload_dir,
 			'allowed_types' => 'gif|jpg|png|jpeg|webp',
@@ -1070,7 +1070,7 @@ class AdminContent extends CI_Controller {
 			return false;
 		}
 
-		// Return relative path for database storage
+		// Ibalik ang paryente nga agianan alang sa pagtipig sa database
 		$upload_data = $this->upload->data();
 		return 'uploads/dashboard/' . $upload_data['file_name'];
 	}
@@ -1118,7 +1118,7 @@ class AdminContent extends CI_Controller {
 			$config = [
 				'upload_path' => $upload_dir,
 				'allowed_types' => 'gif|jpg|png|jpeg|webp',
-				'max_size' => 20480, // 20MB per image
+				'max_size' => 20480, // 20MB matag image
 				'file_name' => 'banner_' . time() . '_' . random_string('alnum', 8),
 				'overwrite' => false,
 				'encrypt_name' => false
@@ -1141,7 +1141,7 @@ class AdminContent extends CI_Controller {
 		return $paths;
 	}
 
-	// ==================== UPDATES MANAGEMENT (ANNOUNCEMENTS / EVENTS / DEAN'S LIST) ====================
+	// ==================== PAGDUMALA SA UPDATE (mga pahibalo / panghitabo / DEAN'S LIST) ====================
 
 	private function _ensure_upload_dir($relative_dir)
 	{
@@ -1559,7 +1559,7 @@ class AdminContent extends CI_Controller {
 		exit;
 	}
 
-	// ==================== FACULTY API ENDPOINTS ====================
+	// ==================== MGA FACULTY API mga endpoint ====================
 
 	public function api_get_faculty() {
 		header('Content-Type: application/json');
@@ -1592,7 +1592,7 @@ class AdminContent extends CI_Controller {
 		try {
 			$input = json_decode($this->input->raw_input_stream, true);
 
-			// Validate required fields
+			// Siguroa nga kumpleto ang mga uma sa gikinahanglang
 			if (empty($input['firstname']) || empty($input['lastname']) || empty($input['position'])) {
 				http_response_code(400);
 				echo json_encode(array(
@@ -1602,7 +1602,7 @@ class AdminContent extends CI_Controller {
 				return;
 			}
 
-			// Handle image upload if provided
+			// Asikasuha ang image upload kung gihatag
 			$imageData = null;
 			if (!empty($input['image'])) {
 				$imageData = $this->handle_image_upload($input['image'], 'faculty');
@@ -1661,7 +1661,7 @@ class AdminContent extends CI_Controller {
 				return;
 			}
 
-			// Validate required fields
+			// Siguroa nga kumpleto ang mga uma sa gikinahanglang
 			if (empty($input['firstname']) || empty($input['lastname']) || empty($input['position'])) {
 				http_response_code(400);
 				echo json_encode(array(
@@ -1678,7 +1678,7 @@ class AdminContent extends CI_Controller {
 				'advisory' => isset($input['advisory']) ? $input['advisory'] : null
 			);
 
-			// Handle image update if provided
+			// Asikasuha ang pag-update sa imahe kung gihatag
 			if (!empty($input['image'])) {
 				$imageData = $this->handle_image_upload($input['image'], 'faculty');
 				$data['image'] = $imageData;
@@ -1751,30 +1751,30 @@ class AdminContent extends CI_Controller {
 		}
 	}
 
-	// Helper function to handle image uploads
+	// Tabang nga function para sa image uploads
 	private function handle_image_upload($imageData, $folder = 'faculty') {
 		try {
-			// Base64 encoded data comes as: data:image/png;base64,iVBORw0KGgo...
+			// Ang Base64 naka-encode nga datos kasagaran ing-ani: datos:imahe/png;base64,iVBORw0KGgo...
 			if (strpos($imageData, ',') === false) {
-				return null; // Invalid format
+				return null; // Dili sakto nga pormat
 			}
 
 			list($type, $data) = explode(',', $imageData);
 			$data = base64_decode($data);
 
-			// Create directory if it doesn't exist
+			// Himoa ang direktoryo kung wala pa
 			$uploadDir = FCPATH . 'uploads/' . $folder;
 			if (!is_dir($uploadDir)) {
 				mkdir($uploadDir, 0755, true);
 			}
 
-			// Generate unique filename
+			// Himo ug talagsaon nga filename
 			$filename = $folder . '_' . time() . '_' . uniqid() . '.png';
 			$filepath = $uploadDir . '/' . $filename;
 
-			// Save file
+			// I-save ang file
 			if (file_put_contents($filepath, $data)) {
-				// Return relative URL for storing in database
+				// Ibalik ang paryente URL alang sa tipigan sa database
 				return base_url('uploads/' . $folder . '/' . $filename);
 			}
 
@@ -1874,7 +1874,7 @@ class AdminContent extends CI_Controller {
 	}
 
 	/**
-	 * AJAX: Load faculty data
+	 * AJAX: I-load ang faculty data
 	 */
 	public function load_faculty()
 	{
@@ -1904,7 +1904,7 @@ class AdminContent extends CI_Controller {
 	}
 
 	/**
-	 * AJAX: Update faculty
+	 * AJAX: I-update ang faculty
 	 */
 	public function update_faculty()
 	{
@@ -1919,7 +1919,7 @@ class AdminContent extends CI_Controller {
 			$vpType = trim((string) $this->input->post('vp_type'));
 			$course = trim((string) $this->input->post('course'));
 
-			// Validate inputs
+			// Siguroa nga sakto ang mga inputs
 			if ($id <= 0 || $firstname === '' || $lastname === '' || $position === '') {
 				http_response_code(400);
 				echo json_encode([
@@ -1936,7 +1936,7 @@ class AdminContent extends CI_Controller {
 				exit;
 			}
 
-			// Prepare update data
+			// Andama ang data para sa update
 			$update_data = [
 				'firstname' => $firstname,
 				'lastname' => $lastname,
@@ -1946,7 +1946,7 @@ class AdminContent extends CI_Controller {
 				'course' => $normalized['data']['course']
 			];
 
-			// Handle image upload if provided
+			// Asikasuha ang image upload kung gihatag
 			if (!empty($_FILES['image']['name'])) {
 				$upload_dir = FCPATH . 'uploads/faculty';
 				if (!is_dir($upload_dir)) {
@@ -1972,7 +1972,7 @@ class AdminContent extends CI_Controller {
 				$update_data['image'] = $image_filename;
 			}
 
-			// Update in database
+			// I-update sa database
 			if (!$this->Faculty_users_model) {
 				$this->load->model('Faculty_users_model');
 			}
@@ -2003,7 +2003,7 @@ class AdminContent extends CI_Controller {
 	}
 
 	/**
-	 * AJAX: Delete faculty
+	 * AJAX: I-delete ang faculty
 	 */
 	public function delete_faculty()
 	{
@@ -2012,7 +2012,7 @@ class AdminContent extends CI_Controller {
 		try {
 			$id = $this->input->post('id');
 
-			// Validate inputs
+			// Siguroa nga sakto ang mga inputs
 			if (empty($id)) {
 				http_response_code(400);
 				echo json_encode([
@@ -2022,7 +2022,7 @@ class AdminContent extends CI_Controller {
 				exit;
 			}
 
-			// Delete from database
+			// I-delete gikan sa database
 			if (!$this->Faculty_users_model) {
 				$this->load->model('Faculty_users_model');
 			}
@@ -2053,7 +2053,7 @@ class AdminContent extends CI_Controller {
 	}
 
 	/**
-	 * AJAX: Save faculty with image upload
+	 * AJAX: I-save ang faculty uban sa sa image upload
 	 */
 	public function save_faculty()
 	{
@@ -2067,7 +2067,7 @@ class AdminContent extends CI_Controller {
 			$vpType = trim((string) $this->input->post('vp_type'));
 			$course = trim((string) $this->input->post('course'));
 
-			// Validate inputs
+			// Siguroa nga sakto ang mga inputs
 			if ($firstname === '' || $lastname === '' || $position === '') {
 				http_response_code(400);
 				echo json_encode([
@@ -2084,7 +2084,7 @@ class AdminContent extends CI_Controller {
 				exit;
 			}
 
-			// Create directory for uploads if doesn't exist
+			// Himoa ang direktoryo alang sa mga upload kung wala pa
 			$upload_dir = FCPATH . 'uploads/faculty';
 			if (!is_dir($upload_dir)) {
 				if (!@mkdir($upload_dir, 0755, true)) {
@@ -2097,7 +2097,7 @@ class AdminContent extends CI_Controller {
 				}
 			}
 
-			// Handle file upload
+			// Asikasuha ang file upload
 			$image_filename = null;
 			if (!empty($_FILES['image']['name'])) {
 				$image_filename = $this->_upload_faculty_image();
@@ -2112,7 +2112,7 @@ class AdminContent extends CI_Controller {
 				}
 			}
 
-			// Prepare save data
+			// Andama ang data para i-save
 			$save_data = [
 				'firstname' => $firstname,
 				'lastname' => $lastname,
@@ -2123,7 +2123,7 @@ class AdminContent extends CI_Controller {
 				'image' => $image_filename
 			];
 
-			// Save to database - make sure model is loaded
+			// I-save sa database - siguroa nga gikarga ang modelo
 			if (!$this->Faculty_users_model) {
 				$this->load->model('Faculty_users_model');
 			}
@@ -2155,11 +2155,11 @@ class AdminContent extends CI_Controller {
 	}
 
 	/**
-	 * Helper: Upload faculty image
+	 * Tabang: Upload faculty image
 	 */
 	private function _upload_faculty_image()
 	{
-		// Create uploads directory if doesn't exist
+		// Himoa ang uploads directory kung wala pa
 		$upload_dir = FCPATH . 'uploads/faculty';
 		if (!is_dir($upload_dir)) {
 			if (!@mkdir($upload_dir, 0755, true)) {
@@ -2168,13 +2168,13 @@ class AdminContent extends CI_Controller {
 			}
 		}
 
-		// Make sure upload directory is writable
+		// Siguroa nga masulatan ang upload directory
 		if (!is_writable($upload_dir)) {
 			log_message('error', 'Upload directory not writable: ' . $upload_dir);
 			return false;
 		}
 
-		// Configure upload settings
+		// I-set ang upload settings
 		$config = [
 			'upload_path' => $upload_dir . '/',
 			'allowed_types' => 'gif|jpg|png|jpeg|jpe',
@@ -2192,13 +2192,13 @@ class AdminContent extends CI_Controller {
 			return false;
 		}
 
-		// Return filename for database storage
+		// Ibalik ang filename alang sa pagtipig sa database
 		$upload_data = $this->upload->data();
 		return $upload_data['file_name'];
 	}
 
 	// ============================================
-	// PROGRAMS MANAGEMENT API METHODS
+	// MGA API nga pamaagi SA PAGDUMALA SA mga programa
 	// ============================================
 
 	public function api_get_programs() {
@@ -2218,7 +2218,7 @@ class AdminContent extends CI_Controller {
 		$duration_years = $this->input->post('duration_years');
 		$career_opportunities = $this->input->post('career_opportunities');
 		
-		// Validate inputs
+		// Siguroa nga sakto ang mga inputs
 		if (empty($program_name) || empty($description) || empty($duration_years) || empty($career_opportunities)) {
 			echo json_encode([
 				'success' => false,
@@ -2291,21 +2291,21 @@ class AdminContent extends CI_Controller {
 		]);
 	}
 
-	// ==================== ACADEMIC CALENDARS API ====================
+	// ==================== Mga kalendaryo sa akademiko API (BISAYA NGA mga nota) ====================
 	
 	public function api_get_calendars() {
 		header('Content-Type: application/json');
 		$this->load->model('AcademicCalendars_model');
 		
 		try {
-			// Check if table exists
+			// Tan-awa kung naa ba ang lamesa
 			if (!$this->db->table_exists('academic_calendars')) {
 				error_log('Academic calendars table does not exist - creating it');
 				$this->create_academic_calendars_table();
 				error_log('Academic calendars table created');
 			}
 			
-			// Get calendars
+			// Kuhaa ang mga kalendaryo
 			$calendars = $this->AcademicCalendars_model->get_all();
 			error_log('Calendars retrieved: ' . count($calendars));
 			
@@ -2327,25 +2327,25 @@ class AdminContent extends CI_Controller {
 		}
 	}
 
-	// ==================== CURRICULUM API ====================
+	// ==================== CURRICULUM API (BISAYA nga mga nota sa NGA) ====================
 	
 	public function api_get_curriculums() {
 		header('Content-Type: application/json');
 		error_log('=== Get Curriculums Started ===');
 		
 		try {
-			// Load model
+			// I-load ang modelo
 			$this->load->model('Curriculum_model');
 			error_log('Model loaded successfully');
 			
-			// Check if table exists
+			// Tan-awa kung naa ba ang lamesa
 			if (!$this->db->table_exists('curriculum')) {
 				error_log('Curriculum table does not exist - creating it');
 				$this->create_curriculum_table();
 				error_log('Curriculum table created');
 			}
 			
-			// Get curriculums
+			// Kuhaa ang mga kurikulum
 			$curriculums = $this->Curriculum_model->get_all();
 			error_log('Curriculums retrieved: ' . count($curriculums));
 			
@@ -2367,25 +2367,25 @@ class AdminContent extends CI_Controller {
 		}
 	}
 
-	// ==================== CLASS SCHEDULES API ====================
+	// ==================== Mga iskedyul sa klase API (BISAYA NGA Tala) ====================
 	
 	public function api_get_schedules() {
 		header('Content-Type: application/json');
 		error_log('=== Get Class Schedules Started ===');
 		
 		try {
-			// Load model
+			// I-load ang modelo
 			$this->load->model('ClassSchedules_model');
 			error_log('Model loaded successfully');
 			
-			// Check if table exists
+			// Tan-awa kung naa ba ang lamesa
 			if (!$this->db->table_exists('class_schedules')) {
 				error_log('Class schedules table does not exist - creating it');
 				$this->create_class_schedules_table();
 				error_log('Class schedules table created');
 			}
 			
-			// Get schedules
+			// Kuhaa ang mga eskedyul
 			$schedules = $this->ClassSchedules_model->get_all();
 			error_log('Schedules retrieved: ' . count($schedules));
 			

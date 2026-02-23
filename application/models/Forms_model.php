@@ -10,7 +10,7 @@ class Forms_model extends CI_Model {
 	}
 
 	/**
-	 * Get all forms
+	 * Kuhaa ang tanan nga mga porma
 	 */
 	public function get_all_forms()
 	{
@@ -19,7 +19,7 @@ class Forms_model extends CI_Model {
 	}
 
 	/**
-	 * Get form by ID
+	 * Get porma pinaagi sa ID
 	 */
 	public function get_form_by_id($id)
 	{
@@ -28,7 +28,7 @@ class Forms_model extends CI_Model {
 	}
 
 	/**
-	 * Insert new form
+	 * Isulud ang bag-ong porma
 	 */
 	public function insert_form($data)
 	{
@@ -52,7 +52,7 @@ class Forms_model extends CI_Model {
 	}
 
 	/**
-	 * Update form
+	 * I-update ang porma
 	 */
 	public function update_form($id, $data)
 	{
@@ -61,7 +61,7 @@ class Forms_model extends CI_Model {
 			'updated_at' => date('Y-m-d H:i:s')
 		);
 
-		// If a new file is provided, update file info
+		// Kung gihatag ang usa ka bag-ong file, i-update ang kasayuran sa file
 		if (isset($data['file_url'])) {
 			$update_data['file_url'] = $data['file_url'];
 			$update_data['original_filename'] = $data['original_filename'];
@@ -73,7 +73,7 @@ class Forms_model extends CI_Model {
 	}
 
 	/**
-	 * Delete form (soft delete)
+	 * I-delete ang porma (humok nga pagtangtang)
 	 */
 	public function delete_form($id)
 	{
@@ -82,7 +82,7 @@ class Forms_model extends CI_Model {
 	}
 
 	/**
-	 * Get form count
+	 * Kuhaa ang ihap sa porma
 	 */
 	public function get_form_count()
 	{
@@ -91,7 +91,7 @@ class Forms_model extends CI_Model {
 	}
 
 	/**
-	 * Search forms by title
+	 * Mga porma sa pagpangita pinaagi sa titulo
 	 */
 	public function search_forms($search_term)
 	{
