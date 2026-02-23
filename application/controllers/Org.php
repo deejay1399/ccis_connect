@@ -294,19 +294,41 @@ class Org extends CI_Controller {
             redirect('org/dashboard#happenings');
         }
 
-        $image = $this->upload_image('happening_image', 'uploads/org/happenings');
-
-        if ($image === false) {
+        $images = $this->upload_multiple_images('happening_images', 'uploads/org/happenings');
+        if ($images === null) {
             redirect('org/dashboard#happenings');
         }
 
-        $this->OrgAdmin_model->add_happening($this->org['organization_slug'], [
+        // Backward compatibility: accept old single field if present.
+        if (empty($images)) {
+            $singleImage = $this->upload_image('happening_image', 'uploads/org/happenings');
+            if ($singleImage === null) {
+                redirect('org/dashboard#happenings');
+            }
+            if ($singleImage !== false) {
+                $images[] = $singleImage;
+            }
+        }
+
+        if (empty($images)) {
+            $this->session->set_flashdata('error', 'Please upload at least one happening image.');
+            redirect('org/dashboard#happenings');
+        }
+
+        $happening_id = $this->OrgAdmin_model->add_happening($this->org['organization_slug'], [
             'title' => $title,
             'description' => $description,
             'event_date' => $event_date,
-            'image' => $image,
+            'image' => $images[0],
             'created_by' => (int) $this->session->userdata('user_id'),
         ]);
+
+        if (!$happening_id) {
+            $this->session->set_flashdata('error', 'Failed to save happening.');
+            redirect('org/dashboard#happenings');
+        }
+
+        $this->OrgAdmin_model->set_happening_images($happening_id, $this->org['organization_slug'], $images);
 
         $this->session->set_flashdata('success', 'Happening saved successfully.');
         redirect('org/dashboard#happenings');
@@ -327,11 +349,19 @@ class Org extends CI_Controller {
             redirect('org/dashboard#happenings');
         }
 
-        $image = null;
-        if (!empty($_FILES['happening_image']['name'])) {
-            $image = $this->upload_image('happening_image', 'uploads/org/happenings');
-            if ($image === null) {
+        $images = $this->upload_multiple_images('happening_images', 'uploads/org/happenings');
+        if ($images === null) {
+            redirect('org/dashboard#happenings');
+        }
+
+        // Backward compatibility: old single field.
+        if (empty($images) && !empty($_FILES['happening_image']['name'])) {
+            $singleImage = $this->upload_image('happening_image', 'uploads/org/happenings');
+            if ($singleImage === null) {
                 redirect('org/dashboard#happenings');
+            }
+            if ($singleImage !== false) {
+                $images[] = $singleImage;
             }
         }
 
@@ -339,8 +369,12 @@ class Org extends CI_Controller {
             'title' => $title,
             'description' => $description,
             'event_date' => $event_date,
-            'image' => $image,
+            'image' => !empty($images) ? $images[0] : null,
         ]);
+
+        if (!empty($images)) {
+            $this->OrgAdmin_model->set_happening_images((int) $id, $this->org['organization_slug'], $images);
+        }
 
         $this->session->set_flashdata('success', 'Happening updated successfully.');
         redirect('org/dashboard#happenings');
@@ -386,6 +420,70 @@ class Org extends CI_Controller {
 
         $data = $this->upload->data();
         return $data['file_name'];
+    }
+
+    private function upload_multiple_images($field_name, $relative_dir)
+    {
+        if (
+            !isset($_FILES[$field_name]) ||
+            !isset($_FILES[$field_name]['name']) ||
+            !is_array($_FILES[$field_name]['name']) ||
+            count(array_filter($_FILES[$field_name]['name'])) === 0
+        ) {
+            return [];
+        }
+
+        $upload_dir = FCPATH . trim($relative_dir, '/');
+        if (!is_dir($upload_dir)) {
+            @mkdir($upload_dir, 0755, true);
+        }
+
+        $uploaded = [];
+        $names = $_FILES[$field_name]['name'];
+        $tmpNames = $_FILES[$field_name]['tmp_name'];
+        $types = $_FILES[$field_name]['type'];
+        $sizes = $_FILES[$field_name]['size'];
+        $errors = $_FILES[$field_name]['error'];
+
+        foreach ($names as $i => $name) {
+            $name = trim((string) $name);
+            if ($name === '') {
+                continue;
+            }
+
+            $_FILES['__multi_upload'] = [
+                'name' => $name,
+                'type' => isset($types[$i]) ? $types[$i] : '',
+                'tmp_name' => isset($tmpNames[$i]) ? $tmpNames[$i] : '',
+                'error' => isset($errors[$i]) ? $errors[$i] : 4,
+                'size' => isset($sizes[$i]) ? $sizes[$i] : 0,
+            ];
+
+            $config = [
+                'upload_path' => $upload_dir,
+                'allowed_types' => 'gif|jpg|jpeg|png|webp',
+                'max_size' => 5120,
+                'file_name' => strtolower('happening_' . time() . '_' . $i . '_' . random_string('alnum', 8)),
+                'overwrite' => false,
+                'encrypt_name' => false,
+            ];
+
+            $this->upload->initialize($config);
+
+            if (!$this->upload->do_upload('__multi_upload')) {
+                $this->session->set_flashdata('error', strip_tags($this->upload->display_errors()));
+                unset($_FILES['__multi_upload']);
+                return null;
+            }
+
+            $data = $this->upload->data();
+            if (!empty($data['file_name'])) {
+                $uploaded[] = $data['file_name'];
+            }
+        }
+
+        unset($_FILES['__multi_upload']);
+        return $uploaded;
     }
 
     private function ensure_upload_directories()

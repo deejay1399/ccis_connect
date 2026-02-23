@@ -310,9 +310,15 @@ $recent_activity = array_slice($recent_activity, 0, 6);
                     <div class="empty-state"><p>No happenings yet.</p></div>
                 <?php else: ?>
                     <?php foreach ($happenings as $happening): ?>
+                        <?php
+                            $happening_images = isset($happening['images']) && is_array($happening['images']) ? $happening['images'] : [];
+                            if (empty($happening_images) && !empty($happening['image'])) {
+                                $happening_images = [$happening['image']];
+                            }
+                        ?>
                         <div class="happening-card">
-                            <?php if (!empty($happening['image'])): ?>
-                                <img src="<?php echo base_url('uploads/org/happenings/' . $happening['image']); ?>" alt="<?php echo html_escape($happening['title']); ?>" loading="lazy" decoding="async" style="width:100%;height:180px;object-fit:cover;border-radius:10px;">
+                            <?php if (!empty($happening_images)): ?>
+                                <img src="<?php echo base_url('uploads/org/happenings/' . $happening_images[0]); ?>" alt="<?php echo html_escape($happening['title']); ?>" loading="lazy" decoding="async" style="width:100%;height:180px;object-fit:cover;border-radius:10px;">
                             <?php else: ?>
                                 <div class="happening-image-placeholder" style="height:180px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:#f3f4f6;">
                                     <i class="fas fa-images"></i>
@@ -322,6 +328,7 @@ $recent_activity = array_slice($recent_activity, 0, 6);
                                 <h6><?php echo html_escape($happening['title']); ?></h6>
                                 <p class="happening-description"><?php echo html_escape($happening['description']); ?></p>
                                 <?php if (!empty($happening['event_date'])): ?><small class="happening-date"><i class="fas fa-calendar me-1"></i><?php echo html_escape($happening['event_date']); ?></small><?php endif; ?>
+                                <?php if (!empty($happening_images)): ?><small class="happening-date d-block"><i class="fas fa-images me-1"></i><?php echo count($happening_images); ?> image<?php echo count($happening_images) !== 1 ? 's' : ''; ?></small><?php endif; ?>
                             </div>
                             <div class="happening-actions">
                                 <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewHappeningModal<?php echo (int) $happening['id']; ?>">
@@ -535,6 +542,12 @@ $recent_activity = array_slice($recent_activity, 0, 6);
 <?php endforeach; ?>
 
 <?php foreach ($happenings as $happening): ?>
+<?php
+    $happening_images = isset($happening['images']) && is_array($happening['images']) ? $happening['images'] : [];
+    if (empty($happening_images) && !empty($happening['image'])) {
+        $happening_images = [$happening['image']];
+    }
+?>
 <div class="modal fade" id="viewHappeningModal<?php echo (int) $happening['id']; ?>" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -543,8 +556,12 @@ $recent_activity = array_slice($recent_activity, 0, 6);
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <?php if (!empty($happening['image'])): ?>
-                    <img src="<?php echo base_url('uploads/org/happenings/' . $happening['image']); ?>" alt="<?php echo html_escape($happening['title']); ?>" class="img-fluid rounded mb-3">
+                <?php if (!empty($happening_images)): ?>
+                    <div class="happening-image-grid mb-3">
+                        <?php foreach ($happening_images as $img): ?>
+                            <img src="<?php echo base_url('uploads/org/happenings/' . $img); ?>" alt="<?php echo html_escape($happening['title']); ?>" class="img-fluid rounded">
+                        <?php endforeach; ?>
+                    </div>
                 <?php endif; ?>
                 <p><strong>Title:</strong> <?php echo html_escape($happening['title']); ?></p>
                 <p><strong>Event date:</strong> <?php echo !empty($happening['event_date']) ? html_escape($happening['event_date']) : 'N/A'; ?></p>
@@ -577,16 +594,22 @@ $recent_activity = array_slice($recent_activity, 0, 6);
                         <textarea class="form-control" name="description" rows="4" required><?php echo html_escape($happening['description']); ?></textarea>
                     </div>
                     <div class="mb-3">
-                        <?php if (!empty($happening['image'])): ?>
+                        <?php if (!empty($happening_images)): ?>
                             <div class="mb-2">
-                                <img src="<?php echo base_url('uploads/org/happenings/' . $happening['image']); ?>" alt="<?php echo html_escape($happening['title']); ?>" class="img-fluid rounded" style="max-height: 180px;">
-                                <small class="d-block text-muted mt-1">Current image: <?php echo html_escape($happening['image']); ?></small>
+                                <div class="happening-image-grid">
+                                    <?php foreach ($happening_images as $img): ?>
+                                        <img src="<?php echo base_url('uploads/org/happenings/' . $img); ?>" alt="<?php echo html_escape($happening['title']); ?>" class="img-fluid rounded">
+                                    <?php endforeach; ?>
+                                </div>
+                                <small class="d-block text-muted mt-1">Current images: <?php echo count($happening_images); ?></small>
                             </div>
                         <?php else: ?>
-                            <small class="d-block text-muted mb-2">Current image: none</small>
+                            <small class="d-block text-muted mb-2">Current images: none</small>
                         <?php endif; ?>
-                        <label class="form-label">Replace image (optional)</label>
-                        <input type="file" class="form-control" name="happening_image" accept="image/*">
+                        <label class="form-label">Replace images (optional)</label>
+                        <input type="file" class="form-control" name="happening_images[]" accept="image/*" multiple data-preview-target="editHappeningPreview<?php echo (int) $happening['id']; ?>">
+                        <small class="text-muted">Selecting new images will replace the current set.</small>
+                        <div id="editHappeningPreview<?php echo (int) $happening['id']; ?>" class="selected-images-preview mt-2"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -722,8 +745,10 @@ $recent_activity = array_slice($recent_activity, 0, 6);
                         <textarea class="form-control" name="description" rows="4" required></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Image</label>
-                        <input type="file" class="form-control" name="happening_image" accept="image/*" required>
+                        <label class="form-label">Images</label>
+                        <input type="file" class="form-control" name="happening_images[]" accept="image/*" multiple required data-preview-target="addHappeningPreview">
+                        <small class="text-muted">You can select multiple images.</small>
+                        <div id="addHappeningPreview" class="selected-images-preview mt-2"></div>
                     </div>
                 </div>
                 <div class="modal-footer">

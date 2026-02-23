@@ -122,9 +122,25 @@
                                         <p class="text-muted">No happenings yet.</p>
                                     <?php else: ?>
                                         <?php foreach ($happenings as $happening): ?>
+                                            <?php
+                                                $happening_images = isset($happening['images']) && is_array($happening['images']) ? $happening['images'] : [];
+                                                if (empty($happening_images) && !empty($happening['image'])) {
+                                                    $happening_images = [$happening['image']];
+                                                }
+                                                $org_prefix = ($panel['organization_slug'] === 'csguild' || $panel['organization_slug'] === 'cs_guild') ? 'csguild' : 'legion';
+                                            ?>
                                             <div class="legion-happening-card mb-3">
-                                                <?php if (!empty($happening['image'])): ?>
-                                                    <img src="<?php echo base_url('uploads/org/happenings/' . $happening['image']); ?>" alt="<?php echo html_escape($happening['title']); ?>" style="width:100%;max-height:260px;object-fit:cover;border-radius:10px;margin-bottom:10px;">
+                                                <?php if (!empty($happening_images)): ?>
+                                                    <div class="<?php echo $org_prefix; ?>-happening-images mt-3">
+                                                        <h6><i class="fas fa-images me-1"></i>Event Photos (<?php echo count($happening_images); ?>)</h6>
+                                                        <div class="<?php echo $org_prefix; ?>-image-gallery" data-happening-id="<?php echo (int) $happening['id']; ?>" data-org="<?php echo $org_prefix; ?>">
+                                                            <?php foreach ($happening_images as $img_index => $img_name): ?>
+                                                                <div class="<?php echo $org_prefix; ?>-image-item" data-image-index="<?php echo (int) $img_index; ?>">
+                                                                    <img src="<?php echo base_url('uploads/org/happenings/' . $img_name); ?>" alt="<?php echo html_escape($happening['title']); ?> image <?php echo (int) ($img_index + 1); ?>" loading="lazy" decoding="async">
+                                                                </div>
+                                                            <?php endforeach; ?>
+                                                        </div>
+                                                    </div>
                                                 <?php endif; ?>
                                                 <h5><?php echo html_escape($happening['title']); ?></h5>
                                                 <p><?php echo html_escape($happening['description']); ?></p>
@@ -144,3 +160,29 @@
         <?php endforeach; ?>
     </div>
 </section>
+
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="image-modal-container">
+                    <button class="image-nav-btn prev-btn" id="prevImageBtn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <img id="modalImage" src="" alt="" class="img-fluid">
+                    <button class="image-nav-btn next-btn" id="nextImageBtn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <p id="modalCaption" class="mt-3 text-muted"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

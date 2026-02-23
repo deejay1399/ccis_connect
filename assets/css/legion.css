@@ -1553,6 +1553,51 @@ h1, h2, h3, h4, h5, h6 {
     transform: scale(1.1);
 }
 
+/* Org dashboard happening file-input preview (selected files) */
+.selected-images-preview {
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 8px;
+    margin-top: 8px;
+    max-height: 170px;
+    overflow-y: auto;
+    background: #fafafa;
+}
+
+.selected-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+    gap: 6px;
+}
+
+.selected-preview-item {
+    width: 68px;
+}
+
+.selected-preview-item img {
+    width: 68px !important;
+    height: 52px !important;
+    min-width: 68px !important;
+    max-width: 68px !important;
+    min-height: 52px !important;
+    max-height: 52px !important;
+    border-radius: 6px;
+    object-fit: cover !important;
+    display: block;
+    border: 1px solid #e5e7eb;
+}
+
+.selected-preview-item small {
+    display: block;
+    margin-top: 2px;
+    font-size: 10px;
+    line-height: 1.2;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* ======================================== */
 /* NOTIFICATION STYLES */
 /* ======================================== */
