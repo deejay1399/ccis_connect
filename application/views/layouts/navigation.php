@@ -17,7 +17,7 @@
                     <ul class="dropdown-menu" aria-labelledby="aboutSubDropdown">
                         <li><a class="dropdown-item" href="<?php echo site_url('about'); ?>#history">History</a></li>
                         <li><a class="dropdown-item" href="<?php echo site_url('about'); ?>#vmgo">VMGO</a></li>
-                        <li><a class="dropdown-item" href="<?php echo site_url('about'); ?>#hymn">Hymn</a></li>
+                        <li><a class="dropdown-item" href="<?php echo site_url('about'); ?>#hymn">Hymn and Jingle</a></li>
                     </ul>
                 </li>
 
@@ -100,8 +100,11 @@
                         </li>
                         <li><a class="dropdown-item" href="<?php echo site_url('alumni'); ?>#giveback-section">How to
                                 Give Back</a></li>
+                        <!-- Temporarily disabled: Update Your Information -->
+                        <!--
                         <li><a class="dropdown-item" href="<?php echo site_url('alumni'); ?>#update-form-section">Update
                                 Your Information</a></li>
+                        -->
                     </ul>
                 </li>
 

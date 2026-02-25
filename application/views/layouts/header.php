@@ -36,6 +36,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             border-radius: 50%;
             background-color: #fff;
             box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+            position: relative;
+            z-index: 2;
         }
         @media (min-width: 769px) {
             .global-header-row {

@@ -55,6 +55,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         ?>
         <link rel="stylesheet" href="<?php echo base_url('assets/css/manage_organizations.css?v=' . $organizations_css_version); ?>">
     <?php endif; ?>
+    <?php if(isset($content_type) && $content_type === 'about'): ?>
+        <?php
+            $about_css_path = FCPATH . 'assets/css/manage_about.css';
+            $about_css_version = file_exists($about_css_path) ? filemtime($about_css_path) : time();
+        ?>
+        <link rel="stylesheet" href="<?php echo base_url('assets/css/manage_about.css?v=' . $about_css_version); ?>">
+    <?php endif; ?>
     <style>
         .superadmin-header-row {
             display: flex;
@@ -81,6 +88,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             border-radius: 50%;
             background-color: #fff;
             box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+            position: relative;
+            z-index: 2;
         }
         @media (min-width: 769px) {
             .superadmin-header-row {
@@ -137,7 +147,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <img src="<?php echo base_url('assets/images/ccis.png'); ?>" alt="CCIS Logo" class="superadmin-header-ccis-logo">
                 <div class="header-auth-icon">
                     <a href="<?php echo base_url('index.php/logout?logout=true'); ?>" id="logout-icon-link" class="auth-icon-link" title="Logout">
-                        <i class="fas fa-sign-out-alt"></i>
+                        <i class="fas fa-user-circle"></i>
                     </a>
                 </div>
             </div>

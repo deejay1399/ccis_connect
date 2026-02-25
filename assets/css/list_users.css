@@ -1038,12 +1038,14 @@ body {
     min-width: 300px;
     max-width: 90%;
     border-left: 5px solid var(--success);
+    pointer-events: none;
 }
 
 .floating-notification.show {
     opacity: 1;
     visibility: visible;
     transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
 }
 
 .notification-content {

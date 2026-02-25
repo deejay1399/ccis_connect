@@ -86,12 +86,7 @@ function initializePage() {
     // Setup event listeners
     setupEventListeners();
     
-    // Setup logout
-    $('#logout-icon-link').click(function(e) {
-        e.preventDefault();
-        window.logoutUser();
-        window.location.href = '../user_side/login.html';
-    });
+    // Logout is handled globally by the shared superadmin footer handler.
     
     // Setup mark all as read buttons
     $('#mark-all-mentor-read').click(markAllMentorRead);

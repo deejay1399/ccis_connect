@@ -771,7 +771,8 @@ $(document).ready(function () {
     loadMentorRequests();
     loadChatbotInquiries();
     loadConnectionRequests();
-    loadUpdates();
+    // Temporarily disabled: Alumni Updates loading
+    // loadUpdates();
     loadGiveback();
     loadFeatured();
     loadDirectory();

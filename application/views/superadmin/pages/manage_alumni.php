@@ -29,11 +29,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <span class="badge bg-danger ms-2" id="connection-badge">0</span>
                         </button>
                     </li>
+                    <!-- Temporarily disabled: Alumni Updates tab -->
+                    <!--
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="updates-tab" data-bs-toggle="tab" data-bs-target="#updates-content" type="button" role="tab">
                             <i class="fas fa-user-edit me-2"></i>Alumni Updates
                         </button>
                     </li>
+                    -->
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="giveback-tab" data-bs-toggle="tab" data-bs-target="#giveback-content" type="button" role="tab">
                             <i class="fas fa-donate me-2"></i>Give Back Submissions
@@ -147,7 +150,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         </div>
                     </div>
 
-                    <!-- Alumni Updates Tab -->
+                    <!-- Temporarily disabled: Alumni Updates tab content -->
+                    <!--
                     <div class="tab-pane fade" id="updates-content" role="tabpanel">
                         <div class="tab-header mt-4 mb-4">
                             <h4><i class="fas fa-newspaper me-2"></i>Alumni Updates</h4>
@@ -165,7 +169,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                     </tr>
                                 </thead>
                                 <tbody id="updates-table-body">
-                                    <!-- Update records will be loaded here -->
                                 </tbody>
                             </table>
                         </div>
@@ -174,6 +177,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <p>No alumni updates yet</p>
                         </div>
                     </div>
+                    -->
 
                     <!-- Give Back Tab -->
                     <div class="tab-pane fade" id="giveback-content" role="tabpanel">

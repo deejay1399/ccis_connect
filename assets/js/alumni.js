@@ -118,6 +118,31 @@ function prefetchPublicAlumniData() {
         }
     });
 }
+
+function showModalById(modalId) {
+    const modalEl = document.getElementById(modalId);
+    if (!modalEl || !window.bootstrap || !bootstrap.Modal) {
+        return;
+    }
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+}
+
+function hideModalById(modalId) {
+    const modalEl = document.getElementById(modalId);
+    if (!modalEl || !window.bootstrap || !bootstrap.Modal) {
+        return;
+    }
+    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+}
+
+function cleanupModalArtifacts() {
+    // If no modal is open, clear any stale backdrop/body lock left by interrupted transitions.
+    if (document.querySelectorAll('.modal.show').length === 0) {
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('padding-right');
+        $('.modal-backdrop').remove();
+    }
+}
 // ===== SECTION TEMPLATES =====
 const sectionTemplates = {
     // Featured Alumni Template
@@ -412,109 +437,15 @@ const sectionTemplates = {
         `;
     },
     
-    // Update Form Template
+    // Update Form Template (temporarily disabled)
     'update-form-section': function() {
         return `
             <section class="update-form-section">
                 <div class="container">
-                    <h2 class="section-title">Update Your Information</h2>
-                    <p class="section-subtitle">Help us keep our alumni database current</p>
-                    
+                    <h2 class="section-title">Update Information</h2>
+                    <p class="section-subtitle">This section is temporarily unavailable.</p>
                     <div class="update-form-container">
-                        <form id="alumni-update-form">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="update-name">Full Name *</label>
-                                    <input type="text" id="update-name" required placeholder="Juan Delacruz">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="update-email">Email Address *</label>
-                                    <input type="email" id="update-email" required placeholder="juan.delacruz@example.com">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="update-photo">Photo (optional)</label>
-                                    <input type="file" id="update-photo" accept="image/*">
-                                </div>
-                            </div>
-                            
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="update-batch">Graduation Year *</label>
-                                    <select id="update-batch" required>
-                                        <option value="">Select Year</option>
-                                        <option value="2024">2024</option>
-                                        <option value="2023">2023</option>
-                                        <option value="2022">2022</option>
-                                        <option value="2021">2021</option>
-                                        <option value="2020">2020</option>
-                                        <option value="2019">2019</option>
-                                        <option value="2018">2018</option>
-                                        <option value="2017">2017</option>
-                                        <option value="2016">2016</option>
-                                        <option value="2015">2015</option>
-                                        <option value="2014">2014</option>
-                                        <option value="2013">2013</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="update-program">Program *</label>
-                                    <select id="update-program" required>
-                                        <option value="">Select Program</option>
-                                        <option value="BSCS">Bachelor of Science in Computer Science</option>
-                                        <option value="BSIT">Bachelor of Science in Information Technology</option>
-                                        <option value="BSIS">Bachelor of Science in Information Systems</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="update-current-position">Current Position</label>
-                                    <input type="text" id="update-current-position" placeholder="Senior Software Engineer">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="update-company">Current Company/Organization</label>
-                                    <input type="text" id="update-company" placeholder="Google Philippines">
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="update-achievements">Recent Achievements or Updates</label>
-                                <textarea id="update-achievements" rows="4" placeholder="Share your recent promotions, awards, publications, or other accomplishments..."></textarea>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label>How would you like to give back?</label>
-                                <div class="checkbox-group">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="update-willing-mentor">
-                                        <span>I'm willing to mentor current students</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="update-willing-speaker">
-                                        <span>I'm available as a guest speaker</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="update-willing-internship">
-                                        <span>My company offers internship opportunities</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="update-willing-donate">
-                                        <span>I'm interested in making a donation</span>
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <button type="submit" class="submit-update-btn">
-                                <i class="fas fa-paper-plane me-2"></i> Submit Update
-                            </button>
-                        </form>
+                        <p class="text-center mb-0">Please check back later.</p>
                     </div>
                 </div>
             </section>
@@ -595,9 +526,10 @@ function setupSectionFunctionality(sectionId) {
         case 'events-section':
             setupEventCards();
             break;
-        case 'update-form-section':
-            setupUpdateForm();
-            break;
+        // Temporarily disabled:
+        // case 'update-form-section':
+        //     setupUpdateForm();
+        //     break;
         case 'giveback-section':
             setupGiveBackButtons();
             break;
@@ -703,7 +635,7 @@ function showAlumniDetails(alumniId) {
 
     if (!alumni) {
         $('#alumniModalContent').html('<p class="text-muted">Alumni details not available.</p>');
-        $('#alumniDetailsModal').modal('show');
+        showModalById('alumniDetailsModal');
         return;
     }
 
@@ -730,7 +662,7 @@ function showAlumniDetails(alumniId) {
 
     $('#alumniModalContent').html(modalContent);
     $('#alumniDetailsModal').data('alumni-name', alumni.name);
-    $('#alumniDetailsModal').modal('show');
+    showModalById('alumniDetailsModal');
 }
 
 // ===== SEARCH AND FILTER =====
@@ -907,7 +839,7 @@ function setupGiveBackButtons() {
         
         if (givebackType === 'Donation') {
             // Show donation information modal
-            $('#donationModal').modal('show');
+            showModalById('donationModal');
         } else {
             // Show form for other giveback types
             showGivebackForm(givebackType);
@@ -960,8 +892,7 @@ function showGivebackForm(givebackType) {
     $('#givebackFormContent').html(formContent);
     $('#givebackFormModalLabel').text(`Give Back to CCIS - ${givebackType}`);
     
-    const givebackModal = new bootstrap.Modal(modalEl);
-    givebackModal.show();
+    showModalById('givebackFormModal');
     
     console.log(`? Giveback form modal shown for: ${givebackType}`);
 }
@@ -969,13 +900,18 @@ function showGivebackForm(givebackType) {
 // ===== MODAL FUNCTIONS =====
 function setupModalEvents() {
     console.log('?? Setting up modal events...');
+
+    // Keep modal state clean to prevent frozen screen after submit/close.
+    $('.modal').on('hidden.bs.modal', function() {
+        setTimeout(cleanupModalArtifacts, 0);
+    });
     
     // Connection form submission
     $(document).on('submit', '#connectionForm', function(e) {
         e.preventDefault();
 
         const alumniName = $('#connectionModalLabel').text().replace('Connect with ', '');
-        const submitBtn = $(this).find('.btn-primary');
+        const submitBtn = $('#connectionModal').find('button[form="connectionForm"].btn-primary');
         const originalText = submitBtn.html();
 
         submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i> Sending...');
@@ -997,7 +933,7 @@ function setupModalEvents() {
         }, function(response) {
             if (response.success) {
                 showNotification(`Your connection request for ${alumniName} has been sent to CCIS Alumni Office. We'll contact you soon.`, 'success');
-                $('#connectionModal').modal('hide');
+                hideModalById('connectionModal');
                 $('#connectionForm')[0].reset();
             } else {
                 showNotification(response.message || 'Failed to send connection request.', 'error');
@@ -1038,7 +974,7 @@ function setupModalEvents() {
         }, function(response) {
             if (response.success) {
                 showNotification(`Thank you for your interest! Your ${givebackType} submission has been received. CCIS Admin will contact you within 3 working days.`, 'success');
-                $('#givebackFormModal').modal('hide');
+                hideModalById('givebackFormModal');
                 $('#givebackForm')[0].reset();
             } else {
                 showNotification(response.message || 'There was an error submitting your request.', 'error');
@@ -1059,12 +995,15 @@ function setupModalEvents() {
         
         if (alumniName) {
             console.log(`?? Connecting with alumni: ${alumniName}`);
-            
-            $('#alumniDetailsModal').modal('hide');
-            setTimeout(() => {
-                $('#connectionModalLabel').text(`Connect with ${alumniName}`);
-                $('#connectionModal').modal('show');
-            }, 200);
+
+            $('#alumniDetailsModal')
+                .off('hidden.bs.modal.alumniConnectFlow')
+                .one('hidden.bs.modal.alumniConnectFlow', function() {
+                    $('#connectionModalLabel').text(`Connect with ${alumniName}`);
+                    showModalById('connectionModal');
+                });
+
+            hideModalById('alumniDetailsModal');
         }
     });
     
@@ -1294,7 +1233,7 @@ function setupAlumniChatbotResponses() {
         window.addChatbotResponse('alumni_info', 
             ['alumni', 'graduates', 'featured alumni', 'alumni directory'],
             [
-                "You can find alumni information by clicking the 'Alumni' dropdown menu. Choose from Featured Alumni, Alumni Directory, Alumni Events, How to Give Back, or Update Your Information.",
+                "You can find alumni information by clicking the 'Alumni' dropdown menu. Choose from Featured Alumni, Alumni Directory, Alumni Events, or How to Give Back.",
                 "Use the Alumni dropdown menu to navigate between different alumni sections. Each section shows only one type of content at a time.",
                 "Select a section from the Alumni dropdown menu to view specific alumni information."
             ]

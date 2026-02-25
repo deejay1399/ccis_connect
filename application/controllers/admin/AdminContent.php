@@ -61,6 +61,169 @@ class AdminContent extends CI_Controller {
 		$this->load->view('superadmin/layouts/footer');
 	}
 
+	public function load_about_content()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('About_content_model');
+
+		try {
+			$data = $this->About_content_model->get_content();
+			echo json_encode(['success' => true, 'data' => $data]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function save_about_history()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('About_content_model');
+
+		try {
+			$content = trim((string) $this->input->post('content'));
+			$result = $this->About_content_model->save_history($content);
+			echo json_encode(['success' => (bool) $result]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function save_about_vmgo()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('About_content_model');
+
+		try {
+			$vision = trim((string) $this->input->post('vision'));
+			$mission = trim((string) $this->input->post('mission'));
+			$goals_raw = (string) $this->input->post('goals');
+			$core_values_raw = (string) $this->input->post('core_values');
+
+			$goals = json_decode($goals_raw, true);
+			if (!is_array($goals)) {
+				$goals = [];
+			}
+			$goals = array_values(array_filter(array_map('trim', $goals), function ($item) {
+				return $item !== '';
+			}));
+
+			$core_values = json_decode($core_values_raw, true);
+			if (!is_array($core_values)) {
+				$core_values = [];
+			}
+
+			$sanitized_core_values = [];
+			foreach ($core_values as $value) {
+				$name = trim((string) ($value['name'] ?? ''));
+				$description = trim((string) ($value['description'] ?? ''));
+				if ($name !== '' && $description !== '') {
+					$sanitized_core_values[] = [
+						'name' => $name,
+						'description' => $description
+					];
+				}
+			}
+
+			$result = $this->About_content_model->save_vmgo($vision, $mission, $goals, $sanitized_core_values);
+			echo json_encode(['success' => (bool) $result]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function save_about_hymn()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('About_content_model');
+
+		try {
+			$verse1 = trim((string) $this->input->post('verse1'));
+			$chorus = trim((string) $this->input->post('chorus'));
+			$finale = trim((string) $this->input->post('finale'));
+			$jingle_verse1 = trim((string) $this->input->post('jingle_verse1'));
+			$jingle_chorus = trim((string) $this->input->post('jingle_chorus'));
+			$jingle_verse2 = trim((string) $this->input->post('jingle_verse2'));
+			$jingle_repeat_chorus = trim((string) $this->input->post('jingle_repeat_chorus'));
+			$jingle_bridge = trim((string) $this->input->post('jingle_bridge'));
+			$jingle_final_chorus = trim((string) $this->input->post('jingle_final_chorus'));
+
+			$hymn_video_path = null;
+			$jingle_video_path = null;
+
+			if (!empty($_FILES['hymn_video']['name'])) {
+				$old_hymn_video = $this->About_content_model->get_video_path('hymn');
+				$hymn_video_path = $this->_upload_file_to('assets/videos/about', 'hymn_video', 'mp4', 'about_hymn', 102400);
+				if ($hymn_video_path === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload hymn MP4 video.']);
+					exit;
+				}
+				$this->_delete_uploaded_asset_file($old_hymn_video);
+			}
+
+			if (!empty($_FILES['jingle_video']['name'])) {
+				$old_jingle_video = $this->About_content_model->get_video_path('jingle');
+				$jingle_video_path = $this->_upload_file_to('assets/videos/about', 'jingle_video', 'mp4', 'about_jingle', 102400);
+				if ($jingle_video_path === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload jingle MP4 video.']);
+					exit;
+				}
+				$this->_delete_uploaded_asset_file($old_jingle_video);
+			}
+
+			$result = $this->About_content_model->save_hymn(
+				$verse1,
+				$chorus,
+				$finale,
+				$jingle_verse1,
+				$jingle_chorus,
+				$jingle_verse2,
+				$jingle_repeat_chorus,
+				$jingle_bridge,
+				$jingle_final_chorus,
+				$hymn_video_path,
+				$jingle_video_path
+			);
+			echo json_encode(['success' => (bool) $result]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function delete_about_video()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('About_content_model');
+
+		try {
+			$type = trim((string) $this->input->post('type'));
+			if (!in_array($type, ['hymn', 'jingle'], true)) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Invalid video type.']);
+				exit;
+			}
+
+			$path = $this->About_content_model->get_video_path($type);
+			$this->_delete_uploaded_asset_file($path);
+			$result = $this->About_content_model->clear_video_path($type);
+
+			echo json_encode(['success' => (bool) $result]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
 	public function faculty()
 	{
 		$data['page_title'] = 'Manage Faculty';
@@ -1063,7 +1226,11 @@ class AdminContent extends CI_Controller {
 			'encrypt_name' => false
 		];
 
-		$this->load->library('upload', $config);
+		if (isset($this->upload) && $this->upload instanceof CI_Upload) {
+			$this->upload->initialize($config, true);
+		} else {
+			$this->load->library('upload', $config);
+		}
 
 		if (!$this->upload->do_upload('banner_image')) {
 			log_message('error', 'Upload Error: ' . $this->upload->display_errors());
@@ -1152,6 +1319,19 @@ class AdminContent extends CI_Controller {
 		return $abs_dir;
 	}
 
+	private function _delete_uploaded_asset_file($relative_path)
+	{
+		$relative_path = trim((string) $relative_path);
+		if ($relative_path === '' || strpos($relative_path, 'assets/videos/about/') !== 0) {
+			return;
+		}
+
+		$absolute_path = FCPATH . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relative_path);
+		if (is_file($absolute_path)) {
+			@unlink($absolute_path);
+		}
+	}
+
 	private function _upload_file_to($relative_dir, $input_name, $allowed_types, $prefix, $max_size_kb)
 	{
 		$abs_dir = $this->_ensure_upload_dir($relative_dir);
@@ -1169,7 +1349,11 @@ class AdminContent extends CI_Controller {
 			'encrypt_name' => false
 		];
 
-		$this->load->library('upload', $config);
+		if (isset($this->upload) && $this->upload instanceof CI_Upload) {
+			$this->upload->initialize($config, true);
+		} else {
+			$this->load->library('upload', $config);
+		}
 
 		if (!$this->upload->do_upload($input_name)) {
 			log_message('error', 'Upload Error: ' . $this->upload->display_errors('', ''));
@@ -1178,6 +1362,44 @@ class AdminContent extends CI_Controller {
 
 		$upload_data = $this->upload->data();
 		return rtrim($relative_dir, '/\\') . '/' . $upload_data['file_name'];
+	}
+
+	private function _upload_multiple_files_to($relative_dir, $input_name, $allowed_types, $prefix, $max_size_kb)
+	{
+		if (!isset($_FILES[$input_name])) {
+			return [];
+		}
+
+		$names = $_FILES[$input_name]['name'];
+		if (!is_array($names)) {
+			$single = $this->_upload_file_to($relative_dir, $input_name, $allowed_types, $prefix, $max_size_kb);
+			return $single === false ? false : [$single];
+		}
+
+		$uploaded = [];
+		$count = count($names);
+		for ($i = 0; $i < $count; $i++) {
+			if (empty($_FILES[$input_name]['name'][$i])) {
+				continue;
+			}
+
+			$_FILES['__multi_tmp'] = [
+				'name' => $_FILES[$input_name]['name'][$i],
+				'type' => $_FILES[$input_name]['type'][$i],
+				'tmp_name' => $_FILES[$input_name]['tmp_name'][$i],
+				'error' => $_FILES[$input_name]['error'][$i],
+				'size' => $_FILES[$input_name]['size'][$i],
+			];
+
+			$path = $this->_upload_file_to($relative_dir, '__multi_tmp', $allowed_types, $prefix, $max_size_kb);
+			unset($_FILES['__multi_tmp']);
+			if ($path === false) {
+				return false;
+			}
+			$uploaded[] = $path;
+		}
+
+		return $uploaded;
 	}
 
 	public function load_announcements()
@@ -1203,6 +1425,8 @@ class AdminContent extends CI_Controller {
 			$title = trim((string) $this->input->post('title'));
 			$content = trim((string) $this->input->post('content'));
 			$announcement_date = $this->input->post('announcement_date');
+			$announcement_time = trim((string) $this->input->post('announcement_time'));
+			$announcement_venue = trim((string) $this->input->post('announcement_venue'));
 
 			if ($title === '' || $content === '' || empty($announcement_date)) {
 				http_response_code(400);
@@ -1210,21 +1434,55 @@ class AdminContent extends CI_Controller {
 				exit;
 			}
 
-			$image = null;
-			if (!empty($_FILES['image']['name'])) {
-				$image = $this->_upload_file_to('uploads/announcements', 'image', 'gif|jpg|png|jpeg|jpe', 'announcement', 5120);
-				if ($image === false) {
+			$has_pdf = !empty($_FILES['pdf_file']['name']);
+			$has_single_image = !empty($_FILES['image']['name']);
+			$has_multi_image = !empty($_FILES['image_files']['name']) && is_array($_FILES['image_files']['name']) && count(array_filter($_FILES['image_files']['name'])) > 0;
+			$has_image = $has_single_image || $has_multi_image;
+			if ($has_pdf && $has_image) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'You cannot upload both PDF and image at the same time.']);
+				exit;
+			}
+
+			$pdf_file = null;
+			if (!empty($_FILES['pdf_file']['name'])) {
+				$pdf_file = $this->_upload_file_to('uploads/announcements', 'pdf_file', 'pdf', 'announcement_pdf', 10240);
+				if ($pdf_file === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload PDF file.']);
+					exit;
+				}
+			}
+
+			$image_paths = [];
+			if ($has_multi_image) {
+				$image_paths = $this->_upload_multiple_files_to('uploads/announcements', 'image_files', 'gif|jpg|png|jpeg|jpe|webp', 'announcement', 10240);
+				if ($image_paths === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload image(s).']);
+					exit;
+				}
+			} elseif ($has_single_image) {
+				$single = $this->_upload_file_to('uploads/announcements', 'image', 'gif|jpg|png|jpeg|jpe|webp', 'announcement', 10240);
+				if ($single === false) {
 					http_response_code(400);
 					echo json_encode(['success' => false, 'message' => 'Failed to upload image.']);
 					exit;
 				}
+				$image_paths = [$single];
 			}
+
+			$image = !empty($image_paths) ? $image_paths[0] : null;
 
 			$id = $this->Announcements_model->insert_announcement([
 				'title' => $title,
 				'content' => $content,
 				'announcement_date' => $announcement_date,
-				'image' => $image
+				'announcement_time' => $announcement_time !== '' ? $announcement_time : null,
+				'announcement_venue' => $announcement_venue !== '' ? $announcement_venue : null,
+				'pdf_file' => $pdf_file,
+				'image' => $image,
+				'images_json' => !empty($image_paths) ? json_encode($image_paths) : null
 			]);
 
 			if ($id) {
@@ -1250,6 +1508,8 @@ class AdminContent extends CI_Controller {
 			$title = trim((string) $this->input->post('title'));
 			$content = trim((string) $this->input->post('content'));
 			$announcement_date = $this->input->post('announcement_date');
+			$announcement_time = trim((string) $this->input->post('announcement_time'));
+			$announcement_venue = trim((string) $this->input->post('announcement_venue'));
 
 			if ($announcement_id <= 0 || $title === '' || $content === '' || empty($announcement_date)) {
 				http_response_code(400);
@@ -1261,16 +1521,50 @@ class AdminContent extends CI_Controller {
 				'title' => $title,
 				'content' => $content,
 				'announcement_date' => $announcement_date,
+				'announcement_time' => $announcement_time !== '' ? $announcement_time : null,
+				'announcement_venue' => $announcement_venue !== '' ? $announcement_venue : null,
 			];
 
-			if (!empty($_FILES['image']['name'])) {
-				$image = $this->_upload_file_to('uploads/announcements', 'image', 'gif|jpg|png|jpeg|jpe', 'announcement', 5120);
-				if ($image === false) {
+			$has_pdf = !empty($_FILES['pdf_file']['name']);
+			$has_single_image = !empty($_FILES['image']['name']);
+			$has_multi_image = !empty($_FILES['image_files']['name']) && is_array($_FILES['image_files']['name']) && count(array_filter($_FILES['image_files']['name'])) > 0;
+			$has_image = $has_single_image || $has_multi_image;
+			if ($has_pdf && $has_image) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'You cannot upload both PDF and image at the same time.']);
+				exit;
+			}
+
+			if (!empty($_FILES['pdf_file']['name'])) {
+				$pdf_file = $this->_upload_file_to('uploads/announcements', 'pdf_file', 'pdf', 'announcement_pdf', 10240);
+				if ($pdf_file === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload PDF file.']);
+					exit;
+				}
+				$update_data['pdf_file'] = $pdf_file;
+			}
+
+			$image_paths = [];
+			if ($has_multi_image) {
+				$image_paths = $this->_upload_multiple_files_to('uploads/announcements', 'image_files', 'gif|jpg|png|jpeg|jpe|webp', 'announcement', 10240);
+				if ($image_paths === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload image(s).']);
+					exit;
+				}
+			} elseif ($has_single_image) {
+				$single = $this->_upload_file_to('uploads/announcements', 'image', 'gif|jpg|png|jpeg|jpe|webp', 'announcement', 10240);
+				if ($single === false) {
 					http_response_code(400);
 					echo json_encode(['success' => false, 'message' => 'Failed to upload image.']);
 					exit;
 				}
-				$update_data['image'] = $image;
+				$image_paths = [$single];
+			}
+			if (!empty($image_paths)) {
+				$update_data['image'] = $image_paths[0];
+				$update_data['images_json'] = json_encode($image_paths);
 			}
 
 			$result = $this->Announcements_model->update_announcement($announcement_id, $update_data);
@@ -1334,8 +1628,15 @@ class AdminContent extends CI_Controller {
 		try {
 			$title = trim((string) $this->input->post('title'));
 			$description = trim((string) $this->input->post('description'));
-			$type = $this->input->post('type');
+			$type = trim((string) $this->input->post('type'));
 			$event_date = $this->input->post('event_date');
+			$event_time = trim((string) $this->input->post('event_time'));
+			$event_location = trim((string) $this->input->post('event_location'));
+			$event_team = trim((string) $this->input->post('event_team'));
+
+			if ($type === '') {
+				$type = 'Event';
+			}
 
 			if ($title === '' || $description === '' || empty($type) || empty($event_date)) {
 				http_response_code(400);
@@ -1349,22 +1650,37 @@ class AdminContent extends CI_Controller {
 				exit;
 			}
 
-			$image = null;
-			if (!empty($_FILES['image']['name'])) {
-				$image = $this->_upload_file_to('uploads/events_achievements', 'image', 'gif|jpg|png|jpeg|jpe', 'event', 5120);
-				if ($image === false) {
+			$image_paths = [];
+			$has_single_image = !empty($_FILES['image']['name']);
+			$has_multi_image = !empty($_FILES['image_files']['name']) && is_array($_FILES['image_files']['name']) && count(array_filter($_FILES['image_files']['name'])) > 0;
+			if ($has_multi_image) {
+				$image_paths = $this->_upload_multiple_files_to('uploads/events_achievements', 'image_files', 'gif|jpg|png|jpeg|jpe|webp', 'event', 10240);
+				if ($image_paths === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload image(s).']);
+					exit;
+				}
+			} elseif ($has_single_image) {
+				$single = $this->_upload_file_to('uploads/events_achievements', 'image', 'gif|jpg|png|jpeg|jpe|webp', 'event', 10240);
+				if ($single === false) {
 					http_response_code(400);
 					echo json_encode(['success' => false, 'message' => 'Failed to upload image.']);
 					exit;
 				}
+				$image_paths = [$single];
 			}
+			$image = !empty($image_paths) ? $image_paths[0] : null;
 
 			$id = $this->Events_achievements_model->insert_event_achievement([
 				'title' => $title,
 				'description' => $description,
 				'type' => $type,
 				'event_date' => $event_date,
-				'image' => $image
+				'event_time' => $event_time !== '' ? $event_time : null,
+				'event_location' => $event_location !== '' ? $event_location : null,
+				'event_team' => $event_team !== '' ? $event_team : null,
+				'image' => $image,
+				'images_json' => !empty($image_paths) ? json_encode($image_paths) : null
 			]);
 
 			if ($id) {
@@ -1389,8 +1705,15 @@ class AdminContent extends CI_Controller {
 			$id = (int) $this->input->post('id');
 			$title = trim((string) $this->input->post('title'));
 			$description = trim((string) $this->input->post('description'));
-			$type = $this->input->post('type');
+			$type = trim((string) $this->input->post('type'));
 			$event_date = $this->input->post('event_date');
+			$event_time = trim((string) $this->input->post('event_time'));
+			$event_location = trim((string) $this->input->post('event_location'));
+			$event_team = trim((string) $this->input->post('event_team'));
+
+			if ($type === '') {
+				$type = 'Event';
+			}
 
 			if ($id <= 0 || $title === '' || $description === '' || empty($type) || empty($event_date)) {
 				http_response_code(400);
@@ -1409,16 +1732,33 @@ class AdminContent extends CI_Controller {
 				'description' => $description,
 				'type' => $type,
 				'event_date' => $event_date,
+				'event_time' => $event_time !== '' ? $event_time : null,
+				'event_location' => $event_location !== '' ? $event_location : null,
+				'event_team' => $event_team !== '' ? $event_team : null,
 			];
 
-			if (!empty($_FILES['image']['name'])) {
-				$image = $this->_upload_file_to('uploads/events_achievements', 'image', 'gif|jpg|png|jpeg|jpe', 'event', 5120);
-				if ($image === false) {
+			$image_paths = [];
+			$has_single_image = !empty($_FILES['image']['name']);
+			$has_multi_image = !empty($_FILES['image_files']['name']) && is_array($_FILES['image_files']['name']) && count(array_filter($_FILES['image_files']['name'])) > 0;
+			if ($has_multi_image) {
+				$image_paths = $this->_upload_multiple_files_to('uploads/events_achievements', 'image_files', 'gif|jpg|png|jpeg|jpe|webp', 'event', 10240);
+				if ($image_paths === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload image(s).']);
+					exit;
+				}
+			} elseif ($has_single_image) {
+				$single = $this->_upload_file_to('uploads/events_achievements', 'image', 'gif|jpg|png|jpeg|jpe|webp', 'event', 10240);
+				if ($single === false) {
 					http_response_code(400);
 					echo json_encode(['success' => false, 'message' => 'Failed to upload image.']);
 					exit;
 				}
-				$update_data['image'] = $image;
+				$image_paths = [$single];
+			}
+			if (!empty($image_paths)) {
+				$update_data['image'] = $image_paths[0];
+				$update_data['images_json'] = json_encode($image_paths);
 			}
 
 			$result = $this->Events_achievements_model->update_event_achievement($id, $update_data);

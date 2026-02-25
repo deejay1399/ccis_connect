@@ -203,16 +203,16 @@
                                 <a href="<?php echo site_url('admin/content/academics'); ?>" class="btn btn-primary" id="manage-academics-btn">Open Editor</a>
                             </div>
                         </div>
-                        <!-- <div class="col-md-6 col-lg-4">
+                        <div class="col-md-6 col-lg-4">
                             <div class="feature-card">
                                 <div class="feature-icon gold-icon">
                                     <i class="fas fa-flag"></i>
                                 </div>
                                 <h5>About Us</h5>
-                                <p>Update college history, VMGO, and the BISU Hymn with lyrics and an audio file.</p>
+                                <p>Update college history, VMGO, hymn lyrics, and MP4 videos for the public About page.</p>
                                 <a href="<?php echo site_url('admin/content/about'); ?>" class="btn btn-primary" id="manage-about-btn">Open Editor</a>
                             </div>
-                        </div> -->
+                        </div>
                         <div class="col-md-6 col-lg-4">
                             <div class="feature-card">
                                 <div class="feature-icon gold-icon">

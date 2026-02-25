@@ -162,6 +162,30 @@
     box-shadow: 0 4px 12px rgba(106, 13, 173, 0.2);
 }
 
+/* Desktop dropdown hover behavior (match other public pages) */
+@media (min-width: 992px) {
+    .navbar-main .dropdown:hover > .dropdown-menu {
+        display: block;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .navbar-main .dropdown-menu {
+        display: block;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+    }
+
+    .navbar-main .dropdown-menu.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+}
+
 .navbar-main .dropdown-menu {
     border: none;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
@@ -262,6 +286,12 @@
     z-index: 2;
 }
 
+.footer-content-wrapper-left {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+}
+
 .footer-logo-text-tapad {
     display: flex;
     align-items: flex-start;
@@ -321,6 +351,167 @@
     flex-wrap: wrap;
     width: 100%;
     font-family: 'Inter', sans-serif;
+}
+
+.value-item {
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    margin: 0;
+    display: inline-block;
+    white-space: nowrap;
+    font-size: 0.65rem;
+    line-height: 1.2;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.value-separator {
+    margin: 0;
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 0.65rem;
+    display: inline-block;
+}
+
+.footer-contact-social-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    padding-left: 0;
+}
+
+.contact-info-left {
+    text-align: left;
+    flex: 0 1 auto;
+    min-width: 200px;
+}
+
+.social-info-left {
+    text-align: right;
+    flex: 0 1 auto;
+    margin-left: 0;
+    margin-right: 2rem;
+    min-width: 150px;
+}
+
+.contact-info-left .contact-title {
+    text-align: left;
+    justify-content: flex-start;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+    position: relative;
+    display: inline-block;
+}
+
+.social-info-left .social-title {
+    text-align: right;
+    justify-content: flex-end;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+    position: relative;
+    display: inline-block;
+}
+
+.contact-info-left .contact-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 35px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+}
+
+.social-info-left .social-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: 0;
+    width: 35px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+}
+
+.contact-info-left .contact-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 0.6rem;
+    gap: 6px;
+    transition: transform 0.3s ease;
+    padding: 0.2rem;
+    border-radius: 6px;
+}
+
+.contact-info-left .contact-item:hover {
+    transform: translateX(3px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.contact-info-left .contact-item i {
+    color: var(--accent);
+    font-size: 0.9rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+.contact-info-left .contact-item span {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: left;
+}
+
+.social-info-left .social-links {
+    margin-top: 0.8rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+}
+
+.social-link {
+    color: white;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+}
+
+.social-link:hover {
+    color: white;
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background: #1877f2;
+}
+
+.copyright {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.75rem;
+    margin-bottom: 0.3rem;
+    text-align: center;
+}
+
+.main-footer hr {
+    border-color: rgba(255, 255, 255, 0.2);
+    margin: 1rem 0 0.8rem;
+    opacity: 0.5;
+}
+
+.quick-links {
+    display: none;
 }
 
 /* Floating Return to Dashboard Button */
@@ -1824,6 +2015,87 @@ button:focus-visible,
 }
 
 @media (max-width: 768px) {
+    .footer-contact-social-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        gap: 1.5rem;
+    }
+
+    .social-info-left {
+        text-align: left;
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .social-info-left .social-title {
+        text-align: left;
+        justify-content: flex-start;
+    }
+
+    .social-info-left .social-title::after {
+        left: 0;
+        right: auto;
+        transform: none;
+    }
+
+    .social-info-left .social-links {
+        justify-content: flex-start;
+    }
+
+    .contact-info-left,
+    .social-info-left {
+        text-align: left;
+        align-items: flex-start;
+        width: 100%;
+        min-width: auto;
+    }
+
+    .contact-info-left .contact-title,
+    .social-info-left .social-title {
+        text-align: left;
+        justify-content: flex-start;
+    }
+
+    .contact-info-left .contact-title::after,
+    .social-info-left .social-title::after {
+        left: 0;
+        transform: none;
+    }
+
+    .contact-info-left .contact-item {
+        justify-content: flex-start;
+    }
+
+    .footer-logo-text-tapad {
+        justify-content: flex-start;
+        text-align: left;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 0.8rem;
+    }
+
+    .footer-text-group {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .footer-university-name {
+        text-align: left;
+        font-size: 0.8rem;
+    }
+
+    .core-values-footer {
+        justify-content: flex-start;
+        text-align: left;
+        font-size: 0.7rem;
+    }
+
+    .main-footer {
+        padding: 0.8rem 0 0.4rem;
+    }
+
     .section-title {
         font-size: 1.8rem;
     }
@@ -1954,6 +2226,26 @@ button:focus-visible,
 }
 
 @media (max-width: 576px) {
+    .footer-university-name {
+        font-size: 0.75rem;
+    }
+
+    .core-values-footer {
+        font-size: 0.65rem;
+    }
+
+    .footer-contact-social-wrapper {
+        gap: 1rem;
+    }
+
+    .contact-info-left .contact-item {
+        font-size: 0.7rem;
+    }
+
+    .main-footer {
+        padding: 0.6rem 0 0.3rem;
+    }
+
     .section-title {
         font-size: 1.5rem;
     }

@@ -232,7 +232,7 @@
     <?php elseif(isset($content_type) && $content_type === 'forms'): ?>
         <script src="<?php echo base_url('assets/js/manage_forms.js'); ?>"></script>
     <?php elseif(isset($content_type) && $content_type === 'about'): ?>
-        <script src="<?php echo base_url('assets/js/manage_about.js'); ?>"></script>
+        <script src="<?php echo base_url('assets/js/manage_about.js?v=' . time()); ?>"></script>
     <?php elseif(isset($content_type) && $content_type === 'organizations'): ?>
         <?php
             $organizations_js_path = FCPATH . 'assets/js/manage_organizations.js';
@@ -255,6 +255,80 @@
         ?>
         <script src="<?php echo base_url('assets/js/admin_notifications.js?v=' . $admin_notifications_version); ?>"></script>
     <?php endif; ?>
+
+    <style>
+        /* Force a consistent logout modal size/style across all superadmin pages */
+        #adminLogoutModal .modal-dialog,
+        #logoutModal .modal-dialog {
+            max-width: 340px !important;
+            width: calc(100% - 2rem) !important;
+            margin: 1rem auto !important;
+        }
+
+        #adminLogoutModal .modal-content,
+        #logoutModal .modal-content {
+            border-radius: 12px !important;
+            border: 4px solid var(--accent) !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+            min-height: 0 !important;
+        }
+
+        #adminLogoutModal .modal-body,
+        #logoutModal .modal-body {
+            padding: 0.85rem 1rem !important;
+            min-height: 0 !important;
+        }
+
+        #adminLogoutModal .logout-modal-body,
+        #logoutModal .logout-modal-body {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.5rem !important;
+            padding: 0.85rem 1rem !important;
+        }
+
+        #adminLogoutModal .logout-modal-icon,
+        #logoutModal .logout-modal-icon {
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+
+        #adminLogoutModal .logout-modal-title,
+        #logoutModal .logout-modal-title {
+            margin: 0 !important;
+            font-size: 0.9rem !important;
+            line-height: 1.2 !important;
+            font-weight: 700 !important;
+            color: var(--primary-purple) !important;
+            text-align: center !important;
+        }
+
+        #adminLogoutModal .fa-sign-out-alt,
+        #logoutModal .fa-sign-out-alt {
+            font-size: 1.7rem !important;
+            color: #dc3545 !important;
+        }
+
+        #adminLogoutModal .logout-modal-actions,
+        #logoutModal .logout-modal-actions {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.65rem !important;
+            margin: 0 !important;
+        }
+
+        #adminLogoutModal .logout-modal-actions .btn,
+        #logoutModal .logout-modal-actions .btn {
+            padding: 6px 16px !important;
+            font-size: 0.85rem !important;
+            min-width: 96px !important;
+            border-radius: 999px !important;
+            margin: 0 !important;
+        }
+    </style>
 
     <!-- Global (superadmin) logout handler: ensures server session logout is called -->
     <script>
@@ -288,21 +362,21 @@
                     }
 
                     const modalDiv = document.createElement('div');
-                    modalDiv.className = 'modal fade';
+                    modalDiv.className = 'modal fade admin-logout-modal';
                     modalDiv.id = 'adminLogoutModal';
                     modalDiv.setAttribute('tabindex', '-1');
                     modalDiv.setAttribute('aria-hidden', 'true');
                     modalDiv.innerHTML = `
-                        <div class="modal-dialog modal-dialog-centered modal-md">
-                            <div class="modal-content" style="border-radius: 12px; border: 4px solid var(--accent); box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
-                                <div class="modal-body text-center p-5">
-                                    <div class="mb-4">
-                                        <i class="fas fa-sign-out-alt" style="font-size: 3rem; color: #dc3545;"></i>
+                        <div class="modal-dialog modal-dialog-centered admin-logout-dialog" style="max-width:340px; width:calc(100% - 2rem); margin:1rem auto;">
+                            <div class="modal-content admin-logout-content" style="border-radius: 12px; border: 4px solid var(--accent); box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                                <div class="modal-body text-center admin-logout-body logout-modal-body" style="padding: 0.85rem 1rem;">
+                                    <div class="logout-modal-icon">
+                                        <i class="fas fa-sign-out-alt" style="font-size: 1.7rem; color: #dc3545;"></i>
                                     </div>
-                                    <h5 class="mb-5" style="color: var(--primary-purple); font-weight: 700; font-size: 1.5rem;">
+                                    <h5 class="logout-modal-title" style="color: var(--primary-purple); font-weight: 700; font-size: 0.9rem;">
                                         Are you sure you want to logout?
                                     </h5>
-                                    <div class="d-flex gap-3 justify-content-center">
+                                    <div class="logout-modal-actions">
                                         <button type="button" class="btn btn-secondary cancel-btn" data-bs-dismiss="modal"
                                             style="border-radius: 50px; padding: 10px 30px; font-weight: 600;
                                             background: #f8f9fa; color: #6c757d; border: 2px solid #dee2e6;
@@ -311,7 +385,7 @@
                                         </button>
                                         <button type="button" class="btn btn-danger logout-btn" id="confirmAdminLogoutBtn"
                                             style="border-radius: 50px; padding: 10px 30px; font-weight: 600;
-                                            background: #f8f9fa; color: #6c757d; border: 2px solid #dee2e6;
+                                            background: #dc3545; color: #ffffff; border: 2px solid #dc3545;
                                             box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                                             Logout
                                         </button>
@@ -322,7 +396,20 @@
                     `;
 
                     document.body.appendChild(modalDiv);
-                    const modal = bootstrap.Modal.getOrCreateInstance(modalDiv);
+
+                    const BsModal = window.bootstrap && window.bootstrap.Modal;
+                    if (!BsModal) {
+                        const proceed = window.confirm('Are you sure you want to logout?');
+                        if (proceed) {
+                            clearClientAuthState();
+                            window.location.href = window.BASE_URL + 'index.php/logout?logout=true';
+                        } else {
+                            modalDiv.remove();
+                        }
+                        return;
+                    }
+
+                    const modal = BsModal.getOrCreateInstance(modalDiv);
                     modal.show();
 
                     const cancelBtn = modalDiv.querySelector('.cancel-btn');
@@ -350,9 +437,9 @@
                     });
 
                     logoutBtn.addEventListener('mouseleave', function() {
-                        this.style.background = '#f8f9fa';
-                        this.style.color = '#6c757d';
-                        this.style.borderColor = '#dee2e6';
+                        this.style.background = '#dc3545';
+                        this.style.color = '#ffffff';
+                        this.style.borderColor = '#dc3545';
                         this.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
                     });
 
@@ -371,14 +458,29 @@
                 }
 
                 // Pagpugos sa usa ka single, authoritative handler (ang pipila nga mga script sa panid nagbugkos sa ilang kaugalingon nga lohika sa pag-logout)
-                $('#logout-icon-link')
-                    .off('click')
-                    .on('click', function(e) {
+                // Expose global handler so any page can call this directly if needed.
+                window.__showAdminLogoutConfirm = showAdminLogoutConfirm;
+
+                $(document)
+                    .off('click.adminLogout', '#logout-icon-link')
+                    .on('click.adminLogout', '#logout-icon-link', function(e) {
                         e.preventDefault();
                         e.stopImmediatePropagation();
                         showAdminLogoutConfirm();
                         return false;
                     });
+
+                // Native delegated fallback (covers cases where jQuery handlers are disrupted).
+                document.addEventListener('click', function(e) {
+                    const logoutLink = e.target && e.target.closest ? e.target.closest('#logout-icon-link') : null;
+                    if (!logoutLink) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (typeof e.stopImmediatePropagation === 'function') {
+                        e.stopImmediatePropagation();
+                    }
+                    showAdminLogoutConfirm();
+                }, true);
             });
         })();
     </script>

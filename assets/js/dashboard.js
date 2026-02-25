@@ -78,17 +78,8 @@ $(document).ready(function() {
         // Keep notification icon visible but non-functional for now.
         setupNotificationBell();
         
-        // Setup logout
-        $('#logout-icon-link').on('click', function(e) {
-            e.preventDefault();
-            if (window.logoutUser) {
-                window.logoutUser();
-            } else {
-                // Fallback: Redirect to logout controller
-                window.location.href = window.baseUrl ? window.baseUrl + 'logout' : '/ccis_connect/logout';
-            }
-        });
-        
+        // Logout is handled globally by the shared superadmin footer handler.
+
         console.log('🎯 Super Admin Dashboard initialized successfully');
     }
     

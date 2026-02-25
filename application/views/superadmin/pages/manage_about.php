@@ -145,21 +145,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             
                             <form id="hymn-form">
                                 <div class="hymn-content">
-                                    <!-- Audio Player Section -->
+                                    <!-- Video Upload Section -->
                                     <div class="hymn-audio mb-4">
                                         <div class="audio-player">
                                             <div class="card">
                                                 <div class="card-body">
                                                     <h5 class="card-title text-center mb-3">
-                                                        <i class="fas fa-play-circle text-primary me-2"></i>
-                                                        BISU Hymn Audio
+                                                        <i class="fas fa-video text-primary me-2"></i>
+                                                        BISU Hymn and Jingle Videos
                                                     </h5>
                                                     <div class="mb-3">
-                                                        <label for="hymn-audio" class="form-label">Upload Audio File</label>
-                                                        <input type="file" class="form-control" id="hymn-audio" accept="audio/*">
+                                                        <label for="hymn-video" class="form-label">Upload Hymn Video (MP4)</label>
+                                                        <input type="file" class="form-control" id="hymn-video" accept="video/mp4">
                                                     </div>
-                                                    <div id="current-audio">
-                                                        <!-- Current audio will be displayed here -->
+                                                    <div class="mb-3">
+                                                        <label for="jingle-video" class="form-label">Upload Jingle Video (MP4)</label>
+                                                        <input type="file" class="form-control" id="jingle-video" accept="video/mp4">
+                                                    </div>
+                                                    <div id="current-videos">
+                                                        <!-- Current videos will be displayed here -->
                                                     </div>
                                                 </div>
                                             </div>
@@ -181,6 +185,40 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <div class="verse">
                                             <p class="text-center fw-bold mb-3">[Finale]</p>
                                             <textarea class="form-control" id="finale-content" rows="3" placeholder="Enter Finale lyrics"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <hr class="my-4">
+                                    <div class="hymn-lyrics">
+                                        <h5 class="mb-3"><i class="fas fa-music me-2"></i>BISU Jingle Lyrics</h5>
+                                        <div class="verse mb-4">
+                                            <p class="text-center fw-bold mb-3">[Verse 1]</p>
+                                            <textarea class="form-control" id="jingle-verse1-content" rows="3" placeholder="Enter Jingle Verse 1 lyrics"></textarea>
+                                        </div>
+
+                                        <div class="chorus mb-4">
+                                            <p class="text-center fw-bold mb-3">[Chorus]</p>
+                                            <textarea class="form-control" id="jingle-chorus-content" rows="3" placeholder="Enter Jingle Chorus lyrics"></textarea>
+                                        </div>
+
+                                        <div class="verse mb-4">
+                                            <p class="text-center fw-bold mb-3">[Verse 2]</p>
+                                            <textarea class="form-control" id="jingle-verse2-content" rows="3" placeholder="Enter Jingle Verse 2 lyrics"></textarea>
+                                        </div>
+
+                                        <div class="chorus mb-4">
+                                            <p class="text-center fw-bold mb-3">[Repeat Chorus]</p>
+                                            <textarea class="form-control" id="jingle-repeat-chorus-content" rows="3" placeholder="Enter repeated chorus lyrics"></textarea>
+                                        </div>
+
+                                        <div class="verse mb-4">
+                                            <p class="text-center fw-bold mb-3">[Bridge]</p>
+                                            <textarea class="form-control" id="jingle-bridge-content" rows="3" placeholder="Enter jingle bridge lyrics"></textarea>
+                                        </div>
+
+                                        <div class="chorus">
+                                            <p class="text-center fw-bold mb-3">[Final Chorus]</p>
+                                            <textarea class="form-control" id="jingle-final-chorus-content" rows="3" placeholder="Enter final chorus lyrics"></textarea>
                                         </div>
                                     </div>
                                 </div>

@@ -100,6 +100,11 @@ $route['admin/manage/load_homepage_all'] = 'admin/AdminContent/load_homepage_all
 $route['admin/manage/save_homepage'] = 'admin/AdminContent/save_homepage';
 $route['admin/manage/replace_homepage'] = 'admin/AdminContent/replace_homepage';
 $route['admin/manage/organizations/overview'] = 'admin/AdminContent/load_organizations_overview';
+$route['admin/manage/about/load'] = 'admin/AdminContent/load_about_content';
+$route['admin/manage/about/save_history'] = 'admin/AdminContent/save_about_history';
+$route['admin/manage/about/save_vmgo'] = 'admin/AdminContent/save_about_vmgo';
+$route['admin/manage/about/save_hymn'] = 'admin/AdminContent/save_about_hymn';
+$route['admin/manage/about/delete_video'] = 'admin/AdminContent/delete_about_video';
 
 // Pagdumala sa Sulud sa Admin - Mga Update (Mga Pahibalo / Hitabo & Mga Nakab-ot/Lista sa Dean)
 $route['admin/manage/load_announcements'] = 'admin/AdminContent/load_announcements';

@@ -36,11 +36,33 @@ $(document).ready(function() {
         }
     }
 
+    function extractImageList(row) {
+        const paths = [];
+        if (row && row.images_json) {
+            try {
+                const parsed = JSON.parse(row.images_json);
+                if (Array.isArray(parsed)) {
+                    parsed.forEach((p) => {
+                        if (typeof p === 'string' && p.trim() !== '') {
+                            paths.push(p);
+                        }
+                    });
+                }
+            } catch (e) {
+                // ignore malformed JSON
+            }
+        }
+        if (row && row.image && paths.indexOf(row.image) === -1) {
+            paths.unshift(row.image);
+        }
+        return paths;
+    }
+
     function mapAnnouncementRow(row) {
-        const images = row.image ? [{
-            url: baseURL + row.image,
+        const images = extractImageList(row).map((imgPath) => ({
+            url: baseURL + imgPath,
             alt: row.title || 'Announcement'
-        }] : [];
+        }));
 
         return {
             id: row.announcement_id,
@@ -48,19 +70,21 @@ $(document).ready(function() {
             title: row.title || '',
             description: row.content || '',
             details: '',
-            venue: '',
-            time: '',
+            venue: row.announcement_venue || '',
+            time: row.announcement_time || '',
             type: 'general',
-            hasPdf: false,
+            hasPdf: !!row.pdf_file,
+            pdfUrl: row.pdf_file ? (baseURL + row.pdf_file) : '',
+            pdfTitle: row.pdf_file ? row.pdf_file.split('/').pop() : '',
             images
         };
     }
 
     function mapEventRow(row) {
-        const images = row.image ? [{
-            url: baseURL + row.image,
+        const images = extractImageList(row).map((imgPath) => ({
+            url: baseURL + imgPath,
             alt: row.title || 'Event'
-        }] : [];
+        }));
 
         const type = (row.type === 'Achievement') ? 'achievement' : 'event';
 
@@ -71,10 +95,10 @@ $(document).ready(function() {
             description: row.description || '',
             type,
             // optional fields used by existing UI
-            team: '',
-            event: '',
-            time: '',
-            location: '',
+            team: row.event_team || '',
+            event: row.event_location || '',
+            time: row.event_time || '',
+            location: row.event_location || '',
             images
         };
     }

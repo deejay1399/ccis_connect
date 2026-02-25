@@ -65,6 +65,7 @@ body {
     bottom: 0;
     background: rgba(0, 0, 0, 0.3);
     z-index: 1;
+    pointer-events: none;
 }
 
 .college-logo {
@@ -112,7 +113,8 @@ body {
     justify-content: flex-end;
     margin-left: auto;
     position: relative;
-    z-index: 2;
+    z-index: 2002;
+    pointer-events: auto;
 }
 
 .auth-icon-link {
@@ -140,6 +142,8 @@ body {
 #logout-icon-link {
     color: white !important;
     background-color: rgba(106, 13, 173, 0.2) !important;
+    pointer-events: auto !important;
+    cursor: pointer;
 }
 
 #logout-icon-link:hover {

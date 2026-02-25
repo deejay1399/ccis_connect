@@ -66,9 +66,6 @@ $(document).ready(function() {
             return;
         }
         
-        // Setup logout handler
-        setupLogoutHandler();
-        
         // Setup public site link
         setupPublicSiteLink();
         
@@ -82,16 +79,6 @@ $(document).ready(function() {
         setupConditionalFields();
         
         console.log('?? Create User Page initialized successfully');
-    }
-    
-    // Function to setup logout handler
-    function setupLogoutHandler() {
-        $('#logout-icon-link').off('click').on('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('?? Logout requested - Super Admin');
-            showLogoutModal();
-        });
     }
 
     // FUNCTION TO SETUP CONDITIONAL FIELDS DISPLAY
@@ -412,117 +399,6 @@ $(document).ready(function() {
                 showNotification(errorMsg, 'error');
             }
         });
-    }
-
-
-    // LOGOUT MODAL FUNCTION
-    function showLogoutModal() {
-        const user = window.getCurrentUser ? window.getCurrentUser() : null;
-
-        if ($('#logoutModal').length > 0) {
-            return;
-        }
-
-        const modalHTML = `
-        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true" data-bs-backdrop="static">
-            <div class="modal-dialog modal-dialog-centered modal-md">
-                <div class="modal-content" style="border-radius: 12px; border: 4px solid var(--accent); box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
-                    <div class="modal-body text-center p-5">
-                        <div class="mb-4">
-                            <i class="fas fa-sign-out-alt" style="font-size: 3rem; color: var(--primary-purple);"></i>
-                        </div>
-                        <h5 class="mb-5" style="color: var(--primary-purple); font-weight: 700; font-size: 1.5rem;">
-                            Are you sure you want to logout?
-                        </h5>
-                        <div class="d-flex gap-3 justify-content-center">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                                style="border-radius: 50px; padding: 10px 30px; font-weight: 600;">
-                                Cancel
-                            </button>
-                            <button type="button" class="btn btn-danger" id="confirmLogoutBtn"
-                                style="border-radius: 50px; padding: 10px 30px; font-weight: 600;">
-                                Yes, Logout
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        `;
-
-        $('body').append(modalHTML);
-
-        const modalElement = document.getElementById('logoutModal');
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
-
-        $(modalElement).on('shown.bs.modal', function() {
-            $('#confirmLogoutBtn').focus();
-        });
-
-        // Redirect to user_side login after logout
-        $('#confirmLogoutBtn').on('click', function() {
-            const btn = $(this);
-            const originalText = btn.html();
-
-            btn.html('<div class="loading-spinner"></div>Logging out...');
-            btn.prop('disabled', true);
-
-            console.log('?? Starting logout process...');
-            clearUserSession();
-
-            setTimeout(() => {
-                console.log('?? Redirecting to system logout...');
-                modal.hide();
-                window.location.href = buildUrl('index.php/logout?logout=true');
-            }, 1000);
-        });
-
-        $(modalElement).on('keydown', function(e) {
-            if (e.key === 'Escape') modal.hide();
-            if (e.key === 'Enter' && !$('#confirmLogoutBtn').is(':disabled')) {
-                $('#confirmLogoutBtn').click();
-            }
-        });
-
-        $(modalElement).on('hidden.bs.modal', function() {
-            $(this).remove();
-        });
-    }
-
-    // CLEAR SESSION FUNCTION
-    function clearUserSession() {
-        console.log('?? Clearing user session...');
-        const userData = localStorage.getItem('ccis_user');
-        const user = userData ? JSON.parse(userData) : null;
-
-        if (user) logLogoutActivity(user);
-
-        localStorage.removeItem('ccis_user');
-        localStorage.removeItem('ccis_login_time');
-        localStorage.removeItem('ccis_session_id');
-        localStorage.removeItem('ccis_session_expiry');
-        localStorage.removeItem('admin_return_url');
-        sessionStorage.removeItem('admin_return_url');
-
-        console.log('? User session completely cleared');
-    }
-
-    // LOG LOGOUT ACTIVITY FUNCTION
-    function logLogoutActivity(user) {
-        const logoutLogs = JSON.parse(localStorage.getItem('ccis_logout_logs') || '[]');
-
-        const logEntry = {
-            timestamp: new Date().toISOString(),
-            email: user.email || 'Unknown',
-            name: user.name || 'Unknown',
-            role: user.role || 'Unknown'
-        };
-
-        logoutLogs.unshift(logEntry);
-        if (logoutLogs.length > 50) logoutLogs.splice(50);
-        localStorage.setItem('ccis_logout_logs', JSON.stringify(logoutLogs));
-        console.log('?? Logout activity logged for:', user.email || 'Unknown');
     }
 
     // Initialize the page
