@@ -24,7 +24,50 @@ require_once APPPATH . 'config/env_loader.php';
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = rtrim((string) ccis_env('APP_BASE_URL', 'http://localhost/ccis_connect'), '/') . '/';
+// $config['base_url'] = rtrim((string) ccis_env('APP_BASE_URL', 'http://localhost/ccis_connect'), '/') . '/';
+$configured_base_url = trim((string) ccis_env('APP_BASE_URL', ''));
+
+if ($configured_base_url !== '')
+{
+	$config['base_url'] = rtrim($configured_base_url, '/') . '/';
+}
+else
+{
+	// Auto-detect host + project subdirectory (e.g. /ccis_connect/) for tunnels/reverse proxies.
+	$scheme = 'http';
+	if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']))
+	{
+		$scheme = strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']);
+	}
+	elseif (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+	{
+		$scheme = 'https';
+	}
+
+	$host = '';
+	if (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))
+	{
+		$host = (string) $_SERVER['HTTP_X_FORWARDED_HOST'];
+	}
+	elseif (!empty($_SERVER['HTTP_HOST']))
+	{
+		$host = (string) $_SERVER['HTTP_HOST'];
+	}
+	elseif (!empty($_SERVER['SERVER_NAME']))
+	{
+		$host = (string) $_SERVER['SERVER_NAME'];
+	}
+	else
+	{
+		$host = 'localhost';
+	}
+
+	$script_name = isset($_SERVER['SCRIPT_NAME']) ? (string) $_SERVER['SCRIPT_NAME'] : '';
+	$base_path = str_replace('\\', '/', dirname($script_name));
+	$base_path = ($base_path === '/' || $base_path === '.') ? '' : rtrim($base_path, '/');
+
+	$config['base_url'] = $scheme . '://' . $host . $base_path . '/';
+}
 
 /*
 |--------------------------------------------------------------------------

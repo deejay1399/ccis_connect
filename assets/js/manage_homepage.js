@@ -6,6 +6,7 @@
 
     var dbCarouselImages = [];
     var pendingCarouselImages = [];
+    var richEditors = [];
 
     function baseUrl() {
         if (window.baseUrl) {
@@ -77,6 +78,124 @@
         var now = new Date();
         var options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
         $('#current-date').text(now.toLocaleDateString('en-US', options));
+    }
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function textToHtml(value) {
+        return escapeHtml(value).replace(/\r\n|\r|\n/g, '<br>');
+    }
+
+    function sanitizeEditorHtml(value) {
+        var container = document.createElement('div');
+        container.innerHTML = String(value || '');
+
+        function walk(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                return escapeHtml(node.textContent || '');
+            }
+            if (node.nodeType !== Node.ELEMENT_NODE) {
+                return '';
+            }
+
+            var tag = node.tagName.toLowerCase();
+            if (tag === 'br') {
+                return '<br>';
+            }
+
+            var inner = '';
+            Array.prototype.forEach.call(node.childNodes, function(child) {
+                inner += walk(child);
+            });
+
+            if (tag === 'b' || tag === 'strong' || tag === 'i' || tag === 'em') {
+                return '<' + tag + '>' + inner + '</' + tag + '>';
+            }
+
+            if (tag === 'div' || tag === 'p') {
+                return inner + '<br>';
+            }
+
+            return inner;
+        }
+
+        var output = '';
+        Array.prototype.forEach.call(container.childNodes, function(child) {
+            output += walk(child);
+        });
+
+        output = output.replace(/(?:<br>\s*){3,}/g, '<br><br>');
+        output = output.replace(/^(?:<br>\s*)+|(?:<br>\s*)+$/g, '');
+
+        return output;
+    }
+
+    function htmlForEditor(rawValue) {
+        var value = String(rawValue || '');
+        if (/<\s*(b|strong|i|em|br)\b/i.test(value)) {
+            return sanitizeEditorHtml(value);
+        }
+        return textToHtml(value);
+    }
+
+    function syncAllRichEditors() {
+        richEditors.forEach(function(syncFn) {
+            syncFn();
+        });
+    }
+
+    function initRichEditor($textarea) {
+        if (!$textarea.length || $textarea.data('rich-editor-ready')) {
+            return;
+        }
+
+        var textareaId = $textarea.attr('id') || ('editor-' + Date.now());
+        var editorId = textareaId + '-rich-editor';
+        var toolbarHtml = [
+            '<div class="ccis-rich-toolbar" data-target="', editorId, '">',
+            '<button type="button" class="btn btn-sm btn-outline-secondary rich-cmd" data-cmd="bold"><i class="fas fa-bold"></i></button>',
+            '<button type="button" class="btn btn-sm btn-outline-secondary rich-cmd" data-cmd="italic"><i class="fas fa-italic"></i></button>',
+            '<button type="button" class="btn btn-sm btn-outline-secondary rich-cmd" data-cmd="removeFormat"><i class="fas fa-eraser"></i></button>',
+            '</div>'
+        ].join('');
+
+        var $toolbar = $(toolbarHtml);
+        var $editor = $('<div>', {
+            id: editorId,
+            class: 'ccis-rich-editor form-control',
+            contenteditable: 'true'
+        });
+
+        $textarea.after($editor).after($toolbar).addClass('d-none').data('rich-editor-ready', true);
+        $editor.html(htmlForEditor($textarea.val()));
+
+        function sync() {
+            $textarea.val(sanitizeEditorHtml($editor.html()));
+        }
+
+        $editor.on('input blur keyup paste', function() {
+            sync();
+        });
+
+        $toolbar.on('mousedown', '.rich-cmd', function(e) {
+            e.preventDefault();
+        });
+
+        $toolbar.on('click', '.rich-cmd', function() {
+            var cmd = $(this).data('cmd');
+            $editor.trigger('focus');
+            document.execCommand(cmd, false, null);
+            sync();
+        });
+
+        richEditors.push(sync);
     }
 
     function renderCarouselImages() {
@@ -164,6 +283,7 @@
 
             $('#welcome-title').val(first.title || '');
             $('#welcome-text').val(first.content || '');
+            $('#welcome-text-rich-editor').html(htmlForEditor(first.content || ''));
 
             dbCarouselImages = records
                 .filter(function(rec) { return !!rec.banner_image; })
@@ -190,8 +310,11 @@
 
 
     function saveHomepageBundle(successMessage) {
+        syncAllRichEditors();
+
         var title = $.trim($('#welcome-title').val() || '');
-        var content = $.trim($('#welcome-text').val() || '');
+        // Keep user-entered spacing/indentation for welcome message.
+        var content = $('#welcome-text').val() || '';
 
         var formData = new FormData();
         formData.append('title', title);
@@ -290,6 +413,7 @@
     });
 
     $(function() {
+        initRichEditor($('#welcome-text'));
         updateCurrentDate();
         setInterval(updateCurrentDate, 60000);
 

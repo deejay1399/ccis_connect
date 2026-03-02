@@ -82,7 +82,7 @@ class AdminContent extends CI_Controller {
 		$this->load->model('About_content_model');
 
 		try {
-			$content = trim((string) $this->input->post('content'));
+			$content = (string) $this->input->post('content');
 			$result = $this->About_content_model->save_history($content);
 			echo json_encode(['success' => (bool) $result]);
 		} catch (Exception $e) {
@@ -468,6 +468,47 @@ class AdminContent extends CI_Controller {
 		$this->load->view('superadmin/layouts/navigation');
 		$this->load->view('superadmin/pages/manage_alumni', $data);
 		$this->load->view('superadmin/layouts/footer');
+	}
+
+	public function load_alumni_donation_settings()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_donation_settings_model');
+
+		try {
+			$data = $this->Alumni_donation_settings_model->get_settings();
+			echo json_encode(['success' => true, 'data' => $data]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function save_alumni_donation_settings()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('Alumni_donation_settings_model');
+
+		try {
+			$payload = [
+				'bank_name' => trim((string) $this->input->post('bank_name')),
+				'bank_account_name' => trim((string) $this->input->post('bank_account_name')),
+				'bank_account_number' => trim((string) $this->input->post('bank_account_number')),
+				'bank_branch' => trim((string) $this->input->post('bank_branch')),
+				'gcash_number' => trim((string) $this->input->post('gcash_number')),
+				'maya_number' => trim((string) $this->input->post('maya_number')),
+				'digital_account_name' => trim((string) $this->input->post('digital_account_name')),
+				'contact_email' => trim((string) $this->input->post('contact_email')),
+			];
+
+			$result = $this->Alumni_donation_settings_model->save_settings($payload);
+			echo json_encode(['success' => (bool) $result]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
 	}
 
 	// ==================== PAGDUMALA SA ALUMNI (AJAX) ====================
@@ -1133,8 +1174,9 @@ class AdminContent extends CI_Controller {
 		try {
 			$this->load->model('Homepage_model');
 
-			$title = trim((string) $this->input->post('title'));
-			$content = trim((string) $this->input->post('content'));
+				$title = trim((string) $this->input->post('title'));
+				// Preserve user-entered indentation/spacing in welcome content.
+				$content = (string) $this->input->post('content');
 			$existing_images = $this->input->post('existing_images');
 			if (!is_array($existing_images)) {
 				$existing_images = [];
@@ -1422,8 +1464,8 @@ class AdminContent extends CI_Controller {
 		$this->load->model('Announcements_model');
 
 		try {
-			$title = trim((string) $this->input->post('title'));
-			$content = trim((string) $this->input->post('content'));
+				$title = trim((string) $this->input->post('title'));
+				$content = trim((string) $this->input->post('content'));
 			$announcement_date = $this->input->post('announcement_date');
 			$announcement_time = trim((string) $this->input->post('announcement_time'));
 			$announcement_venue = trim((string) $this->input->post('announcement_venue'));

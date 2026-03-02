@@ -32,11 +32,7 @@ $jingle_video = isset($about['hymn']['jingleVideo']) && $about['hymn']['jingleVi
             <div class="content-card">
                 <h3><i class="fas fa-history me-3"></i>History of CCIS</h3>
                 <div class="history-content">
-                    <?php foreach (preg_split('/\r\n|\r|\n/', (string) $history) as $line): ?>
-                        <?php if (trim($line) !== ''): ?>
-                            <p><?php echo html_escape($line); ?></p>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
+                    <p><?php echo ccis_format_rich_text($history); ?></p>
                 </div>
             </div>
         </section>
@@ -54,7 +50,7 @@ $jingle_video = isset($about['hymn']['jingleVideo']) && $about['hymn']['jingleVi
                                 </div>
                                 <div class="vmgo-text-horizontal">
                                     <h4 class="mb-3">Vision</h4>
-                                    <p><?php echo nl2br(html_escape($vision)); ?></p>
+                                    <p><?php echo ccis_format_rich_text($vision); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -66,7 +62,7 @@ $jingle_video = isset($about['hymn']['jingleVideo']) && $about['hymn']['jingleVi
                                 </div>
                                 <div class="vmgo-text-horizontal">
                                     <h4 class="mb-3">Mission</h4>
-                                    <p><?php echo nl2br(html_escape($mission)); ?></p>
+                                    <p><?php echo ccis_format_rich_text($mission); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -80,7 +76,7 @@ $jingle_video = isset($about['hymn']['jingleVideo']) && $about['hymn']['jingleVi
                                     <h4 class="mb-3">Goals</h4>
                                     <ul class="goals-list">
                                         <?php foreach ($goals as $goal): ?>
-                                            <li><?php echo html_escape($goal); ?></li>
+                                            <li><?php echo ccis_format_rich_text($goal); ?></li>
                                         <?php endforeach; ?>
                                     </ul>
                                 </div>
@@ -99,7 +95,7 @@ $jingle_video = isset($about['hymn']['jingleVideo']) && $about['hymn']['jingleVi
                                         <?php foreach ($core_values as $value): ?>
                                             <div class="core-value-horizontal">
                                                 <strong><?php echo html_escape(isset($value['name']) ? $value['name'] : ''); ?>.</strong>
-                                                <?php echo html_escape(isset($value['description']) ? $value['description'] : ''); ?>
+                                                <?php echo ccis_format_rich_text(isset($value['description']) ? $value['description'] : ''); ?>
                                             </div>
                                         <?php endforeach; ?>
                                     </div>

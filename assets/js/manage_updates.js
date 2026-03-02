@@ -51,6 +51,29 @@
         return list;
     }
 
+    function toAssetUrl(path) {
+        const raw = String(path || '').trim();
+        if (!raw) return '';
+        if (/^https?:\/\//i.test(raw)) return raw;
+        return baseURL + raw.replace(/^\/+/, '');
+    }
+
+    function buildImageGallery(images, altBase) {
+        if (!images.length) return '';
+        const items = images.map(function (img, idx) {
+            const src = toAssetUrl(img);
+            const alt = `${altBase || 'Image'} ${idx + 1}`;
+            return `<img src="${src}" class="updates-image-thumb" alt="${escapeHtml(alt)}">`;
+        }).join('');
+
+        return `
+            <div class="updates-image-gallery">
+                <div class="updates-image-strip">${items}</div>
+                <small class="text-muted d-block px-3 pb-1">${images.length} image(s)</small>
+            </div>
+        `;
+    }
+
     function fileKey(file) {
         return [file.name, file.size, file.lastModified].join('|');
     }
@@ -209,16 +232,14 @@
 
         rows.forEach(function (a) {
             const images = parseImages(a);
-            const image = images.length ? `<img src="${baseURL + images[0]}" class="announcement-image-preview" alt="${escapeHtml(a.title)}">` : '';
-            const imageCount = images.length > 1 ? `<div class="mt-1"><small class="text-muted">${images.length} images uploaded</small></div>` : '';
+            const gallery = buildImageGallery(images, a.title);
             const pdf = a.pdf_file
-                ? `<div class="mt-2"><a href="${baseURL + a.pdf_file}" target="_blank" rel="noopener">View PDF</a></div>`
+                ? `<div class="mt-2"><a href="${toAssetUrl(a.pdf_file)}" target="_blank" rel="noopener">View PDF</a></div>`
                 : '';
 
             host.append(`
                 <div class="col-12">
                     <div class="updates-list-card">
-                        ${image}
                         <div class="card-body">
                             <h5 class="card-title">${escapeHtml(a.title)}</h5>
                             <div class="meta-info">
@@ -226,12 +247,16 @@
                                 ${a.announcement_time ? `<span><i class="fas fa-clock me-1"></i>${escapeHtml(a.announcement_time)}</span>` : ''}
                                 ${a.announcement_venue ? `<span><i class="fas fa-map-marker-alt me-1"></i>${escapeHtml(a.announcement_venue)}</span>` : ''}
                             </div>
+                            ${gallery}
                             <p class="card-text">${escapeHtml(a.content || '')}</p>
-                            ${imageCount}
                             ${pdf}
-                            <div class="actions">
-                                <button class="btn btn-sm btn-info edit-announcement-btn" data-id="${a.announcement_id}">Edit</button>
-                                <button class="btn btn-sm btn-danger delete-announcement-btn" data-id="${a.announcement_id}" data-title="${escapeHtml(a.title)}">Remove</button>
+                            <div class="actions list-actions">
+                                <button type="button" class="btn btn-sm btn-info edit-announcement-btn d-inline-flex align-items-center gap-1" data-id="${a.announcement_id}">
+                                    <i class="fas fa-edit"></i><span>Edit</span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger delete-announcement-btn d-inline-flex align-items-center gap-1" data-id="${a.announcement_id}" data-title="${escapeHtml(a.title)}">
+                                    <i class="fas fa-trash-alt"></i><span>Delete</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -251,14 +276,12 @@
 
         rows.forEach(function (e) {
             const images = parseImages(e);
-            const image = images.length ? `<img src="${baseURL + images[0]}" class="event-image-preview" alt="${escapeHtml(e.title)}">` : '';
-            const imageCount = images.length > 1 ? `<div class="mt-1"><small class="text-muted">${images.length} images uploaded</small></div>` : '';
+            const gallery = buildImageGallery(images, e.title);
             const badgeClass = e.type === 'Achievement' ? 'bg-success' : 'bg-primary';
 
             host.append(`
                 <div class="col-12">
                     <div class="updates-list-card">
-                        ${image}
                         <div class="card-body">
                             <div class="d-flex align-items-start justify-content-between gap-3">
                                 <h5 class="card-title mb-0">${escapeHtml(e.title)}</h5>
@@ -269,12 +292,16 @@
                                 ${e.event_time ? `<span><i class="fas fa-clock me-1"></i>${escapeHtml(e.event_time)}</span>` : ''}
                                 ${e.event_location ? `<span><i class="fas fa-map-marker-alt me-1"></i>${escapeHtml(e.event_location)}</span>` : ''}
                             </div>
+                            ${gallery}
                             ${e.event_team ? `<p class="card-text"><strong>Team/Student:</strong> ${escapeHtml(e.event_team)}</p>` : ''}
                             <p class="card-text">${escapeHtml(e.description || '')}</p>
-                            ${imageCount}
-                            <div class="actions">
-                                <button class="btn btn-sm btn-info edit-event-btn" data-id="${e.id}">Edit</button>
-                                <button class="btn btn-sm btn-danger delete-event-btn" data-id="${e.id}" data-title="${escapeHtml(e.title)}">Remove</button>
+                            <div class="actions list-actions">
+                                <button type="button" class="btn btn-sm btn-info edit-event-btn d-inline-flex align-items-center gap-1" data-id="${e.id}">
+                                    <i class="fas fa-edit"></i><span>Edit</span>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger delete-event-btn d-inline-flex align-items-center gap-1" data-id="${e.id}" data-title="${escapeHtml(e.title)}">
+                                    <i class="fas fa-trash-alt"></i><span>Delete</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -493,7 +520,9 @@
         });
     });
 
-    $(document).on('click', '.edit-announcement-btn', function () {
+    $(document).on('click', '.edit-announcement-btn', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
         const id = Number($(this).data('id'));
         const a = announcementsCache.find(function (item) { return Number(item.announcement_id) === id; });
         if (!a) {
@@ -565,7 +594,9 @@
         });
     });
 
-    $(document).on('click', '.edit-event-btn', function () {
+    $(document).on('click', '.edit-event-btn', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
         const id = Number($(this).data('id'));
         const ev = eventsCache.find(function (item) { return Number(item.id) === id; });
         if (!ev) {
@@ -630,8 +661,14 @@
         });
     });
 
-    $(document).on('click', '.delete-announcement-btn', function () {
-        const id = $(this).data('id');
+    $(document).on('click', '.delete-announcement-btn', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = Number($(this).data('id'));
+        if (!id) {
+            notify('Invalid announcement ID.', 'error');
+            return;
+        }
         const title = $(this).data('title') || 'this announcement';
 
         showConfirm(`Are you sure you want to remove "${title}"?`, function () {
@@ -648,8 +685,14 @@
         });
     });
 
-    $(document).on('click', '.delete-event-btn', function () {
-        const id = $(this).data('id');
+    $(document).on('click', '.delete-event-btn', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = Number($(this).data('id'));
+        if (!id) {
+            notify('Invalid event/achievement ID.', 'error');
+            return;
+        }
         const title = $(this).data('title') || 'this item';
 
         showConfirm(`Are you sure you want to remove "${title}"?`, function () {

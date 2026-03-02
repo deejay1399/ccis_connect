@@ -1124,6 +1124,12 @@
     min-height: 400px;
 }
 
+#modalImage {
+    max-height: 70vh;
+    width: auto;
+    object-fit: contain;
+}
+
 .image-nav-btn {
     position: absolute;
     top: 50%;

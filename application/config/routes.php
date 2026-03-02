@@ -123,6 +123,8 @@ $route['admin/manage/delete_deans_list'] = 'admin/AdminContent/delete_deans_list
 
 // Admin Content Management - mga ALUMNI
 $route['admin/manage/alumni/mentor_requests'] = 'admin/AdminContent/load_alumni_mentor_requests';
+$route['admin/manage/alumni/donation_settings'] = 'admin/AdminContent/load_alumni_donation_settings';
+$route['admin/manage/alumni/donation_settings/save'] = 'admin/AdminContent/save_alumni_donation_settings';
 $route['admin/manage/alumni/mentor_status'] = 'admin/AdminContent/update_alumni_mentor_status';
 $route['admin/manage/alumni/chatbot_inquiries'] = 'admin/AdminContent/load_alumni_chatbot_inquiries';
 $route['admin/manage/alumni/chatbot_status'] = 'admin/AdminContent/update_alumni_chatbot_status';

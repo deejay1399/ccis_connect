@@ -255,6 +255,19 @@ body {
     margin-bottom: 1.5rem;
 }
 
+.ccis-rich-toolbar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.ccis-rich-editor {
+    min-height: 160px;
+    background: #fff;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
 /* Section Cards - MODERN */
 .section-card {
     background: white;

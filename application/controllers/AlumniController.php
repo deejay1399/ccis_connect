@@ -9,15 +9,17 @@ class AlumniController extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->helper('auth');
 		$this->load->model('Alumni_model');
+		$this->load->model('Alumni_donation_settings_model');
 		restrict_public_for_admin_roles();
 	}
 
 	public function index()
 	{
 		$data['page_type'] = 'alumni';
+		$data['donation_settings'] = $this->Alumni_donation_settings_model->get_settings();
 		$this->load->view('layouts/header', $data);
 		$this->load->view('layouts/navigation');
-		$this->load->view('pages/alumni');
+		$this->load->view('pages/alumni', $data);
 		$this->load->view('layouts/footer');
 	}
 

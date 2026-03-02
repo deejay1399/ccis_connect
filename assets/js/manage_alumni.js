@@ -2,6 +2,7 @@ $(document).ready(function () {
     const baseUrl = window.baseUrl || '/ccis_connect/';
 
     let activeSubmissionContext = null;
+    let mentorRequestsCache = [];
 
     function showNotification(type, message) {
         const notificationModal = `
@@ -70,6 +71,15 @@ $(document).ready(function () {
             .replace(/'/g, '&#039;');
     }
 
+    function isLongFormDetail(label, value) {
+        const normalizedLabel = String(label || '').trim().toLowerCase();
+        const text = String(value ?? '');
+        const hasParagraphBreak = /\r?\n/.test(text);
+        const longFormLabels = ['message', 'update', 'details', 'question', 'biography', 'bio', 'content'];
+
+        return hasParagraphBreak || longFormLabels.includes(normalizedLabel);
+    }
+
     function toTitleCase(value) {
         const input = String(value || '').toLowerCase();
         return input ? input.charAt(0).toUpperCase() + input.slice(1) : '';
@@ -81,7 +91,13 @@ $(document).ready(function () {
 
     function formatDetailRows(details) {
         return Object.entries(details)
-            .map(([label, value]) => `<tr><th style="width: 35%;">${escapeHtml(label)}</th><td>${escapeHtml(value || '-')}</td></tr>`)
+            .map(([label, value]) => {
+                const safeValue = value || '-';
+                const textClasses = isLongFormDetail(label, safeValue)
+                    ? 'submission-detail-value submission-detail-longtext'
+                    : 'submission-detail-value';
+                return `<tr><th style="width: 35%;">${escapeHtml(label)}</th><td class="${textClasses}">${escapeHtml(safeValue)}</td></tr>`;
+            })
             .join('');
     }
 
@@ -179,6 +195,7 @@ $(document).ready(function () {
         $.getJSON(baseUrl + 'admin/manage/alumni/mentor_requests', function(response) {
             if (!response.success) return;
             const data = response.data || [];
+            mentorRequestsCache = data;
             const body = $('#mentor-table-body');
             body.empty();
             setTabBadge('#mentor-badge', data.filter(isUnreadNotification).length);
@@ -206,6 +223,41 @@ $(document).ready(function () {
         });
     }
 
+    async function markAllMentorRequestsAsRead() {
+        const unreadItems = (mentorRequestsCache || []).filter(isUnreadNotification);
+        if (!unreadItems.length) {
+            showNotification('success', 'No unread mentor submissions.');
+            return;
+        }
+
+        const requests = unreadItems.map(function(row) {
+            return $.ajax({
+                url: baseUrl + 'admin/manage/alumni/mentor_status',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    id: row.id,
+                    status: 'read',
+                    source: row.source || 'mentor_requests'
+                }
+            });
+        });
+
+        try {
+            const results = await Promise.all(requests);
+            const failed = results.filter(function(res) { return !(res && res.success); }).length;
+            if (failed > 0) {
+                showNotification('error', `${failed} mentor submission(s) failed to mark as read.`);
+            } else {
+                showNotification('success', 'All mentor submissions marked as read.');
+            }
+            loadMentorRequests();
+        } catch (xhr) {
+            const msg = xhr?.responseJSON?.message || 'Failed to mark all mentor submissions as read';
+            showNotification('error', msg);
+        }
+    }
+
     function loadChatbotInquiries() {
         $.getJSON(baseUrl + 'admin/manage/alumni/chatbot_inquiries', function(response) {
             if (!response.success) return;
@@ -224,7 +276,7 @@ $(document).ready(function () {
                 body.append(`
                     <tr>
                         <td>${escapeHtml(row.name)}</td>
-                        <td>${escapeHtml(row.question)}</td>
+                        <td class="formatted-paragraph">${escapeHtml(row.question)}</td>
                         <td>${escapeHtml(row.category)}</td>
                         <td>${formatDate(row.inquiry_date)}</td>
                     </tr>
@@ -281,7 +333,7 @@ $(document).ready(function () {
                 body.append(`
                     <tr>
                         <td>${escapeHtml(row.author)}</td>
-                        <td>${escapeHtml(row.content)}</td>
+                        <td class="formatted-paragraph">${escapeHtml(row.content)}</td>
                         <td>${formatDate(row.update_date)}</td>
                         <td>${statusBadge(row.status)}</td>
                         <td>
@@ -323,6 +375,46 @@ $(document).ready(function () {
         });
     }
 
+    function loadDonationSettings() {
+        $.getJSON(baseUrl + 'admin/manage/alumni/donation_settings', function(response) {
+            if (!response.success || !response.data) return;
+            const data = response.data;
+
+            $('#donation-bank-name').val(data.bank_name || '');
+            $('#donation-bank-account-name').val(data.bank_account_name || '');
+            $('#donation-bank-account-number').val(data.bank_account_number || '');
+            $('#donation-bank-branch').val(data.bank_branch || '');
+            $('#donation-gcash-number').val(data.gcash_number || '');
+            $('#donation-maya-number').val(data.maya_number || '');
+            $('#donation-digital-account-name').val(data.digital_account_name || '');
+            $('#donation-contact-email').val(data.contact_email || '');
+        });
+    }
+
+    function saveDonationSettings() {
+        const payload = {
+            bank_name: $('#donation-bank-name').val().trim(),
+            bank_account_name: $('#donation-bank-account-name').val().trim(),
+            bank_account_number: $('#donation-bank-account-number').val().trim(),
+            bank_branch: $('#donation-bank-branch').val().trim(),
+            gcash_number: $('#donation-gcash-number').val().trim(),
+            maya_number: $('#donation-maya-number').val().trim(),
+            digital_account_name: $('#donation-digital-account-name').val().trim(),
+            contact_email: $('#donation-contact-email').val().trim()
+        };
+
+        $.post(baseUrl + 'admin/manage/alumni/donation_settings/save', payload, function(response) {
+            if (response && response.success) {
+                showNotification('success', 'Donation payment details saved.');
+                return;
+            }
+            showNotification('error', (response && response.message) || 'Failed to save donation details');
+        }, 'json').fail(function(xhr) {
+            const msg = xhr.responseJSON?.message || 'Failed to save donation details';
+            showNotification('error', msg);
+        });
+    }
+
     function loadFeatured() {
         $.getJSON(baseUrl + 'admin/manage/alumni/featured', function(response) {
             if (!response.success) return;
@@ -347,7 +439,7 @@ $(document).ready(function () {
                                 ${photoHtml}
                                 <h5 class="card-title">${escapeHtml(row.name)}</h5>
                                 <p class="text-muted mb-2">${escapeHtml(row.position)}</p>
-                                <p class="card-text">${escapeHtml(row.bio)}</p>
+                                <p class="card-text formatted-paragraph">${escapeHtml(row.bio)}</p>
                             </div>
                             <div class="card-footer text-end">
                                 <button class="btn btn-sm btn-outline-danger btn-delete-featured" data-id="${row.id}">Delete</button>
@@ -411,7 +503,7 @@ $(document).ready(function () {
                                 ${photoHtml}
                                 <h5 class="card-title">${escapeHtml(row.name)}</h5>
                                 <p class="text-muted mb-1">${formatDate(row.event_date)} | ${escapeHtml(row.location)}</p>
-                                <p class="card-text">${escapeHtml(row.description)}</p>
+                                <p class="card-text formatted-paragraph">${escapeHtml(row.description)}</p>
                             </div>
                             <div class="card-footer text-end">
                                 <button class="btn btn-sm btn-outline-danger btn-delete-event" data-id="${row.id}">Delete</button>
@@ -767,6 +859,15 @@ $(document).ready(function () {
         }, 'json');
     });
 
+    $(document).on('submit', '#donationSettingsForm', function(e) {
+        e.preventDefault();
+        saveDonationSettings();
+    });
+
+    $('#mark-all-mentor-read').on('click', function() {
+        markAllMentorRequestsAsRead();
+    });
+
     // Initial load
     loadMentorRequests();
     loadChatbotInquiries();
@@ -774,6 +875,7 @@ $(document).ready(function () {
     // Temporarily disabled: Alumni Updates loading
     // loadUpdates();
     loadGiveback();
+    loadDonationSettings();
     loadFeatured();
     loadDirectory();
     loadEvents();

@@ -859,6 +859,24 @@
     line-height: 1.6;
 }
 
+/* ===== LONG TEXT FORMATTING ===== */
+.formatted-paragraph {
+    white-space: pre-line;
+    text-align: justify;
+    text-justify: inter-word;
+    line-height: 1.65;
+}
+
+#submission-details-content .submission-detail-value {
+    white-space: pre-line;
+    line-height: 1.65;
+}
+
+#submission-details-content .submission-detail-longtext {
+    text-align: justify;
+    text-justify: inter-word;
+}
+
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 992px) {
     .nav-tabs .nav-link {

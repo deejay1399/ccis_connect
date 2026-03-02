@@ -8,7 +8,8 @@
                 <div class="highlight-slide <?php echo $index === 0 ? 'active' : ''; ?>" id="slide-<?php echo $index; ?>">
                     <div class="highlight-image">
                         <?php if (!empty($record['banner_image'])): ?>
-                            <img src="<?php echo base_url($record['banner_image']); ?>" alt="<?php echo htmlspecialchars($record['title']); ?>">
+                            <?php $banner_image_path = ltrim((string) $record['banner_image'], '/'); ?>
+                            <img src="<?php echo base_url($banner_image_path); ?>" alt="<?php echo htmlspecialchars($record['title']); ?>">
                         <?php else: ?>
                             <div style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; min-height: 400px; color: #999;">
                                 <p>No image available</p>
@@ -67,12 +68,12 @@
                     <p class="welcome-text">
                         <?php 
                         if (!empty($homepage_records) && !empty($homepage_records[0]['content'])) {
-                            echo nl2br(htmlspecialchars($homepage_records[0]['content']));
+                            echo ccis_format_rich_text($homepage_records[0]['content']);
                         } else {
-                            echo 'The College of Computing and Information Sciences (CCIS) is committed to providing 
+                            echo ccis_format_rich_text('The College of Computing and Information Sciences (CCIS) is committed to providing 
                         quality education in the fields of Computer Science and Information Technology. 
                         We foster innovation, research, and technological advancement to prepare students 
-                        for successful careers in the digital age.';
+                        for successful careers in the digital age.');
                         }
                         ?>
                     </p>

@@ -185,6 +185,55 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <h4><i class="fas fa-heart me-2"></i>Give Back Submissions</h4>
                             <p class="text-muted">Alumni giving back to the community</p>
                         </div>
+
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3"><i class="fas fa-wallet me-2"></i>Donation Payment Details</h5>
+                                <p class="text-muted mb-3">These details appear in the public Alumni "Make a Donation" modal.</p>
+                                <form id="donationSettingsForm">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="donation-bank-name" class="form-label">Bank Name</label>
+                                            <input type="text" class="form-control" id="donation-bank-name" maxlength="150">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="donation-bank-account-name" class="form-label">Bank Account Name</label>
+                                            <input type="text" class="form-control" id="donation-bank-account-name" maxlength="150">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="donation-bank-account-number" class="form-label">Bank Account Number</label>
+                                            <input type="text" class="form-control" id="donation-bank-account-number" maxlength="80">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="donation-bank-branch" class="form-label">Bank Branch</label>
+                                            <input type="text" class="form-control" id="donation-bank-branch" maxlength="150">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="donation-gcash-number" class="form-label">GCash Number</label>
+                                            <input type="text" class="form-control" id="donation-gcash-number" maxlength="80">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="donation-maya-number" class="form-label">Maya Number</label>
+                                            <input type="text" class="form-control" id="donation-maya-number" maxlength="80">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="donation-digital-account-name" class="form-label">Digital Account Name</label>
+                                            <input type="text" class="form-control" id="donation-digital-account-name" maxlength="150">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="donation-contact-email" class="form-label">Donation Contact Email</label>
+                                            <input type="email" class="form-control" id="donation-contact-email" maxlength="150">
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-save me-1"></i>Save Donation Details
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>

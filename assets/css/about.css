@@ -49,6 +49,7 @@ body {
     position: relative;
     z-index: 1;
     padding: 2rem 0;
+    border-bottom: 5px solid var(--gold);
     display: flex;
     align-items: center;
     overflow: hidden;

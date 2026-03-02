@@ -539,11 +539,11 @@ body {
     border: 2px solid #dee2e6;
 }
 
-/* PDF Preview Modal */
-.modal {
+/* PDF Preview Modal (scoped so Bootstrap logout modal keeps default layering/behavior) */
+#pdfPreviewModal {
     display: none;
     position: fixed;
-    z-index: 1000;
+    z-index: 2000;
     left: 0;
     top: 0;
     width: 100%;
@@ -552,7 +552,7 @@ body {
     overflow: auto;
 }
 
-.modal-content {
+#pdfPreviewModal .modal-content {
     background-color: white;
     margin: 2% auto;
     padding: 0;
@@ -588,26 +588,26 @@ body {
     background: var(--light-purple);
 }
 
-.modal-header {
+#pdfPreviewModal .modal-header {
     padding: 1.5rem 2rem;
     border-bottom: 2px solid var(--light-purple);
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-radius: 15px 15px 0 0;
 }
 
-.modal-header h3 {
+#pdfPreviewModal .modal-header h3 {
     color: var(--primary-purple);
     margin: 0;
     font-weight: 600;
 }
 
-.modal-body {
+#pdfPreviewModal .modal-body {
     padding: 2rem;
     max-height: 60vh;
     overflow-y: auto;
 }
 
-.modal-footer {
+#pdfPreviewModal .modal-footer {
     padding: 1.5rem 2rem;
     border-top: 2px solid var(--light-purple);
     text-align: center;
@@ -1308,12 +1308,14 @@ body {
         padding: 2rem 0;
     }
     
-    .modal-content {
+    #pdfPreviewModal .modal-content {
         width: 95%;
         margin: 5% auto;
     }
     
-    .modal-header, .modal-body, .modal-footer {
+    #pdfPreviewModal .modal-header,
+    #pdfPreviewModal .modal-body,
+    #pdfPreviewModal .modal-footer {
         padding: 1rem;
     }
     
@@ -1407,7 +1409,7 @@ body {
         font-size: 1.2rem;
     }
     
-    .modal-content {
+    #pdfPreviewModal .modal-content {
         width: 98%;
         margin: 2% auto;
     }

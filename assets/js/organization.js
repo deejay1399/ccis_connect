@@ -1,7 +1,9 @@
 // ORGANIZATION PAGE JAVASCRIPT - Complete functionality with Floating Button
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔄 Initializing Organization Page...');
+    const ORG_DEBUG = false;
+    function orgLog() { if (ORG_DEBUG) console.log.apply(console, arguments); }
+    orgLog('?? Initializing Organization Page...');
     
     // Global variables for image gallery navigation
     let currentGalleryImages = [];
@@ -107,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // Show specific section - FIXED VERSION
     function showSection(sectionId) {
-        console.log('🎬 Showing section:', sectionId);
+        orgLog('?? Showing section:', sectionId);
         
         const sections = document.querySelectorAll('.content-section');
         sections.forEach(section => {
@@ -145,19 +147,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Load section-specific content with better timing
-            console.log('🕒 Loading content for:', sectionId);
+            orgLog('?? Loading content for:', sectionId);
             setTimeout(() => {
                 loadSectionContent(sectionId);
             }, 150);
         } else {
-            console.warn('❌ Section not found:', sectionId);
+            console.warn('? Section not found:', sectionId);
             showSection('the-legion');
         }
     }
 
     // Load section-specific content - IMPROVED VERSION
     function loadSectionContent(sectionId) {
-        console.log('📦 Loading content for section:', sectionId);
+        orgLog('?? Loading content for section:', sectionId);
         
         switch(sectionId) {
             case 'the-legion':
@@ -169,13 +171,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
                 
             default:
-                console.warn('❌ Unknown section:', sectionId);
+                console.warn('? Unknown section:', sectionId);
         }
     }
 
     // Initialize Legion Content
     function initializeLegionContent() {
-        console.log('👥 Initializing Legion content...');
+        orgLog('?? Initializing Legion content...');
         
         // Initialize view buttons for sorting
         initializeViewButtons();
@@ -186,12 +188,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Load Legion data
         loadLegionContent();
         
-        console.log('✅ Legion content initialized');
+        orgLog('? Legion content initialized');
     }
 
     // Initialize CS Guild Content
     function initializeCSGuildContent() {
-        console.log('👥 Initializing CS Guild content...');
+        orgLog('?? Initializing CS Guild content...');
         
         // Initialize view buttons for sorting
         initializeViewButtons();
@@ -202,12 +204,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Load CS Guild data
         loadCSGuildContent();
         
-        console.log('✅ CS Guild content initialized');
+        orgLog('? CS Guild content initialized');
     }
 
     // Initialize view buttons for sorting
     function initializeViewButtons() {
-        console.log('🔍 Initializing view buttons...');
+        orgLog('?? Initializing view buttons...');
         
         // Remove existing listeners to prevent duplicates
         $(document).off('click.viewButtons');
@@ -215,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add event delegation for view buttons
         $(document).on('click.viewButtons', '.view-btn', function(e) {
             e.preventDefault();
-            console.log('🔍 View button clicked!');
+            orgLog('?? View button clicked!');
             
             const $btn = $(this);
             const type = $btn.data('type');
@@ -230,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showNotification(`Sorting ${org} ${type} by ${sort === 'latest' ? 'latest first' : 'oldest first'}`, 'info');
             
             // Add your sorting logic here
-            console.log(`Sorting ${org} ${type} by ${sort}`);
+            orgLog(`Sorting ${org} ${type} by ${sort}`);
             
             // Update the view buttons to have light gray to purple styling
             updateViewButtonsStyling();
@@ -239,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sortContent(org, type, sort);
         });
         
-        console.log('✅ View buttons initialized');
+        orgLog('? View buttons initialized');
     }
 
     // Update view buttons styling
@@ -260,31 +262,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize image gallery functionality with navigation - FIXED VERSION
     function initializeImageGallery() {
-        console.log('🖼️ Initializing image gallery...');
+        orgLog('??? Initializing image gallery...');
         
         // Remove existing listeners to prevent duplicates
         $(document).off('click.imageGallery');
         
         // Add event delegation for image gallery
-        $(document).on('click.imageGallery', '.legion-image-item, .csguild-image-item', function(e) {
+        $(document).on('click.imageGallery', '.legion-image-item img, .csguild-image-item img, .org-announcement-preview-image, .legion-announcement-card > img, .csguild-announcement-card > img', function(e) {
             e.preventDefault();
-            console.log('🖼️ Image clicked!');
+            e.stopPropagation();
+            orgLog('Image clicked');
             
-            const $clickedImage = $(this);
-            const galleryContainer = $clickedImage.closest('.legion-image-gallery, .csguild-image-gallery');
+            const $clickedImage = $(e.currentTarget);
+            const galleryContainer = $clickedImage.closest('.legion-image-gallery, .csguild-image-gallery, .org-announcement-image-preview');
             const happeningId = galleryContainer.data('happening-id');
+            const announcementId = galleryContainer.data('announcement-id');
             const org = galleryContainer.data('org');
             
             // Get all images in this gallery
             const images = [];
-            galleryContainer.find('.legion-image-item, .csguild-image-item').each(function(index) {
-                const $img = $(this).find('img');
+            if (
+                $clickedImage.hasClass('org-announcement-preview-image') ||
+                $clickedImage.parent().hasClass('org-announcement-image-preview') ||
+                $clickedImage.closest('.legion-announcement-card, .csguild-announcement-card').length
+            ) {
                 images.push({
-                    src: $img.attr('src'),
-                    alt: $img.attr('alt'),
-                    caption: $img.attr('alt') || 'Image'
+                    src: $clickedImage.attr('src'),
+                    alt: $clickedImage.attr('alt'),
+                    caption: $clickedImage.attr('alt') || 'Image'
                 });
-            });
+            } else {
+                galleryContainer.find('.legion-image-item, .csguild-image-item').each(function() {
+                    const $img = $(this).find('img');
+                    images.push({
+                        src: $img.attr('src'),
+                        alt: $img.attr('alt'),
+                        caption: $img.attr('alt') || 'Image'
+                    });
+                });
+            }
             
             // Get the clicked image index
             const imageIndex = parseInt($clickedImage.data('image-index') || 0);
@@ -292,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Set global variables for navigation
             currentGalleryImages = images;
             currentImageIndex = imageIndex;
-            currentGalleryId = happeningId || org || 'default';
+            currentGalleryId = happeningId || announcementId || org || 'default';
             
             // Show modal with the clicked image
             showImageInModal(images[imageIndex].src, images[imageIndex].caption);
@@ -301,7 +317,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize modal navigation buttons
         initializeModalNavigation();
         
-        console.log('✅ Image gallery initialized');
+        orgLog('? Image gallery initialized');
+    }
+
+    function cleanupImageModalBackdrop() {
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('padding-right');
+        $('.modal-backdrop').remove();
     }
 
     // Show image in modal - FIXED VERSION
@@ -322,15 +344,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Show modal
-        const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+        const modalElement = document.getElementById('imageModal');
+        const imageModal = bootstrap.Modal.getOrCreateInstance(modalElement);
         imageModal.show();
         
         // Add keyboard event listener when modal opens
         document.addEventListener('keydown', handleKeyboardNavigation);
         
         // Remove event listener when modal closes
-        $('#imageModal').on('hidden.bs.modal', function() {
+        $('#imageModal').off('hidden.bs.modal.imagePreview').on('hidden.bs.modal.imagePreview', function() {
             document.removeEventListener('keydown', handleKeyboardNavigation);
+            cleanupImageModalBackdrop();
         });
     }
 
@@ -405,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize dropdown hover functionality
     function initializeDropdownHover() {
-        console.log('🔄 Initializing dropdown hover functionality...');
+        orgLog('?? Initializing dropdown hover functionality...');
         
         // Desktop hover functionality
         if (window.innerWidth >= 992) {
@@ -430,25 +454,25 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        console.log('✅ Dropdown hover functionality initialized');
+        orgLog('? Dropdown hover functionality initialized');
     }
 
     // Handle navigation from dropdown menu - FIXED VERSION
     function setupDropdownNavigation() {
-        console.log('🔗 Setting up dropdown navigation...');
+        orgLog('?? Setting up dropdown navigation...');
         
         document.querySelectorAll('.section-link').forEach(item => {
             item.addEventListener('click', function(e) {
                 e.preventDefault();
                 const targetId = this.getAttribute('data-section');
-                console.log('🔗 Navigation clicked:', targetId);
+                orgLog('?? Navigation clicked:', targetId);
                 
                 if (this.classList.contains('blocked-nav-item')) {
-                    console.log('🚫 Item is blocked, skipping navigation');
+                    orgLog('?? Item is blocked, skipping navigation');
                     return;
                 }
                 
-                console.log('🎯 Showing section:', targetId);
+                orgLog('?? Showing section:', targetId);
                 showSection(targetId);
                 
                 if (window.innerWidth < 992) {
@@ -460,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        console.log('✅ Dropdown navigation setup completed');
+        orgLog('? Dropdown navigation setup completed');
     }
 
     // Handle browser back/forward buttons
@@ -493,12 +517,12 @@ document.addEventListener('DOMContentLoaded', function() {
         let hash = window.location.hash.substring(1);
         const validSections = ['the-legion', 'cs-guild'];
         
-        console.log('🔗 Initial hash:', hash);
+        orgLog('?? Initial hash:', hash);
         
         // Map hash to actual section IDs
         if (hashMapping[hash]) {
             hash = hashMapping[hash];
-            console.log('🔗 Mapped hash to:', hash);
+            orgLog('?? Mapped hash to:', hash);
         }
         
         // Determine which section to show
@@ -508,10 +532,10 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             // Default to the-legion section
             targetSection = 'the-legion';
-            console.log('🔗 No valid hash, defaulting to:', targetSection);
+            orgLog('?? No valid hash, defaulting to:', targetSection);
         }
         
-        console.log('🎯 Final target section:', targetSection);
+        orgLog('?? Final target section:', targetSection);
         
         // Show the target section with a small delay to ensure DOM is ready
         setTimeout(() => {
@@ -521,7 +545,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Back to Top functionality
     function initBackToTop() {
-        console.log('⬆️ Initializing back to top button...');
+        orgLog('?? Initializing back to top button...');
         
         const backToTopBtn = document.getElementById('backToTop');
         if (!backToTopBtn) return;
@@ -544,7 +568,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleBackToTop();
         window.addEventListener('scroll', toggleBackToTop);
         
-        console.log('✅ Back to top button initialized');
+        orgLog('? Back to top button initialized');
     }
 
     // Create back to top button if not exists
@@ -604,7 +628,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Setup blocked navigation notifications
     function setupBlockedNavigationNotifications() {
-        console.log('🚫 Setting up blocked navigation notifications...');
+        orgLog('?? Setting up blocked navigation notifications...');
         
         // Block specific dropdown items from Academics
         const blockedItems = [
@@ -645,12 +669,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        console.log('✅ Navigation blocking setup completed');
+        orgLog('? Navigation blocking setup completed');
     }
 
     // SORTING FUNCTIONALITY
     function sortContent(org, type, sortOrder) {
-        console.log(`🔄 Sorting ${org} ${type} in ${sortOrder} order`);
+        orgLog(`?? Sorting ${org} ${type} in ${sortOrder} order`);
         
         let items = [];
         
@@ -690,7 +714,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load Legion data
     function loadLegionContent() {
-        console.log('👥 Loading Legion content...');
+        orgLog('?? Loading Legion content...');
         
         // Load officers
         const officers = getLegionOfficers();
@@ -842,7 +866,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load CS Guild data
     function loadCSGuildContent() {
-        console.log('👥 Loading CS Guild content...');
+        orgLog('?? Loading CS Guild content...');
         
         // Load officers
         const officers = getCSGuildOfficers();
@@ -994,7 +1018,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize everything - COMPLETE VERSION
     function initializeAll() {
-        console.log('🚀 Initializing Organization Page Complete System...');
+        orgLog('?? Initializing Organization Page Complete System...');
         
         // Create back to top button
         createBackToTopButton();
@@ -1035,8 +1059,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 100);
         
-        console.log('✅ Organization Page Fully Initialized');
-        console.log('👥 All features loaded: Section switching, Image galleries, Sorting, Dropdown hover, Floating button');
+        orgLog('? Organization Page Fully Initialized');
+        orgLog('?? All features loaded: Section switching, Image galleries, Sorting, Dropdown hover, Floating button');
     }
 
     // Scroll event listener
@@ -1073,7 +1097,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Start the application
     initializeAll();
 
-    console.log('🎉 Organization Page JavaScript Loaded Successfully!');
+    orgLog('?? Organization Page JavaScript Loaded Successfully!');
 });
 
 // DATA GETTER FUNCTIONS
@@ -1154,3 +1178,4 @@ function formatDate(dateString) {
         return dateString;
     }
 }
+

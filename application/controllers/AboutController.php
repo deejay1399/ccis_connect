@@ -8,6 +8,7 @@ class AboutController extends CI_Controller {
 		parent::__construct();
 		$this->load->helper('url');
 		$this->load->helper('auth');
+		$this->load->helper('rich_text');
 		$this->load->model('About_content_model');
 		restrict_public_for_admin_roles();
 	}

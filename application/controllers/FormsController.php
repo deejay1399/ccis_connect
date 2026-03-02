@@ -393,16 +393,28 @@ class FormsController extends CI_Controller {
 				return;
 			}
 
-			// I-delete ang file gikan sa direktoryo sa mga upload
-			$upload_dir = dirname(__FILE__) . '/../../uploads/forms';
-			$file_path = $upload_dir . '/' . basename($form['file_url']);
-			
-			if (file_exists($file_path)) {
-				@unlink($file_path);
+			// I-delete ang file gikan sa direktoryo sa mga upload.
+			$file_path = FCPATH . ltrim((string) $form['file_url'], '/');
+			if (is_file($file_path) && !@unlink($file_path)) {
+				http_response_code(500);
+				echo json_encode([
+					'success' => false,
+					'message' => 'Failed to delete file from storage'
+				]);
+				log_message('error', 'Failed to delete form file: ' . $file_path);
+				return;
 			}
 
 			// Soft delete gikan sa database
-			$this->Forms_model->delete_form($form_id);
+			$deleted = $this->Forms_model->delete_form($form_id);
+			if (!$deleted) {
+				http_response_code(400);
+				echo json_encode([
+					'success' => false,
+					'message' => 'Form is already deleted or could not be deleted'
+				]);
+				return;
+			}
 
 			echo json_encode([
 				'success' => true,

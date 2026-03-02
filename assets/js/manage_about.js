@@ -10,6 +10,7 @@
     };
 
     let aboutData = null;
+    const richEditors = new Map();
 
     const defaultData = {
         history: {
@@ -39,6 +40,190 @@
     function endpoint(path) {
         const base = window.BASE_URL || '/';
         return base + 'index.php/' + path;
+    }
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function textToHtml(value) {
+        return escapeHtml(value).replace(/\r\n|\r|\n/g, '<br>');
+    }
+
+    function sanitizeEditorHtml(value) {
+        const container = document.createElement('div');
+        container.innerHTML = String(value || '');
+
+        function walk(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                return escapeHtml(node.textContent || '');
+            }
+            if (node.nodeType !== Node.ELEMENT_NODE) {
+                return '';
+            }
+
+            const tag = node.tagName.toLowerCase();
+            if (tag === 'br') {
+                return '<br>';
+            }
+
+            let inner = '';
+            node.childNodes.forEach(function (child) {
+                inner += walk(child);
+            });
+
+            if (tag === 'b' || tag === 'strong' || tag === 'i' || tag === 'em') {
+                return '<' + tag + '>' + inner + '</' + tag + '>';
+            }
+
+            if (tag === 'div' || tag === 'p') {
+                return inner + '<br>';
+            }
+
+            return inner;
+        }
+
+        let output = '';
+        container.childNodes.forEach(function (child) {
+            output += walk(child);
+        });
+
+        output = output.replace(/^(?:<br>\s*)+|(?:<br>\s*)+$/g, '');
+
+        return output;
+    }
+
+    function htmlForEditor(rawValue) {
+        const value = String(rawValue || '');
+        if (/<\s*(b|strong|i|em|br)\b/i.test(value)) {
+            return sanitizeEditorHtml(value);
+        }
+        return textToHtml(value);
+    }
+
+    function makeRichEditor($textarea) {
+        if (!$textarea.length) {
+            return;
+        }
+
+        const key = $textarea[0];
+        if (richEditors.has(key)) {
+            return;
+        }
+
+        const sourceId = $textarea.attr('id') || ('about-editor-' + Date.now() + '-' + Math.floor(Math.random() * 10000));
+        if (!$textarea.attr('id')) {
+            $textarea.attr('id', sourceId);
+        }
+
+        const editorId = sourceId + '-rich-editor';
+        const toolbarHtml = [
+            '<div class="ccis-rich-toolbar" data-target="', editorId, '">',
+            '<button type="button" class="btn btn-sm btn-outline-secondary rich-cmd" data-cmd="bold"><i class="fas fa-bold"></i></button>',
+            '<button type="button" class="btn btn-sm btn-outline-secondary rich-cmd" data-cmd="italic"><i class="fas fa-italic"></i></button>',
+            '<button type="button" class="btn btn-sm btn-outline-secondary rich-cmd" data-cmd="removeFormat"><i class="fas fa-eraser"></i></button>',
+            '</div>'
+        ].join('');
+
+        const $toolbar = $(toolbarHtml);
+        const $editor = $('<div>', {
+            id: editorId,
+            class: 'ccis-rich-editor form-control',
+            contenteditable: 'true'
+        });
+
+        $textarea.after($editor).after($toolbar).addClass('d-none');
+
+        function insertTextAtCaret(text) {
+            const selection = window.getSelection();
+            if (!selection || selection.rangeCount === 0) {
+                return false;
+            }
+
+            const range = selection.getRangeAt(0);
+            range.deleteContents();
+            const textNode = document.createTextNode(text);
+            range.insertNode(textNode);
+            range.setStartAfter(textNode);
+            range.setEndAfter(textNode);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            return true;
+        }
+
+        function sync() {
+            $textarea.val(sanitizeEditorHtml($editor.html()));
+        }
+
+        function refreshFromTextarea() {
+            $editor.html(htmlForEditor($textarea.val()));
+        }
+
+        refreshFromTextarea();
+
+        $editor.on('input blur keyup paste', function () {
+            sync();
+        });
+
+        $editor.on('keydown', function (e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                if (!insertTextAtCaret('    ')) {
+                    document.execCommand('insertText', false, '    ');
+                }
+                sync();
+            }
+        });
+
+        $toolbar.on('mousedown', '.rich-cmd', function (e) {
+            e.preventDefault();
+        });
+
+        $toolbar.on('click', '.rich-cmd', function () {
+            const cmd = $(this).data('cmd');
+            $editor.trigger('focus');
+            document.execCommand(cmd, false, null);
+            sync();
+        });
+
+        richEditors.set(key, {
+            sync: sync,
+            refresh: refreshFromTextarea
+        });
+    }
+
+    function initRichEditorsIn($scope) {
+        const selector = '#history-content, #vision-content, #mission-content, .goal-text, .core-value-description';
+        $scope.find(selector).addBack(selector).each(function () {
+            makeRichEditor($(this));
+        });
+    }
+
+    function syncAllRichEditors() {
+        richEditors.forEach(function (item, element) {
+            if (!document.body.contains(element)) {
+                richEditors.delete(element);
+            }
+        });
+        richEditors.forEach(function (item) {
+            item.sync();
+        });
+    }
+
+    function refreshAllRichEditors() {
+        richEditors.forEach(function (item, element) {
+            if (!document.body.contains(element)) {
+                richEditors.delete(element);
+            }
+        });
+        richEditors.forEach(function (item) {
+            item.refresh();
+        });
     }
 
     function showNotification(message, type) {
@@ -100,6 +285,7 @@
             $container.append(item);
         });
 
+        initRichEditorsIn($container);
         bindGoalDelete();
     }
 
@@ -122,6 +308,7 @@
             $container.append(item);
         });
 
+        initRichEditorsIn($container);
         bindCoreValueDelete();
     }
 
@@ -177,6 +364,7 @@
 
         populateGoals(aboutData.vmgo.goals);
         populateCoreValues(aboutData.vmgo.coreValues);
+        refreshAllRichEditors();
         renderCurrentVideos(aboutData.hymn);
     }
 
@@ -197,6 +385,7 @@
     }
 
     function saveHistory() {
+        syncAllRichEditors();
         const content = $('#history-content').val();
         $.post(endpoint(API.saveHistory), { content: content })
             .done(function (resp) {
@@ -214,6 +403,8 @@
     }
 
     function saveVmgo() {
+        syncAllRichEditors();
+
         const goals = [];
         $('.goal-text').each(function () {
             const value = ($(this).val() || '').trim();
@@ -335,6 +526,7 @@
                     </div>
                 </div>
             `);
+            initRichEditorsIn($('#goals-container'));
             bindGoalDelete();
         });
 
@@ -350,6 +542,7 @@
                     </div>
                 </div>
             `);
+            initRichEditorsIn($('#core-values-container'));
             bindCoreValueDelete();
         });
     }
@@ -381,16 +574,8 @@
         });
     }
 
-    function escapeHtml(value) {
-        return String(value || '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-
     function init() {
+        initRichEditorsIn($(document));
         bindVmgoTabs();
         bindAddButtons();
         bindForms();

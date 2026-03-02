@@ -551,13 +551,23 @@ body {
 
 .updates-list-card .actions {
     margin-top: 1rem;
-    display: flex;
+    display: flex !important;
     gap: 0.5rem;
     justify-content: flex-end;
     flex-wrap: wrap;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative;
+    z-index: 2;
 
     /* push actions to bottom for consistent card height */
     margin-top: auto;
+}
+
+.updates-list-card .list-actions {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .updates-list-card .btn {
@@ -565,6 +575,30 @@ body {
     padding: 0.4rem 0.8rem;
     border-radius: 6px;
     transition: all 0.2s ease;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+}
+
+.updates-image-gallery {
+    margin-bottom: 0.75rem;
+}
+
+.updates-image-strip {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+}
+
+.updates-image-thumb {
+    width: 140px;
+    height: 96px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    flex: 0 0 auto;
 }
 
 /* Image Previews */

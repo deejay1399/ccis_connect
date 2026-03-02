@@ -1,7 +1,10 @@
+const SESSION_DEBUG = false;
+function sessionLog() { if (SESSION_DEBUG) console.log.apply(console, arguments); }
+
 // SESSION MANAGEMENT FOR ALL PAGES - DEBUG VERSION
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔄 Session management initializing...');
+    sessionLog('🔄 Session management initializing...');
     
     // Initialize user session
     const session = initializeUserSession();
@@ -16,8 +19,8 @@ document.addEventListener('DOMContentLoaded', function() {
     updateNavigationActiveState();
     
     // Log current access level
-    console.log(`📄 Page loaded with ${session.isValid ? session.user.role : 'guest'} access`);
-    console.log('📍 Current page:', window.location.pathname);
+    sessionLog(`📄 Page loaded with ${session.isValid ? session.user.role : 'guest'} access`);
+    sessionLog('📍 Current page:', window.location.pathname);
 });
 
 function getBaseUrl() {
@@ -26,6 +29,24 @@ function getBaseUrl() {
     }
     const origin = window.location.origin || '';
     return origin.endsWith('/') ? origin : origin + '/';
+}
+
+function normalizePath(url) {
+    try {
+        const parsed = new URL(url, window.location.origin);
+        return (parsed.pathname || '').replace(/\/+$/, '').toLowerCase();
+    } catch (e) {
+        return '';
+    }
+}
+
+function isCurrentRoute(targetUrl) {
+    if (!targetUrl) {
+        return false;
+    }
+    const currentPath = normalizePath(window.location.href);
+    const targetPath = normalizePath(targetUrl);
+    return currentPath !== '' && currentPath === targetPath;
 }
 
 function buildDashboardReturnConfig(user) {
@@ -61,11 +82,11 @@ function buildDashboardReturnConfig(user) {
 
 // ENHANCED: Check and show return button for admin users on public pages
 function checkAndShowReturnButton(user) {
-    console.log('Checking return button for user:', user);
+    sessionLog('Checking return button for user:', user);
 
     const config = buildDashboardReturnConfig(user);
     if (!config) {
-        console.log('User is not eligible for dashboard return button');
+        sessionLog('User is not eligible for dashboard return button');
         return;
     }
 
@@ -73,12 +94,21 @@ function checkAndShowReturnButton(user) {
     localStorage.setItem('admin_return_url', config.url);
     sessionStorage.setItem('admin_return_url', config.url);
 
+    // Do not show return button while already on the role's dashboard.
+    if (isCurrentRoute(config.url)) {
+        const existingBtn = document.getElementById('floating-return-btn');
+        if (existingBtn) {
+            existingBtn.remove();
+        }
+        return;
+    }
+
     addFloatingReturnButton(config);
 }
 
 // ENHANCED FLOATING RETURN BUTTON FUNCTION - canonical role routes
 function addFloatingReturnButton(config) {
-    console.log('Adding floating return button with config:', config);
+    sessionLog('Adding floating return button with config:', config);
 
     const existingBtn = document.getElementById('floating-return-btn');
     if (existingBtn) {
@@ -86,7 +116,7 @@ function addFloatingReturnButton(config) {
     }
 
     if (!config || !config.url) {
-        console.log('Missing dashboard return config, cannot create button');
+        sessionLog('Missing dashboard return config, cannot create button');
         return;
     }
 
@@ -106,7 +136,7 @@ function addFloatingReturnButton(config) {
 }
 // ENHANCED: Update UI for logged in user - show floating button when appropriate
 function updateUIForLoggedInUser(user) {
-    console.log('👤 Updating UI for logged in user:', user.name);
+    sessionLog('👤 Updating UI for logged in user:', user.name);
     
     // Show logout icon, hide login icon
     const loginIconLink = document.getElementById('login-icon-link');
@@ -141,11 +171,11 @@ function updateUIForLoggedInUser(user) {
         });
     }
     
-    console.log('✅ UI updated for logged in user');
+    sessionLog('✅ UI updated for logged in user');
 }
 
 function updateUIForGuest() {
-    console.log('👤 Updating UI for guest user');
+    sessionLog('👤 Updating UI for guest user');
     
     // Hide user info and logout icon, show login icon
     const userInfoItem = document.getElementById('user-info-item');
@@ -176,7 +206,7 @@ function updateUIForGuest() {
         loginLink.href = window.BASE_URL ? window.BASE_URL + 'index.php/login' : './index.php/login';
     }
     
-    console.log('✅ UI updated for guest user');
+    sessionLog('✅ UI updated for guest user');
 }
 
 // ========================================
@@ -184,13 +214,13 @@ function updateUIForGuest() {
 // ========================================
 
 function checkUserSession() {
-    console.log('🔐 Checking user session...');
+    sessionLog('🔐 Checking user session...');
     
     const userData = localStorage.getItem('ccis_user');
     const sessionId = localStorage.getItem('ccis_session_id');
     
     if (!userData || !sessionId) {
-        console.log('❌ No valid session found');
+        sessionLog('❌ No valid session found');
         return { isValid: false, user: null };
     }
     
@@ -199,13 +229,13 @@ function checkUserSession() {
         
         // Check if session ID matches
         if (user.sessionId !== sessionId) {
-            console.log('🚫 Session ID mismatch');
+            sessionLog('🚫 Session ID mismatch');
             clearUserSession();
             return { isValid: false, user: null };
         }
         
         // NO EXPIRATION CHECK - SESSION IS ALWAYS VALID UNTIL MANUAL LOGOUT
-        console.log('✅ Valid session found for user:', user.name);
+        sessionLog('✅ Valid session found for user:', user.name);
         return { isValid: true, user: user };
     } catch (error) {
         console.error('❌ Error parsing user data:', error);
@@ -222,12 +252,12 @@ function clearUserSession() {
     localStorage.removeItem('admin_return_url');
     sessionStorage.removeItem('admin_return_url');
     
-    console.log('🧹 User session completely cleared');
+    sessionLog('🧹 User session completely cleared');
 }
 
 function logoutUser() {
     const user = JSON.parse(localStorage.getItem('ccis_user') || '{}');
-    console.log('🚪 Logging out user:', user.name);
+    sessionLog('🚪 Logging out user:', user.name);
     
     // Show custom centered logout modal instead of browser confirm
     showLogoutModal(user);
@@ -235,7 +265,7 @@ function logoutUser() {
 
 // MODERN LOGOUT MODAL - Updated with your requirements
 function showLogoutModal(user) {
-    console.log('🔄 Showing logout modal');
+    sessionLog('🔄 Showing logout modal');
     
     // Remove existing modal if any
     const existingModal = document.getElementById('logoutModal');
@@ -370,7 +400,7 @@ function showLogoutModal(user) {
 
 // Admin-specific logout modal handler
 function showLogoutModalWithAdminCleanup() {
-    console.log('🔄 Showing admin logout modal with cleanup');
+    sessionLog('🔄 Showing admin logout modal with cleanup');
     
     const user = JSON.parse(localStorage.getItem('ccis_user') || '{}');
     
@@ -532,7 +562,7 @@ function logLogoutActivity(user) {
     }
     
     localStorage.setItem('ccis_logout_logs', JSON.stringify(logoutLogs));
-    console.log('📝 Logout activity logged for:', user.email || 'Unknown');
+    sessionLog('📝 Logout activity logged for:', user.email || 'Unknown');
 }
 
 function getCurrentUserRole() {
@@ -695,11 +725,11 @@ function filterContentByRole() {
         link.removeAttribute('title');
     });
     
-    console.log(`🔐 Current user role: ${userRole}`);
+    sessionLog(`🔐 Current user role: ${userRole}`);
     
     // Role-based navigation filtering - BLOCK instead of HIDE
     if (!hasAccess('student')) {
-        console.log('🚫 User is guest - blocking restricted content');
+        sessionLog('🚫 User is guest - blocking restricted content');
         
         // Block Organization dropdown for GUESTS only
         const orgDropdown = document.getElementById('organizationDropdown');
@@ -732,7 +762,7 @@ function filterContentByRole() {
         });
 
     } else {
-        console.log('✅ User is logged in - removing all blocking');
+        sessionLog('✅ User is logged in - removing all blocking');
         
         // USER IS LOGGED IN - REMOVE ALL BLOCKING
         
@@ -901,5 +931,4 @@ window.getCurrentUser = getCurrentUser;
 window.getCurrentUserRole = getCurrentUserRole;
 window.hasAccess = hasAccess;
 window.filterContentByRole = filterContentByRole;
-
 

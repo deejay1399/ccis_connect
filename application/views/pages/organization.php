@@ -99,7 +99,17 @@
                                         <?php foreach ($announcements as $announcement): ?>
                                             <div class="legion-announcement-card mb-3">
                                                 <?php if (!empty($announcement['image'])): ?>
-                                                    <img src="<?php echo base_url('uploads/org/announcements/' . $announcement['image']); ?>" alt="<?php echo html_escape($announcement['title']); ?>" style="width:100%;max-height:260px;object-fit:cover;border-radius:10px;margin-bottom:10px;">
+                                                    <div class="org-announcement-image-preview" data-announcement-id="<?php echo (int) ($announcement['id'] ?? 0); ?>">
+                                                        <img
+                                                            src="<?php echo base_url('uploads/org/announcements/' . $announcement['image']); ?>"
+                                                            alt="<?php echo html_escape($announcement['title']); ?>"
+                                                            class="org-announcement-preview-image"
+                                                            data-image-index="0"
+                                                            loading="lazy"
+                                                            decoding="async"
+                                                            style="width:100%;max-height:260px;object-fit:cover;border-radius:10px;margin-bottom:10px;cursor:pointer;"
+                                                        >
+                                                    </div>
                                                 <?php endif; ?>
                                                 <h5><?php echo html_escape($announcement['title']); ?></h5>
                                                 <p><?php echo html_escape($announcement['content']); ?></p>

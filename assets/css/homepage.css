@@ -603,6 +603,7 @@ body {
     font-size: 1.1rem;
     line-height: 1.8;
     color: var(--dark-gray);
+    white-space: pre-wrap;
 }
 
 /* Academic Programs Section */

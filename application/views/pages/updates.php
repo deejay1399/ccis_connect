@@ -81,3 +81,29 @@
         </section>
     </div>
 </section>
+
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="image-modal-container">
+                    <button class="image-nav-btn prev-btn" id="prevImageBtn" type="button" aria-label="Previous image">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <img id="modalImage" src="" alt="" class="img-fluid">
+                    <button class="image-nav-btn next-btn" id="nextImageBtn" type="button" aria-label="Next image">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <p id="modalCaption" class="mt-3 text-muted"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -12,8 +12,11 @@ class Forms_model extends CI_Model {
 	/**
 	 * Kuhaa ang tanan nga mga porma
 	 */
-	public function get_all_forms()
+	public function get_all_forms($include_inactive = false)
 	{
+		if (!$include_inactive) {
+			$this->db->where('is_active', 1);
+		}
 		$this->db->order_by('created_at', 'DESC');
 		return $this->db->get('forms')->result_array();
 	}
@@ -21,9 +24,12 @@ class Forms_model extends CI_Model {
 	/**
 	 * Get porma pinaagi sa ID
 	 */
-	public function get_form_by_id($id)
+	public function get_form_by_id($id, $include_inactive = false)
 	{
 		$this->db->where('id', $id);
+		if (!$include_inactive) {
+			$this->db->where('is_active', 1);
+		}
 		return $this->db->get('forms')->row_array();
 	}
 
@@ -78,7 +84,9 @@ class Forms_model extends CI_Model {
 	public function delete_form($id)
 	{
 		$this->db->where('id', $id);
-		return $this->db->update('forms', array('is_active' => 0));
+		$this->db->where('is_active', 1);
+		$updated = $this->db->update('forms', array('is_active' => 0));
+		return $updated && ($this->db->affected_rows() > 0);
 	}
 
 	/**
