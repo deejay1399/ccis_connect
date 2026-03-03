@@ -1267,7 +1267,7 @@ function showNotification(message, type = 'info') {
 
 // Get baseUrl safely
 function getBaseUrl() {
-    return window.baseUrl || '/ccis_connect/';
+    return window.baseUrl || window.BASE_URL || '/';
 }
 
 // Initialize programs management

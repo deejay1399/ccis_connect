@@ -5,7 +5,7 @@ $(document).ready(function() {
     
     // Initialize baseUrl
     if (!window.baseUrl) {
-        window.baseUrl = window.location.origin + '/ccis_connect/';
+        window.baseUrl = window.BASE_URL || (window.location.origin + '/');
     }
     
     console.log('Base URL:', window.baseUrl);

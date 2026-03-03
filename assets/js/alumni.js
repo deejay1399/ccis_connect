@@ -21,7 +21,7 @@ function getCurrentSection() {
     return 'featured-section';
 }
 
-const baseUrl = window.BASE_URL || '/ccis_connect/';
+const baseUrl = window.BASE_URL || '/';
 const alumniApiBase = baseUrl + 'alumni/api/';
 let currentSection = null;
 const alumniPublicData = {

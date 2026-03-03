@@ -25,7 +25,7 @@ $(document).ready(function() {
     let latestNotifications = [];
 
     function getBaseUrl() {
-        return window.baseUrl || window.BASE_URL || '/ccis_connect/';
+        return window.baseUrl || window.BASE_URL || '/';
     }
 
     function apiGet(path) {

@@ -10,7 +10,7 @@ $(document).ready(function() {
         if (typeof window.baseUrl === 'string' && window.baseUrl.length > 0) {
             return window.baseUrl;
         }
-        return '/ccis_connect/';
+        return '/';
     }
 
     function buildUrl(path) {
@@ -347,7 +347,7 @@ $(document).ready(function() {
     // FUNCTION TO SUBMIT USER FORM TO BACKEND
     function submitUserForm(userData) {
         // Get the base URL - try multiple methods
-        let baseUrl = window.baseUrl || 'http://localhost/ccis_connect/';
+        let baseUrl = window.baseUrl || window.BASE_URL || '/';
         if (!baseUrl.endsWith('/')) baseUrl += '/';
         
         const saveUrl = baseUrl + 'admin/users/save';

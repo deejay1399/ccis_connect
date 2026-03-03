@@ -12,7 +12,7 @@
         if (window.baseUrl) {
             return window.baseUrl;
         }
-        return window.location.origin + '/ccis_connect/';
+        return window.BASE_URL || window.baseUrl || (window.location.origin + '/');
     }
 
     function toAbsolutePath(relativePath) {

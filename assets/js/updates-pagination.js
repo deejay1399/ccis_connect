@@ -6,7 +6,7 @@ $(document).ready(function() {
         const b = window.baseUrl || window.BASE_URL;
         if (b) return b.endsWith('/') ? b : (b + '/');
         // Fallback (repo is under /ccis_connect/ in this environment)
-        return window.location.origin + '/ccis_connect/';
+        return window.BASE_URL || window.baseUrl || (window.location.origin + '/');
     }
 
     const baseURL = getBaseURL();

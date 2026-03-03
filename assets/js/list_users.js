@@ -1,7 +1,7 @@
-﻿// LIST USERS PAGE JAVASCRIPT - UPDATED WITH MANAGE_FORMS STYLING
+// LIST USERS PAGE JAVASCRIPT - UPDATED WITH MANAGE_FORMS STYLING
 
 $(document).ready(function() {
-    console.log('ðŸ” List Users Page Loading...');
+    console.log('🔐 List Users Page Loading...');
     
     // Enhanced session check for Super Admin
     function checkSuperAdminSession() {
@@ -10,7 +10,7 @@ $(document).ready(function() {
         console.log('Session check result:', session);
         
         if (!session.isValid) {
-            console.warn('âŒ No valid session found, redirecting to login');
+            console.warn('❌ No valid session found, redirecting to login');
             showNotification('Please login to access Super Admin dashboard', 'error');
             setTimeout(() => {
                 window.location.href = '../login.html';
@@ -19,7 +19,7 @@ $(document).ready(function() {
         }
         
         if (!['superadmin', 'faculty'].includes(session.user.role)) {
-            console.warn('ðŸš« Unauthorized access attempt by:', session.user.role);
+            console.warn('🚫 Unauthorized access attempt by:', session.user.role);
             showNotification('Access denied. Super Admin or Faculty privileges required.', 'error');
             setTimeout(() => {
                 window.location.href = '../index.html';
@@ -28,7 +28,7 @@ $(document).ready(function() {
         }
         
         // Session is valid and user is superadmin
-        console.log('âœ… Super Admin session confirmed:', session.user.name);
+        console.log('✅ Super Admin session confirmed:', session.user.name);
         
         // Update UI with admin info
         updateAdminUI(session.user);
@@ -41,31 +41,31 @@ $(document).ready(function() {
         $('#user-name').text(user.name);
         $('#user-role').text(user.role);
         
-        console.log('ðŸ‘¤ UI updated for:', user.name);
+        console.log('👤 UI updated for:', user.name);
     }
     
     // Function to remove Return to Dashboard links
     function removeReturnToDashboard() {
-        console.log('ðŸ” Searching for Return to Dashboard links...');
+        console.log('🔍 Searching for Return to Dashboard links...');
         
         // Method 1: Remove by exact text content
         $('a').each(function() {
             const text = $(this).text().trim();
             if (text === 'Return to Dashboard') {
-                console.log('ðŸš« Removing Return to Dashboard link:', text);
+                console.log('🚫 Removing Return to Dashboard link:', text);
                 $(this).remove();
             }
         });
         
         // Method 2: Remove by partial text match
         $('a:contains("Return to Dashboard")').each(function() {
-            console.log('ðŸš« Removing Return to Dashboard element');
+            console.log('🚫 Removing Return to Dashboard element');
             $(this).remove();
         });
         
         // Method 3: Remove any quick-links or footer-links containers
         $('.quick-links, .footer-links').each(function() {
-            console.log('ðŸš« Removing quick-links/footer-links container');
+            console.log('🚫 Removing quick-links/footer-links container');
             $(this).remove();
         });
         
@@ -74,7 +74,7 @@ $(document).ready(function() {
             if ($(this).children().length === 0) {
                 const text = $(this).text().trim();
                 if (text.includes('Return to Dashboard')) {
-                    console.log('ðŸš« Removing element with text:', text);
+                    console.log('🚫 Removing element with text:', text);
                     $(this).remove();
                 }
             }
@@ -89,8 +89,8 @@ $(document).ready(function() {
         
         // Initialize baseUrl if not already set
         if (!window.baseUrl) {
-            window.baseUrl = window.location.origin + '/ccis_connect/';
-            console.log('ðŸ“ Initialized baseUrl:', window.baseUrl);
+            window.baseUrl = window.BASE_URL || (window.location.origin + '/');
+            console.log('📍 Initialized baseUrl:', window.baseUrl);
         }
         
         // Setup public site link
@@ -111,50 +111,50 @@ $(document).ready(function() {
         // Remove any Return to Dashboard links
         removeReturnToDashboard();
         
-        console.log('ðŸŽ¯ List Users Page initialized successfully');
+        console.log('🎯 List Users Page initialized successfully');
     }
 
     // Setup navigation handlers
     function setupNavigation() {
-        console.log('ðŸ“ Setting up navigation handlers...');
+        console.log('📍 Setting up navigation handlers...');
         
         // Get base URL
-        const baseUrl = window.baseUrl || (window.location.origin + '/ccis_connect');
+        const baseUrl = window.baseUrl || ((window.BASE_URL || (window.location.origin + '/')).replace(/\/$/, ''));
         console.log('Base URL:', baseUrl);
         
         // Handle navigation clicks with event delegation
         $(document).on('click', '.navbar-nav .nav-link[data-section]', function(e) {
             e.preventDefault();
             const section = $(this).data('section');
-            console.log('ðŸ”— Navigation clicked:', section);
+            console.log('🔗 Navigation clicked:', section);
             
             if (section === 'dashboard-home') {
-                console.log('â†’ Redirecting to Dashboard Home');
+                console.log('→ Redirecting to Dashboard Home');
                 window.location.href = baseUrl + '/admin';
             } else if (section === 'content-management') {
-                console.log('â†’ Redirecting to Content Management');
+                console.log('→ Redirecting to Content Management');
                 window.location.href = baseUrl + '/admin#content-management';
             } else if (section === 'user-management') {
-                console.log('â†’ Redirecting to User Management');
+                console.log('→ Redirecting to User Management');
                 window.location.href = baseUrl + '/admin#user-management';
             }
         });
         // Setup view public site link
         $(document).on('click', '#view-public-site-link', function(e) {
             e.preventDefault();
-            console.log('ðŸŒ View Public Site clicked');
-            const publicUrl = baseUrl.replace('/admin', '') || '/ccis_connect/';
+            console.log('🌐 View Public Site clicked');
+            const publicUrl = baseUrl.replace('/admin', '') || '/';
             console.log('Opening:', publicUrl);
             window.open(publicUrl, '_blank');
         });
         
-        console.log('âœ… Navigation handlers setup complete');
+        console.log('✅ Navigation handlers setup complete');
     }
     // Setup public site link
     function setupPublicSiteLink() {
         $('#view-public-site-link').on('click', function(e) {
             e.preventDefault();
-            const publicUrl = window.baseUrl ? window.baseUrl.replace('admin', '') : '/ccis_connect/';
+            const publicUrl = window.baseUrl ? window.baseUrl.replace('admin', '') : '/';
             window.open(publicUrl, '_blank');
         });
     }
@@ -464,7 +464,7 @@ $(document).ready(function() {
     }
 
     // Setup base URL
-    const baseUrl = window.location.origin + '/ccis_connect';
+    const baseUrl = (window.BASE_URL || (window.location.origin + '/')).replace(/\/$/, '');
 
     // View user details
     window.viewUser = function(userId) {

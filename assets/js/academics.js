@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function loadAcademicsPrograms() {
         // Fetch programs from database via AJAX
-        const baseUrl = window.location.origin + '/ccis_connect/index.php/academics/get_programs_json';
+        const baseUrl = (window.BASE_URL || window.baseUrl || (window.location.origin + '/')) + 'index.php/academics/get_programs_json';
         console.log('Fetching programs from:', baseUrl);
         
         fetch(baseUrl, {
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function checkForAcademicsProgramUpdates() {
         // Fetch latest programs from database
-        const baseUrl = window.location.origin + '/ccis_connect/index.php/academics/get_programs_json';
+        const baseUrl = (window.BASE_URL || window.baseUrl || (window.location.origin + '/')) + 'index.php/academics/get_programs_json';
         
         fetch(baseUrl, {
             method: 'GET',

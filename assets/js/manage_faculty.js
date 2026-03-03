@@ -5,7 +5,7 @@ $(document).ready(function () {
     let addImageFile = null;
     let editImageFile = null;
     let editingId = null;
-    const baseUrl = window.baseUrl || '/ccis_connect/';
+    const baseUrl = window.baseUrl || window.BASE_URL || '/';
     const VP_TYPES = [
         'VP for Academics and Quality Assurance',
         'VP for Research, Development and Extension',

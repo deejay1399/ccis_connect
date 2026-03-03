@@ -1,5 +1,5 @@
 // Program Management
-const baseUrl = window.baseUrl || '/ccis_connect/';
+const baseUrl = window.baseUrl || window.BASE_URL || '/';
 
 document.addEventListener('DOMContentLoaded', function() {
     loadPrograms();

@@ -6,7 +6,7 @@
     $(document).ready(function() {
         console.log('🔐 Manage Forms Page Loading...');
         
-        const BASE_URL = $('base').attr('href') || '/ccis_connect/';
+        const BASE_URL = $('base').attr('href') || window.BASE_URL || '/';
         
         // Initialize on page load
         initializeManageForms();

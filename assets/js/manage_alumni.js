@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    const baseUrl = window.baseUrl || '/ccis_connect/';
+    const baseUrl = window.baseUrl || window.BASE_URL || '/';
 
     let activeSubmissionContext = null;
     let mentorRequestsCache = [];

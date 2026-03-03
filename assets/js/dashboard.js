@@ -12,7 +12,7 @@ $(document).ready(function() {
             console.warn('❌ No valid session found, redirecting to login');
             showNotification('Please login to access Super Admin dashboard', 'error');
             setTimeout(() => {
-                window.location.href = window.baseUrl ? window.baseUrl + 'login' : '/ccis_connect/login';
+                window.location.href = window.baseUrl ? window.baseUrl + 'login' : '/login';
             }, 2000);
             return false;
         }
@@ -22,7 +22,7 @@ $(document).ready(function() {
             console.warn('Unauthorized access attempt by:', session.user ? session.user.role : 'unknown');
             showNotification('Access denied. Authorized staff privileges required.', 'error');
             setTimeout(() => {
-                window.location.href = window.baseUrl ? window.baseUrl + 'login' : '/ccis_connect/login';
+                window.location.href = window.baseUrl ? window.baseUrl + 'login' : '/login';
             }, 2000);
             return false;
         }
@@ -98,7 +98,7 @@ $(document).ready(function() {
     let latestNotifications = [];
 
     function getBaseUrl() {
-        return window.baseUrl || window.BASE_URL || '/ccis_connect/';
+        return window.baseUrl || window.BASE_URL || '/';
     }
 
     function apiGet(path) {

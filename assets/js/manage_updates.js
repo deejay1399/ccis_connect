@@ -1,8 +1,8 @@
-﻿$(function () {
+$(function () {
     function getBaseURL() {
         const b = window.baseUrl || window.BASE_URL;
         if (b) return b.endsWith('/') ? b : b + '/';
-        return window.location.origin + '/ccis_connect/';
+        return window.BASE_URL || window.baseUrl || (window.location.origin + '/');
     }
 
     function escapeHtml(text) {
