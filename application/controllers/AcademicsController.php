@@ -83,4 +83,64 @@ class AcademicsController extends CI_Controller {
 		
 		echo json_encode($formatted_programs);
 	}
+
+	public function api_get_schedules()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('ClassSchedules_model');
+
+		try {
+			if (!$this->db->table_exists('class_schedules')) {
+				echo json_encode([
+					'success' => true,
+					'data' => [],
+					'count' => 0
+				]);
+				return;
+			}
+
+			$schedules = $this->ClassSchedules_model->get_all();
+			echo json_encode([
+				'success' => true,
+				'data' => $schedules,
+				'count' => count($schedules)
+			]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode([
+				'success' => false,
+				'message' => 'Error retrieving schedules: ' . $e->getMessage()
+			]);
+		}
+	}
+
+	public function api_get_calendars()
+	{
+		header('Content-Type: application/json');
+		$this->load->model('AcademicCalendars_model');
+
+		try {
+			if (!$this->db->table_exists('academic_calendars')) {
+				echo json_encode([
+					'success' => true,
+					'data' => [],
+					'count' => 0
+				]);
+				return;
+			}
+
+			$calendars = $this->AcademicCalendars_model->get_all();
+			echo json_encode([
+				'success' => true,
+				'data' => $calendars,
+				'count' => count($calendars)
+			]);
+		} catch (Exception $e) {
+			http_response_code(500);
+			echo json_encode([
+				'success' => false,
+				'message' => 'Error retrieving calendars: ' . $e->getMessage()
+			]);
+		}
+	}
 }

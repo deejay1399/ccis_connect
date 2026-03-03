@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function loadSchedules() {
     console.log('📅 Loading class schedules...');
     
-    const apiUrl = window.BASE_URL + 'index.php/admin/content/api_get_schedules';
+    const apiUrl = window.BASE_URL + 'index.php/academics/api/schedules';
     
     fetch(apiUrl)
         .then(response => response.json())
@@ -131,7 +131,7 @@ function renderNoScheduleViewer() {
 function loadCalendars() {
     console.log('📅 Loading academic calendars...');
     
-    const apiUrl = window.BASE_URL + 'index.php/admin/content/api_get_calendars';
+    const apiUrl = window.BASE_URL + 'index.php/academics/api/calendars';
     
     fetch(apiUrl)
         .then(response => response.json())

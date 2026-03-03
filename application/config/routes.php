@@ -26,6 +26,8 @@ $route['academics/curriculum'] = 'AcademicsController/curriculum';
 $route['academics/schedule'] = 'AcademicsController/schedule';
 $route['academics/calendar'] = 'AcademicsController/calendar';
 $route['academics/get_programs_json'] = 'AcademicsController/get_programs_json';
+$route['academics/api/schedules'] = 'AcademicsController/api_get_schedules';
+$route['academics/api/calendars'] = 'AcademicsController/api_get_calendars';
 
 // ==================== Mga Update ====================
 $route['updates'] = 'UpdatesController/index';
