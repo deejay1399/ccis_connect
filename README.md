@@ -23,31 +23,6 @@ CCIS Connect is a CodeIgniter 3 web application for:
 - `application/cache`
 - `uploads` and its subdirectories
 
-## Environment Configuration
-
-The app now reads environment values from:
-1. System environment variables
-2. Project `.env` file in the repository root
-
-Main keys:
-
-```env
-APP_BASE_URL=http://localhost/ccis_connect
-APP_ENCRYPTION_KEY=change_this_to_a_long_random_key
-APP_COOKIE_SECURE=false
-APP_SESSION_SAVE_PATH=
-
-DB_HOST=127.0.0.1
-DB_USER=root
-DB_PASS=
-DB_NAME=ccis_condb
-DB_DRIVER=mysqli
-```
-
-Important:
-- Do not commit `.env`.
-- Keep production credentials outside the repository.
-
 ## Database Setup
 
 1. Create the database:
