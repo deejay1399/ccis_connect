@@ -2172,6 +2172,7 @@ class AdminContent extends CI_Controller {
 		return [
 			'university president' => ['label' => 'University President', 'limit' => 1],
 			'vp for academics and quality assurance' => ['label' => 'VP for Academics and Quality Assurance', 'limit' => 1],
+			'campus director' => ['label' => 'Campus Director', 'limit' => 1],
 			'dean' => ['label' => 'Dean', 'limit' => 1],
 			'office director, instruction' => ['label' => 'Office Director, Instruction', 'limit' => 1],
 			'department head' => ['label' => 'Department Head', 'limit' => 1],

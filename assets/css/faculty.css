@@ -557,7 +557,8 @@ body {
 }
 
 .org-fixed-stage-president,
-.org-fixed-stage-vp {
+.org-fixed-stage-vp,
+.org-fixed-stage-campus {
     display: flex;
     justify-content: center;
 }
@@ -567,7 +568,8 @@ body {
 }
 
 .org-fixed-stage-president::after,
-.org-fixed-stage-vp::after {
+.org-fixed-stage-vp::after,
+.org-fixed-stage-campus::after {
     content: '';
     position: absolute;
     left: 50%;
@@ -576,6 +578,10 @@ body {
     height: 1rem;
     background: var(--org-line);
     transform: translateX(-50%);
+}
+
+.org-fixed-stage-campus {
+    margin-bottom: 1rem;
 }
 
 .org-fixed-stage-main {

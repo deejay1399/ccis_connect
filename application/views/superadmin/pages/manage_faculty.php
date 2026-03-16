@@ -64,6 +64,7 @@
                                         <option value="">-- Select Position --</option>
                                         <option value="University President">University President</option>
                                         <option value="VP for Academics and Quality Assurance">VP for Academics and Quality Assurance</option>
+                                        <option value="Campus Director">Campus Director</option>
                                         <option value="Dean">Dean</option>
                                         <option value="Office Director, Instruction">Office Director, Instruction</option>
                                         <option value="Department Head">Department Head</option>
@@ -156,6 +157,7 @@
                                         <option value="">-- Select Position --</option>
                                         <option value="University President">University President</option>
                                         <option value="VP for Academics and Quality Assurance">VP for Academics and Quality Assurance</option>
+                                        <option value="Campus Director">Campus Director</option>
                                         <option value="Dean">Dean</option>
                                         <option value="Office Director, Instruction">Office Director, Instruction</option>
                                         <option value="Department Head">Department Head</option>

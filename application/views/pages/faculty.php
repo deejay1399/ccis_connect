@@ -72,6 +72,7 @@
                     $vpAqa = $findFirst('vp for academics and quality assurance') ?: $findFirst('vice president', function($member) use ($containsText) {
                         return $containsText($member['vp_type'] ?? '', ['academics and quality assurance', 'aqa']);
                     });
+                    $campusDirector = $findFirst('campus director');
                     $dean = $findFirst('dean');
                     $officeDirectorInstruction = $findFirst('office director, instruction');
                     $nstpHead = $findFirst('department head');
@@ -133,6 +134,10 @@
 
                     <div class="org-fixed-stage org-fixed-stage-vp">
                         <?php $renderNode($vpAqa, 'VP for Academics and Quality Assurance', '', 'org-fixed-node-md'); ?>
+                    </div>
+
+                    <div class="org-fixed-stage org-fixed-stage-campus">
+                        <?php $renderNode($campusDirector, 'Campus Director', '', 'org-fixed-node-md'); ?>
                     </div>
 
                     <div class="org-fixed-stage org-fixed-stage-main">
