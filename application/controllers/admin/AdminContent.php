@@ -2170,11 +2170,14 @@ class AdminContent extends CI_Controller {
 	private function faculty_position_config()
 	{
 		return [
-			'president' => ['label' => 'President', 'limit' => 1],
-			'vice president' => ['label' => 'Vice President', 'limit' => 4],
-			'campus director' => ['label' => 'Campus Director', 'limit' => 1],
+			'university president' => ['label' => 'University President', 'limit' => 1],
+			'vp for academics and quality assurance' => ['label' => 'VP for Academics and Quality Assurance', 'limit' => 1],
 			'dean' => ['label' => 'Dean', 'limit' => 1],
-			'chairperson' => ['label' => 'Chairperson', 'limit' => 2],
+			'office director, instruction' => ['label' => 'Office Director, Instruction', 'limit' => 1],
+			'department head' => ['label' => 'Department Head', 'limit' => 1],
+			'department chairperson' => ['label' => 'Department Chairperson', 'limit' => 1],
+			'program chairperson - bsit' => ['label' => 'Program Chairperson - BSIT', 'limit' => 1],
+			'program chairperson - bscs' => ['label' => 'Program Chairperson - BSCS', 'limit' => 1],
 			'instructor' => ['label' => 'Instructor', 'limit' => null]
 		];
 	}
@@ -2210,37 +2213,7 @@ class AdminContent extends CI_Controller {
 		$finalVpType = null;
 		$finalCourse = null;
 
-		if ($normalized === 'vice president') {
-			$allowedVpTypes = [
-				'VP for Academics and Quality Assurance',
-				'VP for Research, Development and Extension',
-				'VP for Administration and Finance',
-				'VP for Student Affairs and Services'
-			];
-			if (!in_array($vpType, $allowedVpTypes, true)) {
-				return ['success' => false, 'message' => 'Please select a valid Vice President type'];
-			}
-			$vpCount = $this->Faculty_users_model->count_by_position_and_vp_type($normalized, $vpType, $excludeId);
-			if ($vpCount >= 1) {
-				return ['success' => false, 'message' => $vpType . ' is already assigned'];
-			}
-			$finalVpType = $vpType;
-			$finalAdvisory = '';
-		} elseif ($normalized === 'chairperson') {
-			$allowedCourses = [
-				'Bachelor of Science in Information Technology',
-				'Bachelor of Science in Computer Science'
-			];
-			if (!in_array($course, $allowedCourses, true)) {
-				return ['success' => false, 'message' => 'Please select a valid Chairperson course'];
-			}
-			$courseCount = $this->Faculty_users_model->count_by_position_and_course($normalized, $course, $excludeId);
-			if ($courseCount >= 1) {
-				return ['success' => false, 'message' => 'Chairperson for ' . $course . ' already exists'];
-			}
-			$finalCourse = $course;
-			$finalAdvisory = '';
-		} elseif ($normalized !== 'instructor') {
+		if ($normalized !== 'instructor') {
 			$finalAdvisory = '';
 		}
 

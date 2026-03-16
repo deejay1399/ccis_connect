@@ -6,38 +6,20 @@ $(document).ready(function () {
     let editImageFile = null;
     let editingId = null;
     const baseUrl = window.baseUrl || window.BASE_URL || '/';
-    const VP_TYPES = [
-        'VP for Academics and Quality Assurance',
-        'VP for Research, Development and Extension',
-        'VP for Administration and Finance',
-        'VP for Student Affairs and Services'
-    ];
-
     function applyAddPositionRules(position) {
         const p = String(position || '').trim();
-        $('#add-vp-type-wrapper, #add-course-wrapper').hide();
-        $('#add-vp-type, #add-course').val('');
         $('#add-advisory-check').prop('checked', false);
         $('.add-advisory-section').hide();
         $('#add-year, #add-section').val('');
-        if (p === 'Vice President') {
-            $('#add-vp-type-wrapper').show();
-        } else if (p === 'Chairperson') {
-            $('#add-course-wrapper').show();
-        }
+        if (p === 'Instructor') return;
     }
 
     function applyEditPositionRules(position) {
         const p = String(position || '').trim();
-        $('#edit-vp-type-wrapper, #edit-course-wrapper').hide();
         $('#edit-advisory-check').prop('checked', false);
         $('.edit-advisory-section').hide();
         $('#edit-year, #edit-section').val('');
-        if (p === 'Vice President') {
-            $('#edit-vp-type-wrapper').show();
-        } else if (p === 'Chairperson') {
-            $('#edit-course-wrapper').show();
-        }
+        if (p === 'Instructor') return;
     }
 
     /* ================= HEADER & USER INFO SETUP ================= */
@@ -273,8 +255,6 @@ $(document).ready(function () {
         const firstName = $('#add-firstname').val().trim();
         const lastName = $('#add-lastname').val().trim();
         const position = $('#add-position').val().trim();
-        const vpType = ($('#add-vp-type').val() || '').trim();
-        const course = ($('#add-course').val() || '').trim();
         const year = $('#add-year').val().trim();
         const section = $('#add-section').val().trim();
         
@@ -293,15 +273,6 @@ $(document).ready(function () {
             showNotification('error', 'Please fill in First Name, Last Name, and Position');
             return;
         }
-        if (position === 'Vice President' && !VP_TYPES.includes(vpType)) {
-            showNotification('error', 'Please select a valid Vice President type');
-            return;
-        }
-        if (position === 'Chairperson' && !course) {
-            showNotification('error', 'Please select a course for Chairperson');
-            return;
-        }
-
         if (!addImageFile) {
             showNotification('error', 'Please select an image');
             return;
@@ -313,8 +284,6 @@ $(document).ready(function () {
         formData.append('lastname', lastName);
         formData.append('position', position);
         formData.append('advisory', advisory);
-        formData.append('vp_type', vpType);
-        formData.append('course', course);
         formData.append('image', addImageFile);
 
         // Submit
@@ -344,7 +313,6 @@ $(document).ready(function () {
 
     function resetAddForm() {
         $('#add-faculty-form')[0].reset();
-        $('#add-vp-type-wrapper, #add-course-wrapper').hide();
         $('.add-advisory-section').hide();
         document.getElementById('add-image-input').value = '';
         document.getElementById('add-image-preview').style.display = 'none';
@@ -363,8 +331,6 @@ $(document).ready(function () {
         $('#edit-firstname').val(faculty.firstname);
         $('#edit-lastname').val(faculty.lastname);
         $('#edit-position').val(faculty.position);
-        $('#edit-vp-type').val(faculty.vp_type || '');
-        $('#edit-course').val(faculty.course || '');
         applyEditPositionRules(faculty.position);
         
         // Parse advisory field to extract year and section
@@ -415,8 +381,6 @@ $(document).ready(function () {
         const firstName = $('#edit-firstname').val().trim();
         const lastName = $('#edit-lastname').val().trim();
         const position = $('#edit-position').val().trim();
-        const vpType = ($('#edit-vp-type').val() || '').trim();
-        const course = ($('#edit-course').val() || '').trim();
         const year = $('#edit-year').val().trim();
         const section = $('#edit-section').val().trim();
         
@@ -434,23 +398,12 @@ $(document).ready(function () {
             showNotification('error', 'Please fill in all required fields');
             return;
         }
-        if (position === 'Vice President' && !VP_TYPES.includes(vpType)) {
-            showNotification('error', 'Please select a valid Vice President type');
-            return;
-        }
-        if (position === 'Chairperson' && !course) {
-            showNotification('error', 'Please select a course for Chairperson');
-            return;
-        }
-
         const formData = new FormData();
         formData.append('id', editingId);
         formData.append('firstname', firstName);
         formData.append('lastname', lastName);
         formData.append('position', position);
         formData.append('advisory', advisory);
-        formData.append('vp_type', vpType);
-        formData.append('course', course);
         if (editImageFile) {
             formData.append('image', editImageFile);
         }
@@ -548,8 +501,6 @@ $(document).ready(function () {
                         <div class="faculty-info">
                             <h5>${f.firstname} ${f.lastname}</h5>
                             <p class="position">${f.position}</p>
-                            ${f.vp_type ? `<p class="advisory"><i class="fas fa-network-wired"></i> ${f.vp_type}</p>` : ''}
-                            ${f.course ? `<p class="advisory"><i class="fas fa-book"></i> ${f.course}</p>` : ''}
                             ${f.advisory ? `<p class="advisory"><i class="fas fa-book-reader"></i> ${f.advisory}</p>` : ''}
                             <div class="faculty-actions">
                                 <button class="btn btn-warning btn-edit-faculty" data-id="${f.id}" title="Edit Faculty">

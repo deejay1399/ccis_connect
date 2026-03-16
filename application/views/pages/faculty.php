@@ -6,13 +6,6 @@
 
             <?php if (isset($faculty_members) && !empty($faculty_members)): ?>
                 <?php
-                    $presidents = [];
-                    $vicePresidents = [];
-                    $deans = [];
-                    $chairpersons = [];
-                    $instructors = [];
-                    $others = [];
-
                     $defaultFacultyImage = base_url('assets/images/ccis.png');
                     $buildImagePath = function($member) use ($defaultFacultyImage) {
                         $rawImage = trim((string) ($member['image'] ?? ''));
@@ -31,131 +24,153 @@
                         return base_url('uploads/faculty/' . ltrim($rawImage, '/'));
                     };
 
-                    $vpOrder = [
-                        'academics and quality assurance' => 1,
-                        'research, development and extension' => 2,
-                        'administration and finance' => 3,
-                        'student affairs and services' => 4
-                    ];
+                    $fullNameOf = function($member) {
+                        $name = trim(($member['firstname'] ?? '') . ' ' . ($member['lastname'] ?? ''));
+                        return $name !== '' ? $name : 'Vacant';
+                    };
 
+                    $findFirst = function($position, $matcher = null) use ($faculty_members) {
+                        foreach ($faculty_members as $member) {
+                            $memberPosition = strtolower(trim((string) ($member['position'] ?? '')));
+                            if ($memberPosition !== strtolower($position)) {
+                                continue;
+                            }
+                            if ($matcher !== null && !$matcher($member)) {
+                                continue;
+                            }
+                            return $member;
+                        }
+                        return null;
+                    };
+
+                    $collect = function($position, $matcher = null) use ($faculty_members) {
+                        $matches = [];
+                        foreach ($faculty_members as $member) {
+                            $memberPosition = strtolower(trim((string) ($member['position'] ?? '')));
+                            if ($memberPosition !== strtolower($position)) {
+                                continue;
+                            }
+                            if ($matcher !== null && !$matcher($member)) {
+                                continue;
+                            }
+                            $matches[] = $member;
+                        }
+                        return $matches;
+                    };
+
+                    $containsText = function($value, array $needles) {
+                        $value = strtolower(trim((string) $value));
+                        foreach ($needles as $needle) {
+                            if ($needle !== '' && strpos($value, strtolower($needle)) !== false) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    };
+
+                    $president = $findFirst('university president') ?: $findFirst('president');
+                    $vpAqa = $findFirst('vp for academics and quality assurance') ?: $findFirst('vice president', function($member) use ($containsText) {
+                        return $containsText($member['vp_type'] ?? '', ['academics and quality assurance', 'aqa']);
+                    });
+                    $dean = $findFirst('dean');
+                    $officeDirectorInstruction = $findFirst('office director, instruction');
+                    $nstpHead = $findFirst('department head');
+                    $departmentChair = $findFirst('department chairperson') ?: $findFirst('chairperson', function($member) use ($containsText) {
+                        return $containsText($member['course'] ?? '', ['computing and information science', 'ccis']);
+                    });
+                    $chairBsit = $findFirst('program chairperson - bsit') ?: $findFirst('chairperson', function($member) use ($containsText, $departmentChair) {
+                        if ($departmentChair !== null && (int) ($member['id'] ?? 0) === (int) ($departmentChair['id'] ?? 0)) {
+                            return false;
+                        }
+                        return $containsText($member['course'] ?? '', ['information technology', 'bsit']);
+                    });
+                    $chairBscs = $findFirst('program chairperson - bscs') ?: $findFirst('chairperson', function($member) use ($containsText, $departmentChair) {
+                        if ($departmentChair !== null && (int) ($member['id'] ?? 0) === (int) ($departmentChair['id'] ?? 0)) {
+                            return false;
+                        }
+                        return $containsText($member['course'] ?? '', ['computer science', 'bscs']);
+                    });
+
+                    $facultyList = [];
                     foreach ($faculty_members as $member) {
                         $position = strtolower(trim((string) ($member['position'] ?? '')));
-                        if ($position === 'president') {
-                            $presidents[] = $member;
-                        } elseif ($position === 'vice president') {
-                            $vicePresidents[] = $member;
-                        } elseif ($position === 'dean') {
-                            $deans[] = $member;
-                        } elseif ($position === 'chairperson') {
-                            $chairpersons[] = $member;
-                        } elseif (in_array($position, ['instructor', 'instuctor', 'prof', 'professor'], true)) {
-                            $instructors[] = $member;
-                        } else {
-                            $others[] = $member;
+                        if (in_array($position, ['instructor', 'instuctor', 'professor', 'prof'], true)) {
+                            $facultyList[] = $member;
                         }
                     }
 
-                    usort($vicePresidents, function($a, $b) use ($vpOrder) {
-                        $aLabel = strtolower((string) ($a['vp_type'] ?? $a['advisory'] ?? $a['department'] ?? ''));
-                        $bLabel = strtolower((string) ($b['vp_type'] ?? $b['advisory'] ?? $b['department'] ?? ''));
-                        $aRank = 99;
-                        $bRank = 99;
-                        foreach ($vpOrder as $key => $rank) {
-                            if (strpos($aLabel, $key) !== false) {
-                                $aRank = $rank;
-                            }
-                            if (strpos($bLabel, $key) !== false) {
-                                $bRank = $rank;
-                            }
-                        }
-                        return $aRank <=> $bRank;
-                    });
-
-                    usort($chairpersons, function($a, $b) {
-                        $aCourse = strtolower((string) ($a['course'] ?? $a['advisory'] ?? $a['department'] ?? ''));
-                        $bCourse = strtolower((string) ($b['course'] ?? $b['advisory'] ?? $b['department'] ?? ''));
-                        return strcmp($aCourse, $bCourse);
-                    });
-
-                    $renderCards = function($list, $roleLabel, $sizeClass = '') use ($buildImagePath, $defaultFacultyImage) {
-                        foreach ($list as $member) {
-                            $fullName = trim(($member['firstname'] ?? '') . ' ' . ($member['lastname'] ?? ''));
-                            $fullName = $fullName !== '' ? $fullName : 'Faculty Member';
-                            $position = strtolower(trim((string) ($member['position'] ?? '')));
-                            $subtitle = '';
-                            $displayRole = $roleLabel;
-                            $imageSrc = $buildImagePath($member);
-                            $fallbackSrc = $defaultFacultyImage;
-
-                            if ($position === 'vice president') {
-                                $subtitle = (string) ($member['vp_type'] ?? $member['advisory'] ?? $member['department'] ?? '');
-                            } elseif ($position === 'chairperson') {
-                                $subtitle = (string) ($member['course'] ?? $member['advisory'] ?? $member['department'] ?? '');
-                            } elseif ($position === 'dean') {
-                                $subtitle = 'College of Computing and Information Sciences';
-                            } elseif (in_array($position, ['instructor', 'instuctor', 'prof', 'professor'], true)) {
-                                $subtitle = trim((string) ($member['advisory'] ?? ''));
-                                if ($subtitle !== '' && stripos($subtitle, 'adviser') === false) {
-                                    $subtitle .= ' Adviser';
-                                }
-                                if ($subtitle !== '') {
-                                    $displayRole = '';
-                                }
-                            }
-                            ?>
-                            <article class="org-node <?php echo $sizeClass; ?>">
-                                <div class="org-avatar">
-                                    <img src="<?php echo htmlspecialchars($imageSrc, ENT_QUOTES, 'UTF-8'); ?>"
-                                         alt="<?php echo htmlspecialchars($fullName); ?>"
-                                         onerror="this.onerror=null;this.src='<?php echo htmlspecialchars($fallbackSrc, ENT_QUOTES, 'UTF-8'); ?>';">
-                                </div>
-                                <h4><?php echo htmlspecialchars($fullName); ?></h4>
-                                <?php if ($displayRole !== ''): ?>
-                                    <p class="org-role"><?php echo htmlspecialchars($displayRole); ?></p>
+                    $renderNode = function($member, $title, $subtitle = '', $className = '') use ($buildImagePath, $defaultFacultyImage, $fullNameOf) {
+                        $isVacant = !is_array($member);
+                        $name = $isVacant ? 'Vacant' : $fullNameOf($member);
+                        $imageSrc = $isVacant ? $defaultFacultyImage : $buildImagePath($member);
+                        ?>
+                        <article class="org-fixed-node <?php echo trim($className . ($isVacant ? ' is-vacant' : '')); ?>">
+                            <div class="org-fixed-avatar">
+                                <img src="<?php echo htmlspecialchars($imageSrc, ENT_QUOTES, 'UTF-8'); ?>"
+                                     alt="<?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?>"
+                                     onerror="this.onerror=null;this.src='<?php echo htmlspecialchars($defaultFacultyImage, ENT_QUOTES, 'UTF-8'); ?>';">
+                            </div>
+                            <div class="org-fixed-body">
+                                <h4><?php echo htmlspecialchars($name); ?></h4>
+                                <p class="org-fixed-role"><?php echo htmlspecialchars($title); ?></p>
+                                <?php if (trim($subtitle) !== ''): ?>
+                                    <p class="org-fixed-subrole"><?php echo htmlspecialchars($subtitle); ?></p>
                                 <?php endif; ?>
-                                <?php if ($subtitle !== ''): ?>
-                                    <p class="org-subrole"><?php echo htmlspecialchars($subtitle); ?></p>
-                                <?php endif; ?>
-                            </article>
-                            <?php
-                        }
+                            </div>
+                        </article>
+                        <?php
                     };
                 ?>
 
-                <div class="org-chart">
-                    <div class="org-level">
-                        <h5 class="org-level-title">President</h5>
-                        <div class="org-row org-row-center">
-                            <?php $renderCards($presidents, 'President', 'org-node-lg'); ?>
+                <div class="org-fixed-chart">
+                    <div class="org-fixed-top-tag">Board of Regents</div>
+
+                    <div class="org-fixed-spine"></div>
+
+                    <div class="org-fixed-stage org-fixed-stage-president">
+                        <?php $renderNode($president, 'University President', '', 'org-fixed-node-lg'); ?>
+                    </div>
+
+                    <div class="org-fixed-stage org-fixed-stage-vp">
+                        <?php $renderNode($vpAqa, 'VP for Academics and Quality Assurance', '', 'org-fixed-node-md'); ?>
+                    </div>
+
+                    <div class="org-fixed-stage org-fixed-stage-main">
+                        <div class="org-fixed-main-left">
+                            <?php $renderNode($dean, 'Dean', 'College of Computing and Information Sciences', 'org-fixed-node-lg'); ?>
+                        </div>
+
+                        <div class="org-fixed-main-right">
+                            <?php $renderNode($officeDirectorInstruction, 'Office Director, Instruction', '', 'org-fixed-node-sm'); ?>
+                            <?php $renderNode($nstpHead, 'Department Head', 'National Service Training Program', 'org-fixed-node-sm'); ?>
                         </div>
                     </div>
 
-                    <div class="org-level">
-                        <h5 class="org-level-title">Vice Presidents</h5>
-                        <div class="org-row org-row-four">
-                            <?php $renderCards($vicePresidents, 'Vice President'); ?>
+                    <div class="org-fixed-stage org-fixed-stage-department">
+                        <?php $renderNode($departmentChair, 'Department Chairperson', 'Computing and Information Science', 'org-fixed-node-md'); ?>
+                    </div>
+
+                    <div class="org-fixed-stage org-fixed-stage-chairs">
+                        <div class="org-fixed-branch-line"></div>
+                        <div class="org-fixed-chair-grid">
+                            <?php $renderNode($chairBsit, 'Program Chairperson', 'Bachelor of Science in Information Technology', 'org-fixed-node-md'); ?>
+                            <?php $renderNode($chairBscs, 'Program Chairperson', 'Bachelor of Science in Computer Science', 'org-fixed-node-md'); ?>
                         </div>
                     </div>
 
-                    <div class="org-level">
-                        <h5 class="org-level-title">Dean</h5>
-                        <div class="org-row org-row-center">
-                            <?php $renderCards($deans, 'Dean', 'org-node-lg'); ?>
-                        </div>
-                    </div>
-
-                    <div class="org-level">
-                        <h5 class="org-level-title">Chairpersons</h5>
-                        <div class="org-row org-row-two">
-                            <?php $renderCards($chairpersons, 'Chairperson'); ?>
-                        </div>
-                    </div>
-
-                    <div class="org-level">
-                        <h5 class="org-level-title">Instructors</h5>
-                        <div class="org-row org-row-many">
-                            <?php $renderCards($instructors, 'Instructor'); ?>
-                            <?php $renderCards($others, 'Faculty'); ?>
+                    <div class="org-fixed-stage org-fixed-stage-faculty">
+                        <div class="org-fixed-faculty-tag">Faculty</div>
+                        <div class="org-fixed-faculty-grid">
+                            <?php if (!empty($facultyList)): ?>
+                                <?php foreach ($facultyList as $member): ?>
+                                    <?php
+                                        $subtitle = trim((string) ($member['advisory'] ?? ''));
+                                        $renderNode($member, 'Instructor', $subtitle, 'org-fixed-node-xs');
+                                    ?>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <?php $renderNode(null, 'Instructor', '', 'org-fixed-node-xs'); ?>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
