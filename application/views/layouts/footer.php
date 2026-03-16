@@ -286,7 +286,11 @@
         <?php elseif ($page_type === 'about'): ?>
             <script src="<?php echo base_url('assets/js/about.js'); ?>"></script>
         <?php elseif ($page_type === 'faculty'): ?>
-            <script src="<?php echo base_url('assets/js/faculty.js'); ?>"></script>
+            <?php
+                $faculty_js_path = FCPATH . 'assets/js/faculty.js';
+                $faculty_js_version = file_exists($faculty_js_path) ? filemtime($faculty_js_path) : time();
+            ?>
+            <script src="<?php echo base_url('assets/js/faculty.js?v=' . $faculty_js_version); ?>"></script>
         <?php elseif ($page_type === 'academics'): ?>
             <script src="<?php echo base_url('assets/js/academics.js'); ?>"></script>
             <script src="<?php echo base_url('assets/js/program_offerings.js?v=' . time()); ?>"></script>

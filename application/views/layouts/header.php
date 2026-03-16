@@ -88,7 +88,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <?php elseif ($page_type === 'about'): ?>
             <link rel="stylesheet" href="<?php echo base_url('assets/css/about.css'); ?>">
         <?php elseif ($page_type === 'faculty'): ?>
-            <link rel="stylesheet" href="<?php echo base_url('assets/css/faculty.css'); ?>">
+            <?php
+                $faculty_css_path = FCPATH . 'assets/css/faculty.css';
+                $faculty_css_version = file_exists($faculty_css_path) ? filemtime($faculty_css_path) : time();
+            ?>
+            <link rel="stylesheet" href="<?php echo base_url('assets/css/faculty.css?v=' . $faculty_css_version); ?>">
         <?php elseif ($page_type === 'academics'): ?>
             <link rel="stylesheet" href="<?php echo base_url('assets/css/academics.css'); ?>">
         <?php elseif ($page_type === 'updates'): ?>
