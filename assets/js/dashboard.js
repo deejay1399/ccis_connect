@@ -17,10 +17,10 @@ $(document).ready(function() {
             return false;
         }
         
-        const allowedRoles = ['superadmin', 'faculty'];
+        const allowedRoles = ['superadmin'];
         if (!session.user || !allowedRoles.includes(session.user.role)) {
             console.warn('Unauthorized access attempt by:', session.user ? session.user.role : 'unknown');
-            showNotification('Access denied. Authorized staff privileges required.', 'error');
+            showNotification('Access denied. Super Admin privileges required.', 'error');
             setTimeout(() => {
                 window.location.href = window.baseUrl ? window.baseUrl + 'login' : '/login';
             }, 2000);
@@ -43,8 +43,7 @@ $(document).ready(function() {
         });
         
         // Update user role
-        const roleLabel = user.role === 'faculty' ? 'Faculty' : 'Super Admin';
-        $('#user-role').text(roleLabel);
+        $('#user-role').text('Super Admin');
         
         // Setup public site link to store return URL
         setupPublicSiteLink();
@@ -455,9 +454,7 @@ $(document).ready(function() {
             const session = window.checkUserSession ? window.checkUserSession() : null;
             const role = session && session.isValid && session.user ? session.user.role : null;
             const base = window.BASE_URL || window.baseUrl || '/';
-            const dashboardUrl = (role === 'faculty' || role === 'superadmin')
-                ? base + 'index.php/admin/dashboard'
-                : base + 'index.php/admin/dashboard';
+            const dashboardUrl = base + 'index.php/admin/dashboard';
                                 
             publicSiteLink.on('click', function(e) {
                 // Store the current dashboard URL in local storage

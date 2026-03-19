@@ -59,14 +59,13 @@ document.addEventListener('DOMContentLoaded', function() {
             user = null;
         }
 
-        if (!user || !['superadmin', 'faculty', 'orgadmin'].includes(user.role)) {
+        if (!user || !['superadmin', 'orgadmin'].includes(user.role)) {
             return null;
         }
 
         const base = (window.BASE_URL || (window.location.origin + '/'));
         const routeMap = {
             superadmin: 'index.php/admin/dashboard',
-            faculty: 'index.php/admin/dashboard',
             orgadmin: 'index.php/org/dashboard'
         };
 
@@ -97,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
             user = null;
         }
 
-        if (user && ['superadmin', 'faculty', 'orgadmin'].includes(user.role)) {
+        if (user && ['superadmin', 'orgadmin'].includes(user.role)) {
             setTimeout(() => {
                 floatingBtn.classList.add('show');
                 floatingBtn.style.display = 'flex';

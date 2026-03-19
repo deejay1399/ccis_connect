@@ -67,6 +67,15 @@ function has_role($role_id)
 }
 
 /**
+ * Susihon kung ang tiggamit adunay student-level access.
+ */
+function has_student_level_access()
+{
+    $role_id = (int) get_user_role();
+    return $role_id === 2 || $role_id === 3;
+}
+
+/**
  * Susiha kon ang kasamtangan nga tiggamit mao ang superadmin.
  */
 function is_superadmin()
@@ -122,8 +131,8 @@ function redirect_by_role($role_id = null)
 
     $redirect_paths = [
         1 => 'admin/dashboard',      // Super Admin
-        2 => 'admin/dashboard',      // Faculty - parehas nga pag-access sa superadmin
-        3 => 'student/dashboard',    // Estudyante
+        2 => 'homepage',             // Faculty - student-level access
+        3 => 'homepage',             // Estudyante
         4 => 'org/dashboard'         // Organisasyon Admin
     ];
 
@@ -132,20 +141,20 @@ function redirect_by_role($role_id = null)
 }
 
 /**
- * Gikinahanglan ang usa ka naka-log-in nga superadmin o faculty account.
+ * Gikinahanglan ang usa ka naka-log-in nga superadmin account.
  */
 function require_superadmin()
 {
     require_login();
 
     $role_id = (int) get_user_role();
-    if ($role_id !== 1 && $role_id !== 2) {
+    if ($role_id !== 1) {
         show_error('You do not have permission to access this page', 403);
     }
 }
 
 /**
- * Nanginahanglan usa ka naka-log in nga account nga adunay mga pribilehiyo sa superadmin/faculty.
+ * Backward-compatible alias alang sa superadmin-only checks.
  */
 function require_admin_or_faculty()
 {
@@ -162,7 +171,7 @@ function restrict_public_for_admin_roles()
 }
 
 /**
- * Kinahanglan nimo ang usa ka naka-log in nga account sa estudyante.
+ * Kinahanglan nimo ang usa ka naka-log in nga account nga adunay student-level access.
  */
 function require_student_only()
 {
@@ -172,8 +181,9 @@ function require_student_only()
         redirect('login');
     }
 
-    if ((int) $CI->session->userdata('role_id') !== 3) {
-        redirect_by_role((int) $CI->session->userdata('role_id'));
+    $role_id = (int) $CI->session->userdata('role_id');
+    if ($role_id !== 2 && $role_id !== 3) {
+        redirect_by_role($role_id);
     }
 }
 ?>

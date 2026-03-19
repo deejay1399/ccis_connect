@@ -355,7 +355,6 @@ $(document).ready(function() {
         const $backToTop = $('#backToTop');
         
         if (!$backToTop.length) {
-            console.log('❌ Back to Top button not found in HTML, creating one...');
             // Create the button if it doesn't exist
             $('body').append(`
                 <button id="backToTop" class="back-to-top-btn" aria-label="Back to top" style="display: none;">
@@ -370,19 +369,15 @@ $(document).ready(function() {
         // Function to toggle button visibility
         function toggleBackToTop() {
             if ($(window).scrollTop() > 300) {
-                console.log('⬆️ Showing Back to Top button');
                 $backToTopBtn.fadeIn(300);
             } else {
-                console.log('⬇️ Hiding Back to Top button');
                 $backToTopBtn.fadeOut(300);
             }
         }
         
         // Click event for back to top
         $backToTopBtn.off('click').on('click', function() {
-            console.log('🎯 Back to Top clicked');
             $('html, body').animate({ scrollTop: 0 }, 800, function() {
-                console.log('✅ Scrolled to top');
             });
             return false;
         });
@@ -439,7 +434,6 @@ $(document).ready(function() {
 
     // ✅ UPDATED INITIALIZATION FUNCTION - PRIORITIZE BACK TO TOP
     function initializeAll() {
-        console.log('🚀 Initializing CCIS Homepage...');
         
         // Initialize core functionality
         initCarousel();
@@ -453,19 +447,11 @@ $(document).ready(function() {
         // Initialize other features
         initProgramsDisplay();
         setupProgramInteractions();
-
-        console.log('✅ CCIS Homepage Loaded Successfully');
-        console.log('✅ Back to Top button: ACTIVE');
-        console.log('✅ Carousel: ACTIVE');
-        console.log('✅ Navigation: ACTIVE');
     }
 
     // Initialize everything
     initializeAll();
 
-    // Debug info
-    console.log('🏠 Current Page: Homepage');
-    console.log('📍 URL:', window.location.href);
 });
 
 // Global notification function for consistency

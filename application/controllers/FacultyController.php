@@ -16,15 +16,8 @@ class FacultyController extends CI_Controller {
 	 */
 	public function dashboard()
 	{
-		require_role(2);
-
-		$data['page_title'] = 'Dashboard';
-		$data['page_type'] = 'faculty_dashboard';
-		
-		$this->load->view('superadmin/layouts/header', $data);
-		$this->load->view('superadmin/layouts/navigation');
-		$this->load->view('superadmin/index', $data);
-		$this->load->view('superadmin/layouts/footer');
+		require_login();
+		redirect_by_role((int) $this->session->userdata('role_id'));
 	}
 
 	public function faculty()

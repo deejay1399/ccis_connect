@@ -275,8 +275,8 @@ class LoginController extends CI_Controller {
 				redirect('admin/dashboard');
 				break;
 			case 2:
-				// Faculty - parehas nga pag-access sa superadmin
-				redirect('admin/dashboard');
+				// Faculty - student-level access
+				redirect('homepage');
 				break;
 			case 3:
 				// Estudyante - pag-redirect sa homepage nga adunay bug-os nga mga dagway nga wala ma-lock

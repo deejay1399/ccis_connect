@@ -27,9 +27,9 @@
             return false;
         }
 
-        const allowedRoles = ['superadmin', 'faculty'];
+        const allowedRoles = ['superadmin'];
         if (!allowedRoles.includes(String(window.sessionData.user.role || '').toLowerCase())) {
-            showNotification('Access denied. Authorized staff only.', 'error');
+            showNotification('Access denied. Super Admin only.', 'error');
             window.location.href = (window.BASE_URL || '/') + 'index.php/admin';
             return false;
         }

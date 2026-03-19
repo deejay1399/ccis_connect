@@ -63,13 +63,6 @@ function buildDashboardReturnConfig(user) {
         };
     }
 
-    if (user.role === 'faculty') {
-        return {
-            url: base + 'index.php/admin/dashboard',
-            text: 'Return to Dashboard'
-        };
-    }
-
     if (user.role === 'orgadmin') {
         return {
             url: base + 'index.php/org/dashboard',
@@ -591,7 +584,7 @@ function hasAccess(requiredRole) {
     const roleHierarchy = {
         'guest': 0,
         'student': 1,
-        'faculty': 3,
+        'faculty': 1,
         'orgadmin': 2,
         'superadmin': 3
     };

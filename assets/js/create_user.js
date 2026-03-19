@@ -34,9 +34,9 @@ $(document).ready(function() {
             return false;
         }
         
-        if (!['superadmin', 'faculty'].includes(session.user.role)) {
+        if (session.user.role !== 'superadmin') {
             console.warn('?? Unauthorized access attempt by:', session.user.role);
-            showNotification('Access denied. Super Admin or Faculty privileges required.', 'error');
+            showNotification('Access denied. Super Admin privileges required.', 'error');
             setTimeout(() => {
                 window.location.href = buildUrl('index.php/login');
             }, 2000);
