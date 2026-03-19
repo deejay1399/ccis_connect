@@ -414,50 +414,9 @@ body {
     transform: rotate(180deg);
 }
 
-/* Highlights Section */
-.homepage-parallax-shell {
-    --homepage-parallax-shift: 0px;
-    position: relative;
-    overflow: hidden;
-    background: #f5f1fb;
-}
-
-.homepage-parallax-shell::before {
-    content: '';
-    position: absolute;
-    top: -8%;
-    right: 0;
-    bottom: -8%;
-    left: 0;
-    background-image: url('../images/home-bg.jpg');
-    background-repeat: no-repeat;
-    background-position: center top;
-    background-size: cover;
-    transform: translate3d(0, var(--homepage-parallax-shift), 0);
-    will-change: transform;
-    z-index: 0;
-}
-
-.homepage-parallax-shell::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, rgba(246, 241, 251, 0.58) 22%, rgba(245, 241, 251, 0.84) 56%, rgba(245, 241, 251, 0.94) 100%),
-        radial-gradient(circle at top center, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 48%);
-    pointer-events: none;
-    z-index: 1;
-}
-
-.homepage-parallax-shell > section,
-.homepage-parallax-shell > div {
-    position: relative;
-    z-index: 2;
-}
-
 .highlights-section {
     padding: 2rem 0 2.5rem;
-    background: transparent;
+    background: white;
     position: relative;
 }
 
@@ -629,12 +588,20 @@ body {
 .homepage-content-shell {
     position: relative;
     padding: 1rem 0 4rem;
-    background: transparent;
+    background: white;
 }
 
 .welcome-section {
-    padding: 2rem 0 3rem;
-    background: transparent;
+    min-height: 400px;
+    padding: 3rem 0;
+    display: flex;
+    align-items: center;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.74) 0%, rgba(255, 255, 255, 0.58) 48%, rgba(255, 255, 255, 0.82) 100%),
+        url('../images/home-bg.jpg');
+    background-repeat: no-repeat, no-repeat;
+    background-position: center center, center bottom;
+    background-size: 100% 100%, contain;
 }
 
 .welcome-title {
@@ -658,7 +625,7 @@ body {
 /* Academic Programs Section */
 .programs-section {
     padding: 1rem 0 0;
-    background: transparent;
+    background: white;
 }
 
 .programs-title {
@@ -1417,11 +1384,6 @@ body {
 }
 
 @media (max-width: 992px) {
-    .homepage-parallax-shell::before {
-        top: -6%;
-        bottom: -6%;
-    }
-
     .highlight-image {
         padding-bottom: 45%;
     }
@@ -1484,13 +1446,10 @@ body {
         padding: 0.75rem 0 3rem;
     }
 
-    .homepage-parallax-shell::before {
-        top: -4%;
-        bottom: -4%;
-    }
-
     .welcome-section {
-        padding: 1.5rem 0 2.25rem;
+        min-height: 320px;
+        padding: 2.25rem 0;
+        background-size: 100% 100%, 96% auto;
     }
     
     .highlight-image {
@@ -1624,6 +1583,12 @@ body {
 
     .highlights-section {
         padding-bottom: 1.75rem;
+    }
+
+    .welcome-section {
+        min-height: 260px;
+        padding: 2rem 0;
+        background-size: 100% 100%, 94% auto;
     }
 
     .university-logo,

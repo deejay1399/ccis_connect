@@ -348,52 +348,6 @@ $(document).ready(function() {
         });
     }
 
-    function initHomepageParallax() {
-        const shell = document.querySelector('.homepage-parallax-shell');
-        if (!shell) {
-            return;
-        }
-
-        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-        let rafId = null;
-
-        function updateParallax() {
-            rafId = null;
-
-            if (reducedMotion.matches) {
-                shell.style.setProperty('--homepage-parallax-shift', '0px');
-                return;
-            }
-
-            const rect = shell.getBoundingClientRect();
-            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-            const progress = (viewportHeight - rect.top) * 0.12;
-            const shift = Math.max(-36, Math.min(110, progress - 72));
-
-            shell.style.setProperty('--homepage-parallax-shift', `${shift.toFixed(1)}px`);
-        }
-
-        function requestParallaxUpdate() {
-            if (rafId !== null) {
-                return;
-            }
-
-            rafId = window.requestAnimationFrame(updateParallax);
-        }
-
-        requestParallaxUpdate();
-
-        $(window)
-            .off('scroll.homepageParallax resize.homepageParallax')
-            .on('scroll.homepageParallax resize.homepageParallax', requestParallaxUpdate);
-
-        if (typeof reducedMotion.addEventListener === 'function') {
-            reducedMotion.addEventListener('change', requestParallaxUpdate);
-        } else if (typeof reducedMotion.addListener === 'function') {
-            reducedMotion.addListener(requestParallaxUpdate);
-        }
-    }
-
     // ✅✅✅ BACK TO TOP BUTTON FUNCTIONALITY - GUARANTEED WORKING
     function initBackToTop() {
         console.log('🔄 Initializing Back to Top button...');
@@ -492,7 +446,6 @@ $(document).ready(function() {
         initDropdownHover();
         enhanceMobileMenu();
         animateOnScroll();
-        initHomepageParallax();
         
         // ✅ CRITICAL: Initialize Back to Top FIRST
         initBackToTop();
