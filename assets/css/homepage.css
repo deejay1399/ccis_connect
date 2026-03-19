@@ -586,9 +586,35 @@ body {
 }
 
 /* Welcome Section */
+.homepage-content-shell {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.homepage-content-shell::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('../images/home-content-bg.jpg');
+    background-attachment: scroll;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: 92% auto;
+    opacity: 0.18;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.homepage-content-shell > section {
+    position: relative;
+    z-index: 1;
+}
+
 .welcome-section {
     padding: 3rem 0;
-    background: white;
+    background: transparent;
 }
 
 .welcome-title {
@@ -603,13 +629,14 @@ body {
     font-size: 1.1rem;
     line-height: 1.8;
     color: var(--dark-gray);
+    text-align: center;
     white-space: pre-wrap;
 }
 
 /* Academic Programs Section */
 .programs-section {
     padding: 3rem 0;
-    background: white;
+    background: transparent;
 }
 
 .programs-title {

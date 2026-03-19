@@ -60,85 +60,89 @@
         </div>
     </section>
 
-    <section class="welcome-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h3 class="welcome-title"><?php echo !empty($homepage_records) && !empty($homepage_records[0]['title']) ? htmlspecialchars($homepage_records[0]['title']) : 'Welcome to CCIS'; ?></h3>
-                    <p class="welcome-text">
-                        <?php 
-                        if (!empty($homepage_records) && !empty($homepage_records[0]['content'])) {
-                            echo ccis_format_rich_text($homepage_records[0]['content']);
-                        } else {
-                            echo ccis_format_rich_text('The College of Computing and Information Sciences (CCIS) is committed to providing 
-                        quality education in the fields of Computer Science and Information Technology. 
-                        We foster innovation, research, and technological advancement to prepare students 
-                        for successful careers in the digital age.');
-                        }
-                        ?>
-                    </p>
+    <?php
+        $welcome_title = !empty($homepage_records) && !empty($homepage_records[0]['title'])
+            ? htmlspecialchars($homepage_records[0]['title'])
+            : 'Welcome to CCIS';
+
+        $welcome_content = !empty($homepage_records) && !empty($homepage_records[0]['content'])
+            ? $homepage_records[0]['content']
+            : "The College of Computing and Information Sciences (CCIS) is committed to providing\n"
+                . "quality education in the fields of Computer Science and Information Technology.\n"
+                . "We foster innovation, research, and technological advancement to prepare students\n"
+                . "for successful careers in the digital age.";
+    ?>
+
+    <div class="homepage-content-shell">
+        <section class="welcome-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto text-center">
+                        <h3 class="welcome-title"><?php echo $welcome_title; ?></h3>
+                        <p class="welcome-text"><?php echo ccis_format_rich_text($welcome_content); ?></p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="programs-section">
-        <div class="container">
-            <h3 class="programs-title">Academic Programs</h3>
-            
-            <div class="programs-grid" id="programs-grid">
-                <?php if (!empty($programs)): ?>
-                    <?php 
-                        // Mga ngalan sa programa sa mapa sa angay nga mga icon
-                        $iconMap = array(
-                            'BSCS' => 'fas fa-laptop-code',
-                            'BSIT' => 'fas fa-network-wired',
-                            'Computer Science' => 'fas fa-laptop-code',
-                            'Information Technology' => 'fas fa-network-wired'
-                        );
-                        
-                        foreach ($programs as $program): 
-                            // Tinoa ang icon
-                            $icon = 'fas fa-graduation-cap';
-                            foreach ($iconMap as $keyword => $iconClass) {
-                                if (stripos($program['program_name'], $keyword) !== false) {
-                                    $icon = $iconClass;
-                                    break;
-                                }
-                            }
+        <section class="programs-section">
+            <div class="container">
+                <h3 class="programs-title">Academic Programs</h3>
+                
+                <div class="programs-grid" id="programs-grid">
+                    <?php if (!empty($programs)): ?>
+                        <?php 
+                            // Mga ngalan sa programa sa mapa sa angay nga mga icon
+                            $iconMap = array(
+                                'BSCS' => 'fas fa-laptop-code',
+                                'BSIT' => 'fas fa-network-wired',
+                                'Computer Science' => 'fas fa-laptop-code',
+                                'Information Technology' => 'fas fa-network-wired'
+                            );
                             
-                            // Mga oportunidad sa karera sa pag-parse kung kini usa ka pisi nga gibulag sa koma
-                            $careers = array();
-                            if (!empty($program['career_opportunities'])) {
-                                $careers = array_map('trim', explode(',', $program['career_opportunities']));
-                            }
-                    ?>
-                        <div class="program-card detailed">
-                            <div class="program-header">
-                                <i class="<?php echo htmlspecialchars($icon); ?>"></i>
-                                <h4><?php echo htmlspecialchars($program['program_name']); ?></h4>
+                            foreach ($programs as $program): 
+                                // Tinoa ang icon
+                                $icon = 'fas fa-graduation-cap';
+                                foreach ($iconMap as $keyword => $iconClass) {
+                                    if (stripos($program['program_name'], $keyword) !== false) {
+                                        $icon = $iconClass;
+                                        break;
+                                    }
+                                }
+                                
+                                // Mga oportunidad sa karera sa pag-parse kung kini usa ka pisi nga gibulag sa koma
+                                $careers = array();
+                                if (!empty($program['career_opportunities'])) {
+                                    $careers = array_map('trim', explode(',', $program['career_opportunities']));
+                                }
+                        ?>
+                            <div class="program-card detailed">
+                                <div class="program-header">
+                                    <i class="<?php echo htmlspecialchars($icon); ?>"></i>
+                                    <h4><?php echo htmlspecialchars($program['program_name']); ?></h4>
+                                </div>
+                                <div class="program-details">
+                                    <p><strong>Program Description:</strong> <?php echo htmlspecialchars($program['description']); ?></p>
+                                    <p class="program-duration"><strong>Duration:</strong> <?php echo htmlspecialchars($program['duration_years']); ?> years</p>
+                                    <?php if (!empty($careers)): ?>
+                                        <div class="program-features">
+                                            <h5>Career Opportunities:</h5>
+                                            <ul>
+                                                <?php foreach ($careers as $career): ?>
+                                                    <li><?php echo htmlspecialchars(trim($career)); ?></li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
                             </div>
-                            <div class="program-details">
-                                <p><strong>Program Description:</strong> <?php echo htmlspecialchars($program['description']); ?></p>
-                                <p class="program-duration"><strong>Duration:</strong> <?php echo htmlspecialchars($program['duration_years']); ?> years</p>
-                                <?php if (!empty($careers)): ?>
-                                    <div class="program-features">
-                                        <h5>Career Opportunities:</h5>
-                                        <ul>
-                                            <?php foreach ($careers as $career): ?>
-                                                <li><?php echo htmlspecialchars(trim($career)); ?></li>
-                                            <?php endforeach; ?>
-                                        </ul>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="program-card">
+                            <p>No programs available at this time.</p>
                         </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="program-card">
-                        <p>No programs available at this time.</p>
-                    </div>
-                <?php endif; ?>
+                    <?php endif; ?>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </div>

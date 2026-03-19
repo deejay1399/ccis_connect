@@ -5,6 +5,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <head>
 	<meta charset="utf-8">
 	<title>Welcome to CodeIgniter</title>
+	<link rel="icon" type="image/x-icon" href="<?php echo htmlspecialchars(rtrim(config_item('base_url'), '/') . '/assets/images/ccis.ico', ENT_QUOTES, 'UTF-8'); ?>">
 
 	<style type="text/css">
 
