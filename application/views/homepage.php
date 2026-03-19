@@ -78,8 +78,10 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-8 mx-auto text-center">
-                        <h3 class="welcome-title"><?php echo $welcome_title; ?></h3>
-                        <p class="welcome-text"><?php echo ccis_format_rich_text($welcome_content); ?></p>
+                        <div class="welcome-panel">
+                            <h3 class="welcome-title"><?php echo $welcome_title; ?></h3>
+                            <p class="welcome-text"><?php echo ccis_format_rich_text($welcome_content); ?></p>
+                        </div>
                     </div>
                 </div>
             </div>
