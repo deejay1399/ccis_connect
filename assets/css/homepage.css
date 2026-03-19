@@ -415,11 +415,49 @@ body {
 }
 
 /* Highlights Section */
-.highlights-section {
-    padding: 2rem 0 7rem;
+.homepage-parallax-shell {
+    --homepage-parallax-shift: 0px;
+    position: relative;
+    overflow: hidden;
+    background: #f5f1fb;
+}
+
+.homepage-parallax-shell::before {
+    content: '';
+    position: absolute;
+    top: -8%;
+    right: 0;
+    bottom: -8%;
+    left: 0;
+    background-image: url('../images/home-bg.jpg');
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: cover;
+    transform: translate3d(0, var(--homepage-parallax-shift), 0);
+    will-change: transform;
+    z-index: 0;
+}
+
+.homepage-parallax-shell::after {
+    content: '';
+    position: absolute;
+    inset: 0;
     background:
-        radial-gradient(circle at top center, rgba(255, 215, 0, 0.18) 0%, rgba(255, 215, 0, 0) 42%),
-        linear-gradient(180deg, #f2ebff 0%, #f7f3ff 58%, rgba(247, 243, 255, 0) 100%);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, rgba(246, 241, 251, 0.58) 22%, rgba(245, 241, 251, 0.84) 56%, rgba(245, 241, 251, 0.94) 100%),
+        radial-gradient(circle at top center, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 48%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.homepage-parallax-shell > section,
+.homepage-parallax-shell > div {
+    position: relative;
+    z-index: 2;
+}
+
+.highlights-section {
+    padding: 2rem 0 2.5rem;
+    background: transparent;
     position: relative;
 }
 
@@ -590,72 +628,13 @@ body {
 /* Welcome Section */
 .homepage-content-shell {
     position: relative;
-    overflow: hidden;
-    isolation: isolate;
-    z-index: 2;
-    margin-top: -5rem;
-    padding: 7.25rem 0 4.5rem;
-    border-radius: 38px 38px 0 0;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(247, 248, 252, 0.62) 26%, rgba(247, 248, 252, 0.92) 100%);
-}
-
-.homepage-content-shell::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url('../images/home-content-bg.jpg');
-    background-attachment: scroll;
-    background-repeat: no-repeat;
-    background-position: center 82%;
-    background-size: 122% auto;
-    opacity: 0.34;
-    filter: contrast(1.08);
-    pointer-events: none;
-    z-index: 0;
-}
-
-.homepage-content-shell::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(252, 252, 253, 0.54) 18%, rgba(247, 248, 252, 0.82) 46%, rgba(247, 248, 252, 0.94) 100%),
-        radial-gradient(circle at top center, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.18) 46%, rgba(255, 255, 255, 0) 74%);
-    pointer-events: none;
-    z-index: 1;
-}
-
-.homepage-content-shell > section {
-    position: relative;
-    z-index: 2;
-}
-
-.welcome-section {
-    padding: 0 0 3.5rem;
+    padding: 1rem 0 4rem;
     background: transparent;
 }
 
-.welcome-panel {
-    position: relative;
-    overflow: hidden;
-    padding: clamp(1.8rem, 4vw, 3rem);
-    border-radius: 28px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.74) 0%, rgba(255, 255, 255, 0.45) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.72);
-    box-shadow: 0 30px 80px rgba(64, 44, 100, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-}
-
-.welcome-panel::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 8%;
-    width: 84%;
-    height: 4px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, rgba(255, 215, 0, 0.95) 0%, rgba(106, 13, 173, 0.92) 100%);
+.welcome-section {
+    padding: 2rem 0 3rem;
+    background: transparent;
 }
 
 .welcome-title {
@@ -664,6 +643,7 @@ body {
     font-weight: 600;
     margin-bottom: 1.5rem;
     font-size: 2rem;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);
 }
 
 .welcome-text {
@@ -703,40 +683,35 @@ body {
     margin-top: 2rem;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     transition: all 0.3s ease;
-    align-items: stretch;
 }
 
 .program-card {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.42) 100%);
+    background: rgba(255, 255, 255, 0.92);
     padding: 2rem;
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.62);
+    border-radius: 15px;
+    border-left: 5px solid var(--accent);
     height: 100%;
-    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
     animation: fadeInUp 0.6s ease-out;
     display: flex;
     flex-direction: column;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    box-shadow: 0 24px 56px rgba(56, 41, 94, 0.12);
+    box-shadow: 0 14px 32px rgba(56, 41, 94, 0.14);
 }
 
 .program-card.detailed {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.44) 100%);
+    background: rgba(255, 255, 255, 0.92);
     padding: 2rem;
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.64);
-    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+    border-radius: 15px;
+    border-left: 5px solid var(--accent);
+    transition: box-shadow 0.3s ease, border-left-color 0.3s ease, transform 0.3s ease;
     height: 100%;
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    box-shadow: 0 24px 56px rgba(56, 41, 94, 0.12);
+    box-shadow: 0 14px 32px rgba(56, 41, 94, 0.14);
 }
 
 .program-card::before {
@@ -750,26 +725,13 @@ body {
     transition: left 0.5s ease;
 }
 
-.program-card::after {
-    content: '';
-    position: absolute;
-    top: 1.1rem;
-    bottom: 1.1rem;
-    left: 0;
-    width: 5px;
-    border-radius: 999px;
-    background: linear-gradient(180deg, rgba(255, 215, 0, 0.95) 0%, rgba(106, 13, 173, 0.9) 100%);
-    box-shadow: 0 0 20px rgba(106, 13, 173, 0.18);
-}
-
 .program-card:hover::before {
     left: 100%;
 }
 
 .program-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 30px 70px rgba(48, 34, 86, 0.18);
-    border-color: rgba(255, 255, 255, 0.88);
+    transform: translateY(-5px);
+    box-shadow: 0 22px 42px rgba(48, 34, 86, 0.2);
 }
 
 .program-header {
@@ -1455,14 +1417,9 @@ body {
 }
 
 @media (max-width: 992px) {
-    .homepage-content-shell {
-        margin-top: -3.75rem;
-        padding: 5.5rem 0 3.75rem;
-    }
-
-    .homepage-content-shell::before {
-        background-position: center 78%;
-        background-size: 148% auto;
+    .homepage-parallax-shell::before {
+        top: -6%;
+        bottom: -6%;
     }
 
     .highlight-image {
@@ -1520,28 +1477,20 @@ body {
     }
     
     .highlights-section {
-        padding: 1.5rem 0 4.75rem;
+        padding: 1.5rem 0 2rem;
     }
 
     .homepage-content-shell {
-        margin-top: -2.75rem;
-        padding: 4.5rem 0 3rem;
-        border-radius: 28px 28px 0 0;
+        padding: 0.75rem 0 3rem;
     }
 
-    .homepage-content-shell::before {
-        background-position: center 74%;
-        background-size: 182% auto;
-        opacity: 0.3;
+    .homepage-parallax-shell::before {
+        top: -4%;
+        bottom: -4%;
     }
 
     .welcome-section {
-        padding-bottom: 2.5rem;
-    }
-
-    .welcome-panel {
-        padding: 1.6rem 1.4rem;
-        border-radius: 22px;
+        padding: 1.5rem 0 2.25rem;
     }
     
     .highlight-image {
@@ -1669,25 +1618,12 @@ body {
 }
 
 @media (max-width: 576px) {
-    .highlights-section {
-        padding-bottom: 4rem;
-    }
-
     .homepage-content-shell {
-        margin-top: -2rem;
-        padding: 3.5rem 0 2.5rem;
-        border-radius: 22px 22px 0 0;
+        padding: 0.5rem 0 2.5rem;
     }
 
-    .homepage-content-shell::before {
-        background-position: center 70%;
-        background-size: 212% auto;
-        opacity: 0.28;
-    }
-
-    .welcome-panel {
-        padding: 1.35rem 1.15rem;
-        border-radius: 20px;
+    .highlights-section {
+        padding-bottom: 1.75rem;
     }
 
     .university-logo,
