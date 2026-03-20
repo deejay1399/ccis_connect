@@ -449,6 +449,22 @@
                 var storedScrollY = 0;
                 var isLocked = false;
 
+                function ensureBackdrop() {
+                    if (document.querySelector('.navbar-backdrop')) {
+                        return;
+                    }
+
+                    var backdrop = document.createElement('div');
+                    backdrop.className = 'navbar-backdrop';
+                    document.body.appendChild(backdrop);
+                }
+
+                function removeBackdrops() {
+                    document.querySelectorAll('.navbar-backdrop').forEach(function(backdrop) {
+                        backdrop.remove();
+                    });
+                }
+
                 function lockScroll() {
                     if (window.innerWidth >= 992 || isLocked) {
                         return;
@@ -465,6 +481,7 @@
                         navbarMain.classList.add('mobile-open');
                     }
 
+                    ensureBackdrop();
                     isLocked = true;
                 }
 
@@ -478,6 +495,8 @@
                     if (navbarMain) {
                         navbarMain.classList.remove('mobile-open');
                     }
+
+                    removeBackdrops();
 
                     if (isLocked) {
                         window.scrollTo(0, storedScrollY);

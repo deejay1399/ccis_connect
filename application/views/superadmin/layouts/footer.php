@@ -212,6 +212,128 @@
             }
         })();
     </script>
+    <script>
+        (function initializeAdminMobileNavLock() {
+            function setup() {
+                var navbarCollapse = document.getElementById('mainNav');
+                var navbarMain = document.querySelector('.navbar-main');
+
+                if (!navbarCollapse) {
+                    return;
+                }
+
+                var storedScrollY = 0;
+                var isLocked = false;
+
+                function ensureBackdrop() {
+                    if (document.querySelector('.navbar-backdrop')) {
+                        return;
+                    }
+
+                    var backdrop = document.createElement('div');
+                    backdrop.className = 'navbar-backdrop';
+                    document.body.appendChild(backdrop);
+                    backdrop.addEventListener('click', function() {
+                        if (window.bootstrap && window.bootstrap.Collapse) {
+                            window.bootstrap.Collapse.getOrCreateInstance(navbarCollapse, { toggle: false }).hide();
+                        }
+                    });
+                }
+
+                function removeBackdrops() {
+                    document.querySelectorAll('.navbar-backdrop').forEach(function(backdrop) {
+                        backdrop.remove();
+                    });
+                }
+
+                function lockScroll() {
+                    if (window.innerWidth >= 992 || isLocked) {
+                        return;
+                    }
+
+                    storedScrollY = window.scrollY || window.pageYOffset || 0;
+                    document.documentElement.classList.add('menu-open');
+                    document.body.classList.add('menu-open');
+                    document.body.style.top = '-' + storedScrollY + 'px';
+                    document.body.style.left = '0';
+                    document.body.style.right = '0';
+
+                    if (navbarMain) {
+                        navbarMain.classList.add('mobile-open');
+                    }
+
+                    ensureBackdrop();
+                    isLocked = true;
+                }
+
+                function unlockScroll() {
+                    document.documentElement.classList.remove('menu-open');
+                    document.body.classList.remove('menu-open');
+                    document.body.style.removeProperty('top');
+                    document.body.style.removeProperty('left');
+                    document.body.style.removeProperty('right');
+
+                    if (navbarMain) {
+                        navbarMain.classList.remove('mobile-open');
+                    }
+
+                    removeBackdrops();
+
+                    if (isLocked) {
+                        window.scrollTo(0, storedScrollY);
+                    }
+
+                    storedScrollY = 0;
+                    isLocked = false;
+                }
+
+                function syncMenuState() {
+                    var shouldLock = window.innerWidth < 992 && navbarCollapse.classList.contains('show');
+                    var navbarToggler = document.querySelector('.navbar-toggler');
+
+                    if (navbarToggler) {
+                        navbarToggler.setAttribute('aria-expanded', shouldLock ? 'true' : 'false');
+                    }
+
+                    if (shouldLock) {
+                        lockScroll();
+                    } else {
+                        unlockScroll();
+                    }
+                }
+
+                if (window.bootstrap && window.bootstrap.Collapse) {
+                    navbarCollapse.addEventListener('show.bs.collapse', function() {
+                        requestAnimationFrame(syncMenuState);
+                    });
+                    navbarCollapse.addEventListener('shown.bs.collapse', syncMenuState);
+                    navbarCollapse.addEventListener('hide.bs.collapse', function() {
+                        requestAnimationFrame(syncMenuState);
+                    });
+                    navbarCollapse.addEventListener('hidden.bs.collapse', syncMenuState);
+                }
+
+                var observer = new MutationObserver(syncMenuState);
+                observer.observe(navbarCollapse, {
+                    attributes: true,
+                    attributeFilter: ['class']
+                });
+
+                window.addEventListener('resize', syncMenuState);
+                window.addEventListener('orientationchange', syncMenuState);
+                window.addEventListener('pageshow', syncMenuState);
+
+                syncMenuState();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', setup);
+                return;
+            }
+
+            setup();
+        })();
+    </script>
     
     <!-- Page-specific scripts -->
     <?php if(isset($page_type) && $page_type === 'admin_users'): ?>
