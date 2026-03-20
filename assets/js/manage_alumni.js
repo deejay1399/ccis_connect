@@ -209,6 +209,30 @@ $(document).ready(function () {
         }
     }
 
+    function extractServerMessage(xhr, fallbackMessage) {
+        const response = parseJsonResponse(xhr);
+        if (response?.message) {
+            return response.message;
+        }
+
+        const rawResponse = String(xhr?.responseText || '')
+            .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+            .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        if (rawResponse) {
+            return rawResponse.slice(0, 320);
+        }
+
+        if (xhr?.status) {
+            return `${fallbackMessage} (HTTP ${xhr.status})`;
+        }
+
+        return fallbackMessage;
+    }
+
     function setFeaturedFormLocked(isLocked) {
         const modal = $('#addFeaturedModal');
         modal.toggleClass('featured-form-locked', isLocked);
@@ -1291,7 +1315,7 @@ $(document).ready(function () {
                 return;
             }
 
-            const message = response.message || 'Failed to add featured alumni.';
+            const message = extractServerMessage(xhr, 'Failed to add featured alumni.');
             showNotification('error', message);
         });
 

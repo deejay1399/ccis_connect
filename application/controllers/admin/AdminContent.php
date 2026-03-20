@@ -816,12 +816,14 @@ class AdminContent extends CI_Controller {
 
 			$id = $this->Alumni_model->insert_featured($payload);
 			if (!$id) {
-				throw new RuntimeException('Failed to save the featured alumni entry.');
+				$db_error = isset($this->db) ? $this->db->error() : ['message' => ''];
+				$error_suffix = !empty($db_error['message']) ? ' Database error: ' . $db_error['message'] : '';
+				throw new RuntimeException('Failed to save the featured alumni entry.' . $error_suffix);
 			}
 
 			$this->_delete_featured_staging_artifacts($upload_token);
 			echo json_encode(['success' => true, 'id' => $id]);
-		} catch (Exception $e) {
+		} catch (Throwable $e) {
 			$this->_delete_uploaded_public_files($final_paths);
 			$this->_delete_uploaded_public_files($staged_paths);
 			$this->_delete_featured_staging_artifacts($upload_token);
@@ -847,7 +849,7 @@ class AdminContent extends CI_Controller {
 			$this->_delete_featured_staging_artifacts($upload_token, false);
 
 			echo json_encode(['success' => true]);
-		} catch (Exception $e) {
+		} catch (Throwable $e) {
 			http_response_code(500);
 			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 		}
@@ -876,7 +878,7 @@ class AdminContent extends CI_Controller {
 				]));
 			}
 			echo json_encode(['success' => (bool) $result]);
-		} catch (Exception $e) {
+		} catch (Throwable $e) {
 			http_response_code(500);
 			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 		}
