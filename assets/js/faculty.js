@@ -108,6 +108,10 @@ $(document).ready(function() {
             // Close mobile menu when a link is clicked
             $('.navbar-nav .nav-link, .dropdown-item').off('click.menu').on('click.menu', function() {
                 if ($(window).width() < 992) {
+                    const $link = $(this);
+                    if ($link.hasClass('dropdown-toggle') || $link.attr('data-bs-toggle') === 'dropdown') {
+                        return;
+                    }
                     closeMenu();
                 }
             });

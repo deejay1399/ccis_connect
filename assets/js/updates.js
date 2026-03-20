@@ -1101,6 +1101,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.navbar-nav .nav-link, .dropdown-item').forEach(link => {
             link.addEventListener('click', function() {
                 if (window.innerWidth < 992) {
+                    if (this.classList.contains('dropdown-toggle') || this.getAttribute('data-bs-toggle') === 'dropdown') {
+                        return;
+                    }
                     setTimeout(() => closeMenu(), 100);
                 }
             });

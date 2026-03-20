@@ -371,6 +371,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Close mobile menu when a link is clicked
         $(document).on('click', '.navbar-nav .nav-link, .dropdown-item', function() {
             if ($(window).width() < 992) {
+                const $link = $(this);
+                if ($link.hasClass('dropdown-toggle') || $link.attr('data-bs-toggle') === 'dropdown') {
+                    return;
+                }
                 closeMenu();
             }
         });
