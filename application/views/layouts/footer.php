@@ -121,6 +121,29 @@
         <span class="chatbot-notification">1</span>
     </button>
 
+    <div id="globalFormPreviewModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="globalFormPreviewTitle">
+        <div class="form-preview-dialog">
+            <div class="form-preview-header">
+                <h3 class="form-preview-title" id="globalFormPreviewTitle">Form Preview</h3>
+                <button type="button" class="form-preview-close" data-form-preview-close aria-label="Close form preview">&times;</button>
+            </div>
+            <div class="form-preview-body">
+                <div class="form-preview-frame-wrap">
+                    <iframe
+                        id="globalFormPreviewFrame"
+                        class="form-preview-frame"
+                        title="Form preview"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <div id="globalFormPreviewDocx" class="form-preview-docx" aria-live="polite"></div>
+                </div>
+            </div>
+            <div class="form-preview-footer">
+                <button type="button" id="globalFormPreviewDownload" class="form-preview-download">Download File</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -128,6 +151,7 @@
     <script>
         // Itakda ang global base URL alang sa tanan nga mga panid
         window.BASE_URL = '<?php echo base_url(); ?>';
+        window.SITE_URL = '<?php echo site_url(); ?>';
         window.CSRF_TOKEN_NAME = '<?php echo $this->security->get_csrf_token_name(); ?>';
         window.CSRF_TOKEN_VALUE = '<?php echo $this->security->get_csrf_hash(); ?>';
     </script>
@@ -279,7 +303,139 @@
         $session_mgmt_ver = file_exists($session_mgmt_js) ? filemtime($session_mgmt_js) : time();
     ?>
     <script src="<?php echo base_url('assets/js/session-management.js?v=' . $session_mgmt_ver); ?>"></script>
+    <?php
+        $form_preview_js_path = FCPATH . 'assets/js/form-preview.js';
+        $form_preview_js_version = file_exists($form_preview_js_path) ? filemtime($form_preview_js_path) : time();
+    ?>
+    <script src="<?php echo base_url('assets/js/form-preview.js?v=' . $form_preview_js_version); ?>"></script>
     <script src="<?php echo base_url('assets/js/chatbot.js'); ?>"></script>
+    <script>
+        (function initializeFormsDropdown() {
+            function slugify(value) {
+                return String(value || '')
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/^-+|-+$/g, '') || 'form';
+            }
+
+            function buildFileUrl(filePath) {
+                if (!filePath) {
+                    return '';
+                }
+
+                if (/^https?:\/\//i.test(filePath)) {
+                    return filePath;
+                }
+
+                return window.BASE_URL + String(filePath).replace(/^\/+/, '');
+            }
+
+            function setMenuMessage(menu, message) {
+                menu.innerHTML = '';
+                var item = document.createElement('li');
+                var text = document.createElement('span');
+                text.className = 'dropdown-item-text text-muted px-3 py-2';
+                text.textContent = message;
+                item.appendChild(text);
+                menu.appendChild(item);
+            }
+
+            function closeMobileNavigation() {
+                if (window.innerWidth >= 992) {
+                    return;
+                }
+
+                var navbarCollapse = document.getElementById('mainNav');
+                var navbarMain = document.querySelector('.navbar-main');
+                var navbarToggler = document.querySelector('.navbar-toggler');
+
+                if (!navbarCollapse || !window.bootstrap || !window.bootstrap.Collapse) {
+                    return;
+                }
+
+                var collapse = window.bootstrap.Collapse.getOrCreateInstance(navbarCollapse, { toggle: false });
+                collapse.hide();
+
+                if (navbarMain) {
+                    navbarMain.classList.remove('mobile-open');
+                }
+
+                if (navbarToggler) {
+                    navbarToggler.setAttribute('aria-expanded', 'false');
+                }
+            }
+
+            function renderFormsMenu(forms) {
+                var menu = document.getElementById('formsDropdownMenu');
+                if (!menu) {
+                    return;
+                }
+
+                var currentFormId = String(menu.getAttribute('data-current-form-id') || '');
+                menu.innerHTML = '';
+
+                if (!Array.isArray(forms) || forms.length === 0) {
+                    setMenuMessage(menu, 'No forms available');
+                    return;
+                }
+
+                forms.forEach(function(form) {
+                    var item = document.createElement('li');
+                    var link = document.createElement('a');
+                    var formId = String(form && form.id ? form.id : '');
+                    var formTitle = String(form && form.title ? form.title : 'Form');
+                    var fileUrl = buildFileUrl(form && form.file_url ? form.file_url : '');
+                    var fileExt = String((form && form.file_url ? form.file_url : '').split('.').pop() || '').toLowerCase();
+                    var downloadName = String(form && form.original_filename ? form.original_filename : formTitle);
+
+                    link.className = 'dropdown-item';
+                    if (currentFormId !== '' && formId === currentFormId) {
+                        link.classList.add('active');
+                    }
+
+                    link.href = window.SITE_URL + 'forms/' + encodeURIComponent(formId) + '/' + slugify(formTitle);
+                    link.setAttribute('data-form-preview-trigger', '1');
+                    link.setAttribute('data-form-title', formTitle);
+                    link.setAttribute('data-form-url', fileUrl);
+                    link.setAttribute('data-file-ext', fileExt);
+                    link.setAttribute('data-is-pdf', fileExt === 'pdf' ? '1' : '0');
+                    link.setAttribute('data-download-name', downloadName);
+                    link.textContent = formTitle;
+                    link.addEventListener('click', closeMobileNavigation);
+
+                    item.appendChild(link);
+                    menu.appendChild(item);
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                var menu = document.getElementById('formsDropdownMenu');
+                if (!menu) {
+                    return;
+                }
+
+                fetch(window.SITE_URL + 'forms/api/list', {
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error('Failed to load forms');
+                        }
+
+                        return response.json();
+                    })
+                    .then(function(payload) {
+                        renderFormsMenu(payload && payload.success ? payload.data : []);
+                    })
+                    .catch(function() {
+                        setMenuMessage(menu, 'Forms unavailable');
+                    });
+            });
+        })();
+    </script>
     <?php if (!empty($page_type)): ?>
         <?php if ($page_type === 'homepage'): ?>
             <script src="<?php echo base_url('assets/js/homepage.js'); ?>"></script>

@@ -1089,9 +1089,26 @@
     gap: 0.7rem;
 }
 
+.directory-name-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
 .directory-name-text {
     color: var(--primary-purple);
     font-weight: 600;
+}
+
+.directory-photo-meta {
+    color: var(--medium-gray);
+    font-size: 0.8rem;
+}
+
+.directory-photo-stack {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
 }
 
 .directory-photo-thumb {
@@ -1110,6 +1127,24 @@
     justify-content: center;
     background: #f2e9ff;
     color: var(--secondary-purple);
+}
+
+.directory-photo-count {
+    position: absolute;
+    right: -8px;
+    bottom: -3px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 0.35rem;
+    border-radius: 999px;
+    background: var(--secondary-purple);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(75, 0, 130, 0.2);
 }
 
 .directory-actions-cell {
@@ -1520,7 +1555,8 @@
     max-height: 65vh;
 }
 
-#alumniModalContent img {
+#alumniModalContent > img,
+#alumniModalContent .alumni-modal-standalone-photo {
     width: 140px;
     max-width: 140px;
     height: 140px;
@@ -1587,12 +1623,87 @@ body:not(.modal-open) {
     padding: 0.5rem;
 }
 
-.alumni-modal-image img {
+.alumni-modal-image {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.alumni-modal-primary-image {
+    border-radius: 18px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #faf5ff 0%, #f3e6ff 100%);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.alumni-modal-primary-image img {
     width: 100%;
     height: 350px;
     object-fit: cover;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: none;
+}
+
+.alumni-modal-image-count {
+    color: var(--secondary-purple);
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.alumni-modal-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+    gap: 0.75rem;
+}
+
+.alumni-modal-thumb {
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 0;
+    background: transparent;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.alumni-modal-thumb:hover,
+.alumni-modal-thumb.is-active {
+    border-color: var(--secondary-purple);
+    box-shadow: 0 8px 20px rgba(106, 13, 173, 0.16);
+    transform: translateY(-2px);
+}
+
+.alumni-modal-thumb img {
+    width: 100%;
+    height: 76px;
+    object-fit: cover;
+    display: block;
+    border-radius: 10px;
+}
+
+.alumni-modal-image-placeholder {
+    min-height: 350px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #faf5ff 0%, #f3e6ff 100%);
+    align-items: center;
+    justify-content: center;
+}
+
+.alumni-modal-placeholder-icon {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    color: var(--secondary-purple);
+    font-size: 2.4rem;
+    box-shadow: 0 8px 24px rgba(75, 0, 130, 0.12);
+}
+
+.alumni-modal-details {
+    min-width: 0;
 }
 
 .alumni-modal-header h2 {
@@ -2008,13 +2119,38 @@ button:focus-visible,
         text-align: center;
     }
     
-    .alumni-modal-image img {
+    .alumni-modal-primary-image img {
         max-width: 250px;
         height: 250px;
+        margin: 0 auto;
+    }
+
+    .alumni-modal-image-placeholder {
+        min-height: 250px;
     }
 }
 
 @media (max-width: 768px) {
+    .directory-name-wrap {
+        gap: 0.55rem;
+    }
+
+    .directory-name-meta {
+        min-width: 0;
+    }
+
+    .directory-photo-meta {
+        font-size: 0.76rem;
+    }
+
+    .directory-photo-count {
+        right: -6px;
+        bottom: -2px;
+        min-width: 20px;
+        height: 20px;
+        font-size: 0.65rem;
+    }
+
     .footer-contact-social-wrapper {
         flex-direction: column;
         align-items: flex-start;
@@ -2195,6 +2331,14 @@ button:focus-visible,
     .modal-body {
         padding: 1.5rem;
     }
+
+    .alumni-modal-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .alumni-modal-gallery {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
     
     .bank-details, .digital-payment, .important-notes {
         padding: 0.75rem;
@@ -2226,6 +2370,15 @@ button:focus-visible,
 }
 
 @media (max-width: 576px) {
+    .directory-name-text {
+        font-size: 0.92rem;
+    }
+
+    .directory-photo-thumb {
+        width: 38px;
+        height: 38px;
+    }
+
     .footer-university-name {
         font-size: 0.75rem;
     }
@@ -2283,6 +2436,24 @@ button:focus-visible,
     .custom-notification {
         padding: 12px 20px;
         font-size: 0.9rem;
+    }
+
+    .alumni-modal-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .alumni-modal-batch,
+    .alumni-modal-company {
+        font-size: 0.95rem;
+    }
+
+    .alumni-modal-gallery {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+    }
+
+    .alumni-modal-thumb img {
+        height: 70px;
     }
 }
 

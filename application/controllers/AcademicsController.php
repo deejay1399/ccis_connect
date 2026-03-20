@@ -3,21 +3,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class AcademicsController extends CI_Controller {
 
+	private $use_local_fallback = false;
+
 	public function __construct()
 	{
 		parent::__construct();
 		$this->load->helper('url');
 		$this->load->helper('auth');
-		$this->load->model('Programs_model');
-		$this->load->model('Curriculum_model');
+		$this->load->helper('local_test');
+		$this->use_local_fallback = ccis_should_use_local_fallback();
+		if (!$this->use_local_fallback) {
+			$this->load->model('Programs_model');
+			$this->load->model('Curriculum_model');
+		}
 		restrict_public_for_admin_roles();
 	}
 
 	public function index()
 	{
 		$data['page_type'] = 'academics';
-		$data['programs'] = $this->Programs_model->get_all_programs();
-		$data['curricula'] = $this->Curriculum_model->get_all();
+		$data['programs'] = $this->use_local_fallback ? array() : $this->Programs_model->get_all_programs();
+		$data['curricula'] = $this->use_local_fallback ? array() : $this->Curriculum_model->get_all();
 		$this->load->view('layouts/header', $data);
 		$this->load->view('layouts/navigation');
 		$this->load->view('pages/program_offerings', $data);
@@ -50,6 +56,11 @@ class AcademicsController extends CI_Controller {
 	public function get_programs_json()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			echo json_encode(array());
+			return;
+		}
+
 		$programs = $this->Programs_model->get_all_programs();
 		
 		// Pagbag-o sa datos sa database aron magkatugma sa format sa JavaScript
@@ -87,6 +98,15 @@ class AcademicsController extends CI_Controller {
 	public function api_get_schedules()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			echo json_encode([
+				'success' => true,
+				'data' => [],
+				'count' => 0
+			]);
+			return;
+		}
+
 		$this->load->model('ClassSchedules_model');
 
 		try {
@@ -117,6 +137,15 @@ class AcademicsController extends CI_Controller {
 	public function api_get_calendars()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			echo json_encode([
+				'success' => true,
+				'data' => [],
+				'count' => 0
+			]);
+			return;
+		}
+
 		$this->load->model('AcademicCalendars_model');
 
 		try {

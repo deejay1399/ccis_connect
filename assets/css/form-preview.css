@@ -1,0 +1,155 @@
+:root {
+    --form-preview-backdrop: rgba(14, 8, 25, 0.78);
+    --form-preview-surface: #ffffff;
+    --form-preview-border: #ece7f7;
+    --form-preview-heading: #6a0dad;
+    --form-preview-muted: #6c757d;
+}
+
+body.form-preview-open {
+    overflow: hidden;
+}
+
+#globalFormPreviewModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2100;
+    background: var(--form-preview-backdrop);
+    padding: 24px;
+    overflow-y: auto;
+}
+
+#globalFormPreviewModal.is-open {
+    display: block;
+}
+
+#globalFormPreviewModal .form-preview-dialog {
+    width: min(100%, 980px);
+    margin: 0 auto;
+    background: var(--form-preview-surface);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+}
+
+#globalFormPreviewModal .form-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem 1.75rem;
+    border-bottom: 1px solid var(--form-preview-border);
+    background: linear-gradient(135deg, #fbfbff 0%, #f1f3f9 100%);
+}
+
+#globalFormPreviewModal .form-preview-title {
+    margin: 0;
+    color: var(--form-preview-heading);
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+#globalFormPreviewModal .form-preview-close {
+    width: 48px;
+    height: 48px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #a6a6a6;
+    font-size: 2rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+#globalFormPreviewModal .form-preview-close:hover {
+    color: var(--form-preview-heading);
+    background: #f1e8ff;
+    transform: scale(1.04);
+}
+
+#globalFormPreviewModal .form-preview-body {
+    padding: 1.25rem;
+    background: #fafafa;
+}
+
+#globalFormPreviewModal .form-preview-frame-wrap {
+    background: #fff;
+    border: 1px solid var(--form-preview-border);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+#globalFormPreviewModal .form-preview-frame,
+#globalFormPreviewModal .form-preview-docx {
+    width: 100%;
+    height: min(68vh, 780px);
+    border: 0;
+}
+
+#globalFormPreviewModal .form-preview-docx {
+    display: none;
+    overflow: auto;
+    background: #fff;
+    padding: 1rem;
+}
+
+#globalFormPreviewModal .form-preview-footer {
+    padding: 1.25rem;
+    border-top: 1px solid var(--form-preview-border);
+    background: #fff;
+}
+
+#globalFormPreviewModal .form-preview-download {
+    width: 100%;
+    border: 0;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--form-preview-muted);
+    background: #f2f4f7;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+#globalFormPreviewModal .form-preview-download:hover {
+    color: #fff;
+    background: linear-gradient(135deg, #6a0dad 0%, #9229f5 100%);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    #globalFormPreviewModal {
+        padding: 12px;
+    }
+
+    #globalFormPreviewModal .form-preview-dialog {
+        border-radius: 18px;
+    }
+
+    #globalFormPreviewModal .form-preview-header {
+        padding: 1.1rem 1rem;
+    }
+
+    #globalFormPreviewModal .form-preview-close {
+        width: 42px;
+        height: 42px;
+        font-size: 1.7rem;
+    }
+
+    #globalFormPreviewModal .form-preview-body,
+    #globalFormPreviewModal .form-preview-footer {
+        padding: 0.9rem;
+    }
+
+    #globalFormPreviewModal .form-preview-frame,
+    #globalFormPreviewModal .form-preview-docx {
+        height: 62vh;
+    }
+}

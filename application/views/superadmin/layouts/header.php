@@ -63,6 +63,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         ?>
         <link rel="stylesheet" href="<?php echo base_url('assets/css/manage_about.css?v=' . $about_css_version); ?>">
     <?php endif; ?>
+    <?php
+        $admin_shell_css_path = FCPATH . 'assets/css/admin-shell-overrides.css';
+        $admin_shell_css_version = file_exists($admin_shell_css_path) ? filemtime($admin_shell_css_path) : time();
+    ?>
+    <link rel="stylesheet" href="<?php echo base_url('assets/css/admin-shell-overrides.css?v=' . $admin_shell_css_version); ?>">
     <style>
         .superadmin-header-row {
             display: flex;

@@ -707,8 +707,8 @@ function filterContentByRole() {
     const userRole = getCurrentUserRole();
     const user = getCurrentUser();
     
-    // Ensure links now public (Curriculum and Forms) are never left in blocked style.
-    const alwaysPublicLinks = document.querySelectorAll('.dropdown-item[href*="curriculum"], a[href*="forms"]');
+    // Ensure links now public are never left in blocked style.
+    const alwaysPublicLinks = document.querySelectorAll('.dropdown-item[href*="curriculum"], a[href*="forms"], a[href*="organization"]');
     alwaysPublicLinks.forEach(link => {
         link.classList.remove('blocked-nav-item');
         link.style.opacity = '1';
@@ -723,20 +723,6 @@ function filterContentByRole() {
     // Role-based navigation filtering - BLOCK instead of HIDE
     if (!hasAccess('student')) {
         sessionLog('🚫 User is guest - blocking restricted content');
-        
-        // Block Organization dropdown for GUESTS only
-        const orgDropdown = document.getElementById('organizationDropdown');
-        if (orgDropdown && !orgDropdown.classList.contains('blocked-nav-item')) {
-            blockNavigationItem(orgDropdown, 'You need to login as a student to view organizations.');
-        }
-
-        // Also block individual links within the organization dropdown
-        const orgLinks = document.querySelectorAll('#organizationDropdown + .dropdown-menu .dropdown-item');
-        orgLinks.forEach(link => {
-            if (!link.classList.contains('blocked-nav-item')) {
-                blockNavigationItem(link, 'You need to login as a student to view organizations.');
-            }
-        });
         
         // Block Schedule from Academics dropdown for guests
         const scheduleLinks = document.querySelectorAll('.dropdown-item[href*="schedule"]');
@@ -758,34 +744,6 @@ function filterContentByRole() {
         sessionLog('✅ User is logged in - removing all blocking');
         
         // USER IS LOGGED IN - REMOVE ALL BLOCKING
-        
-        // Remove blocking from Organization dropdown
-        const orgDropdown = document.getElementById('organizationDropdown');
-        if (orgDropdown && orgDropdown.classList.contains('blocked-nav-item')) {
-            orgDropdown.classList.remove('blocked-nav-item');
-            orgDropdown.style.opacity = '1';
-            orgDropdown.style.cursor = 'pointer';
-            orgDropdown.removeAttribute('title');
-            
-            // Remove the click event listener that was blocking it
-            const newOrgDropdown = orgDropdown.cloneNode(true);
-            orgDropdown.parentNode.replaceChild(newOrgDropdown, orgDropdown);
-        }
-
-        // Remove blocking from organization dropdown links
-        const orgLinks = document.querySelectorAll('#organizationDropdown + .dropdown-menu .dropdown-item');
-        orgLinks.forEach(link => {
-            if (link.classList.contains('blocked-nav-item')) {
-                link.classList.remove('blocked-nav-item');
-                link.style.opacity = '1';
-                link.style.cursor = 'pointer';
-                link.removeAttribute('title');
-                
-                // Remove the click event listener that was blocking it
-                const newLink = link.cloneNode(true);
-                link.parentNode.replaceChild(newLink, link);
-            }
-        });
         
         // Remove blocking from schedule links
         const scheduleLinks = document.querySelectorAll('.dropdown-item[href*="schedule"]');
@@ -837,15 +795,6 @@ function filterPageContent(userRole) {
     
     // Special handling for different pages
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-    
-    // Allow students to access organization page, only block guests
-    if (currentPage === 'organization.html' && !hasAccess('student')) {
-        // Redirect GUESTS away from organization page (but allow students)
-        window.showNotification('You need to login as a student to view organizations.', 'error');
-        setTimeout(() => {
-            window.location.href = './index.php/login';
-        }, 2000);
-    }
     
 }
 

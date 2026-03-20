@@ -783,43 +783,122 @@ class AdminContent extends CI_Controller {
 	{
 		header('Content-Type: application/json');
 		$this->load->model('Alumni_model');
+		$uploaded_paths = [];
+		$transaction_started = false;
 
 		try {
-			$name = trim((string) $this->input->post('name'));
-			$batch = trim((string) $this->input->post('batch'));
-			$email = trim((string) $this->input->post('email'));
-			$phone = trim((string) $this->input->post('phone'));
+			$entries_payload = trim((string) $this->input->post('entries_json'));
+			$entries = [];
 
-			if ($name === '' || $batch === '' || $email === '' || $phone === '') {
-				http_response_code(400);
-				echo json_encode(['success' => false, 'message' => 'Name, batch, email, and phone are required']);
-				exit;
-			}
-
-			$photo = null;
-			if (!empty($_FILES['photo']['name'])) {
-				$photo = $this->_upload_file_to('uploads/alumni/directory', 'photo', 'gif|jpg|png|jpeg|jpe', 'directory', 5120);
-				if ($photo === false) {
+			if ($entries_payload !== '') {
+				$decoded_entries = json_decode($entries_payload, true);
+				if (!is_array($decoded_entries) || empty($decoded_entries)) {
 					http_response_code(400);
-					echo json_encode(['success' => false, 'message' => 'Failed to upload photo.']);
+					echo json_encode(['success' => false, 'message' => 'At least one valid directory entry is required']);
 					exit;
 				}
+
+				foreach ($decoded_entries as $index => $entry) {
+					$name = trim((string) ($entry['name'] ?? ''));
+					$batch = trim((string) ($entry['batch'] ?? ''));
+					$email = trim((string) ($entry['email'] ?? ''));
+					$phone = trim((string) ($entry['phone'] ?? ''));
+					$file_key = trim((string) ($entry['file_key'] ?? ''));
+
+					if ($name === '' || $batch === '' || $email === '' || $phone === '') {
+						http_response_code(400);
+						echo json_encode(['success' => false, 'message' => 'Name, batch, email, and phone are required for each directory entry']);
+						exit;
+					}
+
+					$entries[] = [
+						'name' => $name,
+						'batch' => $batch,
+						'email' => $email,
+						'phone' => $phone,
+						'file_key' => $file_key !== '' ? $file_key : ('photo_files_' . $index)
+					];
+				}
+			} else {
+				$name = trim((string) $this->input->post('name'));
+				$batch = trim((string) $this->input->post('batch'));
+				$email = trim((string) $this->input->post('email'));
+				$phone = trim((string) $this->input->post('phone'));
+
+				if ($name === '' || $batch === '' || $email === '' || $phone === '') {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Name, batch, email, and phone are required']);
+					exit;
+				}
+
+				$has_multi_photo = !empty($_FILES['photo_files']['name']) && (
+					(is_array($_FILES['photo_files']['name']) && count(array_filter($_FILES['photo_files']['name'])) > 0) ||
+					(!is_array($_FILES['photo_files']['name']) && trim((string) $_FILES['photo_files']['name']) !== '')
+				);
+				$has_single_photo = !empty($_FILES['photo']['name']);
+
+				$entries[] = [
+					'name' => $name,
+					'batch' => $batch,
+					'email' => $email,
+					'phone' => $phone,
+					'file_key' => $has_multi_photo ? 'photo_files' : ($has_single_photo ? 'photo' : '')
+				];
 			}
 
-			$payload = [
-				'name' => $name,
-				'batch' => $batch,
-				'email' => $email,
-				'phone' => $phone
-			];
-			if ($photo) {
-				$payload['photo'] = $photo;
+			$created_ids = [];
+			$this->db->trans_begin();
+			$transaction_started = true;
+
+			foreach ($entries as $entry) {
+				$image_paths = [];
+				$file_key = isset($entry['file_key']) ? trim((string) $entry['file_key']) : '';
+
+				if ($file_key !== '' && isset($_FILES[$file_key])) {
+					$image_paths = $this->_upload_multiple_files_to('uploads/alumni/directory', $file_key, 'gif|jpg|png|jpeg|jpe|webp', 'directory', 5120);
+					if ($image_paths === false) {
+						throw new RuntimeException('Failed to upload photo(s) for ' . $entry['name'] . '.');
+					}
+				}
+				$uploaded_paths = array_merge($uploaded_paths, $image_paths);
+
+				$payload = [
+					'name' => $entry['name'],
+					'batch' => $entry['batch'],
+					'email' => $entry['email'],
+					'phone' => $entry['phone']
+				];
+				if (!empty($image_paths)) {
+					$payload['photo'] = $image_paths[0];
+					$payload['images_json'] = json_encode($image_paths);
+				}
+
+				$id = $this->Alumni_model->insert_directory($payload);
+				if (!$id) {
+					throw new RuntimeException('Failed to save directory entry for ' . $entry['name'] . '.');
+				}
+
+				$created_ids[] = $id;
 			}
 
-			$id = $this->Alumni_model->insert_directory($payload);
+			if ($this->db->trans_status() === false) {
+				throw new RuntimeException('Failed to save alumni directory entries.');
+			}
 
-			echo json_encode(['success' => (bool) $id, 'id' => $id]);
+			$this->db->trans_commit();
+			echo json_encode([
+				'success' => !empty($created_ids),
+				'id' => !empty($created_ids) ? $created_ids[0] : null,
+				'ids' => $created_ids,
+				'created_count' => count($created_ids)
+			]);
 		} catch (Exception $e) {
+			if ($transaction_started) {
+				$this->db->trans_rollback();
+			}
+			if (!empty($uploaded_paths)) {
+				$this->_delete_uploaded_public_files($uploaded_paths);
+			}
 			http_response_code(500);
 			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
 		}
@@ -839,7 +918,20 @@ class AdminContent extends CI_Controller {
 				exit;
 			}
 
+			$entry = $this->Alumni_model->get_directory_by_id($id);
+			if (!$entry) {
+				http_response_code(404);
+				echo json_encode(['success' => false, 'message' => 'Directory entry not found']);
+				exit;
+			}
+
 			$result = $this->Alumni_model->delete_directory($id);
+			if ($result) {
+				$this->_delete_uploaded_public_files($this->_extract_uploaded_public_paths(
+					isset($entry['images_json']) ? $entry['images_json'] : null,
+					isset($entry['photo']) ? $entry['photo'] : null
+				));
+			}
 			echo json_encode(['success' => (bool) $result]);
 		} catch (Exception $e) {
 			http_response_code(500);
@@ -1374,6 +1466,54 @@ class AdminContent extends CI_Controller {
 		}
 	}
 
+	private function _delete_uploaded_public_file($relative_path)
+	{
+		$relative_path = trim((string) $relative_path);
+		if ($relative_path === '' || strpos($relative_path, 'uploads/') !== 0) {
+			return;
+		}
+
+		$absolute_path = FCPATH . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relative_path);
+		if (is_file($absolute_path)) {
+			@unlink($absolute_path);
+		}
+	}
+
+	private function _delete_uploaded_public_files($paths)
+	{
+		if (!is_array($paths)) {
+			return;
+		}
+
+		foreach (array_values(array_unique($paths)) as $path) {
+			$this->_delete_uploaded_public_file($path);
+		}
+	}
+
+	private function _extract_uploaded_public_paths($images_json, $fallback_path = null)
+	{
+		$paths = [];
+
+		if (!empty($images_json)) {
+			$decoded = json_decode((string) $images_json, true);
+			if (is_array($decoded)) {
+				foreach ($decoded as $path) {
+					$path = trim((string) $path);
+					if ($path !== '') {
+						$paths[] = $path;
+					}
+				}
+			}
+		}
+
+		$fallback_path = trim((string) $fallback_path);
+		if ($fallback_path !== '') {
+			$paths[] = $fallback_path;
+		}
+
+		return array_values(array_unique($paths));
+	}
+
 	private function _upload_file_to($relative_dir, $input_name, $allowed_types, $prefix, $max_size_kb)
 	{
 		$abs_dir = $this->_ensure_upload_dir($relative_dir);
@@ -1436,6 +1576,7 @@ class AdminContent extends CI_Controller {
 			$path = $this->_upload_file_to($relative_dir, '__multi_tmp', $allowed_types, $prefix, $max_size_kb);
 			unset($_FILES['__multi_tmp']);
 			if ($path === false) {
+				$this->_delete_uploaded_public_files($uploaded);
 				return false;
 			}
 			$uploaded[] = $path;
@@ -1866,13 +2007,12 @@ class AdminContent extends CI_Controller {
 			$full_name = trim((string) $this->input->post('full_name'));
 			$program = trim((string) $this->input->post('program'));
 			$year_level = trim((string) $this->input->post('year_level'));
-			$honors = trim((string) $this->input->post('honors'));
 			$gwa = trim((string) $this->input->post('gwa'));
 			$achievements = trim((string) $this->input->post('achievements'));
 
-			if ($academic_year === '' || $full_name === '' || $program === '' || $year_level === '' || $honors === '' || $gwa === '') {
+			if ($academic_year === '' || $full_name === '' || $program === '' || $year_level === '' || $gwa === '') {
 				http_response_code(400);
-				echo json_encode(['success' => false, 'message' => 'Academic year, name, program, year level, honors, and GWA are required']);
+				echo json_encode(['success' => false, 'message' => 'Academic year, name, program, year level, and GWA are required']);
 				exit;
 			}
 
@@ -1897,7 +2037,7 @@ class AdminContent extends CI_Controller {
 				'full_name' => $full_name,
 				'program' => $program,
 				'year_level' => $year_level,
-				'honors' => $honors,
+				'honors' => null,
 				'gwa' => $gwa,
 				'achievements' => $achievements !== '' ? $achievements : null,
 				'image' => $image,

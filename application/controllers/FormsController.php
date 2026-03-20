@@ -3,13 +3,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class FormsController extends CI_Controller {
 
+	private $use_local_fallback = false;
+
 	public function __construct()
 	{
 		parent::__construct();
 		$this->load->helper('url');
 		$this->load->helper('auth');
-		$this->load->model('Forms_model');
-		$this->_ensure_table_exists();
+		$this->load->helper('local_test');
+		$this->use_local_fallback = ccis_should_use_local_fallback();
+		if (!$this->use_local_fallback) {
+			$this->load->model('Forms_model');
+			$this->_ensure_table_exists();
+		}
 		restrict_public_for_admin_roles();
 	}
 
@@ -105,13 +111,133 @@ class FormsController extends CI_Controller {
 		return in_array($ext, ['pdf', 'doc', 'docx'], true);
 	}
 
+	private function _build_form_view_path(array $form)
+	{
+		$formId = isset($form['id']) ? (int) $form['id'] : 0;
+		$title = isset($form['title']) ? (string) $form['title'] : 'form';
+		$slug = url_title($title, 'dash', true);
+
+		if ($slug === '') {
+			$slug = 'form';
+		}
+
+		return 'forms/' . $formId . '/' . $slug;
+	}
+
+	private function _get_fallback_forms()
+	{
+		$directory = FCPATH . 'uploads/forms';
+		if (!is_dir($directory)) {
+			return [];
+		}
+
+		$entries = @scandir($directory);
+		if (!is_array($entries)) {
+			return [];
+		}
+
+		$allowed_exts = ['pdf', 'doc', 'docx'];
+		$filenames = [];
+
+		foreach ($entries as $entry) {
+			if ($entry === '.' || $entry === '..') {
+				continue;
+			}
+
+			$path = $directory . DIRECTORY_SEPARATOR . $entry;
+			if (!is_file($path)) {
+				continue;
+			}
+
+			$ext = strtolower(pathinfo($entry, PATHINFO_EXTENSION));
+			if (!in_array($ext, $allowed_exts, true)) {
+				continue;
+			}
+
+			$filenames[] = $entry;
+		}
+
+		if (empty($filenames)) {
+			return [];
+		}
+
+		rsort($filenames, SORT_NATURAL | SORT_FLAG_CASE);
+
+		$forms = [];
+		foreach ($filenames as $index => $filename) {
+			$path = $directory . DIRECTORY_SEPARATOR . $filename;
+			$timestamp = @filemtime($path);
+			$basename = pathinfo($filename, PATHINFO_FILENAME);
+			$basename = preg_replace('/^\d+_/', '', (string) $basename);
+			$title = preg_replace('/\s+/', ' ', str_replace(['_', '-'], ' ', (string) $basename));
+			$title = trim((string) $title);
+
+			$forms[] = [
+				'id' => $index + 1,
+				'title' => $title !== '' ? ucwords($title) : 'Form',
+				'file_url' => 'uploads/forms/' . $filename,
+				'original_filename' => $filename,
+				'file_size' => @filesize($path) ?: null,
+				'is_active' => 1,
+				'created_at' => $timestamp ? date('Y-m-d H:i:s', $timestamp) : null,
+				'updated_at' => $timestamp ? date('Y-m-d H:i:s', $timestamp) : null,
+			];
+		}
+
+		return $forms;
+	}
+
+	private function _get_public_forms()
+	{
+		return $this->use_local_fallback
+			? $this->_get_fallback_forms()
+			: $this->Forms_model->get_all_forms();
+	}
+
+	private function _get_public_form_by_id($id)
+	{
+		$formId = (int) $id;
+		if ($formId <= 0) {
+			return null;
+		}
+
+		if (!$this->use_local_fallback) {
+			return $this->Forms_model->get_form_by_id($formId);
+		}
+
+		foreach ($this->_get_fallback_forms() as $form) {
+			if ((int) $form['id'] === $formId) {
+				return $form;
+			}
+		}
+
+		return null;
+	}
+
+	private function _respond_local_fallback_readonly()
+	{
+		http_response_code(503);
+		echo json_encode([
+			'success' => false,
+			'message' => 'Form management is read-only in local test mode while the database service is offline.'
+		]);
+	}
+
+	private function _redirect_to_available_form()
+	{
+		$forms = $this->_get_public_forms();
+
+		if (!empty($forms)) {
+			redirect($this->_build_form_view_path($forms[0]));
+			return;
+		}
+
+		redirect('/');
+	}
+
 	public function index()
 	{
-		$data['page_type'] = 'forms';
-		$this->load->view('layouts/header', $data);
-		$this->load->view('layouts/navigation');
-		$this->load->view('pages/forms');
-		$this->load->view('layouts/footer');
+		$this->_redirect_to_available_form();
 	}
 
 	/**
@@ -122,7 +248,7 @@ class FormsController extends CI_Controller {
 		header('Content-Type: application/json');
 		
 		try {
-			$forms = $this->Forms_model->get_all_forms();
+			$forms = $this->_get_public_forms();
 			echo json_encode([
 				'success' => true,
 				'data' => $forms,
@@ -143,6 +269,11 @@ class FormsController extends CI_Controller {
 	public function upload_form()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			$this->_respond_local_fallback_readonly();
+			return;
+		}
+
 		if (!$this->_require_superadmin_json()) {
 			return;
 		}
@@ -263,6 +394,11 @@ class FormsController extends CI_Controller {
 	public function update_form()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			$this->_respond_local_fallback_readonly();
+			return;
+		}
+
 		if (!$this->_require_superadmin_json()) {
 			return;
 		}
@@ -365,6 +501,11 @@ class FormsController extends CI_Controller {
 	public function delete_form()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			$this->_respond_local_fallback_readonly();
+			return;
+		}
+
 		if (!$this->_require_superadmin_json()) {
 			return;
 		}
@@ -436,13 +577,31 @@ class FormsController extends CI_Controller {
 	 */
 	public function view_forms()
 	{
-		$data['forms'] = $this->Forms_model->get_all_forms();
-		$data['page_title'] = 'Forms';
+		$this->_redirect_to_available_form();
+	}
+
+	public function view_form($form_id = null)
+	{
+		$formId = (int) $form_id;
+		if ($formId <= 0) {
+			show_404();
+			return;
+		}
+
+		$form = $this->_get_public_form_by_id($formId);
+		if (empty($form)) {
+			show_404();
+			return;
+		}
+
+		$data['current_form'] = $form;
+		$data['page_title'] = $form['title'];
 		$data['page_type'] = 'forms';
 		$data['content_type'] = 'forms';
+
 		$this->load->view('layouts/header', $data);
-		$this->load->view('layouts/navigation');
-		$this->load->view('pages/forms', $data);
+		$this->load->view('layouts/navigation', $data);
+		$this->load->view('pages/form_view', $data);
 		$this->load->view('layouts/footer', $data);
 	}
 }

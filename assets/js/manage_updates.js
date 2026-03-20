@@ -339,7 +339,6 @@ $(function () {
                                     <span><i class="fas fa-layer-group me-1"></i>${escapeHtml(d.year_level)}</span>
                                 </div>
                                 <div class="meta-info mt-1">
-                                    <span><i class="fas fa-award me-1"></i>${escapeHtml(d.honors)}</span>
                                     <span><i class="fas fa-percent me-1"></i>GWA: ${escapeHtml(d.gwa)}</span>
                                 </div>
                                 ${d.achievements ? `<p class="card-text">${escapeHtml(d.achievements)}</p>` : ''}
@@ -493,7 +492,6 @@ $(function () {
         fd.append('full_name', $('#achieverName').val().trim());
         fd.append('program', $('#achieverProgram').val());
         fd.append('year_level', normalizeYearLevel($('#achieverYear').val()));
-        fd.append('honors', $('#achieverHonors').val());
         fd.append('gwa', $('#achieverGWA').val().trim());
         fd.append('achievements', $('#achieverAchievements').val().trim());
 

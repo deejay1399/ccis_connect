@@ -644,13 +644,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return text.split(',').map(x => x.trim()).filter(Boolean);
     }
 
-    function getHonorsClass(honors) {
-        const v = String(honors || '').toLowerCase();
-        if (v.indexOf('summa') !== -1) return 'summa';
-        if (v.indexOf('magna') !== -1) return 'magna';
-        return 'cum-laude';
-    }
-
     function updateDeansListContent() {
         const deansListContent = document.getElementById('deanslist-content');
         if (!deansListContent) return;
@@ -696,12 +689,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const achievers = groupedByProgram[program];
 
             const achieversHtml = achievers.map(r => {
-                const honorsClass = getHonorsClass(r.honors);
                 const imageUrl = r.image ? (baseURL + r.image) : (baseURL + 'assets/images/ccis.png');
                 const achievements = parseAchievements(r.achievements);
 
                 return `
-                    <div class="achiever-card ${honorsClass}">
+                    <div class="achiever-card">
                         <div class="achiever-header">
                             <div class="achiever-image">
                                 <img src="${imageUrl}" alt="${r.full_name || 'Achiever'}" onerror="this.onerror=null;this.src='${baseURL + 'assets/images/ccis.png'}';">
@@ -711,9 +703,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <span class="achiever-year">${toYearLevelDisplay(r.year_level || '-')}</span>
                                 <div class="achiever-gwa">GWA: ${r.gwa || '-'}</div>
                             </div>
-                        </div>
-                        <div class="achiever-honors">
-                            <span class="honors-badge ${honorsClass}">${r.honors || '-'}</span>
                         </div>
                         ${achievements.length ? `
                             <div class="achiever-achievements">

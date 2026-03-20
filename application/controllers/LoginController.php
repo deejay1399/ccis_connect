@@ -3,16 +3,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class LoginController extends CI_Controller {
 
+	private $use_local_fallback = false;
+
 	public function __construct()
 	{
 		parent::__construct();
 		$this->load->library('session');
-		$this->load->model('User_model');
-		$this->load->model('UserRole_model');
-		$this->load->model('Session_model');
-		$this->load->model('OrgAdmin_model');
-		$this->load->model('Student_model');
 		$this->load->helper('url');
+		$this->load->helper('local_test');
+		$this->use_local_fallback = ccis_should_use_local_fallback();
+		if (!$this->use_local_fallback) {
+			$this->load->model('User_model');
+			$this->load->model('UserRole_model');
+			$this->load->model('Session_model');
+			$this->load->model('OrgAdmin_model');
+			$this->load->model('Student_model');
+		}
 	}
 
 	/**
@@ -29,6 +35,9 @@ class LoginController extends CI_Controller {
 		$data['page_type'] = 'login';
 		$data['error'] = $this->session->flashdata('error');
 		$data['success'] = $this->session->flashdata('success');
+		if ($this->use_local_fallback && empty($data['error'])) {
+			$data['error'] = 'Local test mode is active. Login is temporarily unavailable while the database service is offline.';
+		}
 		
 		$this->load->view('layouts/header', $data);
 		$this->load->view('layouts/navigation');
@@ -39,8 +48,14 @@ class LoginController extends CI_Controller {
 	/**
 	 * Pagdumala sa pagsumite sa porma sa pag-login
 	 */
-	public function authenticate()
+public function authenticate()
 {
+    if ($this->use_local_fallback) {
+        $this->session->set_flashdata('error', 'Login is temporarily unavailable in local test mode because the database service is offline.');
+        redirect('login');
+        return;
+    }
+
     if ($this->input->method() !== 'post') {
         show_error('Invalid request method', 405);
     }
@@ -107,6 +122,12 @@ class LoginController extends CI_Controller {
 	public function api_authenticate()
 	{
 		header('Content-Type: application/json');
+
+		if ($this->use_local_fallback) {
+			http_response_code(503);
+			echo json_encode(['success' => false, 'message' => 'Login is unavailable in local test mode while the database service is offline.']);
+			exit;
+		}
 
 		if ($this->input->method() !== 'post') {
 			http_response_code(405);
@@ -214,7 +235,7 @@ class LoginController extends CI_Controller {
 	public function logout()
 	{
 		$token = $this->session->userdata('token');
-		if ($token) {
+		if (!$this->use_local_fallback && $token) {
 			$this->Session_model->delete_session($token);
 		}
 
@@ -249,6 +270,10 @@ class LoginController extends CI_Controller {
 	 */
 	private function _is_logged_in()
 	{
+		if ($this->use_local_fallback) {
+			return false;
+		}
+
 		$user_id = $this->session->userdata('user_id');
 		$token = $this->session->userdata('token');
 

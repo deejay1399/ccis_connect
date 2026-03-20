@@ -11,6 +11,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo base_url('assets/css/chatbot.css'); ?>">
+    <?php
+        $form_preview_css_path = FCPATH . 'assets/css/form-preview.css';
+        $form_preview_css_version = file_exists($form_preview_css_path) ? filemtime($form_preview_css_path) : time();
+    ?>
+    <link rel="stylesheet" href="<?php echo base_url('assets/css/form-preview.css?v=' . $form_preview_css_version); ?>">
     <style>
         .global-header-row {
             display: flex;
@@ -116,6 +121,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <link rel="stylesheet" href="<?php echo base_url('assets/css/organization.css'); ?>">
         <?php endif; ?>
     <?php endif; ?>
+    <?php
+        $public_shell_css_path = FCPATH . 'assets/css/public-shell-overrides.css';
+        $public_shell_css_version = file_exists($public_shell_css_path) ? filemtime($public_shell_css_path) : time();
+    ?>
+    <link rel="stylesheet" href="<?php echo base_url('assets/css/public-shell-overrides.css?v=' . $public_shell_css_version); ?>">
     <style>
         .global-header-row {
             display: flex !important;

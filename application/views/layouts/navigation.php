@@ -1,3 +1,17 @@
+<?php
+$ci = &get_instance();
+$current_path = trim((string) $ci->uri->uri_string(), '/');
+$current_form_id = isset($current_form['id']) ? (int) $current_form['id'] : 0;
+
+$is_home_active = in_array($current_path, ['', 'home', 'homepage', 'landing'], true);
+$is_about_active = strpos($current_path, 'about') === 0;
+$is_faculty_active = strpos($current_path, 'faculty') === 0;
+$is_academics_active = strpos($current_path, 'academics') === 0;
+$is_updates_active = strpos($current_path, 'updates') === 0;
+$is_forms_active = strpos($current_path, 'forms') === 0;
+$is_organization_active = strpos($current_path, 'organization') === 0;
+$is_alumni_active = strpos($current_path, 'alumni') === 0;
+?>
 <nav class="navbar navbar-expand-lg navbar-main">
     <div class="container">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
@@ -7,10 +21,10 @@
         </button>
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav mx-auto">
-                <li class="nav-item"><a class="nav-link active" href="<?php echo site_url('/'); ?>">Home</a></li>
+                <li class="nav-item"><a class="nav-link<?php echo $is_home_active ? ' active' : ''; ?>" href="<?php echo site_url('/'); ?>">Home</a></li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="aboutSubDropdown" role="button"
+                    <a class="nav-link dropdown-toggle<?php echo $is_about_active ? ' active' : ''; ?>" href="#" id="aboutSubDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         About
                     </a>
@@ -22,11 +36,11 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo site_url('faculty'); ?>">Faculty</a>
+                    <a class="nav-link<?php echo $is_faculty_active ? ' active' : ''; ?>" href="<?php echo site_url('faculty'); ?>">Faculty</a>
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="academicsDropdown" role="button"
+                    <a class="nav-link dropdown-toggle<?php echo $is_academics_active ? ' active' : ''; ?>" href="#" id="academicsDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         Academics
                     </a>
@@ -49,7 +63,7 @@
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="updatesDropdown" role="button"
+                    <a class="nav-link dropdown-toggle<?php echo $is_updates_active ? ' active' : ''; ?>" href="#" id="updatesDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         News & Updates
                     </a>
@@ -64,13 +78,18 @@
                     </ul>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="<?php echo site_url('forms'); ?>">Forms</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle<?php echo $is_forms_active ? ' active' : ''; ?>" href="#" id="formsDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Forms
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="formsDropdown" id="formsDropdownMenu" data-current-form-id="<?php echo $current_form_id; ?>">
+                        <li><span class="dropdown-item-text text-muted px-3 py-2">Loading forms...</span></li>
+                    </ul>
                 </li>
 
-                <?php if ($this->session->userdata('logged_in')): ?>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="organizationDropdown" role="button"
+                    <a class="nav-link dropdown-toggle<?php echo $is_organization_active ? ' active' : ''; ?>" href="#" id="organizationDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         Organization
                     </a>
@@ -81,10 +100,9 @@
                                 Guild</a></li>
                     </ul>
                 </li>
-                <?php endif; ?>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="alumniDropdown" role="button"
+                    <a class="nav-link dropdown-toggle<?php echo $is_alumni_active ? ' active' : ''; ?>" href="#" id="alumniDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         Alumni
                     </a>

@@ -3,6 +3,7 @@ $(document).ready(function () {
 
     let activeSubmissionContext = null;
     let mentorRequestsCache = [];
+    let nextDirectoryEntryIndex = 0;
 
     function showNotification(type, message) {
         const notificationModal = `
@@ -69,6 +70,188 @@ $(document).ready(function () {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#039;');
+    }
+
+    function normalizeDirectoryImages(row) {
+        const images = [];
+        const addImage = (value) => {
+            const path = String(value ?? '').trim();
+            if (path) {
+                images.push(path);
+            }
+        };
+
+        if (Array.isArray(row?.images)) {
+            row.images.forEach(addImage);
+        }
+
+        if (!images.length && row?.images_json) {
+            try {
+                const decoded = JSON.parse(row.images_json);
+                if (Array.isArray(decoded)) {
+                    decoded.forEach(addImage);
+                }
+            } catch (error) {
+                console.warn('Failed to parse alumni directory images_json', error);
+            }
+        }
+
+        if (!images.length && row?.photo) {
+            addImage(row.photo);
+        }
+
+        return [...new Set(images)];
+    }
+
+    function formatPhotoCountLabel(count) {
+        return `${count} photo${count === 1 ? '' : 's'}`;
+    }
+
+    function buildDirectoryEntryMarkup(entryIndex, values = {}) {
+        const safeName = escapeHtml(values.name || '');
+        const safeBatch = escapeHtml(values.batch || '');
+        const safeEmail = escapeHtml(values.email || '');
+        const safePhone = escapeHtml(values.phone || '');
+
+        return `
+            <div class="card border-0 shadow-sm mb-3 directory-entry-item directory-entry-card" data-entry-index="${entryIndex}">
+                <div class="card-body directory-entry-body">
+                    <div class="directory-entry-toolbar d-flex justify-content-between align-items-start gap-3 mb-3">
+                        <div class="directory-entry-copy">
+                            <h6 class="mb-1 directory-entry-title">Entry</h6>
+                            <p class="text-muted small mb-0">Fill out this alumni directory record.</p>
+                        </div>
+                        <button type="button" class="btn btn-outline-danger btn-sm directory-remove-entry">
+                            <i class="fas fa-trash-alt me-1"></i>Remove
+                        </button>
+                    </div>
+                    <div class="row g-3 directory-entry-fields">
+                        <div class="col-md-6">
+                            <label for="dirName_${entryIndex}" class="form-label">Name</label>
+                            <input type="text" class="form-control directory-name-input" id="dirName_${entryIndex}" value="${safeName}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="dirBatch_${entryIndex}" class="form-label">Batch/Year</label>
+                            <input type="text" class="form-control directory-batch-input" id="dirBatch_${entryIndex}" value="${safeBatch}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="dirEmail_${entryIndex}" class="form-label">Email</label>
+                            <input type="email" class="form-control directory-email-input" id="dirEmail_${entryIndex}" value="${safeEmail}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="dirPhone_${entryIndex}" class="form-label">Phone</label>
+                            <input type="tel" class="form-control directory-phone-input" id="dirPhone_${entryIndex}" value="${safePhone}" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="dirPhoto_${entryIndex}" class="form-label">Photos (optional)</label>
+                            <input type="file" class="form-control directory-photo-input" id="dirPhoto_${entryIndex}" data-entry-index="${entryIndex}" accept="image/*" multiple>
+                            <div class="form-text">You can select multiple photos for this alumni entry.</div>
+                            <div class="directory-photo-preview mt-2 small text-muted"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function updateDirectoryEntryControls() {
+        const cards = $('#directoryEntryList .directory-entry-item');
+
+        cards.each(function(position) {
+            $(this).find('.directory-entry-title').text(`Entry ${position + 1}`);
+        });
+
+        cards.find('.directory-remove-entry').toggle(cards.length > 1);
+    }
+
+    function renderDirectoryPhotoSelection(entryIndex) {
+        const card = $(`.directory-entry-item[data-entry-index="${entryIndex}"]`);
+        const preview = card.find('.directory-photo-preview');
+        const files = Array.from(card.find('.directory-photo-input')[0]?.files || []);
+
+        if (!preview.length) {
+            return;
+        }
+
+        if (!files.length) {
+            preview.text('No photos selected yet.');
+            return;
+        }
+
+        const fileList = files
+            .map((file, index) => `${index + 1}. ${escapeHtml(file.name)}`)
+            .join('<br>');
+
+        preview.html(`
+            <div class="fw-semibold text-dark mb-1">${formatPhotoCountLabel(files.length)} selected</div>
+            <div>${fileList}</div>
+        `);
+    }
+
+    function addDirectoryEntryRow(values = {}) {
+        const entryIndex = nextDirectoryEntryIndex++;
+        $('#directoryEntryList').append(buildDirectoryEntryMarkup(entryIndex, values));
+        renderDirectoryPhotoSelection(entryIndex);
+        updateDirectoryEntryControls();
+    }
+
+    function collectDirectoryEntries() {
+        const entries = [];
+        let hasInvalidField = false;
+
+        $('#directoryEntryList .directory-entry-item').each(function() {
+            const card = $(this);
+            const entryIndex = Number(card.data('entry-index'));
+            const nameInput = card.find('.directory-name-input');
+            const batchInput = card.find('.directory-batch-input');
+            const emailInput = card.find('.directory-email-input');
+            const phoneInput = card.find('.directory-phone-input');
+            const inputs = [nameInput, batchInput, emailInput, phoneInput];
+
+            inputs.forEach((input) => input.removeClass('is-invalid'));
+
+            const name = nameInput.val().trim();
+            const batch = batchInput.val().trim();
+            const email = emailInput.val().trim();
+            const phone = phoneInput.val().trim();
+
+            if (!name) {
+                nameInput.addClass('is-invalid');
+                hasInvalidField = true;
+            }
+            if (!batch) {
+                batchInput.addClass('is-invalid');
+                hasInvalidField = true;
+            }
+            if (!email) {
+                emailInput.addClass('is-invalid');
+                hasInvalidField = true;
+            }
+            if (!phone) {
+                phoneInput.addClass('is-invalid');
+                hasInvalidField = true;
+            }
+
+            entries.push({
+                name,
+                batch,
+                email,
+                phone,
+                file_key: `photo_files_${entryIndex}`
+            });
+        });
+
+        return hasInvalidField ? null : entries;
+    }
+
+    function resetDirectoryForm() {
+        const form = $('#addDirectoryForm')[0];
+        if (form) {
+            form.reset();
+        }
+        $('#directoryEntryList').empty();
+        nextDirectoryEntryIndex = 0;
+        addDirectoryEntryRow();
     }
 
     function isLongFormDetail(label, value) {
@@ -465,9 +648,26 @@ $(document).ready(function () {
             $('#no-directory-data').hide();
 
             data.forEach(row => {
+                const images = normalizeDirectoryImages(row);
+                const primaryImage = images[0] || '';
+                const photoSummary = images.length > 1
+                    ? `<div class="text-muted small">${formatPhotoCountLabel(images.length)}</div>`
+                    : '';
+                const photoThumb = primaryImage
+                    ? `<img src="${baseUrl + primaryImage}" alt="${escapeHtml(row.name)}" style="width:42px;height:42px;object-fit:cover;border-radius:50%;border:2px solid #efe1ff;flex-shrink:0;">`
+                    : `<div class="d-inline-flex align-items-center justify-content-center rounded-circle" style="width:42px;height:42px;background:#f2e9ff;color:#6a0dad;flex-shrink:0;"><i class="fas fa-user"></i></div>`;
+
                 body.append(`
                     <tr>
-                        <td>${escapeHtml(row.name)}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                ${photoThumb}
+                                <div>
+                                    <div class="fw-semibold">${escapeHtml(row.name)}</div>
+                                    ${photoSummary}
+                                </div>
+                            </div>
+                        </td>
                         <td>${escapeHtml(row.batch)}</td>
                         <td>${escapeHtml(row.email)}</td>
                         <td>${escapeHtml(row.phone)}</td>
@@ -763,15 +963,24 @@ $(document).ready(function () {
 
     $(document).on('submit', '#addDirectoryForm', function (e) {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('name', $('#dirName').val().trim());
-        formData.append('batch', $('#dirBatch').val().trim());
-        formData.append('email', $('#dirEmail').val().trim());
-        formData.append('phone', $('#dirPhone').val().trim());
-        const photoFile = $('#dirPhoto')[0].files[0];
-        if (photoFile) {
-            formData.append('photo', photoFile);
+        const entries = collectDirectoryEntries();
+        if (!entries || !entries.length) {
+            showNotification('error', 'Please complete all required fields for each directory entry.');
+            return;
         }
+
+        const formData = new FormData();
+        formData.append('entries_json', JSON.stringify(entries));
+
+        $('#directoryEntryList .directory-entry-item').each(function() {
+            const card = $(this);
+            const entryIndex = Number(card.data('entry-index'));
+            const photoFiles = Array.from(card.find('.directory-photo-input')[0]?.files || []);
+
+            photoFiles.forEach((file) => {
+                formData.append(`photo_files_${entryIndex}[]`, file);
+            });
+        });
 
         $.ajax({
             url: baseUrl + 'admin/manage/alumni/directory/create',
@@ -783,9 +992,10 @@ $(document).ready(function () {
             success: function(response) {
                 if (response.success) {
                     $('#addDirectoryModal').modal('hide');
-                    $('#addDirectoryForm')[0].reset();
+                    resetDirectoryForm();
                     loadDirectory();
-                    showNotification('success', 'Directory entry added');
+                    const createdCount = Number(response.created_count || entries.length || 1);
+                    showNotification('success', `${createdCount} directory entr${createdCount === 1 ? 'y' : 'ies'} added`);
                 } else {
                     showNotification('error', response.message || 'Failed to add directory entry');
                 }
@@ -795,6 +1005,30 @@ $(document).ready(function () {
                 showNotification('error', msg);
             }
         });
+    });
+
+    $(document).on('click', '#addDirectoryEntryRow', function() {
+        addDirectoryEntryRow();
+    });
+
+    $(document).on('click', '.directory-remove-entry', function() {
+        $(this).closest('.directory-entry-item').remove();
+        updateDirectoryEntryControls();
+        if (!$('#directoryEntryList .directory-entry-item').length) {
+            addDirectoryEntryRow();
+        }
+    });
+
+    $(document).on('change', '.directory-photo-input', function() {
+        renderDirectoryPhotoSelection($(this).data('entry-index'));
+    });
+
+    $(document).on('input', '#directoryEntryList .form-control', function() {
+        $(this).removeClass('is-invalid');
+    });
+
+    $('#addDirectoryModal').on('hidden.bs.modal', function() {
+        resetDirectoryForm();
     });
 
     $(document).on('click', '.btn-delete-directory', function () {
@@ -879,6 +1113,7 @@ $(document).ready(function () {
     loadFeatured();
     loadDirectory();
     loadEvents();
+    resetDirectoryForm();
     activateRequestedTab();
     autoOpenRequestedSubmission();
 });

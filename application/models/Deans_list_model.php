@@ -103,7 +103,7 @@ class Deans_list_model extends CI_Model {
 			'full_name' => $data['full_name'],
 			'program' => $data['program'],
 			'year_level' => $data['year_level'],
-			'honors' => $data['honors'],
+			'honors' => isset($data['honors']) && $data['honors'] !== '' ? $data['honors'] : null,
 			'gwa' => $data['gwa'],
 			'achievements' => isset($data['achievements']) ? $data['achievements'] : null,
 			'image' => isset($data['image']) ? $data['image'] : null,

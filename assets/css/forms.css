@@ -431,6 +431,11 @@ body {
     margin-bottom: 3rem;
 }
 
+.forms-grid-single {
+    grid-template-columns: minmax(0, 820px);
+    justify-content: center;
+}
+
 /* Form Card */
 .form-card {
     background: white;
@@ -483,6 +488,22 @@ body {
     margin: 0;
     font-size: 1.4rem;
     line-height: 1.3;
+}
+
+.form-kicker {
+    color: var(--medium-gray);
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.6rem;
+    text-transform: uppercase;
+}
+
+.form-file-name {
+    color: var(--medium-gray);
+    font-size: 0.95rem;
+    margin: 0.85rem 0 0;
+    word-break: break-word;
 }
 
 .form-actions {

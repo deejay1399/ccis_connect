@@ -11,6 +11,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <?php $legion_css_version = file_exists(FCPATH . 'assets/css/legion.css') ? filemtime(FCPATH . 'assets/css/legion.css') : time(); ?>
+    <?php $orgadmin_shell_css_version = file_exists(FCPATH . 'assets/css/orgadmin-shell-overrides.css') ? filemtime(FCPATH . 'assets/css/orgadmin-shell-overrides.css') : time(); ?>
     <link rel="stylesheet" href="<?php echo base_url('assets/css/legion.css?v=' . $legion_css_version); ?>">
     <style>
         .org-header-row {
@@ -57,6 +58,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             }
         }
     </style>
+    <link rel="stylesheet" href="<?php echo base_url('assets/css/orgadmin-shell-overrides.css?v=' . $orgadmin_shell_css_version); ?>">
 </head>
 <body>
     <header class="university-header">

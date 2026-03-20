@@ -3,17 +3,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class OrganizationController extends CI_Controller {
 
+	private $use_local_fallback = false;
+
 	public function __construct()
 	{
 		parent::__construct();
 		$this->load->helper(['url', 'auth']);
-		$this->load->model('Student_model');
-		$this->load->model('OrgAdmin_model');
+		$this->load->helper('local_test');
+		$this->use_local_fallback = ccis_should_use_local_fallback();
+		if (!$this->use_local_fallback) {
+			$this->load->model('Student_model');
+			$this->load->model('OrgAdmin_model');
+		}
 	}
 
 	public function index()
 	{
-		$is_logged_in = (bool) $this->session->userdata('logged_in');
+		$is_logged_in = !$this->use_local_fallback && (bool) $this->session->userdata('logged_in');
 		$user_id = (int) $this->session->userdata('user_id');
 		$role_id = (int) $this->session->userdata('role_id');
 		$is_public_view = true;
@@ -47,10 +53,10 @@ class OrganizationController extends CI_Controller {
 		$data['organization_slug'] = $org_slug;
 		$data['organization_name'] = $org_name;
 		$data['organizations'] = $organizations;
-		$data['officers'] = $this->OrgAdmin_model->get_officers($org_slug);
-		$data['advisers'] = $this->OrgAdmin_model->get_advisers($org_slug);
-		$data['announcements'] = $this->OrgAdmin_model->get_announcements($org_slug);
-		$data['happenings'] = $this->OrgAdmin_model->get_happenings($org_slug);
+		$data['officers'] = $this->use_local_fallback ? [] : $this->OrgAdmin_model->get_officers($org_slug);
+		$data['advisers'] = $this->use_local_fallback ? [] : $this->OrgAdmin_model->get_advisers($org_slug);
+		$data['announcements'] = $this->use_local_fallback ? [] : $this->OrgAdmin_model->get_announcements($org_slug);
+		$data['happenings'] = $this->use_local_fallback ? [] : $this->OrgAdmin_model->get_happenings($org_slug);
 
 		$this->load->view('layouts/header', $data);
 		$this->load->view('layouts/navigation');
@@ -74,10 +80,10 @@ class OrganizationController extends CI_Controller {
 			'about_heading' => $meta['about_heading'],
 			'about_text' => $meta['about_text'],
 			'is_member' => $is_member,
-			'officers' => $this->OrgAdmin_model->get_officers($slug),
-			'advisers' => $this->OrgAdmin_model->get_advisers($slug),
-			'announcements' => $is_member ? $this->OrgAdmin_model->get_announcements($slug) : [],
-			'happenings' => $is_member ? $this->OrgAdmin_model->get_happenings($slug) : [],
+			'officers' => $this->use_local_fallback ? [] : $this->OrgAdmin_model->get_officers($slug),
+			'advisers' => $this->use_local_fallback ? [] : $this->OrgAdmin_model->get_advisers($slug),
+			'announcements' => ($this->use_local_fallback || !$is_member) ? [] : $this->OrgAdmin_model->get_announcements($slug),
+			'happenings' => ($this->use_local_fallback || !$is_member) ? [] : $this->OrgAdmin_model->get_happenings($slug),
 		];
 	}
 

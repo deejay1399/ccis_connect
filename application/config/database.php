@@ -13,6 +13,8 @@ $db['default'] = array(
 	'password' => ccis_env('DB_PASS', ''),
 	'database' => ccis_env('DB_NAME', 'ccis_condb'),
 	'dbdriver' => ccis_env('DB_DRIVER', 'mysqli'),
+	'port'     => (int) ccis_env('DB_PORT', 3306),
+	'socket'   => ccis_env('DB_SOCKET', ''),
 	'dbprefix' => ccis_env('DB_PREFIX', ''),
 	'pconnect' => false,
 	'db_debug' => (ENVIRONMENT !== 'production'),

@@ -3,20 +3,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class AlumniController extends CI_Controller {
 
+	private $use_local_fallback = false;
+
 	public function __construct()
 	{
 		parent::__construct();
 		$this->load->helper('url');
 		$this->load->helper('auth');
-		$this->load->model('Alumni_model');
-		$this->load->model('Alumni_donation_settings_model');
+		$this->load->helper('local_test');
+		$this->use_local_fallback = ccis_should_use_local_fallback();
+		if (!$this->use_local_fallback) {
+			$this->load->model('Alumni_model');
+			$this->load->model('Alumni_donation_settings_model');
+		}
 		restrict_public_for_admin_roles();
 	}
 
 	public function index()
 	{
 		$data['page_type'] = 'alumni';
-		$data['donation_settings'] = $this->Alumni_donation_settings_model->get_settings();
+		$data['donation_settings'] = $this->use_local_fallback ? array() : $this->Alumni_donation_settings_model->get_settings();
 		$this->load->view('layouts/header', $data);
 		$this->load->view('layouts/navigation');
 		$this->load->view('pages/alumni', $data);
@@ -28,6 +34,10 @@ class AlumniController extends CI_Controller {
 	public function api_featured()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			echo json_encode(['success' => true, 'data' => []]);
+			return;
+		}
 		try {
 			$data = $this->Alumni_model->get_all_featured();
 			echo json_encode(['success' => true, 'data' => $data]);
@@ -39,6 +49,10 @@ class AlumniController extends CI_Controller {
 	public function api_directory()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			echo json_encode(['success' => true, 'data' => []]);
+			return;
+		}
 		try {
 			$data = $this->Alumni_model->get_all_directory();
 			echo json_encode(['success' => true, 'data' => $data]);
@@ -50,6 +64,10 @@ class AlumniController extends CI_Controller {
 	public function api_stories()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			echo json_encode(['success' => true, 'data' => []]);
+			return;
+		}
 		try {
 			$data = $this->Alumni_model->get_all_stories();
 			echo json_encode(['success' => true, 'data' => $data]);
@@ -61,6 +79,10 @@ class AlumniController extends CI_Controller {
 	public function api_events()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			echo json_encode(['success' => true, 'data' => []]);
+			return;
+		}
 		try {
 			$data = $this->Alumni_model->get_all_events();
 			echo json_encode(['success' => true, 'data' => $data]);
@@ -72,6 +94,11 @@ class AlumniController extends CI_Controller {
 	public function submit_update()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			http_response_code(503);
+			echo json_encode(['success' => false, 'message' => 'Submissions are disabled in local test mode while the database service is offline.']);
+			return;
+		}
 
 		if ($this->input->method() !== 'post') {
 			http_response_code(405);
@@ -149,6 +176,11 @@ class AlumniController extends CI_Controller {
 	public function submit_giveback()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			http_response_code(503);
+			echo json_encode(['success' => false, 'message' => 'Submissions are disabled in local test mode while the database service is offline.']);
+			return;
+		}
 
 		if ($this->input->method() !== 'post') {
 			http_response_code(405);
@@ -189,6 +221,11 @@ class AlumniController extends CI_Controller {
 	public function submit_connection()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			http_response_code(503);
+			echo json_encode(['success' => false, 'message' => 'Submissions are disabled in local test mode while the database service is offline.']);
+			return;
+		}
 
 		if ($this->input->method() !== 'post') {
 			http_response_code(405);

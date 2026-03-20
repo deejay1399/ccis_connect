@@ -3,11 +3,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class UpdatesController extends CI_Controller {
 
+	private $use_local_fallback = false;
+
 	public function __construct()
 	{
 		parent::__construct();
 		$this->load->helper('url');
 		$this->load->helper('auth');
+		$this->load->helper('local_test');
+		$this->use_local_fallback = ccis_should_use_local_fallback();
 		restrict_public_for_admin_roles();
 	}
 
@@ -40,6 +44,10 @@ class UpdatesController extends CI_Controller {
 	public function api_announcements()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			echo json_encode(['success' => true, 'data' => []]);
+			exit;
+		}
 		$this->load->model('Announcements_model');
 
 		try {
@@ -55,6 +63,10 @@ class UpdatesController extends CI_Controller {
 	public function api_events_achievements()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			echo json_encode(['success' => true, 'data' => []]);
+			exit;
+		}
 		$this->load->model('Events_achievements_model');
 
 		try {
@@ -70,6 +82,10 @@ class UpdatesController extends CI_Controller {
 	public function api_deans_list()
 	{
 		header('Content-Type: application/json');
+		if ($this->use_local_fallback) {
+			echo json_encode(['success' => true, 'data' => []]);
+			exit;
+		}
 		$this->load->model('Deans_list_model');
 
 		try {

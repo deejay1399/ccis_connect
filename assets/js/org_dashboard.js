@@ -1,6 +1,15 @@
 (function () {
     var happeningSelectedFiles = {};
 
+    function collapseResponsiveNav() {
+        var navElement = document.getElementById('orgAdminNavMenu');
+        if (!navElement || !navElement.classList.contains('show') || !window.bootstrap || !bootstrap.Collapse) {
+            return;
+        }
+
+        bootstrap.Collapse.getOrCreateInstance(navElement).hide();
+    }
+
     function setActiveSection(sectionId) {
         $('.admin-section').removeClass('active-section');
         $('#' + sectionId).addClass('active-section');
@@ -32,6 +41,7 @@
             if (!target) return;
             setActiveSection(target);
             window.location.hash = target;
+            collapseResponsiveNav();
         });
 
         $('.action-btn[data-action="add-officer"]').on('click', function () {

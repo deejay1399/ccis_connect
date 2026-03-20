@@ -280,7 +280,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <h4><i class="fas fa-address-book me-2"></i>Alumni Directory</h4>
                             <p class="text-muted">Directory of alumni members</p>
                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addDirectoryModal">
-                                <i class="fas fa-plus me-1"></i>Add Directory Entry
+                                <i class="fas fa-plus me-1"></i>Add Directory Entries
                             </button>
                         </div>
                         <div class="table-responsive">
@@ -384,39 +384,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <!-- Add Directory Entry Modal -->
 <div class="modal fade" id="addDirectoryModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>Add Directory Entry</h5>
+                <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>Add Directory Entries</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="addDirectoryForm">
-                    <div class="mb-3">
-                        <label for="dirName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="dirName" required>
+                    <div class="directory-modal-toolbar d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                        <div class="directory-modal-copy">
+                            <h6 class="mb-1">Directory Entries</h6>
+                            <p class="text-muted small mb-0">Add multiple alumni entries in one submit. Each entry can also have its own photos.</p>
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="addDirectoryEntryRow">
+                            <i class="fas fa-plus me-1"></i>Add Another Entry
+                        </button>
                     </div>
-                    <div class="mb-3">
-                        <label for="dirPhoto" class="form-label">Photo (optional)</label>
-                        <input type="file" class="form-control" id="dirPhoto" accept="image/*">
-                    </div>
-                    <div class="mb-3">
-                        <label for="dirBatch" class="form-label">Batch/Year</label>
-                        <input type="text" class="form-control" id="dirBatch" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="dirEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="dirEmail" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="dirPhone" class="form-label">Phone</label>
-                        <input type="tel" class="form-control" id="dirPhone" required>
-                    </div>
+                    <div id="directoryEntryList" class="directory-entry-list"></div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" form="addDirectoryForm" class="btn btn-primary">Add Entry</button>
+                <button type="submit" form="addDirectoryForm" class="btn btn-primary">Save Entries</button>
             </div>
         </div>
     </div>

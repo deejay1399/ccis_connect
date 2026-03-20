@@ -159,14 +159,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         </select>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="achieverHonors" class="form-label">Honors</label>
-                                        <select class="form-select" id="achieverHonors" required>
-                                            <option value="Cum Laude">Cum Laude</option>
-                                            <option value="Magna Cum Laude">Magna Cum Laude</option>
-                                            <option value="Summa Cum Laude">Summa Cum Laude</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
                                         <label for="achieverGWA" class="form-label">GWA (General Weighted Average)</label>
                                         <input type="number" step="0.01" class="form-control" id="achieverGWA" required>
                                     </div>

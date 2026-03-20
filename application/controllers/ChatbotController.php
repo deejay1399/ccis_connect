@@ -3,10 +3,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class ChatbotController extends CI_Controller {
 
+    private $use_local_fallback = false;
+
     public function __construct()
     {
         parent::__construct();
-        $this->load->helper(array('url', 'auth'));
+        $this->load->helper(array('url', 'auth', 'local_test'));
+        $this->use_local_fallback = function_exists('ccis_should_use_local_fallback')
+            ? ccis_should_use_local_fallback()
+            : false;
 
         if (function_exists('restrict_public_for_admin_roles')) {
             restrict_public_for_admin_roles();
@@ -91,66 +96,68 @@ class ChatbotController extends CI_Controller {
         $featured_alumni = array();
         $alumni_events = array();
 
-        try {
-            $this->load->model('Programs_model');
-            $programs = $this->Programs_model->get_all_programs();
-            foreach ($programs as $program) {
-                if (!empty($program['program_name'])) {
-                    $program_names[] = trim($program['program_name']);
+        if (!$this->use_local_fallback) {
+            try {
+                $this->load->model('Programs_model');
+                $programs = $this->Programs_model->get_all_programs();
+                foreach ($programs as $program) {
+                    if (!empty($program['program_name'])) {
+                        $program_names[] = trim($program['program_name']);
+                    }
                 }
+            } catch (Exception $e) {
+                log_message('error', 'Chatbot programs load failed: ' . $e->getMessage());
             }
-        } catch (Exception $e) {
-            log_message('error', 'Chatbot programs load failed: ' . $e->getMessage());
-        }
 
-        try {
-            $this->load->model('Curriculum_model');
-            $curriculum_rows = $this->Curriculum_model->get_all();
-        } catch (Exception $e) {
-            log_message('error', 'Chatbot curriculum load failed: ' . $e->getMessage());
-        }
+            try {
+                $this->load->model('Curriculum_model');
+                $curriculum_rows = $this->Curriculum_model->get_all();
+            } catch (Exception $e) {
+                log_message('error', 'Chatbot curriculum load failed: ' . $e->getMessage());
+            }
 
-        try {
-            $this->load->model('Forms_model');
-            $forms_rows = $this->Forms_model->get_all_forms();
-        } catch (Exception $e) {
-            log_message('error', 'Chatbot forms load failed: ' . $e->getMessage());
-        }
+            try {
+                $this->load->model('Forms_model');
+                $forms_rows = $this->Forms_model->get_all_forms();
+            } catch (Exception $e) {
+                log_message('error', 'Chatbot forms load failed: ' . $e->getMessage());
+            }
 
-        try {
-            $this->load->model('Faculty_users_model');
-            $faculty_rows = $this->Faculty_users_model->get_all_faculty();
-        } catch (Exception $e) {
-            log_message('error', 'Chatbot faculty load failed: ' . $e->getMessage());
-        }
+            try {
+                $this->load->model('Faculty_users_model');
+                $faculty_rows = $this->Faculty_users_model->get_all_faculty();
+            } catch (Exception $e) {
+                log_message('error', 'Chatbot faculty load failed: ' . $e->getMessage());
+            }
 
-        try {
-            $this->load->model('Announcements_model');
-            $announcements = $this->Announcements_model->get_all();
-        } catch (Exception $e) {
-            log_message('error', 'Chatbot announcements load failed: ' . $e->getMessage());
-        }
+            try {
+                $this->load->model('Announcements_model');
+                $announcements = $this->Announcements_model->get_all();
+            } catch (Exception $e) {
+                log_message('error', 'Chatbot announcements load failed: ' . $e->getMessage());
+            }
 
-        try {
-            $this->load->model('Events_achievements_model');
-            $events = $this->Events_achievements_model->get_all();
-        } catch (Exception $e) {
-            log_message('error', 'Chatbot events load failed: ' . $e->getMessage());
-        }
+            try {
+                $this->load->model('Events_achievements_model');
+                $events = $this->Events_achievements_model->get_all();
+            } catch (Exception $e) {
+                log_message('error', 'Chatbot events load failed: ' . $e->getMessage());
+            }
 
-        try {
-            $this->load->model('Deans_list_model');
-            $deans_list = $this->Deans_list_model->get_all();
-        } catch (Exception $e) {
-            log_message('error', 'Chatbot deans list load failed: ' . $e->getMessage());
-        }
+            try {
+                $this->load->model('Deans_list_model');
+                $deans_list = $this->Deans_list_model->get_all();
+            } catch (Exception $e) {
+                log_message('error', 'Chatbot deans list load failed: ' . $e->getMessage());
+            }
 
-        try {
-            $this->load->model('Alumni_model');
-            $featured_alumni = $this->Alumni_model->get_all_featured();
-            $alumni_events = $this->Alumni_model->get_all_events();
-        } catch (Exception $e) {
-            log_message('error', 'Chatbot alumni load failed: ' . $e->getMessage());
+            try {
+                $this->load->model('Alumni_model');
+                $featured_alumni = $this->Alumni_model->get_all_featured();
+                $alumni_events = $this->Alumni_model->get_all_events();
+            } catch (Exception $e) {
+                log_message('error', 'Chatbot alumni load failed: ' . $e->getMessage());
+            }
         }
 
         $active_forms = array();
@@ -385,6 +392,10 @@ class ChatbotController extends CI_Controller {
 
     private function log_chatbot_inquiry($question, $category)
     {
+        if ($this->use_local_fallback) {
+            return;
+        }
+
         try {
             $this->load->model('Alumni_model');
             if (method_exists($this->Alumni_model, 'insert_chatbot_inquiry')) {

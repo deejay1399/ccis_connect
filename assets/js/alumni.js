@@ -35,6 +35,67 @@ const alumniPublicData = {
     }
 };
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function formatTextBlock(value) {
+    return escapeHtml(String(value ?? '')).replace(/\r?\n/g, '<br>');
+}
+
+function normalizeAlumniImages(alumni) {
+    const images = [];
+    const addImage = (value) => {
+        const path = String(value ?? '').trim();
+        if (path) {
+            images.push(path);
+        }
+    };
+
+    if (Array.isArray(alumni?.images)) {
+        alumni.images.forEach(addImage);
+    }
+
+    if (!images.length && alumni?.images_json) {
+        try {
+            const decoded = JSON.parse(alumni.images_json);
+            if (Array.isArray(decoded)) {
+                decoded.forEach(addImage);
+            }
+        } catch (error) {
+            console.warn('Failed to parse alumni images_json', error);
+        }
+    }
+
+    if (!images.length && alumni?.photo) {
+        addImage(alumni.photo);
+    }
+
+    return [...new Set(images)];
+}
+
+function renderDirectoryPhotoThumb(alumni) {
+    const images = normalizeAlumniImages(alumni);
+    const photoCount = images.length;
+    const safeName = escapeHtml(alumni?.name || 'Alumni');
+
+    if (!images.length) {
+        return `<div class="directory-photo-stack">
+            <div class="directory-photo-thumb directory-photo-placeholder"><i class="fas fa-user"></i></div>
+        </div>`;
+    }
+
+    return `<div class="directory-photo-stack">
+        <img src="${baseUrl + images[0]}" alt="${safeName}" class="directory-photo-thumb">
+        ${photoCount > 1 ? `<span class="directory-photo-count">+${photoCount - 1}</span>` : ''}
+    </div>`;
+}
+
 
 // ALUMNI PAGE JAVASCRIPT - WITH HASH-BASED NAVIGATION
 $(document).ready(function() {
@@ -237,23 +298,25 @@ const sectionTemplates = {
                 const phone = alumni.phone || '';
                 const email = alumni.email || '';
                 const batch = alumni.batch || '';
+                const imageCount = normalizeAlumniImages(alumni).length;
                 const searchable = `${alumni.name || ''} ${email} ${phone} ${company} ${position}`.toLowerCase();
-                const photoHtml = alumni.photo
-                    ? `<img src="${baseUrl + alumni.photo}" alt="${alumni.name}" class="directory-photo-thumb">`
-                    : `<div class="directory-photo-thumb directory-photo-placeholder"><i class="fas fa-user"></i></div>`;
+                const photoHtml = renderDirectoryPhotoThumb(alumni);
 
                 if (batch) batchSet.add(batch);
                 directoryRows += `
-                    <tr class="directory-row" data-id="${alumni.id}" data-program="${program}" data-batch="${batch}" data-search="${searchable}">
+                    <tr class="directory-row" data-id="${alumni.id}" data-program="${escapeHtml(program)}" data-batch="${escapeHtml(batch)}" data-search="${escapeHtml(searchable)}">
                         <td class="directory-name-cell">
                             <div class="directory-name-wrap">
                                 ${photoHtml}
-                                <span class="directory-name-text">${alumni.name || '-'}</span>
+                                <div class="directory-name-meta">
+                                    <span class="directory-name-text">${escapeHtml(alumni.name || '-')}</span>
+                                    ${imageCount > 1 ? `<span class="directory-photo-meta">${imageCount} photos</span>` : ''}
+                                </div>
                             </div>
                         </td>
-                        <td>${batch || '-'}</td>
-                        <td>${email || '-'}</td>
-                        <td>${phone || '-'}</td>
+                        <td>${escapeHtml(batch || '-')}</td>
+                        <td>${escapeHtml(email || '-')}</td>
+                        <td>${escapeHtml(phone || '-')}</td>
                         <td class="directory-actions-cell">
                             <button type="button" class="btn btn-sm btn-outline-primary directory-view-btn" data-id="${alumni.id}">
                                 <i class="fas fa-eye me-1"></i>View
@@ -639,25 +702,72 @@ function showAlumniDetails(alumniId) {
         return;
     }
 
-    const photoHtml = alumni.photo
-        ? `<img src="${baseUrl + alumni.photo}" alt="${alumni.name}" class="img-fluid rounded mb-3">`
-        : '';
-
+    const safeName = escapeHtml(alumni.name || 'Alumni');
+    const images = normalizeAlumniImages(alumni);
     const title = alumni.position || alumni.company || alumni.program || '';
     const details = [];
-    if (alumni.program) details.push(`<p class="mb-1"><strong>Program:</strong> ${alumni.program}</p>`);
-    if (alumni.batch) details.push(`<p class="mb-1"><strong>Batch:</strong> ${alumni.batch}</p>`);
-    if (alumni.company) details.push(`<p class="mb-1"><strong>Company:</strong> ${alumni.company}</p>`);
-    if (alumni.email) details.push(`<p class="mb-1"><strong>Email:</strong> ${alumni.email}</p>`);
-    if (alumni.phone) details.push(`<p class="mb-1"><strong>Phone:</strong> ${alumni.phone}</p>`);
+    if (alumni.program) details.push(`<p class="mb-1"><strong>Program:</strong> ${escapeHtml(alumni.program)}</p>`);
+    if (alumni.batch) details.push(`<p class="mb-1"><strong>Batch:</strong> ${escapeHtml(alumni.batch)}</p>`);
+    if (alumni.company) details.push(`<p class="mb-1"><strong>Company:</strong> ${escapeHtml(alumni.company)}</p>`);
+    if (alumni.position && alumni.company !== alumni.position) details.push(`<p class="mb-1"><strong>Position:</strong> ${escapeHtml(alumni.position)}</p>`);
+    if (alumni.email) details.push(`<p class="mb-1"><strong>Email:</strong> ${escapeHtml(alumni.email)}</p>`);
+    if (alumni.phone) details.push(`<p class="mb-1"><strong>Phone:</strong> ${escapeHtml(alumni.phone)}</p>`);
     const description = alumni.bio || alumni.achievement || alumni.position || '';
+    const galleryHtml = images.length
+        ? `
+            <div class="alumni-modal-image">
+                <div class="alumni-modal-primary-image">
+                    <img src="${baseUrl + images[0]}" alt="${safeName}" class="alumni-modal-primary-photo">
+                </div>
+                ${images.length > 1 ? `
+                    <div class="alumni-modal-image-count">${images.length} photos</div>
+                    <div class="alumni-modal-gallery">
+                        ${images.map((image, index) => `
+                            <button
+                                type="button"
+                                class="alumni-modal-thumb ${index === 0 ? 'is-active' : ''}"
+                                data-image-src="${escapeHtml(baseUrl + image)}"
+                                data-image-alt="${safeName} photo ${index + 1}"
+                                aria-label="View photo ${index + 1} of ${safeName}"
+                            >
+                                <img src="${baseUrl + image}" alt="${safeName} photo ${index + 1}">
+                            </button>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `
+        : `
+            <div class="alumni-modal-image alumni-modal-image-placeholder">
+                <div class="alumni-modal-placeholder-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        `;
 
     const modalContent = `
-        ${photoHtml}
-        <h4>${alumni.name}</h4>
-        ${title ? `<p class="text-muted mb-2">${title}</p>` : ''}
-        ${details.join('')}
-        ${description ? `<p class="mt-2">${description}</p>` : ''}
+        <div class="alumni-modal-content">
+            ${galleryHtml}
+            <div class="alumni-modal-details">
+                <div class="alumni-modal-header">
+                    <h2>${safeName}</h2>
+                    ${alumni.batch ? `<p class="alumni-modal-batch">Batch ${escapeHtml(alumni.batch)}</p>` : ''}
+                    ${title ? `<p class="alumni-modal-company">${escapeHtml(title)}</p>` : ''}
+                </div>
+                ${details.length ? `
+                    <div class="alumni-modal-section">
+                        <h4><i class="fas fa-id-card"></i> Directory Details</h4>
+                        ${details.join('')}
+                    </div>
+                ` : ''}
+                ${description ? `
+                    <div class="alumni-modal-section">
+                        <h4><i class="fas fa-align-left"></i> About</h4>
+                        <p>${formatTextBlock(description)}</p>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
     `;
 
     $('#alumniModalContent').html(modalContent);
@@ -904,6 +1014,21 @@ function setupModalEvents() {
     // Keep modal state clean to prevent frozen screen after submit/close.
     $('.modal').on('hidden.bs.modal', function() {
         setTimeout(cleanupModalArtifacts, 0);
+    });
+
+    $(document).on('click', '.alumni-modal-thumb', function() {
+        const nextImage = $(this).data('image-src');
+        const nextAlt = $(this).data('image-alt') || 'Alumni photo';
+        const primaryImage = $('#alumniModalContent .alumni-modal-primary-photo');
+
+        if (!primaryImage.length || !nextImage) {
+            return;
+        }
+
+        primaryImage.attr('src', nextImage);
+        primaryImage.attr('alt', nextAlt);
+        $('.alumni-modal-thumb').removeClass('is-active');
+        $(this).addClass('is-active');
     });
     
     // Connection form submission

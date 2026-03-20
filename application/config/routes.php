@@ -45,6 +45,9 @@ $route['chatbot/api/faq'] = 'ChatbotController/faq';
 $route['chatbot/api/ask'] = 'ChatbotController/ask';
 
 // Mga porma
+$route['forms/api/list'] = 'FormsController/get_forms';
+$route['forms/(:num)/(:any)'] = 'FormsController/view_form/$1';
+$route['forms/(:num)'] = 'FormsController/view_form/$1';
 $route['forms'] = 'FormsController/view_forms';
 
 // Login

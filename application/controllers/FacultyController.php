@@ -3,12 +3,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class FacultyController extends CI_Controller {
 
+	private $use_local_fallback = false;
+
 	public function __construct()
 	{
 		parent::__construct();
 		$this->load->helper('url');
 		$this->load->helper('auth');
+		$this->load->helper('local_test');
 		$this->load->library('session');
+		$this->use_local_fallback = ccis_should_use_local_fallback();
 	}
 
 	/**
@@ -23,10 +27,13 @@ class FacultyController extends CI_Controller {
 	public function faculty()
 	{
 		restrict_public_for_admin_roles();
-		$this->load->model('Faculty_users_model');
+		$allFaculty = array();
+		if (!$this->use_local_fallback) {
+			$this->load->model('Faculty_users_model');
 
-		// Panguna nga gigikanan: Pagdumala sa mga entry sa Faculty.
-		$allFaculty = $this->Faculty_users_model->get_all_faculty();
+			// Panguna nga gigikanan: Pagdumala sa mga entry sa Faculty.
+			$allFaculty = $this->Faculty_users_model->get_all_faculty();
+		}
 		
 		$data['page_type'] = 'faculty';
 		$data['faculty_members'] = $allFaculty;

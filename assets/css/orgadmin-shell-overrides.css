@@ -1,0 +1,593 @@
+:root {
+    --org-shell-shadow: 0 18px 40px rgba(45, 62, 80, 0.14);
+    --org-shell-border: rgba(106, 13, 173, 0.14);
+}
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+iframe {
+    max-width: 100%;
+}
+
+.university-header,
+.admin-nav,
+.admin-main,
+.admin-footer {
+    width: 100%;
+}
+
+.org-header-row {
+    width: 100%;
+    min-width: 0;
+}
+
+.org-header-text {
+    min-width: 0;
+}
+
+.org-header-text .college-title {
+    font-size: clamp(1rem, 2.2vw, 1.8rem);
+    line-height: 1.14;
+    overflow-wrap: anywhere;
+}
+
+.org-header-text .college-subtitle {
+    font-size: clamp(0.72rem, 1.15vw, 1rem);
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.admin-nav.navbar,
+.admin-nav {
+    padding: 1rem 0;
+}
+
+.admin-nav.navbar .container,
+.admin-nav .container {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0.75rem;
+}
+
+.admin-nav .navbar-collapse {
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.admin-nav .admin-nav-list {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    flex-wrap: nowrap;
+}
+
+.admin-nav .nav-item {
+    display: flex;
+    min-width: 0;
+}
+
+.admin-nav .nav-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 46px;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 0.68rem 1.2rem;
+    font-size: 0.97rem;
+}
+
+.admin-nav .nav-link i {
+    flex-shrink: 0;
+}
+
+.admin-nav-toggler {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    border: 1px solid var(--org-shell-border);
+    border-radius: 14px;
+    padding: 0.6rem 0.9rem;
+    background: rgba(255, 255, 255, 0.98);
+    color: var(--primary-purple);
+    box-shadow: 0 10px 24px rgba(75, 0, 130, 0.12);
+}
+
+.admin-nav-toggler:focus {
+    box-shadow: 0 0 0 0.25rem rgba(106, 13, 173, 0.18);
+}
+
+.admin-nav-toggler-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 10px;
+    background: rgba(106, 13, 173, 0.12);
+}
+
+.admin-nav-toggler-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.admin-main {
+    padding: clamp(1.15rem, 2.5vw, 2rem) 0 2.25rem;
+}
+
+.section-header {
+    gap: 1rem;
+}
+
+.section-header > div:first-child,
+.section-header > button {
+    min-width: 0;
+}
+
+.section-header h3,
+.section-subtitle,
+.officer-info h5,
+.adviser-info h5,
+.announcement-title-section h5,
+.happening-content h6,
+.activity-content p,
+.activity-content small {
+    overflow-wrap: anywhere;
+}
+
+.quick-actions,
+.activity-card,
+.stat-card,
+.officer-card,
+.adviser-card,
+.announcement-card,
+.happening-card,
+.empty-state,
+.modal-content {
+    max-width: 100%;
+}
+
+.quick-actions,
+.activity-card,
+.stat-card,
+.officer-card,
+.adviser-card,
+.announcement-card,
+.happening-card,
+.empty-state {
+    border-radius: 18px;
+}
+
+.quick-actions .row > [class*="col-"] {
+    display: flex;
+}
+
+.action-btn {
+    height: 100%;
+}
+
+.activity-item {
+    gap: 1rem;
+}
+
+.activity-icon {
+    margin-right: 0;
+}
+
+.officer-info,
+.adviser-info,
+.activity-content {
+    min-width: 0;
+}
+
+.officer-actions,
+.adviser-actions,
+.announcement-footer .d-flex,
+.happening-actions {
+    flex-wrap: wrap;
+}
+
+.officer-actions form,
+.adviser-actions form,
+.announcement-footer form,
+.happening-actions form {
+    margin: 0;
+}
+
+.announcement-footer .d-flex > *,
+.happening-actions > *,
+.officer-actions > *,
+.adviser-actions > * {
+    flex: 1 1 140px;
+}
+
+.announcement-footer .btn,
+.happening-actions .btn,
+.officer-actions .btn,
+.adviser-actions .btn {
+    width: 100%;
+}
+
+.happening-image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+}
+
+.happening-image-grid img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+}
+
+.modal-dialog {
+    width: min(100% - 1.5rem, var(--bs-modal-width, 860px));
+}
+
+.modal-content {
+    border-radius: 22px;
+    overflow: hidden;
+}
+
+.modal-body {
+    max-height: calc(100vh - 10rem);
+    overflow-y: auto;
+}
+
+.modal-footer {
+    gap: 0.75rem;
+}
+
+.modal-footer .btn {
+    min-width: 140px;
+}
+
+.admin-footer .row {
+    row-gap: 1rem;
+}
+
+@media (min-width: 992px) {
+    .admin-nav .navbar-collapse {
+        display: flex !important;
+        align-items: center;
+    }
+}
+
+@media (max-width: 1199.98px) {
+    .admin-nav .nav-link {
+        padding: 0.65rem 1.1rem;
+        font-size: 0.94rem;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .admin-nav.navbar .container,
+    .admin-nav .container {
+        flex-wrap: wrap;
+    }
+
+    .admin-nav .navbar-collapse:not(.show) {
+        display: none !important;
+    }
+
+    .admin-nav .navbar-collapse.show {
+        display: block !important;
+    }
+
+    .admin-nav .navbar-collapse {
+        width: 100%;
+        flex: 0 0 100%;
+        margin-top: 0.35rem;
+        padding: 1rem;
+        border-radius: 20px;
+        border: 1px solid var(--org-shell-border);
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: var(--org-shell-shadow);
+        backdrop-filter: blur(12px);
+    }
+
+    .admin-nav .admin-nav-list {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: flex-start;
+        gap: 0.45rem;
+        width: 100%;
+        margin: 0;
+    }
+
+    .admin-nav .nav-item,
+    .admin-nav .nav-item.ms-lg-auto {
+        width: 100%;
+        margin-left: 0 !important;
+    }
+
+    .admin-nav .return-btn {
+        margin-left: 0;
+    }
+
+    .admin-nav .nav-link {
+        width: 100%;
+        justify-content: space-between;
+        padding: 0.85rem 1rem;
+        margin: 0 !important;
+        border-radius: 14px;
+        text-align: left;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .admin-nav .nav-link:hover,
+    .admin-nav .nav-link.active {
+        transform: none;
+        box-shadow: 0 10px 22px rgba(106, 13, 173, 0.14);
+    }
+
+    .university-header .container,
+    .admin-nav .container,
+    .admin-main .container,
+    .admin-footer .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .section-header {
+        align-items: flex-start;
+    }
+
+    .section-header .btn {
+        width: 100%;
+    }
+
+    .modal-dialog {
+        margin: 0.75rem auto;
+    }
+
+    .modal-footer {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .org-header-row {
+        gap: 0.55rem !important;
+        align-items: flex-start !important;
+    }
+
+    .org-header-row .college-logo {
+        width: 44px !important;
+        height: 44px !important;
+    }
+
+    .org-header-text .college-title {
+        font-size: clamp(0.92rem, 4vw, 1.25rem);
+    }
+
+    .org-header-text .college-subtitle {
+        font-size: 0.7rem;
+    }
+
+    .header-auth-icon .auth-icon-link {
+        width: 40px;
+        height: 40px;
+        font-size: 1.35rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        text-align: left;
+    }
+
+    .admin-profile-small {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .stat-card {
+        flex-direction: row;
+        align-items: center;
+        padding: 1.15rem;
+    }
+
+    .stat-icon {
+        width: 54px;
+        height: 54px;
+        margin-right: 1rem;
+    }
+
+    .stat-icon i {
+        font-size: 1.5rem;
+    }
+
+    .stat-info h4 {
+        font-size: 1.75rem;
+    }
+
+    .quick-actions,
+    .activity-card,
+    .officer-card,
+    .adviser-card,
+    .announcement-card,
+    .happening-card,
+    .empty-state {
+        padding: 1.1rem;
+    }
+
+    .action-btn {
+        padding: 1.3rem 0.9rem;
+    }
+
+    .action-btn i {
+        font-size: 2rem;
+    }
+
+    .officer-header,
+    .adviser-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .officer-avatar,
+    .adviser-avatar {
+        margin-right: 0;
+        margin-bottom: 0.9rem;
+    }
+
+    .officer-actions,
+    .adviser-actions,
+    .announcement-footer .d-flex,
+    .happening-actions {
+        flex-direction: column;
+    }
+
+    .announcement-footer .d-flex > *,
+    .happening-actions > *,
+    .officer-actions > *,
+    .adviser-actions > * {
+        flex-basis: 100%;
+    }
+
+    .happening-image-grid {
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    }
+
+    .happening-image-grid img {
+        height: 110px;
+    }
+
+    .admin-footer .footer-contact-social-wrapper {
+        gap: 1.25rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .org-header-row .college-logo {
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    .org-header-text .college-title {
+        font-size: 0.82rem;
+    }
+
+    .org-header-text .college-subtitle {
+        font-size: 0.62rem;
+    }
+
+    .header-auth-icon .auth-icon-link {
+        width: 36px;
+        height: 36px;
+        font-size: 1.15rem;
+    }
+
+    .university-header .container,
+    .admin-nav .container,
+    .admin-main .container,
+    .admin-footer .container {
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+    }
+
+    .admin-nav .navbar-collapse {
+        padding: 0.85rem;
+        border-radius: 16px;
+    }
+
+    .admin-nav .nav-link {
+        font-size: 0.89rem;
+        padding: 0.8rem 0.9rem;
+    }
+
+    .admin-nav-toggler {
+        padding: 0.55rem 0.75rem;
+    }
+
+    .admin-main {
+        padding-top: 1rem;
+    }
+
+    .section-header h3 {
+        font-size: 1.25rem;
+    }
+
+    .section-subtitle {
+        font-size: 0.88rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-info h4 {
+        font-size: 1.55rem;
+    }
+
+    .quick-actions,
+    .activity-card,
+    .officer-card,
+    .adviser-card,
+    .announcement-card,
+    .happening-card,
+    .empty-state {
+        border-radius: 16px;
+        padding: 1rem;
+    }
+
+    .modal-dialog {
+        width: min(100% - 1rem, var(--bs-modal-width, 860px));
+        margin: 0.5rem auto;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .modal-body {
+        max-height: calc(100vh - 8rem);
+    }
+
+    .selected-images-preview {
+        padding: 0.6rem;
+    }
+}
+
+@media (max-width: 419.98px) {
+    .org-header-row {
+        gap: 0.4rem !important;
+    }
+
+    .org-header-text .college-title {
+        font-size: 0.76rem;
+    }
+
+    .org-header-text .college-subtitle {
+        font-size: 0.56rem;
+    }
+
+    .admin-nav-toggler-label {
+        font-size: 0.82rem;
+    }
+}

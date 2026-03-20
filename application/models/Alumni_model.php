@@ -16,7 +16,9 @@ class Alumni_model extends CI_Model {
     public function __construct() {
         parent::__construct();
         $this->load->database();
+        $this->load->dbforge();
         $this->ensure_notification_read_columns();
+        $this->ensure_directory_schema();
     }
 
     private function ensure_notification_read_columns() {
@@ -26,8 +28,6 @@ class Alumni_model extends CI_Model {
             $this->connection_table,
             $this->giveback_table
         ];
-
-        $this->load->dbforge();
 
         foreach ($tables as $table) {
             if ($this->db->table_exists($table) && !$this->db->field_exists('notification_read', $table)) {
@@ -41,6 +41,54 @@ class Alumni_model extends CI_Model {
                 ]);
             }
         }
+    }
+
+    private function ensure_directory_schema() {
+        if (!$this->db->table_exists($this->directory_table)) {
+            return;
+        }
+
+        if (!$this->db->field_exists('images_json', $this->directory_table)) {
+            $this->dbforge->add_column($this->directory_table, [
+                'images_json' => [
+                    'type' => 'TEXT',
+                    'null' => true,
+                    'after' => 'photo'
+                ]
+            ]);
+        }
+    }
+
+    private function normalize_directory_row($row) {
+        if (!is_array($row)) {
+            return [];
+        }
+
+        $images = [];
+        if (!empty($row['images_json'])) {
+            $decoded = json_decode((string) $row['images_json'], true);
+            if (is_array($decoded)) {
+                foreach ($decoded as $path) {
+                    $path = trim((string) $path);
+                    if ($path !== '') {
+                        $images[] = $path;
+                    }
+                }
+            }
+        }
+
+        if (empty($images) && !empty($row['photo'])) {
+            $images[] = (string) $row['photo'];
+        }
+
+        if (empty($row['photo']) && !empty($images)) {
+            $row['photo'] = $images[0];
+        }
+
+        $row['images'] = array_values(array_unique($images));
+        $row['images_json'] = !empty($row['images']) ? json_encode($row['images']) : null;
+
+        return $row;
     }
 
     public function get_all_mentor_requests() {
@@ -236,11 +284,23 @@ class Alumni_model extends CI_Model {
     }
 
     public function get_all_directory() {
-        return $this->db->order_by('created_at', 'DESC')->get($this->directory_table)->result_array();
+        $rows = $this->db->order_by('created_at', 'DESC')->get($this->directory_table)->result_array();
+        return array_map([$this, 'normalize_directory_row'], $rows);
+    }
+
+    public function get_directory_by_id($id) {
+        $row = $this->db->where('id', (int) $id)->get($this->directory_table)->row_array();
+        return $row ? $this->normalize_directory_row($row) : null;
     }
 
     public function insert_directory($data) {
         $data['created_at'] = date('Y-m-d H:i:s');
+        if (empty($data['photo']) && !empty($data['images_json'])) {
+            $decoded = json_decode((string) $data['images_json'], true);
+            if (is_array($decoded) && !empty($decoded[0])) {
+                $data['photo'] = (string) $decoded[0];
+            }
+        }
         if ($this->db->insert($this->directory_table, $data)) {
             return $this->db->insert_id();
         }
