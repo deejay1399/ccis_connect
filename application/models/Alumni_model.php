@@ -9,7 +9,6 @@ class Alumni_model extends CI_Model {
     private $updates_table = 'alumni_updates';
     private $giveback_table = 'alumni_giveback';
     private $featured_table = 'alumni_featured';
-    private $featured_media_table = 'alumni_featured_media';
     private $directory_table = 'alumni_directory';
     private $stories_table = 'alumni_success_stories';
     private $events_table = 'alumni_events';
@@ -20,7 +19,7 @@ class Alumni_model extends CI_Model {
         $this->load->dbforge();
         $this->ensure_notification_read_columns();
         $this->ensure_directory_schema();
-        $this->ensure_featured_media_table();
+        $this->ensure_featured_schema();
     }
 
     private function ensure_notification_read_columns() {
@@ -61,64 +60,40 @@ class Alumni_model extends CI_Model {
         }
     }
 
-    private function ensure_featured_media_table() {
-        if ($this->db->table_exists($this->featured_media_table)) {
+    private function ensure_featured_schema() {
+        if (!$this->db->table_exists($this->featured_table)) {
             return;
         }
 
-        $this->dbforge->add_field([
-            'id' => [
-                'type' => 'INT',
-                'constraint' => 11,
-                'unsigned' => true,
-                'auto_increment' => true
-            ],
-            'featured_id' => [
-                'type' => 'INT',
-                'constraint' => 11,
-                'unsigned' => true,
-                'null' => false
-            ],
-            'media_type' => [
-                'type' => 'VARCHAR',
-                'constraint' => 20,
-                'null' => false
-            ],
-            'media_path' => [
-                'type' => 'TEXT',
-                'null' => false
-            ],
-            'created_at' => [
-                'type' => 'DATETIME',
-                'null' => true
-            ]
-        ]);
-        $this->dbforge->add_key('id', true);
-        $this->dbforge->add_key('featured_id');
-        $this->dbforge->create_table($this->featured_media_table, true);
+        if (!$this->db->field_exists('video', $this->featured_table)) {
+            $this->dbforge->add_column($this->featured_table, [
+                'video' => [
+                    'type' => 'TEXT',
+                    'null' => true,
+                    'after' => 'photo'
+                ]
+            ]);
+        }
+
+        if (!$this->db->field_exists('media_type', $this->featured_table)) {
+            $this->dbforge->add_column($this->featured_table, [
+                'media_type' => [
+                    'type' => 'VARCHAR',
+                    'constraint' => 20,
+                    'null' => true,
+                    'after' => $this->db->field_exists('video', $this->featured_table) ? 'video' : 'photo'
+                ]
+            ]);
+        }
     }
 
-    private function normalize_featured_row($row, $media_row = null) {
+    private function normalize_featured_row($row) {
         if (!is_array($row)) {
             return [];
         }
 
         $row['photo'] = !empty($row['photo']) ? trim((string) $row['photo']) : null;
         $row['video'] = !empty($row['video']) ? trim((string) $row['video']) : null;
-
-        if (is_array($media_row)) {
-            $media_type = trim((string) ($media_row['media_type'] ?? ''));
-            $media_path = trim((string) ($media_row['media_path'] ?? ''));
-
-            if ($media_type === 'photo') {
-                $row['photo'] = $media_path !== '' ? $media_path : $row['photo'];
-                $row['video'] = null;
-                $row['media_type'] = 'photo';
-            } elseif ($media_type === 'video') {
-                $row['video'] = $media_path !== '' ? $media_path : $row['video'];
-                $row['media_type'] = 'video';
-            }
-        }
 
         $mediaType = trim((string) ($row['media_type'] ?? ''));
         if ($mediaType === '') {
@@ -134,57 +109,6 @@ class Alumni_model extends CI_Model {
         $row['media_type'] = $mediaType;
 
         return $row;
-    }
-
-    private function get_featured_media_map($featured_ids) {
-        $featured_ids = array_values(array_filter(array_map('intval', (array) $featured_ids)));
-        if (empty($featured_ids) || !$this->db->table_exists($this->featured_media_table)) {
-            return [];
-        }
-
-        $rows = $this->db
-            ->where_in('featured_id', $featured_ids)
-            ->order_by('id', 'DESC')
-            ->get($this->featured_media_table)
-            ->result_array();
-
-        $map = [];
-        foreach ($rows as $row) {
-            $featured_id = (int) ($row['featured_id'] ?? 0);
-            if ($featured_id > 0 && !isset($map[$featured_id])) {
-                $map[$featured_id] = $row;
-            }
-        }
-
-        return $map;
-    }
-
-    private function save_featured_media($featured_id, $media_type, $media_path) {
-        $featured_id = (int) $featured_id;
-        $media_type = trim((string) $media_type);
-        $media_path = trim((string) $media_path);
-
-        if ($featured_id <= 0 || $media_type === '' || $media_path === '' || !$this->db->table_exists($this->featured_media_table)) {
-            return false;
-        }
-
-        $this->db->where('featured_id', $featured_id)->delete($this->featured_media_table);
-
-        return $this->db->insert($this->featured_media_table, [
-            'featured_id' => $featured_id,
-            'media_type' => $media_type,
-            'media_path' => $media_path,
-            'created_at' => date('Y-m-d H:i:s')
-        ]);
-    }
-
-    public function delete_featured_media($featured_id) {
-        $featured_id = (int) $featured_id;
-        if ($featured_id <= 0 || !$this->db->table_exists($this->featured_media_table)) {
-            return true;
-        }
-
-        return $this->db->where('featured_id', $featured_id)->delete($this->featured_media_table);
     }
 
     private function normalize_directory_row($row) {
@@ -397,81 +321,31 @@ class Alumni_model extends CI_Model {
 
     public function get_all_featured() {
         $rows = $this->db->order_by('created_at', 'DESC')->get($this->featured_table)->result_array();
-        $media_map = $this->get_featured_media_map(array_column($rows, 'id'));
-
-        return array_map(function($row) use ($media_map) {
-            $featured_id = (int) ($row['id'] ?? 0);
-            $media_row = isset($media_map[$featured_id]) ? $media_map[$featured_id] : null;
-            return $this->normalize_featured_row($row, $media_row);
-        }, $rows);
+        return array_map([$this, 'normalize_featured_row'], $rows);
     }
 
     public function get_featured_by_id($id) {
         $row = $this->db->where('id', (int) $id)->get($this->featured_table)->row_array();
-        if (!$row) {
-            return null;
-        }
-
-        $media_map = $this->get_featured_media_map([(int) $id]);
-        $media_row = isset($media_map[(int) $id]) ? $media_map[(int) $id] : null;
-        return $this->normalize_featured_row($row, $media_row);
+        return $row ? $this->normalize_featured_row($row) : null;
     }
 
     public function insert_featured($data) {
-        $media_type = trim((string) ($data['media_type'] ?? ''));
-        $photo = trim((string) ($data['photo'] ?? ''));
-        $video = trim((string) ($data['video'] ?? ''));
-        $media_path = '';
-
-        if ($media_type === 'video' && $video !== '') {
-            $media_path = $video;
-        } elseif (($media_type === 'photo' || ($media_type === '' && $photo !== '')) && $photo !== '') {
-            $media_type = 'photo';
-            $media_path = $photo;
-        }
-
-        unset($data['photo'], $data['video'], $data['media_type']);
         $data['created_at'] = date('Y-m-d H:i:s');
-
-        $this->db->trans_begin();
-
-        if ($this->db->insert($this->featured_table, $data)) {
-            $featured_id = $this->db->insert_id();
-
-            if ($media_path !== '') {
-                $saved = $this->save_featured_media($featured_id, $media_type, $media_path);
-                if (!$saved) {
-                    $this->db->trans_rollback();
-                    return false;
-                }
+        if (empty($data['media_type'])) {
+            if (!empty($data['video'])) {
+                $data['media_type'] = 'video';
+            } elseif (!empty($data['photo'])) {
+                $data['media_type'] = 'photo';
             }
-
-            if ($this->db->trans_status() === false) {
-                $this->db->trans_rollback();
-                return false;
-            }
-
-            $this->db->trans_commit();
-            return $featured_id;
         }
-
-        $this->db->trans_rollback();
+        if ($this->db->insert($this->featured_table, $data)) {
+            return $this->db->insert_id();
+        }
         return false;
     }
 
     public function delete_featured($id) {
-        $id = (int) $id;
-        $this->db->trans_begin();
-        $this->delete_featured_media($id);
-        $this->db->where('id', $id)->delete($this->featured_table);
-
-        if ($this->db->trans_status() === false) {
-            $this->db->trans_rollback();
-            return false;
-        }
-
-        $this->db->trans_commit();
-        return true;
+        return $this->db->where('id', $id)->delete($this->featured_table);
     }
 
     public function get_all_directory() {
