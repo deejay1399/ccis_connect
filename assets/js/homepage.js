@@ -263,34 +263,72 @@ $(document).ready(function() {
         const $navbarToggler = $('.navbar-toggler');
         const $navbarMain = $('.navbar-main');
         const $navbarCollapse = $('#mainNav');
+        let backdropCreated = false;
+        
+        // Function to create backdrop
+        function createBackdrop() {
+            if (!backdropCreated) {
+                $('body').append('<div class="navbar-backdrop"></div>');
+                backdropCreated = true;
+            }
+        }
+        
+        // Function to remove backdrop
+        function removeBackdrop() {
+            $('.navbar-backdrop').remove();
+            backdropCreated = false;
+        }
+        
+        // Function to close menu
+        function closeMenu() {
+            $navbarCollapse.collapse('hide');
+            $navbarMain.removeClass('mobile-open');
+            $('body').removeClass('menu-open');
+            removeBackdrop();
+            $navbarToggler.attr('aria-expanded', 'false');
+        }
         
         // Handle mobile menu toggle
         $navbarToggler.on('click', function() {
-            $navbarMain.toggleClass('mobile-open');
-            
-            // Update ARIA attributes for accessibility
-            const isExpanded = $navbarCollapse.hasClass('show');
-            $navbarToggler.attr('aria-expanded', isExpanded ? 'false' : 'true');
-        });
-        
-        // Close mobile menu when clicking outside
-        $(document).on('click', function(e) {
             if ($(window).width() < 992) {
-                if (!$navbarMain.is(e.target) && $navbarMain.has(e.target).length === 0 && 
-                    !$navbarToggler.is(e.target)) {
-                    $navbarCollapse.collapse('hide');
-                    $navbarMain.removeClass('mobile-open');
-                    $navbarToggler.attr('aria-expanded', 'false');
+                const isCurrentlyOpen = $navbarCollapse.hasClass('show');
+                
+                if (!isCurrentlyOpen) {
+                    // Opening menu
+                    $navbarMain.addClass('mobile-open');
+                    $('body').addClass('menu-open');
+                    createBackdrop();
+                    $navbarToggler.attr('aria-expanded', 'true');
+                } else {
+                    // Closing menu
+                    closeMenu();
                 }
             }
         });
         
-        // Close mobile menu when a link is clicked
-        $('.navbar-nav .nav-link, .dropdown-item').on('click', function() {
+        // Close menu when backdrop is clicked
+        $(document).on('click', '.navbar-backdrop', function(e) {
             if ($(window).width() < 992) {
-                $navbarCollapse.collapse('hide');
-                $navbarMain.removeClass('mobile-open');
-                $navbarToggler.attr('aria-expanded', 'false');
+                closeMenu();
+            }
+        });
+        
+        // Close mobile menu when a link is clicked
+        $(document).on('click', '.navbar-nav .nav-link, .dropdown-item', function() {
+            if ($(window).width() < 992) {
+                closeMenu();
+            }
+        });
+        
+        // Close menu when clicking outside the navbar
+        $(document).on('click', function(e) {
+            if ($(window).width() < 992) {
+                const $target = $(e.target);
+                if (!$target.closest('.navbar-main').length && 
+                    !$target.closest('.navbar-toggler').length &&
+                    $navbarCollapse.hasClass('show')) {
+                    closeMenu();
+                }
             }
         });
         

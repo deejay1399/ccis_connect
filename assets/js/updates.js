@@ -1041,12 +1041,68 @@ document.addEventListener('DOMContentLoaded', function() {
     function enhanceMobileMenu() {
         const navbarToggler = document.querySelector('.navbar-toggler');
         const navbarMain = document.querySelector('.navbar-main');
+        const navbarCollapse = document.getElementById('mainNav');
+        let backdropCreated = false;
         
-        if (navbarToggler && navbarMain) {
-            navbarToggler.addEventListener('click', function() {
-                navbarMain.classList.toggle('mobile-open');
-            });
+        if (!navbarToggler || !navbarMain) return;
+        
+        // Function to create backdrop
+        function createBackdrop() {
+            if (!backdropCreated) {
+                const backdrop = document.createElement('div');
+                backdrop.className = 'navbar-backdrop';
+                document.body.appendChild(backdrop);
+                backdropCreated = true;
+            }
         }
+        
+        // Function to remove backdrop
+        function removeBackdrop() {
+            const backdrop = document.querySelector('.navbar-backdrop');
+            if (backdrop) backdrop.remove();
+            backdropCreated = false;
+        }
+        
+        // Function to close menu
+        function closeMenu() {
+            navbarCollapse?.classList.remove('show');
+            navbarMain.classList.remove('mobile-open');
+            document.body.classList.remove('menu-open');
+            removeBackdrop();
+            navbarToggler.setAttribute('aria-expanded', 'false');
+        }
+        
+        // Handle mobile menu toggle
+        navbarToggler.addEventListener('click', function() {
+            if (window.innerWidth < 992) {
+                const isOpen = navbarCollapse?.classList.contains('show');
+                
+                if (!isOpen) {
+                    navbarMain.classList.add('mobile-open');
+                    document.body.classList.add('menu-open');
+                    createBackdrop();
+                    navbarToggler.setAttribute('aria-expanded', 'true');
+                } else {
+                    closeMenu();
+                }
+            }
+        });
+        
+        // Close menu when backdrop is clicked
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('navbar-backdrop') && window.innerWidth < 992) {
+                closeMenu();
+            }
+        });
+        
+        // Close menu when clicking a nav link
+        document.querySelectorAll('.navbar-nav .nav-link, .dropdown-item').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth < 992) {
+                    setTimeout(() => closeMenu(), 100);
+                }
+            });
+        });
     }
 
     // Setup blocked navigation notifications
