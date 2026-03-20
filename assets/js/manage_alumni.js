@@ -38,6 +38,69 @@ $(document).ready(function () {
         }, { once: true });
     }
 
+    function showConfirmationModal(options = {}) {
+        const config = {
+            title: options.title || 'Confirm Action',
+            message: options.message || 'Are you sure you want to continue?',
+            confirmText: options.confirmText || 'Confirm',
+            cancelText: options.cancelText || 'Cancel',
+            variant: options.variant || 'danger'
+        };
+
+        const modalId = `confirmModal_${Date.now()}`;
+        const iconClass = config.variant === 'danger' ? 'fa-trash-alt' : 'fa-circle-question';
+        const confirmModal = `
+            <div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered confirm-dialog-modal">
+                    <div class="modal-content confirm-dialog-card">
+                        <div class="modal-header">
+                            <h5 class="modal-title"><i class="fas ${iconClass} me-2"></i>${escapeHtml(config.title)}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="confirm-dialog-icon confirm-${escapeHtml(config.variant)}">
+                                <i class="fas ${iconClass}"></i>
+                            </div>
+                            <p class="confirm-dialog-message">${escapeHtml(config.message)}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${escapeHtml(config.cancelText)}</button>
+                            <button type="button" class="btn btn-${escapeHtml(config.variant)} confirm-dialog-approve">${escapeHtml(config.confirmText)}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        $('#notificationModal').remove();
+        $('body').append(confirmModal);
+
+        const modalElement = document.getElementById(modalId);
+        const modalInstance = new bootstrap.Modal(modalElement);
+
+        return new Promise((resolve) => {
+            let resolved = false;
+
+            modalElement.addEventListener('hidden.bs.modal', function() {
+                if (!resolved) {
+                    resolved = true;
+                    resolve(false);
+                }
+                this.remove();
+            }, { once: true });
+
+            $(modalElement).find('.confirm-dialog-approve').on('click', function() {
+                if (!resolved) {
+                    resolved = true;
+                    resolve(true);
+                }
+                modalInstance.hide();
+            });
+
+            modalInstance.show();
+        });
+    }
+
     function formatDate(value) {
         if (!value) return '-';
         const d = new Date(value);
@@ -1357,13 +1420,20 @@ $(document).ready(function () {
         xhr.send(formData);
     });
 
-    $(document).on('click', '.btn-delete-featured', function () {
+    $(document).on('click', '.btn-delete-featured', async function () {
         const id = $(this).data('id');
-        if (!confirm('Delete this featured alumni?')) return;
+        const shouldDelete = await showConfirmationModal({
+            title: 'Delete Featured Alumni',
+            message: 'This will remove the featured alumni entry and its uploaded media from the site.',
+            confirmText: 'Delete',
+            variant: 'danger'
+        });
+        if (!shouldDelete) return;
 
         $.post(baseUrl + 'admin/manage/alumni/featured/delete', { id }, function(response) {
             if (response.success) {
                 loadFeatured();
+                showNotification('success', 'Featured alumni deleted successfully.');
             } else {
                 showNotification('error', response.message || 'Failed to delete featured alumni');
             }
@@ -1440,13 +1510,20 @@ $(document).ready(function () {
         resetDirectoryForm();
     });
 
-    $(document).on('click', '.btn-delete-directory', function () {
+    $(document).on('click', '.btn-delete-directory', async function () {
         const id = $(this).data('id');
-        if (!confirm('Delete this directory entry?')) return;
+        const shouldDelete = await showConfirmationModal({
+            title: 'Delete Directory Entry',
+            message: 'This will permanently remove the alumni directory entry and its uploaded photos.',
+            confirmText: 'Delete',
+            variant: 'danger'
+        });
+        if (!shouldDelete) return;
 
         $.post(baseUrl + 'admin/manage/alumni/directory/delete', { id }, function(response) {
             if (response.success) {
                 loadDirectory();
+                showNotification('success', 'Directory entry deleted successfully.');
             } else {
                 showNotification('error', response.message || 'Failed to delete directory entry');
             }
@@ -1489,13 +1566,20 @@ $(document).ready(function () {
         });
     });
 
-    $(document).on('click', '.btn-delete-event', function () {
+    $(document).on('click', '.btn-delete-event', async function () {
         const id = $(this).data('id');
-        if (!confirm('Delete this event?')) return;
+        const shouldDelete = await showConfirmationModal({
+            title: 'Delete Alumni Event',
+            message: 'This will permanently remove the event and any uploaded event photo.',
+            confirmText: 'Delete',
+            variant: 'danger'
+        });
+        if (!shouldDelete) return;
 
         $.post(baseUrl + 'admin/manage/alumni/events/delete', { id }, function(response) {
             if (response.success) {
                 loadEvents();
+                showNotification('success', 'Alumni event deleted successfully.');
             } else {
                 showNotification('error', response.message || 'Failed to delete event');
             }
