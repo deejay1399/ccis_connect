@@ -4,7 +4,6 @@
     'use strict';
 
     $(document).ready(function() {
-        console.log('🔐 Manage Forms Page Loading...');
         
         const BASE_URL = $('base').attr('href') || window.BASE_URL || '/';
         
@@ -28,7 +27,6 @@
                 success: function(response) {
                     if (response.success) {
                         displayFormsList(response.data);
-                        console.log('✅ Forms loaded successfully:', response.data.length);
                     } else {
                         showNotification('Failed to load forms', 'error');
                         console.error('Error loading forms');
@@ -405,6 +403,5 @@
             return allowedExtensions.includes(extension);
         }
 
-        console.log('✅ Manage Forms Page initialized successfully');
     });
 })(jQuery);

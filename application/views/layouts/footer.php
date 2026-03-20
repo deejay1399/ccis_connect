@@ -154,19 +154,6 @@
         window.SITE_URL = '<?php echo site_url(); ?>';
         window.CSRF_TOKEN_NAME = '<?php echo $this->security->get_csrf_token_name(); ?>';
         window.CSRF_TOKEN_VALUE = '<?php echo $this->security->get_csrf_hash(); ?>';
-        window.CCIS_DISABLE_CONSOLE_NOISE = true;
-
-        (function suppressConsoleNoise() {
-            if (window.CCIS_DISABLE_CONSOLE_NOISE === false || !window.console) {
-                return;
-            }
-
-            ['log', 'info', 'debug', 'warn'].forEach(function(method) {
-                if (typeof window.console[method] === 'function') {
-                    window.console[method] = function() {};
-                }
-            });
-        })();
     </script>
     <script>
         (function attachCsrfHandlers() {
@@ -306,7 +293,6 @@
                 localStorage.setItem('ccis_user', JSON.stringify(sessionData));
                 localStorage.setItem('ccis_session_id', sessionData.sessionId);
                 localStorage.setItem('ccis_login_time', new Date().getTime());
-                console.log('✅ Session synced to localStorage:', sessionData);
             }
         })();
     </script>

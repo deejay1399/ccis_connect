@@ -1,7 +1,6 @@
 // UPDATES PAGE JAVASCRIPT - COMPLETE FUNCTIONALITY WITH FLOATING BUTTON
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('ðŸ”„ Initializing Updates Page...');
     
     // Global variables for image gallery navigation
     let currentGalleryImages = [];
@@ -46,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Show specific section - FIXED VERSION
     function showSection(sectionId) {
-        console.log('ðŸŽ¬ Showing section:', sectionId);
         
         const sections = document.querySelectorAll('.content-section');
         sections.forEach(section => {
@@ -84,19 +82,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Load section-specific content with better timing
-            console.log('ðŸ•’ Loading content for:', sectionId);
             setTimeout(() => {
                 loadSectionContent(sectionId);
             }, 150);
         } else {
-            console.warn('âŒ Section not found:', sectionId);
+            console.warn('Ã¢ÂÅ’ Section not found:', sectionId);
             showSection('announcements-section');
         }
     }
 
     // Load section-specific content - IMPROVED VERSION
     function loadSectionContent(sectionId) {
-        console.log('ðŸ“¦ Loading content for section:', sectionId);
         
         switch(sectionId) {
             case 'announcements-section':
@@ -108,18 +104,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
                 
             case 'deanslist-section':
-                console.log('ðŸ† Loading Dean\'s List section');
                 initializeDeansListContent();
                 break;
                 
             default:
-                console.warn('âŒ Unknown section:', sectionId);
+                console.warn('Ã¢ÂÅ’ Unknown section:', sectionId);
         }
     }
 
     // Initialize Announcements Content
     function initializeAnnouncementsContent() {
-        console.log('ðŸ“¢ Initializing announcements content...');
         
         // Initialize Read More buttons for announcements
         initializeReadMoreButtons();
@@ -133,12 +127,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize image gallery functionality
         initializeImageGallery();
         
-        console.log('âœ… Announcements content initialized');
     }
 
     // Initialize Events & Achievements Content
     function initializeEventsContent() {
-        console.log('ðŸŽ‰ Initializing events content...');
         
         // Initialize Read More buttons for events
         initializeReadMoreButtons();
@@ -149,12 +141,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize image gallery functionality
         initializeImageGallery();
         
-        console.log('âœ… Events content initialized');
     }
 
     // Initialize Dean's List Content
     function initializeDeansListContent() {
-        console.log('ðŸ† Initializing Dean\'s List content...');
         
         // Remove semester filter if it exists
         const semesterFilter = document.querySelector('.semester-filter');
@@ -168,12 +158,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Load Dean's List data
         loadDeansListData();
         
-        console.log('âœ… Dean\'s List content initialized');
     }
 
     // Initialize Read More buttons with light gray to purple styling
     function initializeReadMoreButtons() {
-        console.log('ðŸ“– Initializing Read More buttons...');
         
         // Remove existing listeners to prevent duplicates
         $(document).off('click.readMore');
@@ -181,7 +169,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add event delegation for Read More buttons
         $(document).on('click.readMore', '.btn-read-more', function(e) {
             e.preventDefault();
-            console.log('ðŸ“– Read More button clicked!');
             
             const $btn = $(this);
             const $container = $btn.closest('.announcement-content-container, .event-description-container, .achievement-description-container');
@@ -246,12 +233,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        console.log('âœ… Read More buttons initialized');
     }
 
     // Initialize PDF buttons with light gray to purple styling
     function initializePDFButtons() {
-        console.log('ðŸ“„ Initializing PDF buttons...');
         
         // Remove existing listeners to prevent duplicates
         $(document).off('click.pdfButtons');
@@ -259,7 +244,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add event delegation for PDF buttons
         $(document).on('click.pdfButtons', '.btn-view-pdf, .btn-download-pdf', function(e) {
             e.preventDefault();
-            console.log('ðŸ“„ PDF button clicked!');
             
             const $btn = $(this);
             const isViewBtn = $btn.hasClass('btn-view-pdf');
@@ -300,12 +284,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         });
         
-        console.log('âœ… PDF buttons initialized');
     }
 
     // Initialize view buttons for sorting
     function initializeViewButtons() {
-        console.log('ðŸ” Initializing view buttons...');
         
         // Remove existing listeners to prevent duplicates
         $(document).off('click.viewButtons');
@@ -313,7 +295,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add event delegation for view buttons
         $(document).on('click.viewButtons', '.view-btn', function(e) {
             e.preventDefault();
-            console.log('ðŸ” View button clicked!');
             
             const $btn = $(this);
             const type = $btn.data('type');
@@ -327,13 +308,11 @@ document.addEventListener('DOMContentLoaded', function() {
             showNotification(`Sorting ${type} by ${sort === 'latest' ? 'latest first' : 'oldest first'}`, 'info');
             
             // Add your sorting logic here
-            console.log(`Sorting ${type} by ${sort}`);
             
             // Update the view buttons to have light gray to purple styling
             updateViewButtonsStyling();
         });
         
-        console.log('âœ… View buttons initialized');
     }
 
     // Update view buttons styling
@@ -354,7 +333,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize image gallery functionality with navigation - FIXED VERSION
     function initializeImageGallery() {
-        console.log('ðŸ–¼ï¸ Initializing image gallery...');
         
         // Remove existing listeners to prevent duplicates
         $(document).off('click.imageGallery');
@@ -362,7 +340,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add event delegation for image gallery
         $(document).on('click.imageGallery', '.gallery-image, .achievement-gallery-image, .event-gallery-image', function(e) {
             e.preventDefault();
-            console.log('ðŸ–¼ï¸ Image clicked!');
             
             const $clickedImage = $(this);
             const galleryContainer = $clickedImage.closest('.images-gallery, .achievement-gallery, .event-gallery');
@@ -395,7 +372,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Initialize modal navigation buttons
         initializeModalNavigation();
         
-        console.log('âœ… Image gallery initialized');
     }
 
     // Show image in modal - FIXED VERSION
@@ -737,7 +713,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function initializeDeansListContent() {
-        console.log('🏆 Initializing Dean\'s List content...');
 
         await loadDeansListFromDB();
 
@@ -770,11 +745,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         updateDeansListContent();
-        console.log('✅ Dean\'s List content initialized');
     }
     // Initialize dropdown hover functionality
     function initializeDropdownHover() {
-        console.log('ðŸ”„ Initializing dropdown hover functionality...');
         
         // Desktop hover functionality
         if (window.innerWidth >= 992) {
@@ -799,25 +772,20 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        console.log('âœ… Dropdown hover functionality initialized');
     }
 
     // Handle navigation from dropdown menu - FIXED VERSION
     function setupDropdownNavigation() {
-        console.log('ðŸ”— Setting up dropdown navigation...');
         
         document.querySelectorAll('.section-link').forEach(item => {
             item.addEventListener('click', function(e) {
                 e.preventDefault();
                 const targetId = this.getAttribute('data-section');
-                console.log('ðŸ”— Navigation clicked:', targetId);
                 
                 if (this.classList.contains('blocked-nav-item')) {
-                    console.log('ðŸš« Item is blocked, skipping navigation');
                     return;
                 }
                 
-                console.log('ðŸŽ¯ Showing section:', targetId);
                 showSection(targetId);
                 
                 if (window.innerWidth < 992) {
@@ -829,7 +797,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        console.log('âœ… Dropdown navigation setup completed');
     }
 
     // Handle browser back/forward buttons
@@ -863,19 +830,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const updatesPageSections = document.querySelectorAll('.updates-section .content-section');
         if (updatesPageSections.length === 0) {
             // Not on the updates page, don't modify the URL
-            console.log('ðŸš« Not on updates page, skipping hash navigation');
             return;
         }
         
         let hash = window.location.hash.substring(1);
         const validSections = ['announcements-section', 'events-achievements-section', 'deanslist-section'];
         
-        console.log('ðŸ”— Initial hash:', hash);
         
         // Map hash to actual section IDs
         if (hashMapping[hash]) {
             hash = hashMapping[hash];
-            console.log('ðŸ”— Mapped hash to:', hash);
         }
         
         // Determine which section to show
@@ -885,11 +849,9 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (hash) {
             // If there's a hash but it's not valid, show announcements
             targetSection = 'announcements-section';
-            console.log('ðŸ”— Invalid hash, defaulting to:', targetSection);
         } else {
             // No hash at all - just show announcements without modifying URL
             targetSection = 'announcements-section';
-            console.log('ðŸ”— No hash, showing default section');
             // Don't add hash to URL when coming from other pages
             setTimeout(() => {
                 showSection(targetSection);
@@ -897,7 +859,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        console.log('ðŸŽ¯ Final target section:', targetSection);
         
         // Show the target section with a small delay to ensure DOM is ready
         setTimeout(() => {
@@ -968,7 +929,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // Back to Top functionality
     function initBackToTop() {
-        console.log('â¬†ï¸ Initializing back to top button...');
         
         const backToTopBtn = document.getElementById('backToTop');
         if (!backToTopBtn) return;
@@ -991,7 +951,6 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleBackToTop();
         window.addEventListener('scroll', toggleBackToTop);
         
-        console.log('âœ… Back to top button initialized');
     }
 
     // Create back to top button if not exists
@@ -1112,7 +1071,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Setup blocked navigation notifications
     function setupBlockedNavigationNotifications() {
-        console.log('ðŸš« Setting up blocked navigation notifications...');
         
         // Block specific dropdown items from Academics
         const blockedItems = [
@@ -1156,12 +1114,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        console.log('âœ… Navigation blocking setup completed');
     }
 
     // Initialize everything - COMPLETE VERSION
     function initializeAll() {
-        console.log('ðŸš€ Initializing Updates Page Complete System...');
         
         // Create back to top button
         createBackToTopButton();
@@ -1188,7 +1144,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Force re-apply role filter
         if (typeof window.filterContentByRole === 'function') {
             window.filterContentByRole(); 
-            console.log('âœ… Role-based blocking re-applied.');
         }
         
         // Double-check that only the correct section is visible
@@ -1208,8 +1163,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 100);
         
-        console.log('âœ… Updates Page Fully Initialized');
-        console.log('ðŸ“¢ All features loaded: Section switching, Read More buttons, PDF buttons, Dropdown hover, Floating button');
     }
 
     // Scroll event listener
@@ -1246,5 +1199,4 @@ document.addEventListener('DOMContentLoaded', function() {
     // Start the application
     initializeAll();
 
-    console.log('ðŸŽ‰ Updates Page JavaScript Loaded Successfully!');
 });

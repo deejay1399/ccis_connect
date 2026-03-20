@@ -15,7 +15,6 @@ window.organizationData = {
 
 // Function to initialize all organization data
 function initializeAllOrganizationData() {
-    console.log('📚 Initializing Organization Data...');
     
     // Initialize Legion data
     initializeLegionData();
@@ -23,7 +22,6 @@ function initializeAllOrganizationData() {
     // Initialize CS Guild data
     initializeCSGuildData();
     
-    console.log('✅ Organization Data Initialized');
 }
 
 // ==========================================
@@ -98,7 +96,7 @@ function initializeLegionData() {
         {
             id: 2,
             title: 'Tech Talk Series: Web Development Workshop',
-            description: 'Join us for an intensive 3-day workshop on modern web development. Topics include HTML5, CSS3, JavaScript ES6+, and React basics. Limited slots available. Registration fee: ₱200 for members, ₱350 for non-members.',
+            description: 'Join us for an intensive 3-day workshop on modern web development. Topics include HTML5, CSS3, JavaScript ES6+, and React basics. Limited slots available. Registration fee: â‚±200 for members, â‚±350 for non-members.',
             date: '2024-10-20',
             time: '09:00 AM',
             venue: 'Computer Laboratory 1',
@@ -107,7 +105,7 @@ function initializeLegionData() {
         {
             id: 3,
             title: 'Mobile Legends Tournament Registration Open',
-            description: 'The Legion is organizing the biggest Mobile Legends tournament of the year! Form your teams (5 members each) and register now. Amazing prizes await! Registration deadline is October 18. Entry fee: ₱500 per team.',
+            description: 'The Legion is organizing the biggest Mobile Legends tournament of the year! Form your teams (5 members each) and register now. Amazing prizes await! Registration deadline is October 18. Entry fee: â‚±500 per team.',
             date: '2024-10-25',
             venue: 'CCIS Gaming Area',
             createdAt: '2024-10-01'
@@ -170,7 +168,6 @@ function initializeLegionData() {
         }
     ];
     
-    console.log('✅ Legion Data Loaded');
 }
 
 // ==========================================
@@ -342,7 +339,6 @@ function initializeCSGuildData() {
         }
     ];
     
-    console.log('✅ CS Guild Data Loaded');
 }
 
 // Initialize data when the script loads

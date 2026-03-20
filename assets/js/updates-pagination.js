@@ -32,7 +32,6 @@ $(document).ready(function() {
         if (typeof window.showNotification === 'function') {
             window.showNotification(message, type || 'info');
         } else {
-            console.log('[notify]', type || 'info', message);
         }
     }
 
@@ -120,7 +119,6 @@ $(document).ready(function() {
     }
 
     function preloadAllContent() {
-        console.log('📦 Loading announcements + events from DB...');
 
         return $.when(fetchAnnouncements(), fetchEvents())
             .then((annRes, evRes) => {
@@ -144,7 +142,6 @@ $(document).ready(function() {
                     sorted: sortContent(events, 'latest')
                 };
 
-                console.log('✅ DB content loaded', { announcements: announcements.length, events: events.length });
             })
             .catch((xhr) => {
                 notify('Failed to load updates from database. Please try again later.', 'error');
@@ -157,24 +154,20 @@ $(document).ready(function() {
 
     // Initialize pagination system
     function initializePaginationSystem() {
-        console.log('🚀 Initializing Updates Pagination System...');
 
         preloadAllContent().then(() => {
             setupViewButtons();
             initializePaginationContent();
-            console.log('✅ Updates Pagination System Initialized');
         });
     }
 
     // Initialize pagination content
     function initializePaginationContent() {
-        console.log('🚀 Initializing pagination content...');
         
         // Load initial content for all sections from cache
         loadAnnouncements(1, 'latest');
         loadEvents(1, 'latest');
         
-        console.log('✅ Pagination content initialized');
     }
 
     // Set up view buttons for sorting
@@ -200,7 +193,6 @@ $(document).ready(function() {
 
     // Load section content - INSTANT DISPLAY
     function loadSectionContent(sectionId) {
-        console.log('📦 Loading section:', sectionId);
         
         switch(sectionId) {
             case 'announcements-section':
@@ -214,7 +206,6 @@ $(document).ready(function() {
                 updateEventsPaginationUI();
                 break;
             case 'deanslist-section':
-                console.log('🎓 Dean\'s List section - pagination system skipping');
                 break;
         }
     }
@@ -345,7 +336,6 @@ $(document).ready(function() {
             container.append(announcementHTML);
         });
         
-        console.log('✅ Announcements displayed with images and functional buttons');
     }
 
     function updateAnnouncementsPaginationUI() {
@@ -483,7 +473,6 @@ $(document).ready(function() {
             }
         });
         
-        console.log('✅ Events & Achievements displayed with images and functional buttons');
     }
 
     function updateEventsPaginationUI() {
@@ -580,18 +569,15 @@ $(document).ready(function() {
     // ========================================
 
     function initializeUpdatesPagination() {
-        console.log('🚀 Initializing Updates Pagination System...');
         
         preloadAllContent();
         setupViewButtons();
         
         setTimeout(() => {
             initializePaginationContent();
-            console.log('✅ Updates Pagination System Fully Initialized');
             
             const currentHash = window.location.hash.substring(1);
             if (currentHash === 'events-achievements' || currentHash === 'events-achievements-section') {
-                console.log('🎯 Immediate load for Events & Achievements');
                 loadSectionContent('events-achievements-section');
             }
         }, 200);

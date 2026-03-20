@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const notification = document.createElement('div');
         notification.className = `notification alert ${notificationClass} alert-dismissible fade show`;
         
-        // 🎯 CONSISTENT Top-Right positioning across all pages
+        // ðŸŽ¯ CONSISTENT Top-Right positioning across all pages
         notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
 
         notification.innerHTML = `
@@ -93,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Show specific section - FIXED VERSION
     function showSection(sectionId) {
-        console.log('Showing section:', sectionId);
         
         const sections = document.querySelectorAll('.content-section');
         sections.forEach(section => {
@@ -195,15 +194,12 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.dropdown-item[href^="#"]').forEach(item => {
             item.addEventListener('click', function(e) {
                 e.preventDefault();
-                console.log('Dropdown item clicked:', this.getAttribute('href'));
                 
                 // Check if the link is blocked first
                 if (this.classList.contains('blocked-nav-item')) {
-                    console.log('Item is blocked, skipping navigation');
                     return;
                 }
                 const targetId = this.getAttribute('href').substring(1);
-                console.log('Target section:', targetId);
                 showSection(targetId);
             });
         });
@@ -470,7 +466,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize everything - FIXED VERSION
     function initializeAll() {
-        console.log('Initializing About Page...');
         
         // Set up navigation
         handleHashOnLoad();
@@ -492,13 +487,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Force re-apply role filter
         if (typeof window.filterContentByRole === 'function') {
             window.filterContentByRole(); 
-            console.log('✅ Role-based blocking re-applied.');
         }
         
-        console.log('✅ About Page Loaded Successfully');
-        console.log('📖 History, VMGO, and Hymn sections initialized');
-        console.log('🎵 Video player ready for BISU Hymn');
-        console.log('🎯 All homepage functionality integrated');
     }
 
     // Scroll event listener - SAME AS HOMEPAGE

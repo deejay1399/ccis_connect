@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Show specific section - ENHANCED VERSION
     function showSection(sectionId) {
-        console.log('Showing section:', sectionId);
         
         const sections = document.querySelectorAll('.content-section');
         sections.forEach(section => {
@@ -119,7 +118,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadAcademicsPrograms() {
         // Fetch programs from database via AJAX
         const baseUrl = (window.BASE_URL || window.baseUrl || (window.location.origin + '/')) + 'index.php/academics/get_programs_json';
-        console.log('Fetching programs from:', baseUrl);
         
         fetch(baseUrl, {
             method: 'GET',
@@ -129,17 +127,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .then(response => {
-            console.log('Response status:', response.status);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
-            console.log('Programs fetched from database:', data);
             if (data && Array.isArray(data) && data.length > 0) {
                 academicsPrograms = data;
-                console.log('Successfully loaded', data.length, 'programs from database');
             } else {
                 console.warn('No programs returned from database, using defaults');
                 academicsPrograms = getAcademicsDefaultPrograms();
@@ -148,7 +143,6 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('Error fetching programs from database:', error);
-            console.log('Falling back to default programs');
             // Fallback to default programs if fetch fails
             academicsPrograms = getAcademicsDefaultPrograms();
             renderAcademicsPrograms();
@@ -278,7 +272,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const newIds = newPrograms.map(p => p.id).join(',');
             
             if (currentIds !== newIds) {
-                console.log('Program updates detected, refreshing...');
                 academicsPrograms = newPrograms;
                 renderAcademicsPrograms();
                 
@@ -578,13 +571,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Academic Calendar Management
     function initCalendarViewer() {
-        console.log('Initializing Academic Calendar Viewer...');
         
         // View PDF button click
         const viewPdfBtn = document.getElementById('viewPdfBtn');
         if (viewPdfBtn) {
             viewPdfBtn.addEventListener('click', function() {
-                console.log('Opening PDF viewer...');
                 
                 // Hide placeholder and show PDF embed
                 const pdfPlaceholder = document.getElementById('pdf-placeholder');
@@ -610,7 +601,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const closePdfBtn = document.getElementById('closePdfBtn');
         if (closePdfBtn) {
             closePdfBtn.addEventListener('click', function() {
-                console.log('Closing PDF viewer...');
                 
                 // Hide PDF embed and show placeholder
                 const pdfPlaceholder = document.getElementById('pdf-placeholder');
@@ -720,15 +710,12 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.dropdown-item[href^="#"]').forEach(item => {
             item.addEventListener('click', function(e) {
                 e.preventDefault();
-                console.log('Dropdown item clicked:', this.getAttribute('href'));
                 
                 // Check if the link is blocked first (logic handled by session-management.js filter)
                 if (this.classList.contains('blocked-nav-item')) {
-                     console.log('Item is blocked, skipping navigation');
                      return;
                 }
                 const targetId = this.getAttribute('href').substring(1);
-                console.log('Target section:', targetId);
                 showSection(targetId);
             });
         });
@@ -808,7 +795,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize everything - ENHANCED VERSION
     function initializeAll() {
-        console.log('Initializing Academics Page...');
         
         // Initialize managers
         window.scheduleManager = new ScheduleManager();
@@ -826,7 +812,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Force re-apply role filter
         if (typeof window.filterContentByRole === 'function') {
             window.filterContentByRole(); 
-            console.log('✅ Role-based blocking re-applied.');
         }
         
         // Double-check that only the correct section is visible
@@ -846,11 +831,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 100);
         
-        console.log('✅ Academics Page Loaded Successfully');
-        console.log('📚 Programs, Curriculum, Schedule, and Calendar systems initialized');
-        console.log('📄 PDF files ready for: BSCS-CURRICULUM.pdf, BSIT-CURRICULUM.pdf, CLASS-SCHEDULE.pdf, ACADEMIC-CALENDAR.pdf');
-        console.log('🎯 Tapad buttons implemented for all PDF sections');
-        console.log('📱 Mobile dropdowns fixed to appear on left side');
     }
 
     // Start the application

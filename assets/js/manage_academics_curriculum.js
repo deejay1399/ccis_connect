@@ -6,25 +6,21 @@ let isUploading = false;
 
 // Initialize on DOM ready and also when tab becomes visible
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📚 Curriculum Management Initializing...');
-    console.log('🔗 API_BASE_URL:', window.API_BASE_URL);
     
     if (!window.API_BASE_URL) {
-        console.error('❌ API_BASE_URL not set! Check footer.php');
+        console.error('âŒ API_BASE_URL not set! Check footer.php');
     }
     
     // Small delay to ensure all DOM elements are ready
     setTimeout(function() {
         initializeCurriculumUpload();
         loadCurriculumList();
-        console.log('✅ Curriculum Management Ready');
     }, 100);
 });
 
 // Also reinitialize when curriculum tab is clicked
 document.addEventListener('shown.bs.tab', function(e) {
     if (e.target && e.target.id === 'curriculum-tab') {
-        console.log('📚 Curriculum tab shown - reinitializing...');
         initializeCurriculumUpload();
         loadCurriculumList();
     }
@@ -32,15 +28,13 @@ document.addEventListener('shown.bs.tab', function(e) {
 
 // Initialize Curriculum Upload Form
 function initializeCurriculumUpload() {
-    console.log('🔧 Setting up curriculum form...');
     const form = document.getElementById('uploadCurriculumForm');
     
     if (!form) {
-        console.error('❌ Upload form not found');
+        console.error('âŒ Upload form not found');
         return;
     }
     
-    console.log('✓ Form element found:', form);
     
     // Remove old listeners by cloning
     const formClone = form.cloneNode(true);
@@ -49,18 +43,17 @@ function initializeCurriculumUpload() {
     // Add new listener to cloned form
     const newForm = document.getElementById('uploadCurriculumForm');
     if (!newForm) {
-        console.error('❌ Form not found after clone');
+        console.error('âŒ Form not found after clone');
         return;
     }
     
     newForm.addEventListener('submit', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('📝 Form submitted - AJAX mode');
         
         // Prevent double submission
         if (isUploading) {
-            console.warn('⚠️ Upload already in progress');
+            console.warn('âš ï¸ Upload already in progress');
             showNotification('Upload already in progress. Please wait...', 'warning');
             return;
         }
@@ -69,7 +62,7 @@ function initializeCurriculumUpload() {
         const fileInput = document.getElementById('curriculumFile');
         
         if (!curriculumName || !fileInput) {
-            console.error('❌ Form elements not found');
+            console.error('âŒ Form elements not found');
             showNotification('Form elements missing', 'error');
             return;
         }
@@ -87,7 +80,6 @@ function initializeCurriculumUpload() {
         }
         
         const file = fileInput.files[0];
-        console.log('📄 File selected:', file.name, 'Type:', file.type, 'Size:', file.size);
         
         // Validate file type
         if (file.type !== 'application/pdf') {
@@ -106,7 +98,6 @@ function initializeCurriculumUpload() {
         return false; // Extra safety
     });
     
-    console.log('✓ Curriculum form listener attached successfully');
 }
 
 // Upload Curriculum File
@@ -131,24 +122,19 @@ function uploadCurriculumFile(curriculumName, file) {
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
     
     const uploadUrl = window.API_BASE_URL + 'upload_curriculum';
-    console.log('🚀 Uploading to:', uploadUrl);
-    console.log('📦 FormData keys:', Array.from(formData.entries()));
     
     fetch(uploadUrl, {
         method: 'POST',
         body: formData
     })
     .then(response => {
-        console.log('📥 Response received:', response.status, response.statusText);
-        console.log('📥 Response headers:', response.headers);
         
         // Always try to parse JSON
         return response.text().then(text => {
-            console.log('📄 Raw response text:', text);
             try {
                 return JSON.parse(text);
             } catch (e) {
-                console.error('❌ Failed to parse JSON:', e);
+                console.error('âŒ Failed to parse JSON:', e);
                 throw new Error(`Invalid JSON response: ${text.substring(0, 200)}`);
             }
         }).then(data => {
@@ -159,21 +145,19 @@ function uploadCurriculumFile(curriculumName, file) {
         });
     })
     .then(data => {
-        console.log('✅ Response data:', data);
         
         if (data.success) {
-            console.log('✨ Success! File uploaded');
-            showNotification('✅ Curriculum uploaded successfully!', 'success');
+            showNotification('âœ… Curriculum uploaded successfully!', 'success');
             form.reset();
             setTimeout(() => loadCurriculumList(), 500);
         } else {
             const errorMsg = data.message || 'Error uploading curriculum';
-            console.error('❌ Upload failed:', errorMsg);
+            console.error('âŒ Upload failed:', errorMsg);
             showNotification('Error: ' + errorMsg, 'error');
         }
     })
     .catch(error => {
-        console.error('❌ Upload error:', error.message);
+        console.error('âŒ Upload error:', error.message);
         console.error('Full error:', error);
         showNotification('Error: ' + error.message, 'error');
     })
@@ -190,19 +174,16 @@ function uploadCurriculumFile(curriculumName, file) {
 // Load Curriculum List
 function loadCurriculumList() {
     const listUrl = window.API_BASE_URL + 'get_curriculums';
-    console.log('📂 Loading from:', listUrl);
     
     fetch(listUrl, {
         method: 'GET'
     })
     .then(response => {
-        console.log('📥 List response:', response.status);
         return response.text().then(text => {
-            console.log('📄 Raw response:', text.substring(0, 200));
             try {
                 return JSON.parse(text);
             } catch (e) {
-                console.error('❌ Failed to parse JSON:', e);
+                console.error('âŒ Failed to parse JSON:', e);
                 throw new Error(`Invalid JSON: ${text.substring(0, 100)}`);
             }
         }).then(data => {
@@ -213,11 +194,10 @@ function loadCurriculumList() {
         });
     })
     .then(data => {
-        console.log('📚 Curriculums loaded:', data);
         const container = document.getElementById('curriculumList');
         
         if (!container) {
-            console.warn('⚠️ Curriculum list container not found');
+            console.warn('âš ï¸ Curriculum list container not found');
             return;
         }
         
@@ -228,7 +208,7 @@ function loadCurriculumList() {
         }
     })
     .catch(error => {
-        console.error('❌ Error loading curriculums:', error);
+        console.error('âŒ Error loading curriculums:', error);
         const container = document.getElementById('curriculumList');
         if (container) {
             container.innerHTML = '<div class="col-12"><p class="text-danger text-center py-5">Error loading curriculums: ' + error.message + '</p></div>';
@@ -238,7 +218,6 @@ function loadCurriculumList() {
 
 // Render Curriculum List
 function renderCurriculumList(curriculums) {
-    console.log('🎨 Rendering', curriculums.length, 'curriculums');
     let html = '';
     
     curriculums.forEach((curriculum, index) => {
@@ -282,7 +261,6 @@ function renderCurriculumList(curriculums) {
 
 // Delete Curriculum
 function deleteCurriculumItem(curriculumId) {
-    console.log('🗑️ Delete requested for ID:', curriculumId);
     
     if (confirm('Are you sure you want to delete this curriculum? This action cannot be undone.')) {
         const deleteUrl = window.API_BASE_URL + 'delete_curriculum';
@@ -296,31 +274,28 @@ function deleteCurriculumItem(curriculumId) {
             body: 'id=' + curriculumId
         })
         .then(response => {
-            console.log('📥 Delete response:', response.status);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
-            console.log('✅ Delete response data:', data);
             if (data.success) {
-                showNotification('✅ Curriculum deleted successfully!', 'success');
+                showNotification('âœ… Curriculum deleted successfully!', 'success');
                 setTimeout(() => loadCurriculumList(), 500);
             } else {
-                showNotification('❌ ' + (data.message || 'Error deleting curriculum'), 'error');
+                showNotification('âŒ ' + (data.message || 'Error deleting curriculum'), 'error');
             }
         })
         .catch(error => {
-            console.error('❌ Delete error:', error);
-            showNotification('❌ Error deleting curriculum: ' + error.message, 'error');
+            console.error('âŒ Delete error:', error);
+            showNotification('âŒ Error deleting curriculum: ' + error.message, 'error');
         });
     }
 }
 
 // Preview PDF in Modal
 function previewPDF(pdfUrl, title) {
-    console.log('👀 Opening PDF preview:', title);
     const modal = new bootstrap.Modal(document.getElementById('pdfPreviewModal'));
     const pdfViewer = document.getElementById('pdfViewer');
     const downloadBtn = document.getElementById('pdfDownloadBtn');
@@ -341,7 +316,6 @@ function previewPDF(pdfUrl, title) {
 
 // Global notification function
 function showNotification(message, type = 'info') {
-    console.log('🔔 Notification:', type, message);
     
     const alertClass = {
         'success': 'alert-success',
@@ -367,7 +341,6 @@ function showNotification(message, type = 'info') {
     `;
     
     document.body.appendChild(notification);
-    console.log('✅ Notification displayed');
     
     // Auto remove after 6 seconds
     setTimeout(() => {

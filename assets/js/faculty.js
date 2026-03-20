@@ -21,7 +21,7 @@ $(document).ready(function() {
             const notification = document.createElement('div');
             notification.className = `notification alert ${notificationClass} alert-dismissible fade show`;
             
-            // 🎯 CONSISTENT Top-Right positioning across all pages
+            // ðŸŽ¯ CONSISTENT Top-Right positioning across all pages
             notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
 
             notification.innerHTML = `
@@ -209,7 +209,7 @@ $(document).ready(function() {
         }
     }
     
-    // ✅ BACK TO TOP BUTTON FUNCTIONALITY - COMPLETE FIX
+    // âœ… BACK TO TOP BUTTON FUNCTIONALITY - COMPLETE FIX
     function initBackToTop() {
         try {
             const $backToTop = $('#backToTop');
@@ -274,7 +274,6 @@ $(document).ready(function() {
             if (typeof window.filterContentByRole === 'function') {
                 setTimeout(() => {
                     window.filterContentByRole();
-                    console.log('✅ Role-based blocking applied on Faculty page');
                 }, 100);
             }
         } catch (error) {
@@ -451,13 +450,6 @@ $(document).ready(function() {
         safeInit(initFacultyFilter, 'initFacultyFilter');
         safeInit(initFacultyModal, 'initFacultyModal');
         
-        console.log('✅ CCIS Faculty Page Loaded Successfully');
-        console.log('🎯 All homepage functionality integrated');
-        console.log('📱 Mobile navigation menu initialized');
-        console.log('👨‍🏫 Faculty cards with hover effects');
-        console.log('🔍 Faculty search and filter initialized');
-        console.log('🔐 Role-based blocking applied');
-        console.log('⬆️ Back to Top button initialized');
     }
     
     // Scroll event listener - SAME AS HOMEPAGE

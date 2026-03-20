@@ -392,9 +392,8 @@ $(document).ready(function() {
         });
     }
 
-    // ✅✅✅ BACK TO TOP BUTTON FUNCTIONALITY - GUARANTEED WORKING
+    // âœ…âœ…âœ… BACK TO TOP BUTTON FUNCTIONALITY - GUARANTEED WORKING
     function initBackToTop() {
-        console.log('🔄 Initializing Back to Top button...');
         
         const $backToTop = $('#backToTop');
         
@@ -432,7 +431,6 @@ $(document).ready(function() {
         // Scroll event
         $(window).off('scroll.backtotop').on('scroll.backtotop', toggleBackToTop);
         
-        console.log('✅ Back to Top button initialized successfully');
     }
 
     // Enhanced navbar toggler accessibility
@@ -476,7 +474,7 @@ $(document).ready(function() {
         setupProgramInteractions();
     }
 
-    // ✅ UPDATED INITIALIZATION FUNCTION - PRIORITIZE BACK TO TOP
+    // âœ… UPDATED INITIALIZATION FUNCTION - PRIORITIZE BACK TO TOP
     function initializeAll() {
         
         // Initialize core functionality
@@ -485,7 +483,7 @@ $(document).ready(function() {
         enhanceMobileMenu();
         animateOnScroll();
         
-        // ✅ CRITICAL: Initialize Back to Top FIRST
+        // âœ… CRITICAL: Initialize Back to Top FIRST
         initBackToTop();
         
         // Initialize other features

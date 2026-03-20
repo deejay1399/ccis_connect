@@ -76,19 +76,6 @@
         window.baseUrl = '<?php echo base_url(); ?>';
         window.CSRF_TOKEN_NAME = '<?php echo $this->security->get_csrf_token_name(); ?>';
         window.CSRF_TOKEN_VALUE = '<?php echo $this->security->get_csrf_hash(); ?>';
-        window.CCIS_DISABLE_CONSOLE_NOISE = true;
-
-        (function suppressConsoleNoise() {
-            if (window.CCIS_DISABLE_CONSOLE_NOISE === false || !window.console) {
-                return;
-            }
-
-            ['log', 'info', 'debug', 'warn'].forEach(function(method) {
-                if (typeof window.console[method] === 'function') {
-                    window.console[method] = function() {};
-                }
-            });
-        })();
 
         window.sessionData = {
             isValid: <?php echo $this->session->userdata('logged_in') ? 'true' : 'false'; ?>,

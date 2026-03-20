@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📚 Program Offerings Page Ready');
     
     // Load schedules and calendars
     loadSchedules();
@@ -14,34 +13,28 @@ document.addEventListener('DOMContentLoaded', function() {
 // ============================================
 
 function loadSchedules() {
-    console.log('📅 Loading class schedules...');
     
     const apiUrl = window.BASE_URL + 'index.php/academics/api/schedules';
     
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-            console.log('📊 Schedules loaded:', data);
             
             if (data.success && data.data && data.data.length > 0) {
                 renderScheduleList(data.data);
             } else {
-                console.log('⚠️ No schedules found');
                 renderNoScheduleViewer();
             }
         })
         .catch(error => {
-            console.log('❌ Error loading schedules:', error);
             renderNoScheduleViewer();
         });
 }
 
 function renderScheduleList(schedules) {
-    console.log('🎨 Rendering schedule list:', schedules.length, 'items');
     
     const container = document.getElementById('schedule-viewer-container');
     if (!container) {
-        console.log('⚠️ Schedule viewer container not found');
         return;
     }
     
@@ -109,7 +102,6 @@ function renderScheduleList(schedules) {
         });
     });
     
-    console.log('✅ Schedule list rendered successfully');
 }
 
 function renderNoScheduleViewer() {
@@ -129,34 +121,28 @@ function renderNoScheduleViewer() {
 // ============================================
 
 function loadCalendars() {
-    console.log('📅 Loading academic calendars...');
     
     const apiUrl = window.BASE_URL + 'index.php/academics/api/calendars';
     
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-            console.log('📊 Calendars loaded:', data);
             
             if (data.success && data.data && data.data.length > 0) {
                 renderCalendarList(data.data);
             } else {
-                console.log('⚠️ No calendars found');
                 renderNoCalendarViewer();
             }
         })
         .catch(error => {
-            console.log('❌ Error loading calendars:', error);
             renderNoCalendarViewer();
         });
 }
 
 function renderCalendarList(calendars) {
-    console.log('🎨 Rendering calendar list:', calendars.length, 'items');
     
     const container = document.getElementById('calendar-viewer-container');
     if (!container) {
-        console.log('⚠️ Calendar viewer container not found');
         return;
     }
     
@@ -224,7 +210,6 @@ function renderCalendarList(calendars) {
         });
     });
     
-    console.log('✅ Calendar list rendered successfully');
 }
 
 function renderNoCalendarViewer() {
@@ -244,7 +229,6 @@ function renderNoCalendarViewer() {
 // ============================================
 
 function attachCurriculumListeners() {
-    console.log('📖 Attaching curriculum listeners');
     
     // View curriculum PDF buttons
     const viewCurriculumBtns = document.querySelectorAll('.view-curriculum-pdf');

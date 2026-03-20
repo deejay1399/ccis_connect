@@ -15,7 +15,6 @@ let currentHappeningsPage = 1;
 // ======================================== */
 
 $(document).ready(function() {
-    console.log('🌐 The Legion Admin System Loading...');
     
     // Check authentication
     const user = getCurrentUser();
@@ -36,7 +35,6 @@ $(document).ready(function() {
 });
 
 function initializeLegionAdmin() {
-    console.log('🎯 Initializing The Legion Admin...');
     
     const user = getCurrentUser();
     // Set admin name to Marc Jay Magan and role to The Legion Admin
@@ -80,7 +78,6 @@ function initializeLegionAdmin() {
         // The password modal will be shown by initializePasswordManager()
     }
     
-    console.log('✅ The Legion Admin Initialized');
 }
 
 function initializeNavigation() {
@@ -123,7 +120,6 @@ function initializeNavigation() {
 }
 
 function initializeEventHandlers() {
-    console.log('🔗 Initializing event handlers...');
     
     // Quick Actions
     $('.action-btn[data-action="add-officer"]').on('click', showAddOfficerModal);
@@ -148,7 +144,6 @@ function initializeEventHandlers() {
         logoutUser(); // This now uses the confirmation modal like homepage
     });
     
-    console.log('✅ Event handlers initialized');
 }
 
 // ======================================== */
@@ -382,7 +377,6 @@ function showConfirmationModal(title, message, confirmCallback, cancelCallback =
 // ======================================== */
 
 function showAddOfficerModal() {
-    console.log('➕ Opening Add Officer Modal');
     const modalHTML = `
         <div class="modal fade" id="officerModal" tabindex="-1">
             <div class="modal-dialog">
@@ -445,7 +439,6 @@ function previewOfficerPicture(event) {
 }
 
 function showEditOfficerModal(officerId) {
-    console.log('✏️ Opening Edit Officer Modal for ID:', officerId);
     const officers = getLegionOfficers();
     const officer = officers.find(m => m.id === officerId);
     
@@ -622,7 +615,6 @@ function createOfficerCard(officer) {
 }
 
 function editOfficer(officerId) {
-    console.log('✏️ Editing officer:', officerId);
     showEditOfficerModal(officerId);
 }
 
@@ -649,7 +641,6 @@ function removeOfficer(officerId) {
 // ======================================== */
 
 function showAddAdviserModal() {
-    console.log('👔 Opening Add Adviser Modal');
     const modalHTML = `
         <div class="modal fade" id="adviserModal" tabindex="-1">
             <div class="modal-dialog">
@@ -716,7 +707,6 @@ function previewAdviserPicture(event) {
 }
 
 function showEditAdviserModal(adviserId) {
-    console.log('✏️ Opening Edit Adviser Modal for ID:', adviserId);
     const advisers = getLegionAdvisers();
     const adviser = advisers.find(a => a.id === adviserId);
     
@@ -900,7 +890,6 @@ function createAdviserCard(adviser) {
 }
 
 function editAdviser(adviserId) {
-    console.log('✏️ Editing adviser:', adviserId);
     showEditAdviserModal(adviserId);
 }
 
@@ -927,7 +916,6 @@ function removeAdviser(adviserId) {
 // ======================================== */
 
 function showAddAnnouncementModal() {
-    console.log('📢 Opening Add Announcement Modal');
     const modalHTML = `
         <div class="modal fade" id="announcementModal" tabindex="-1">
             <div class="modal-dialog modal-lg">
@@ -983,7 +971,6 @@ function showAddAnnouncementModal() {
 }
 
 function showEditAnnouncementModal(announcementId) {
-    console.log('✏️ Opening Edit Announcement Modal for ID:', announcementId);
     const announcements = getLegionAnnouncements();
     const announcement = announcements.find(a => a.id === announcementId);
     
@@ -1245,7 +1232,6 @@ function formatTime(timeString) {
 }
 
 function editAnnouncement(announcementId) {
-    console.log('✏️ Editing announcement:', announcementId);
     showEditAnnouncementModal(announcementId);
 }
 
@@ -1274,7 +1260,6 @@ function removeAnnouncement(announcementId) {
 let selectedFiles = [];
 
 function showUploadHappeningModal() {
-    console.log('📷 Opening Upload Happening Modal');
     selectedFiles = [];
     
     const modalHTML = `

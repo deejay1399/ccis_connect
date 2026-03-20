@@ -6,25 +6,21 @@ let isScheduleUploading = false;
 
 // Initialize on DOM ready and also when tab becomes visible
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📅 Class Schedules Management Initializing...');
-    console.log('🔗 API_BASE_URL:', window.API_BASE_URL);
     
     if (!window.API_BASE_URL) {
-        console.error('❌ API_BASE_URL not set! Check footer.php');
+        console.error('âŒ API_BASE_URL not set! Check footer.php');
     }
     
     // Small delay to ensure all DOM elements are ready
     setTimeout(function() {
         initializeScheduleUpload();
         loadScheduleList();
-        console.log('✅ Class Schedules Management Ready');
     }, 100);
 });
 
 // Also reinitialize when schedule tab is clicked
 document.addEventListener('shown.bs.tab', function(e) {
     if (e.target && e.target.id === 'schedule-tab') {
-        console.log('📅 Schedule tab shown - reinitializing...');
         initializeScheduleUpload();
         loadScheduleList();
     }
@@ -32,15 +28,13 @@ document.addEventListener('shown.bs.tab', function(e) {
 
 // Initialize Schedule Upload Form
 function initializeScheduleUpload() {
-    console.log('🔧 Setting up schedule form...');
     const form = document.getElementById('uploadScheduleForm');
     
     if (!form) {
-        console.error('❌ Upload form not found - waiting...');
+        console.error('âŒ Upload form not found - waiting...');
         return;
     }
     
-    console.log('✓ Form element found:', form);
     
     // Remove old listeners by cloning
     const formClone = form.cloneNode(true);
@@ -49,18 +43,17 @@ function initializeScheduleUpload() {
     // Add new listener to cloned form
     const newForm = document.getElementById('uploadScheduleForm');
     if (!newForm) {
-        console.error('❌ Form not found after clone');
+        console.error('âŒ Form not found after clone');
         return;
     }
     
     newForm.addEventListener('submit', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('📝 Schedule form submitted - AJAX mode');
         
         // Prevent double submission
         if (isScheduleUploading) {
-            console.warn('⚠️ Upload already in progress');
+            console.warn('âš ï¸ Upload already in progress');
             showNotification('Upload already in progress. Please wait...', 'warning');
             return;
         }
@@ -70,7 +63,7 @@ function initializeScheduleUpload() {
         const fileInput = document.getElementById('scheduleFile');
         
         if (!yearInput || !semesterInput || !fileInput) {
-            console.error('❌ Form elements not found');
+            console.error('âŒ Form elements not found');
             showNotification('Form elements missing', 'error');
             return;
         }
@@ -94,7 +87,6 @@ function initializeScheduleUpload() {
         }
         
         const file = fileInput.files[0];
-        console.log('📄 File selected:', file.name, 'Type:', file.type, 'Size:', file.size);
         
         // Validate file type
         if (file.type !== 'application/pdf') {
@@ -113,7 +105,6 @@ function initializeScheduleUpload() {
         return false; // Extra safety
     });
     
-    console.log('✓ Schedule form listener attached successfully');
 }
 
 // Upload Schedule File
@@ -141,24 +132,19 @@ function uploadScheduleFile(academicYear, semester, file) {
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
     
     const uploadUrl = window.API_BASE_URL + 'upload_schedule';
-    console.log('🚀 Uploading to:', uploadUrl);
-    console.log('📦 FormData keys:', Array.from(formData.entries()));
     
     fetch(uploadUrl, {
         method: 'POST',
         body: formData
     })
     .then(response => {
-        console.log('📥 Response received:', response.status, response.statusText);
-        console.log('📥 Response headers:', response.headers);
         
         // Always try to parse JSON
         return response.text().then(text => {
-            console.log('📄 Raw response text:', text);
             try {
                 return JSON.parse(text);
             } catch (e) {
-                console.error('❌ Failed to parse JSON:', e);
+                console.error('âŒ Failed to parse JSON:', e);
                 throw new Error(`Invalid JSON response: ${text.substring(0, 200)}`);
             }
         }).then(data => {
@@ -169,21 +155,19 @@ function uploadScheduleFile(academicYear, semester, file) {
         });
     })
     .then(data => {
-        console.log('✅ Response data:', data);
         
         if (data.success) {
-            console.log('✨ Success! File uploaded');
-            showNotification('✅ Class schedule uploaded successfully!', 'success');
+            showNotification('âœ… Class schedule uploaded successfully!', 'success');
             form.reset();
             setTimeout(() => loadScheduleList(), 500);
         } else {
             const errorMsg = data.message || 'Error uploading schedule';
-            console.error('❌ Upload failed:', errorMsg);
+            console.error('âŒ Upload failed:', errorMsg);
             showNotification('Error: ' + errorMsg, 'error');
         }
     })
     .catch(error => {
-        console.error('❌ Upload error:', error.message);
+        console.error('âŒ Upload error:', error.message);
         console.error('Full error:', error);
         showNotification('Error: ' + error.message, 'error');
     })
@@ -201,19 +185,16 @@ function uploadScheduleFile(academicYear, semester, file) {
 // Load Schedule List
 function loadScheduleList() {
     const listUrl = window.API_BASE_URL + 'get_schedules';
-    console.log('📂 Loading from:', listUrl);
     
     fetch(listUrl, {
         method: 'GET'
     })
     .then(response => {
-        console.log('📥 List response:', response.status);
         return response.text().then(text => {
-            console.log('📄 Raw response:', text.substring(0, 200));
             try {
                 return JSON.parse(text);
             } catch (e) {
-                console.error('❌ Failed to parse JSON:', e);
+                console.error('âŒ Failed to parse JSON:', e);
                 throw new Error(`Invalid JSON: ${text.substring(0, 100)}`);
             }
         }).then(data => {
@@ -224,11 +205,10 @@ function loadScheduleList() {
         });
     })
     .then(data => {
-        console.log('📅 Schedules loaded:', data);
         const container = document.getElementById('scheduleList');
         
         if (!container) {
-            console.warn('⚠️ Schedule list container not found');
+            console.warn('âš ï¸ Schedule list container not found');
             return;
         }
         
@@ -239,7 +219,7 @@ function loadScheduleList() {
         }
     })
     .catch(error => {
-        console.error('❌ Error loading schedules:', error);
+        console.error('âŒ Error loading schedules:', error);
         const container = document.getElementById('scheduleList');
         if (container) {
             container.innerHTML = '<div class="col-12"><p class="text-danger text-center py-5">Error loading schedules: ' + error.message + '</p></div>';
@@ -249,7 +229,6 @@ function loadScheduleList() {
 
 // Render Schedule List
 function renderScheduleList(schedules) {
-    console.log('🎨 Rendering', schedules.length, 'schedules');
     let html = '';
     
     schedules.forEach((schedule, index) => {
@@ -293,7 +272,6 @@ function renderScheduleList(schedules) {
 
 // Delete Schedule
 function deleteScheduleItem(scheduleId) {
-    console.log('🗑️ Delete requested for Schedule ID:', scheduleId);
     
     if (confirm('Are you sure you want to delete this schedule? This action cannot be undone.')) {
         const deleteUrl = window.API_BASE_URL + 'delete_schedule';
@@ -307,31 +285,28 @@ function deleteScheduleItem(scheduleId) {
             body: 'id=' + scheduleId
         })
         .then(response => {
-            console.log('📥 Delete response:', response.status);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
-            console.log('✅ Delete response data:', data);
             if (data.success) {
-                showNotification('✅ Class schedule deleted successfully!', 'success');
+                showNotification('âœ… Class schedule deleted successfully!', 'success');
                 setTimeout(() => loadScheduleList(), 500);
             } else {
-                showNotification('❌ ' + (data.message || 'Error deleting schedule'), 'error');
+                showNotification('âŒ ' + (data.message || 'Error deleting schedule'), 'error');
             }
         })
         .catch(error => {
-            console.error('❌ Delete error:', error);
-            showNotification('❌ Error deleting schedule: ' + error.message, 'error');
+            console.error('âŒ Delete error:', error);
+            showNotification('âŒ Error deleting schedule: ' + error.message, 'error');
         });
     }
 }
 
 // Preview Schedule PDF in Modal
 function previewSchedulePDF(pdfUrl, title) {
-    console.log('👀 Opening PDF preview:', title);
     const modal = new bootstrap.Modal(document.getElementById('pdfPreviewModal'));
     const pdfViewer = document.getElementById('pdfViewer');
     const downloadBtn = document.getElementById('pdfDownloadBtn');
@@ -352,7 +327,6 @@ function previewSchedulePDF(pdfUrl, title) {
 
 // Global notification function
 function showNotification(message, type = 'info') {
-    console.log('🔔 Notification:', type, message);
     
     const alertClass = {
         'success': 'alert-success',
@@ -378,7 +352,6 @@ function showNotification(message, type = 'info') {
     `;
     
     document.body.appendChild(notification);
-    console.log('✅ Notification displayed');
     
     // Auto remove after 6 seconds
     setTimeout(() => {

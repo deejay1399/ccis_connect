@@ -1,7 +1,6 @@
 // SUPER ADMIN CREATE USER JAVASCRIPT - UPDATED VERSION
 
 $(document).ready(function() {
-    console.log('?? Create User Page Loading...');
 
     function getBaseUrl() {
         if (typeof window.BASE_URL === 'string' && window.BASE_URL.length > 0) {
@@ -23,7 +22,6 @@ $(document).ready(function() {
     function checkSuperAdminSession() {
         const session = window.checkUserSession(); // Use global checkUserSession
         
-        console.log('Session check result:', session);
         
         if (!session.isValid) {
             console.warn('? No valid session found, redirecting to login');
@@ -44,7 +42,6 @@ $(document).ready(function() {
         }
         
         // Session is valid and user is superadmin
-        console.log('? Super Admin session confirmed:', session.user.name);
         
         // Update UI with admin info
         updateAdminUI(session.user);
@@ -57,7 +54,6 @@ $(document).ready(function() {
         $('#user-name').text(user.name);
         $('#user-role').text(user.role);
         
-        console.log('?? UI updated for:', user.name);
     }
     
     // Initialize page
@@ -78,17 +74,14 @@ $(document).ready(function() {
         // SETUP CONDITIONAL FIELDS HANDLER
         setupConditionalFields();
         
-        console.log('?? Create User Page initialized successfully');
     }
 
     // FUNCTION TO SETUP CONDITIONAL FIELDS DISPLAY
     function setupConditionalFields() {
-        console.log('?? Setting up conditional fields handler...');
 
         $('.user-type-radio').on('change', function() {
             const selectedRole = $(this).val();
             
-            console.log(`?? User type changed to: ${selectedRole}`);
             
             // Hide all conditional field sections
             $('#studentFields').slideUp(300);
@@ -103,18 +96,14 @@ $(document).ready(function() {
                 // Student
                 $('#studentFields').slideDown(300);
                 $('#studentNumber, #course, #yearLevel, #section').attr('required', 'required');
-                console.log('?? Student fields displayed');
             } else if (selectedRole === '2') {
                 // Faculty
-                console.log('????? Faculty selected (no additional fields required)');
             } else if (selectedRole === '4') {
                 // Organization Admin
                 $('#orgAdminFields').slideDown(300);
                 $('#organization').attr('required', 'required');
-                console.log('?? Organization Admin fields displayed');
             } else if (selectedRole === '1') {
                 // Super Admin
-                console.log('?? Super Admin selected (no additional fields needed)');
             }
         });
 
@@ -128,7 +117,6 @@ $(document).ready(function() {
             }
         });
 
-        console.log('? Conditional fields handler attached');
     }
     function setupPublicSiteLink() {
         const publicSiteLink = $('#view-public-site-link');
@@ -140,7 +128,6 @@ $(document).ready(function() {
                 // Store the current dashboard URL in local storage
                 localStorage.setItem('admin_return_url', dashboardUrl);
                 sessionStorage.setItem('admin_return_url', dashboardUrl); // Use both for redundancy
-                console.log(`?? Storing return URL: ${dashboardUrl}`);
                 // Continue with navigation
             });
         }
@@ -148,26 +135,22 @@ $(document).ready(function() {
     
     // FUNCTION TO REMOVE RETURN TO DASHBOARD LINKS
     function removeReturnToDashboard() {
-        console.log('?? Searching for Return to Dashboard links...');
         
         // Method 1: Remove by exact text content
         $('a').each(function() {
             const text = $(this).text().trim();
             if (text === 'Return to Dashboard') {
-                console.log('?? Removing Return to Dashboard link:', text);
                 $(this).remove();
             }
         });
         
         // Method 2: Remove by partial text match
         $('a:contains("Return to Dashboard")').each(function() {
-            console.log('?? Removing Return to Dashboard element');
             $(this).remove();
         });
         
         // Method 3: Remove any quick-links or footer-links containers
         $('.quick-links, .footer-links').each(function() {
-            console.log('?? Removing quick-links/footer-links container');
             $(this).remove();
         });
         
@@ -176,7 +159,6 @@ $(document).ready(function() {
             if ($(this).children().length === 0) {
                 const text = $(this).text().trim();
                 if (text.includes('Return to Dashboard')) {
-                    console.log('?? Removing element with text:', text);
                     $(this).remove();
                 }
             }
@@ -338,7 +320,6 @@ $(document).ready(function() {
             userData.organization_custom = $('#organizationCustom').val().trim();
         }
         
-        console.log('?? User data to submit:', userData);
         
         // Send to backend
         submitUserForm(userData);
@@ -352,7 +333,6 @@ $(document).ready(function() {
         
         const saveUrl = baseUrl + 'admin/users/save';
         
-        console.log('?? Submitting to:', saveUrl);
         
         $.ajax({
             url: saveUrl,
@@ -372,7 +352,6 @@ $(document).ready(function() {
                     
                     showFloatingNotification(`Account for ${fullName} (${roleDisplay}) has been created successfully!`);
                     
-                    console.log(`? User created successfully:`, response);
                     
                     // Reset the form
                     $('#create-user-form')[0].reset();

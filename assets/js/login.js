@@ -1,9 +1,8 @@
 // LOGIN PAGE JAVASCRIPT - WITH ENHANCED VALIDATION MESSAGES
 
 $(document).ready(function() {
-    console.log('🔐 CCIS Login System Loading...');
     
-    // ✅ CRITICAL: Initialize session management first for navigation blocking
+    // âœ… CRITICAL: Initialize session management first for navigation blocking
     const session = checkUserSession();
     if (session.isValid) {
         updateUIForLoggedInUser(session.user);
@@ -25,7 +24,6 @@ $(document).ready(function() {
 
     // CHECK IF ALREADY LOGGED IN
     if (session.isValid && !isIntentionalLogin()) {
-        console.log('User already logged in:', session.user);
         showSuccess(`Welcome back, ${session.user.name}! Redirecting...`);
         
         setTimeout(() => {
@@ -41,7 +39,7 @@ $(document).ready(function() {
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    // ✅ ENHANCED INITIALIZATION - IDENTICAL TO HOMEPAGE
+    // âœ… ENHANCED INITIALIZATION - IDENTICAL TO HOMEPAGE
     initializeAll();
 });
 
@@ -95,12 +93,11 @@ function showPasswordValidation(message) {
 }
 
 // ============================================
-// ✅ IDENTICAL NAVIGATION FUNCTIONALITY AS HOMEPAGE
+// âœ… IDENTICAL NAVIGATION FUNCTIONALITY AS HOMEPAGE
 // ============================================
 
 // Enhanced Dropdown Hover Functionality - IDENTICAL COPY FROM HOMEPAGE
 function initDropdownHover() {
-    console.log('🔄 Initializing dropdown hover (identical to homepage)...');
     
     const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
     
@@ -142,12 +139,10 @@ function initDropdownHover() {
         }
     });
     
-    console.log('✅ Dropdown hover initialized (identical to homepage)');
 }
 
 // Enhanced Mobile Menu Functionality - IDENTICAL COPY FROM HOMEPAGE
 function enhanceMobileMenu() {
-    console.log('📱 Initializing mobile menu (identical to homepage)...');
     
     const $navbarToggler = $('.navbar-toggler');
     const $navbarMain = $('.navbar-main');
@@ -254,12 +249,10 @@ function enhanceMobileMenu() {
         }
     });
     
-    console.log('✅ Mobile menu initialized (identical to homepage)');
 }
 
 // Smooth scrolling for anchor links - IDENTICAL COPY FROM HOMEPAGE
 function initSmoothScrolling() {
-    console.log('🎯 Initializing smooth scrolling (identical to homepage)...');
     
     $('a[href^="#"]').on('click', function(e) {
         // Only prevent default if it's a same-page anchor
@@ -274,12 +267,10 @@ function initSmoothScrolling() {
         }
     });
     
-    console.log('✅ Smooth scrolling initialized (identical to homepage)');
 }
 
 // Enhanced navbar toggler accessibility - IDENTICAL COPY FROM HOMEPAGE
 function initNavbarAccessibility() {
-    console.log('♿ Initializing navbar accessibility (identical to homepage)...');
     
     $('#mainNav').on('show.bs.collapse', function () {
         $('.navbar-toggler').attr('aria-expanded', 'true');
@@ -289,17 +280,14 @@ function initNavbarAccessibility() {
         $('.navbar-toggler').attr('aria-expanded', 'false');
     });
     
-    console.log('✅ Navbar accessibility initialized (identical to homepage)');
 }
 
 // Back to Top Button - IDENTICAL COPY FROM HOMEPAGE
 function initBackToTop() {
-    console.log('🔄 Initializing Back to Top button (identical to homepage)...');
     
     const $backToTop = $('#backToTop');
     
     if (!$backToTop.length) {
-        console.log('❌ Back to Top button not found in HTML, creating one...');
         // Create the button if it doesn't exist
         $('body').append(`
             <button id="backToTop" class="back-to-top-btn" aria-label="Back to top" style="display: none;">
@@ -314,19 +302,15 @@ function initBackToTop() {
     // Function to toggle button visibility
     function toggleBackToTop() {
         if ($(window).scrollTop() > 300) {
-            console.log('⬆️ Showing Back to Top button');
             $backToTopBtn.fadeIn(300);
         } else {
-            console.log('⬇️ Hiding Back to Top button');
             $backToTopBtn.fadeOut(300);
         }
     }
     
     // Click event for back to top
     $backToTopBtn.off('click').on('click', function() {
-        console.log('🎯 Back to Top clicked');
         $('html, body').animate({ scrollTop: 0 }, 800, function() {
-            console.log('✅ Scrolled to top');
         });
         return false;
     });
@@ -337,7 +321,6 @@ function initBackToTop() {
     // Scroll event
     $(window).off('scroll.backtotop').on('scroll.backtotop', toggleBackToTop);
     
-    console.log('✅ Back to Top button initialized successfully (identical to homepage)');
 }
 
 // ============================================
@@ -346,7 +329,6 @@ function initBackToTop() {
 
 // INITIALIZE LOGIN PAGE - COMBINES NAVIGATION + LOGIN
 function initializeLoginPage() {
-    console.log('🎯 Login page initialized');
     initializeSecurity();
     
     // PASSWORD VISIBILITY TOGGLE
@@ -447,27 +429,21 @@ function initializeLoginPage() {
     $('#email').focus();
 }
 
-// ✅ UPDATED INITIALIZATION FUNCTION - IDENTICAL STRUCTURE AS HOMEPAGE
+// âœ… UPDATED INITIALIZATION FUNCTION - IDENTICAL STRUCTURE AS HOMEPAGE
 function initializeAll() {
-    console.log('🚀 Initializing CCIS Login Page (IDENTICAL TO HOMEPAGE)...');
     
-    // ✅ CRITICAL: Initialize core navigation functionality (IDENTICAL TO HOMEPAGE)
+    // âœ… CRITICAL: Initialize core navigation functionality (IDENTICAL TO HOMEPAGE)
     initDropdownHover();
     enhanceMobileMenu();
     initSmoothScrolling();
     initNavbarAccessibility();
     
-    // ✅ CRITICAL: Initialize Back to Top (IDENTICAL TO HOMEPAGE)
+    // âœ… CRITICAL: Initialize Back to Top (IDENTICAL TO HOMEPAGE)
     initBackToTop();
     
     // Initialize login-specific functionality
     initializeLoginPage();
 
-    console.log('✅ CCIS Login Page Loaded Successfully');
-    console.log('✅ Back to Top button: ACTIVE');
-    console.log('✅ Navigation: ACTIVE');
-    console.log('✅ Dropdown Hover: ACTIVE (IDENTICAL TO HOMEPAGE)');
-    console.log('✅ All features working exactly like homepage');
 }
 
 // ============================================
@@ -476,31 +452,24 @@ function initializeAll() {
 
 // ROLE-BASED REDIRECTION (WITH SUPER ADMIN)
 function redirectBasedOnRole(user) {
-    console.log('🎯 Redirecting user based on role:', user.role, user.organization);
     
     if (user.role === 'superadmin') {
-        console.log('🚀 Redirecting to Super Admin Dashboard');
         window.location.replace('super_admin/index.html');
     } else if (user.role === 'orgadmin') {
         if (user.organization && user.organization.includes('CS Guild')) {
-            console.log('💻 Redirecting to CS Guild Admin');
             window.location.replace('csguild_admin/index.html');
         } else if (user.organization && user.organization.includes('The Legion')) {
-            console.log('🌐 Redirecting to The Legion Admin');
             window.location.replace('legion_admin/index.html');
         } else {
-            console.log('📱 Redirecting to Main Website');
             window.location.replace('index.html');
         }
     } else {
-        console.log('🎓 Redirecting to Main Website (Student)');
         window.location.replace('index.html');
     }
 }
 
 // USER AUTHENTICATION SYSTEM - NOW ACCEPTS BOTH BISU AND PERSONAL EMAILS
 function authenticateUser(email, password) {
-    console.log('🔑 Authenticating user via backend API:', email);
     
     // Make synchronous AJAX call to backend API
     let result = {success: false, message: 'Authentication failed'};
@@ -515,7 +484,6 @@ function authenticateUser(email, password) {
         },
         async: false,  // Synchronous call
         success: function(response) {
-            console.log('✅ Backend authentication successful:', response);
             if (response.success && response.user) {
                 result = {
                     success: true,
@@ -538,7 +506,7 @@ function authenticateUser(email, password) {
             }
         },
         error: function(xhr, status, error) {
-            console.error('❌ Backend authentication error:', error, xhr.responseText);
+            console.error('âŒ Backend authentication error:', error, xhr.responseText);
             let errorMsg = 'Invalid email or password';
             
             try {
@@ -574,7 +542,6 @@ function storeUserSession(user) {
     // NO EXPIRATION SET - SESSION WILL PERSIST UNTIL MANUAL LOGOUT
     logLoginActivity(user);
     
-    console.log('💾 User session stored (no expiration):', user);
 }
 
 // LOG LOGIN ACTIVITY
@@ -598,7 +565,6 @@ function logLoginActivity(user) {
     }
     
     localStorage.setItem('ccis_login_logs', JSON.stringify(loginLogs));
-    console.log('📝 Login activity logged for:', user.email);
 }
 
 // SECURITY FUNCTIONS
@@ -658,7 +624,6 @@ function checkUserSession() {
         const user = JSON.parse(userData);
         
         if (user.sessionId !== sessionId) {
-            console.log('🚫 Session ID mismatch');
             clearUserSession();
             return { isValid: false, user: null };
         }
@@ -666,7 +631,7 @@ function checkUserSession() {
         // NO EXPIRATION CHECK - SESSION IS ALWAYS VALID UNTIL MANUAL LOGOUT
         return { isValid: true, user: user };
     } catch (error) {
-        console.error('❌ Error parsing user data:', error);
+        console.error('âŒ Error parsing user data:', error);
         clearUserSession();
         return { isValid: false, user: null };
     }
@@ -684,7 +649,6 @@ function clearUserSession() {
     
     failedAttempts = 0;
     
-    console.log('🧹 User session completely cleared');
 }
 
 // HELPER FUNCTIONS
@@ -710,7 +674,6 @@ function showError(message) {
         $('#errorMessage').slideUp(300);
     }, 5000);
     
-    console.log('❌ Login error:', message);
 }
 
 function hideError() {
@@ -722,7 +685,6 @@ function showSuccess(message) {
     $('#successMessage').slideDown(300);
     $('#errorMessage').slideUp(300);
     
-    console.log('✅ Login success:', message);
 }
 
 function hideSuccess() {

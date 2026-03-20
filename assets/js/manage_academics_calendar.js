@@ -1,11 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📅 Academic Calendars Management Ready');
     
     // Watch for tab changes
     const calendarTabButton = document.getElementById('calendar-tab');
     if (calendarTabButton) {
         calendarTabButton.addEventListener('shown.bs.tab', function() {
-            console.log('📁 Calendar tab activated - reinitializing');
             attachCalendarFormListener();
             loadCalendars();
         });
@@ -19,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
 function attachCalendarFormListener() {
     const form = document.getElementById('uploadCalendarForm');
     if (!form) {
-        console.log('⚠️ Calendar form not found');
         return;
     }
     
@@ -35,11 +32,9 @@ function attachCalendarFormListener() {
         return false;
     }, true);
     
-    console.log('✓ Calendar form listener attached successfully');
 }
 
 function submitCalendarForm() {
-    console.log('📝 Calendar form submitted - AJAX mode');
     
     const form = document.getElementById('uploadCalendarForm');
     const year = document.getElementById('calendarYear').value;
@@ -66,14 +61,12 @@ function submitCalendarForm() {
         return;
     }
     
-    console.log('📂 File validation passed:', file.name);
     
     // Prepare FormData
     const formData = new FormData();
     formData.append('academic_year', year);
     formData.append('calendar_file', file);
     
-    console.log('🚀 Uploading to: ' + window.API_BASE_URL + 'upload_calendar');
     
     // Submit via AJAX
     fetch(window.API_BASE_URL + 'upload_calendar', {
@@ -81,11 +74,9 @@ function submitCalendarForm() {
         body: formData
     })
     .then(response => {
-        console.log('📨 Response received:', response.status);
         return response.json();
     })
     .then(data => {
-        console.log('✨ Response data:', data);
         if (data.success) {
             showCalendarMessage('Academic calendar uploaded successfully!', 'success');
             form.reset();
@@ -95,28 +86,23 @@ function submitCalendarForm() {
         }
     })
     .catch(error => {
-        console.log('❌ Error uploading calendar:', error);
         showCalendarMessage('Error uploading calendar: ' + error.message, 'danger');
     });
 }
 
 function loadCalendars() {
-    console.log('📥 Loading calendars...');
     
     fetch(window.API_BASE_URL + 'get_calendars')
         .then(response => response.json())
         .then(data => {
-            console.log('📊 Calendars loaded:', data);
             
             if (data.success && data.data) {
                 renderCalendars(data.data);
             } else {
-                console.log('⚠️ No calendars found');
                 document.getElementById('calendarList').innerHTML = '<p class="text-muted">No calendars uploaded yet</p>';
             }
         })
         .catch(error => {
-            console.log('❌ Error loading calendars:', error);
             document.getElementById('calendarList').innerHTML = '<p class="text-danger">Error loading calendars</p>';
         });
 }
@@ -168,7 +154,6 @@ function renderCalendars(calendars) {
 function deleteCalendar(id) {
     if (!confirm('Are you sure you want to delete this calendar?')) return;
     
-    console.log('🗑️ Deleting calendar:', id);
     
     fetch(window.API_BASE_URL + 'delete_calendar', {
         method: 'POST',
@@ -187,7 +172,6 @@ function deleteCalendar(id) {
         }
     })
     .catch(error => {
-        console.log('❌ Error deleting calendar:', error);
         showCalendarMessage('Error deleting calendar: ' + error.message, 'danger');
     });
 }

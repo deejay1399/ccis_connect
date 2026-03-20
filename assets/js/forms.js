@@ -21,7 +21,7 @@ $(document).ready(function() {
             const notification = document.createElement('div');
             notification.className = `notification alert ${notificationClass} alert-dismissible fade show`;
             
-            // 🎯 CONSISTENT Top-Right positioning across all pages
+            // ðŸŽ¯ CONSISTENT Top-Right positioning across all pages
             notification.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
 
             notification.innerHTML = `
@@ -651,10 +651,6 @@ $(document).ready(function() {
         safeInit(initFormAnimations, 'initFormAnimations');
         safeInit(initBackToTop, 'initBackToTop');
         
-        console.log('✅ CCIS Forms Page Loaded Successfully');
-        console.log('🎯 All homepage functionality integrated');
-        console.log('📄 PDF download and preview system ready');
-        console.log('📱 Mobile navigation menu initialized');
     }
 
     // Initialize everything

@@ -2,22 +2,18 @@
 function getCurrentSection() {
     // Get hash from URL
     let hash = window.location.hash;
-    console.log('?? Raw hash from URL:', hash);
     
     // Remove the # if it exists
     if (hash.startsWith('#')) {
         hash = hash.substring(1);
     }
-    console.log('?? Cleaned hash:', hash);
     
     // If hash exists and is valid, use it
     if (hash && sectionTemplates[hash]) {
-        console.log('? Valid hash found:', hash);
         return hash;
     }
     
     // Otherwise use default
-    console.log('?? Using default: featured-section');
     return 'featured-section';
 }
 
@@ -115,19 +111,15 @@ function renderDirectoryPhotoThumb(alumni) {
 
 // ALUMNI PAGE JAVASCRIPT - WITH HASH-BASED NAVIGATION
 $(document).ready(function() {
-    console.log('?? Alumni page initialized');
     
     // LOAD THE SECTION on initial page load
     currentSection = getCurrentSection();
-    console.log('?? Initial loading section:', currentSection);
     loadAlumniSection(currentSection);
     prefetchPublicAlumniData();
     
     // Setup hash change listener for dropdown clicks
     window.addEventListener('hashchange', function() {
-        console.log('?? Hash changed event fired!');
         const newSection = getCurrentSection();
-        console.log('?? Hash changed! New section:', newSection);
         loadAlumniSection(newSection);
     });
     
@@ -136,13 +128,11 @@ $(document).ready(function() {
         const href = $(this).attr('href');
         if (href && href.includes('#')) {
             const hash = href.substring(href.indexOf('#'));
-            console.log('?? Navigation link clicked, hash:', hash);
             
             // If already on alumni page, directly load section instead of waiting for hash change
             if (window.location.pathname.includes('alumni')) {
                 const sectionId = hash.substring(1); // Remove the #
                 if (sectionTemplates[sectionId]) {
-                    console.log('?? Directly loading section:', sectionId);
                     loadAlumniSection(sectionId);
                     e.preventDefault();
                     // Update hash for history
@@ -161,7 +151,6 @@ $(document).ready(function() {
     // Initialize chatbot responses
     setTimeout(setupAlumniChatbotResponses, 1000);
     
-    console.log('? Alumni page ready');
 });
 
 function prefetchPublicAlumniData() {
@@ -554,20 +543,17 @@ const sectionTemplates = {
 
 // ===== LOAD SECTION =====
 function loadAlumniSection(sectionId) {
-    console.log(`?? Loading section: ${sectionId}`);
     
     // Get template function
     const templateFunction = sectionTemplates[sectionId];
     
     if (!templateFunction) {
         console.error(`? Template not found for: ${sectionId}`);
-        console.log('Available templates:', Object.keys(sectionTemplates));
         return;
     }
     
     // Get content area
     const contentArea = $('.alumni-content-area');
-    console.log(`?? Content area found:`, contentArea.length > 0);
     
     if (contentArea.length === 0) {
         console.error('? Content area element not found!');
@@ -581,15 +567,12 @@ function loadAlumniSection(sectionId) {
     setTimeout(() => {
         // Clear and load new content
         contentArea.empty();
-        console.log(`??? Content cleared`);
         
         // Generate HTML from template
         const sectionHtml = templateFunction();
-        console.log(`?? Template generated for: ${sectionId}`);
         
         // Append new content
         contentArea.html(sectionHtml);
-        console.log(`? Content appended to page`);
         
         // Remove exit class, add enter class
         contentArea.removeClass('alumni-content-exit');
@@ -603,17 +586,14 @@ function loadAlumniSection(sectionId) {
             $('html, body').animate({
                 scrollTop: contentArea.offset().top - 100
             }, 500, function() {
-                console.log('? Scroll complete');
             });
         }, 100);
         
-        console.log(`? Section ${sectionId} loaded and displayed`);
     }, 300);
 }
 
 // ===== SETUP SECTION FUNCTIONALITY =====
 function setupSectionFunctionality(sectionId) {
-    console.log(`?? Setting up functionality for: ${sectionId}`);
     
     switch(sectionId) {
         case 'featured-section':
@@ -637,7 +617,6 @@ function setupSectionFunctionality(sectionId) {
 
 // ===== BUTTON EFFECTS =====
 function setupButtonEffects() {
-    console.log('?? Setting up button effects...');
     
     // Add pressed class on button click
     $(document).on('mousedown touchstart', '.alumni-view-details, .giveback-btn, .submit-update-btn, .btn-primary, .btn-secondary, .btn-outline-primary, #clear-filters', function() {
@@ -701,12 +680,10 @@ function setupButtonEffects() {
         }, 150);
     });
     
-    console.log('? Button effects setup complete');
 }
 
 // ===== FEATURED ALUMNI =====
 function setupFeaturedAlumni() {
-    console.log('?? Setting up featured alumni...');
     
     // Setup alumni card click
     $(document).on('click', '.alumni-view-details', function(e) {
@@ -722,11 +699,9 @@ function setupFeaturedAlumni() {
         }
     });
     
-    console.log('? Featured alumni setup complete');
 }
 
 function showAlumniDetails(alumniId) {
-    console.log(`??? Showing alumni details for ID: ${alumniId}`);
 
     const featuredAlumni = (alumniPublicData.featured || []).find(a => String(a.id) === String(alumniId));
     const directoryAlumni = (alumniPublicData.directory || []).find(a => String(a.id) === String(alumniId));
@@ -826,7 +801,6 @@ function showAlumniDetails(alumniId) {
 
 // ===== SEARCH AND FILTER =====
 function setupSearchAndFilter() {
-    console.log('?? Setting up search and filter...');
     
     // Wait a bit for DOM to be ready
     setTimeout(() => {
@@ -905,25 +879,21 @@ function setupSearchAndFilter() {
             showAlumniDetails(alumniId);
         });
         
-        console.log('? Search and filter setup complete');
     }, 100);
 }
 
 // ===== EVENT CARDS =====
 function setupEventCards() {
-    console.log('?? Setting up event cards...');
     
     $(document).on('click', '.event-card', function() {
         const eventTitle = $(this).find('h3').text();
         showNotification(`Event: ${eventTitle} - More details will be announced soon.`, 'info');
     });
     
-    console.log('? Event cards setup complete');
 }
 
 // ===== UPDATE FORM =====
 function setupUpdateForm() {
-    console.log('?? Setting up update form...');
 
     $(document).on('submit', '#alumni-update-form', function(e) {
         e.preventDefault();
@@ -983,18 +953,15 @@ function setupUpdateForm() {
         });
     });
 
-    console.log('? Update form setup complete');
 }
 
 // ===== GIVE BACK BUTTONS =====
 function setupGiveBackButtons() {
-    console.log('?? Setting up give back buttons...');
     
     $(document).on('click', '.giveback-btn', function(e) {
         e.stopPropagation();
         const givebackType = $(this).data('giveback-type');
         
-        console.log(`?? Give back button clicked: ${givebackType}`);
         
         if (givebackType === 'Donation') {
             // Show donation information modal
@@ -1005,11 +972,9 @@ function setupGiveBackButtons() {
         }
     });
     
-    console.log('? Give back buttons setup complete');
 }
 
 function showGivebackForm(givebackType) {
-    console.log(`?? Showing giveback form for: ${givebackType}`);
 
     const modalEl = document.getElementById('givebackFormModal');
     if (!modalEl) {
@@ -1053,12 +1018,10 @@ function showGivebackForm(givebackType) {
     
     showModalById('givebackFormModal');
     
-    console.log(`? Giveback form modal shown for: ${givebackType}`);
 }
 
 // ===== MODAL FUNCTIONS =====
 function setupModalEvents() {
-    console.log('?? Setting up modal events...');
 
     // Keep modal state clean to prevent frozen screen after submit/close.
     $('.modal').on('hidden.bs.modal', function() {
@@ -1168,7 +1131,6 @@ function setupModalEvents() {
         const alumniName = $('#alumniDetailsModal').data('alumni-name');
         
         if (alumniName) {
-            console.log(`?? Connecting with alumni: ${alumniName}`);
 
             $('#alumniDetailsModal')
                 .off('hidden.bs.modal.alumniConnectFlow')
@@ -1181,7 +1143,6 @@ function setupModalEvents() {
         }
     });
     
-    console.log('? Modal events setup complete');
 }
 
 // ===== FORM VALIDATION HELPERS =====
@@ -1259,7 +1220,6 @@ function storeAlumniUpdate(data) {
         let updates = JSON.parse(localStorage.getItem('alumni_updates') || '[]');
         updates.push(data);
         localStorage.setItem('alumni_updates', JSON.stringify(updates));
-        console.log('?? Alumni update stored:', data);
         return true;
     } catch (error) {
         console.error('? Error storing alumni update:', error);
@@ -1272,7 +1232,6 @@ function storeGivebackInterest(data) {
         let interests = JSON.parse(localStorage.getItem('giveback_interests') || '[]');
         interests.push(data);
         localStorage.setItem('giveback_interests', JSON.stringify(interests));
-        console.log('?? Giveback interest stored:', data);
         return true;
     } catch (error) {
         console.error('? Error storing giveback interest:', error);
@@ -1285,7 +1244,6 @@ function storeConnectionRequest(data) {
         let requests = JSON.parse(localStorage.getItem('connection_requests') || '[]');
         requests.push(data);
         localStorage.setItem('connection_requests', JSON.stringify(requests));
-        console.log('?? Connection request stored:', data);
         return true;
     } catch (error) {
         console.error('? Error storing connection request:', error);
@@ -1295,7 +1253,6 @@ function storeConnectionRequest(data) {
 
 // ===== NOTIFICATION FUNCTION =====
 function showNotification(message, type = 'info', duration = 5000) {
-    console.log(`?? Notification: ${type} - ${message}`);
     
     const colors = {
         success: '#28a745',
@@ -1437,9 +1394,7 @@ function setupAlumniChatbotResponses() {
             ]
         );
         
-        console.log('? Alumni chatbot responses added');
     } else {
-        console.log('?? Chatbot response system not available');
     }
 }
 
@@ -1448,7 +1403,6 @@ function setupAlumniChatbotResponses() {
 if (typeof window.alumniNav !== 'undefined') {
     $(document).ready(function() {
         if (window.alumniNav.section) {
-            console.log(`?? Navigation requested to: ${window.alumniNav.section}`);
             loadAlumniSection(window.alumniNav.section);
         }
     });

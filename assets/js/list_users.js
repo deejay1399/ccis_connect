@@ -1,16 +1,14 @@
 // LIST USERS PAGE JAVASCRIPT - UPDATED WITH MANAGE_FORMS STYLING
 
 $(document).ready(function() {
-    console.log('🔐 List Users Page Loading...');
     
     // Enhanced session check for Super Admin
     function checkSuperAdminSession() {
         const session = window.checkUserSession(); // Use global checkUserSession
         
-        console.log('Session check result:', session);
         
         if (!session.isValid) {
-            console.warn('❌ No valid session found, redirecting to login');
+            console.warn('âŒ No valid session found, redirecting to login');
             showNotification('Please login to access Super Admin dashboard', 'error');
             setTimeout(() => {
                 window.location.href = '../login.html';
@@ -19,7 +17,7 @@ $(document).ready(function() {
         }
         
         if (session.user.role !== 'superadmin') {
-            console.warn('🚫 Unauthorized access attempt by:', session.user.role);
+            console.warn('ðŸš« Unauthorized access attempt by:', session.user.role);
             showNotification('Access denied. Super Admin privileges required.', 'error');
             setTimeout(() => {
                 window.location.href = '../index.html';
@@ -28,7 +26,6 @@ $(document).ready(function() {
         }
         
         // Session is valid and user is superadmin
-        console.log('✅ Super Admin session confirmed:', session.user.name);
         
         // Update UI with admin info
         updateAdminUI(session.user);
@@ -41,31 +38,26 @@ $(document).ready(function() {
         $('#user-name').text(user.name);
         $('#user-role').text(user.role);
         
-        console.log('👤 UI updated for:', user.name);
     }
     
     // Function to remove Return to Dashboard links
     function removeReturnToDashboard() {
-        console.log('🔍 Searching for Return to Dashboard links...');
         
         // Method 1: Remove by exact text content
         $('a').each(function() {
             const text = $(this).text().trim();
             if (text === 'Return to Dashboard') {
-                console.log('🚫 Removing Return to Dashboard link:', text);
                 $(this).remove();
             }
         });
         
         // Method 2: Remove by partial text match
         $('a:contains("Return to Dashboard")').each(function() {
-            console.log('🚫 Removing Return to Dashboard element');
             $(this).remove();
         });
         
         // Method 3: Remove any quick-links or footer-links containers
         $('.quick-links, .footer-links').each(function() {
-            console.log('🚫 Removing quick-links/footer-links container');
             $(this).remove();
         });
         
@@ -74,7 +66,6 @@ $(document).ready(function() {
             if ($(this).children().length === 0) {
                 const text = $(this).text().trim();
                 if (text.includes('Return to Dashboard')) {
-                    console.log('🚫 Removing element with text:', text);
                     $(this).remove();
                 }
             }
@@ -90,7 +81,6 @@ $(document).ready(function() {
         // Initialize baseUrl if not already set
         if (!window.baseUrl) {
             window.baseUrl = window.BASE_URL || (window.location.origin + '/');
-            console.log('📍 Initialized baseUrl:', window.baseUrl);
         }
         
         // Setup public site link
@@ -111,44 +101,34 @@ $(document).ready(function() {
         // Remove any Return to Dashboard links
         removeReturnToDashboard();
         
-        console.log('🎯 List Users Page initialized successfully');
     }
 
     // Setup navigation handlers
     function setupNavigation() {
-        console.log('📍 Setting up navigation handlers...');
         
         // Get base URL
         const baseUrl = window.baseUrl || ((window.BASE_URL || (window.location.origin + '/')).replace(/\/$/, ''));
-        console.log('Base URL:', baseUrl);
         
         // Handle navigation clicks with event delegation
         $(document).on('click', '.navbar-nav .nav-link[data-section]', function(e) {
             e.preventDefault();
             const section = $(this).data('section');
-            console.log('🔗 Navigation clicked:', section);
             
             if (section === 'dashboard-home') {
-                console.log('→ Redirecting to Dashboard Home');
                 window.location.href = baseUrl + '/admin';
             } else if (section === 'content-management') {
-                console.log('→ Redirecting to Content Management');
                 window.location.href = baseUrl + '/admin#content-management';
             } else if (section === 'user-management') {
-                console.log('→ Redirecting to User Management');
                 window.location.href = baseUrl + '/admin#user-management';
             }
         });
         // Setup view public site link
         $(document).on('click', '#view-public-site-link', function(e) {
             e.preventDefault();
-            console.log('🌐 View Public Site clicked');
             const publicUrl = baseUrl.replace('/admin', '') || '/';
-            console.log('Opening:', publicUrl);
             window.open(publicUrl, '_blank');
         });
         
-        console.log('✅ Navigation handlers setup complete');
     }
     // Setup public site link
     function setupPublicSiteLink() {

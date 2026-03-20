@@ -1,18 +1,15 @@
 // MANAGE HOMEPAGE - Super Admin Functional Form Handler
 
 $(document).ready(function() {
-    console.log('🏠 Manage Homepage Loading...');
     
     // Initialize baseUrl
     if (!window.baseUrl) {
         window.baseUrl = window.BASE_URL || (window.location.origin + '/');
     }
     
-    console.log('Base URL:', window.baseUrl);
     
     // Modal for notifications
     function showModalNotification(title, message, type = 'success') {
-        console.log('Showing modal:', title, message, type);
         
         const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
         const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
@@ -50,7 +47,6 @@ $(document).ready(function() {
                     try {
                         modal.hide();
                     } catch(e) {
-                        console.log('Modal close error:', e);
                     }
                 }, 5000);
             } catch(e) {
@@ -61,14 +57,12 @@ $(document).ready(function() {
     
     // Load existing homepage data
     function loadHomepageData() {
-        console.log('Loading homepage data from:', window.baseUrl + 'admin/manage/load_homepage');
         
         $.ajax({
             url: window.baseUrl + 'admin/manage/load_homepage',
             method: 'GET',
             dataType: 'json',
             success: function(response) {
-                console.log('✅ Loaded data:', response);
                 if (response.success && response.data) {
                     const data = response.data;
                     $('#homepageTitle').val(data.title || '');
@@ -86,7 +80,6 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                console.log('Load error:', error, xhr.responseText);
             }
         });
     }
@@ -136,8 +129,6 @@ $(document).ready(function() {
         const originalText = submitBtn.html();
         submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Saving...').prop('disabled', true);
         
-        console.log('Submitting form to:', window.baseUrl + 'admin/manage/save_homepage');
-        console.log('Form data - Title:', title, 'Content:', content, 'File:', bannerFile ? 'Yes' : 'No');
         
         // Submit via AJAX
         $.ajax({
@@ -149,10 +140,8 @@ $(document).ready(function() {
             dataType: 'json',
             timeout: 10000,
             success: function(response) {
-                console.log('✅ Response received:', response);
                 
                 if (response.success) {
-                    console.log('✅ Save successful!');
                     showModalNotification(
                         'Success!', 
                         'Homepage content has been saved successfully.',
@@ -168,7 +157,6 @@ $(document).ready(function() {
                         loadHomepageData();
                     }, 1500);
                 } else {
-                    console.log('❌ Save failed:', response.message);
                     showModalNotification(
                         'Error',
                         response.message || 'Failed to save homepage content',
@@ -177,7 +165,7 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                console.error('❌ AJAX Error:', error, status);
+                console.error('âŒ AJAX Error:', error, status);
                 console.error('Response:', xhr.responseText);
                 
                 let errorMsg = 'An error occurred while saving. Please try again.';
@@ -188,14 +176,12 @@ $(document).ready(function() {
                         errorMsg = errorResponse.message;
                     }
                 } catch(e) {
-                    console.log('Could not parse error response');
                 }
                 
                 if (xhr.status === 413) {
                     errorMsg = 'File size is too large. Please upload a smaller image.';
                 }
                 
-                console.log('Showing error modal with message:', errorMsg);
                 showModalNotification('Error', errorMsg, 'error');
             },
             complete: function() {

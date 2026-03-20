@@ -1,6 +1,5 @@
 // MANAGE ALUMNI JAVASCRIPT - COMPLETE VERSION
 $(document).ready(function() {
-    console.log('👥 Manage Alumni Page Initializing...');
     
     // Check session and initialize
     if (!checkAdminSession()) {
@@ -16,7 +15,6 @@ $(document).ready(function() {
     // Setup auto-refresh every 30 seconds
     setInterval(loadActiveTabData, 30000);
     
-    console.log('✅ Manage Alumni Page Ready');
 });
 
 // Navigation Functions
@@ -40,7 +38,7 @@ function checkAdminSession() {
     const session = window.checkUserSession();
     
     if (!session.isValid) {
-        console.warn('❌ No valid session found, redirecting to login');
+        console.warn('âŒ No valid session found, redirecting to login');
         showNotification('Please login to access admin panel', 'error');
         setTimeout(() => {
             window.location.href = '../user_side/login.html';
@@ -49,7 +47,7 @@ function checkAdminSession() {
     }
     
     if (session.user.role !== 'superadmin') {
-        console.warn('🚫 Unauthorized access attempt by:', session.user.role);
+        console.warn('ðŸš« Unauthorized access attempt by:', session.user.role);
         showNotification('Access denied. Super Admin privileges required.', 'error');
         setTimeout(() => {
             window.location.href = '../user_side/login.html';
@@ -81,7 +79,6 @@ function updateCurrentDate() {
 
 // Initialize Page
 function initializePage() {
-    console.log('🔄 Initializing manage alumni page...');
     
     // Setup event listeners
     setupEventListeners();
@@ -187,7 +184,6 @@ function setupNotificationBell() {
         e.stopPropagation();
         $(this).addClass('active');
         notificationDropdown.toggleClass('show');
-        console.log('🔔 Notification bell clicked');
     });
     
     // Close dropdown when clicking outside
@@ -241,7 +237,7 @@ function loadNotificationCounts() {
         }
         
     } catch (error) {
-        console.error('❌ Error loading notification counts:', error);
+        console.error('âŒ Error loading notification counts:', error);
     }
 }
 
@@ -357,7 +353,7 @@ function loadNotificationDropdown() {
         });
         
     } catch (error) {
-        console.error('❌ Error loading notification dropdown:', error);
+        console.error('âŒ Error loading notification dropdown:', error);
         notificationList.html(`
             <div class="notification-empty">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -400,7 +396,7 @@ function markAllNotificationsAsRead() {
         loadActiveTabData();
         
     } catch (error) {
-        console.error('❌ Error marking all notifications as read:', error);
+        console.error('âŒ Error marking all notifications as read:', error);
         showNotification('Error marking notifications as read', 'error');
     }
 }
@@ -431,17 +427,15 @@ function markSingleNotificationAsRead(index, type) {
         
         if (items) {
             localStorage.setItem(storageKey, JSON.stringify(items));
-            console.log(`✅ Marked ${type} notification ${index} as read`);
         }
         
     } catch (error) {
-        console.error('❌ Error marking single notification as read:', error);
+        console.error('âŒ Error marking single notification as read:', error);
     }
 }
 
 // Handle Notification Click
 function handleNotificationClick(index, type) {
-    console.log(`📨 Notification clicked: ${type}, index: ${index}`);
     
     // Close dropdown
     $('#notification-dropdown').removeClass('show');
@@ -522,7 +516,7 @@ function loadMentorSubmissions() {
             $('#mentor-table-body').empty();
         }
     } catch (error) {
-        console.error('❌ Error loading mentor submissions:', error);
+        console.error('âŒ Error loading mentor submissions:', error);
         showNotification('Error loading mentor submissions', 'error');
     }
 }
@@ -577,7 +571,7 @@ function loadChatbotInquiries() {
             $('#chatbot-table-body').empty();
         }
     } catch (error) {
-        console.error('❌ Error loading chatbot inquiries:', error);
+        console.error('âŒ Error loading chatbot inquiries:', error);
         showNotification('Error loading chatbot inquiries', 'error');
     }
 }
@@ -633,7 +627,7 @@ function loadConnectionRequests() {
             $('#connection-table-body').empty();
         }
     } catch (error) {
-        console.error('❌ Error loading connection requests:', error);
+        console.error('âŒ Error loading connection requests:', error);
         showNotification('Error loading connection requests', 'error');
     }
 }
@@ -676,7 +670,7 @@ function loadAlumniUpdates() {
             $('#updates-table-body').empty();
         }
     } catch (error) {
-        console.error('❌ Error loading alumni updates:', error);
+        console.error('âŒ Error loading alumni updates:', error);
         showNotification('Error loading alumni updates', 'error');
     }
 }
@@ -702,7 +696,7 @@ function loadFeaturedAlumni() {
                             </div>
                             <div class="featured-content">
                                 <h5>${alumni.name}</h5>
-                                <p class="featured-batch">${alumni.batch} • ${alumni.program}</p>
+                                <p class="featured-batch">${alumni.batch} â€¢ ${alumni.program}</p>
                                 <p class="featured-position">${alumni.position}</p>
                                 <p class="featured-company">${alumni.company}</p>
                                 <div class="featured-actions">
@@ -724,7 +718,7 @@ function loadFeaturedAlumni() {
             $('#featured-alumni-grid').empty();
         }
     } catch (error) {
-        console.error('❌ Error loading featured alumni:', error);
+        console.error('âŒ Error loading featured alumni:', error);
         showNotification('Error loading featured alumni', 'error');
     }
 }
@@ -751,7 +745,7 @@ function updateNotificationCounts() {
         $('#connection-badge').text(connectionRequests.length).toggle(connectionRequests.length > 0);
         
     } catch (error) {
-        console.error('❌ Error updating notification counts:', error);
+        console.error('âŒ Error updating notification counts:', error);
     }
 }
 
@@ -915,7 +909,7 @@ function viewSubmissionDetails(index, type) {
         }
         
     } catch (error) {
-        console.error('❌ Error viewing details:', error);
+        console.error('âŒ Error viewing details:', error);
         showNotification('Error loading details', 'error');
     }
 }
@@ -938,7 +932,7 @@ function viewFeaturedDetails(index) {
                 </div>
                 <div class="col-md-8">
                     <h4>${featured.name}</h4>
-                    <p class="text-muted">${featured.batch} • ${featured.program}</p>
+                    <p class="text-muted">${featured.batch} â€¢ ${featured.program}</p>
                     <p><strong>Position:</strong> ${featured.position}</p>
                     <p><strong>Company:</strong> ${featured.company}</p>
                     <div class="mt-3">
@@ -957,7 +951,7 @@ function viewFeaturedDetails(index) {
         modal.show();
         
     } catch (error) {
-        console.error('❌ Error viewing featured alumni:', error);
+        console.error('âŒ Error viewing featured alumni:', error);
         showNotification('Error loading featured alumni details', 'error');
     }
 }
@@ -992,7 +986,7 @@ function markAsRead(index, type) {
             loadTabData($('#alumniTabs .nav-link.active').attr('id'));
         }
     } catch (error) {
-        console.error('❌ Error marking as read:', error);
+        console.error('âŒ Error marking as read:', error);
         showNotification('Error updating status', 'error');
     }
 }
@@ -1011,7 +1005,7 @@ function markAllMentorRead() {
         loadNotificationCounts();
         loadTabData('mentor-tab');
     } catch (error) {
-        console.error('❌ Error marking all mentor as read:', error);
+        console.error('âŒ Error marking all mentor as read:', error);
         showNotification('Error updating mentor submissions', 'error');
     }
 }
@@ -1027,7 +1021,7 @@ function markAllChatbotRead() {
         loadNotificationCounts();
         loadTabData('chatbot-tab');
     } catch (error) {
-        console.error('❌ Error marking all chatbot as read:', error);
+        console.error('âŒ Error marking all chatbot as read:', error);
         showNotification('Error updating chatbot inquiries', 'error');
     }
 }
@@ -1043,7 +1037,7 @@ function markAllConnectionRead() {
         loadNotificationCounts();
         loadTabData('connection-tab');
     } catch (error) {
-        console.error('❌ Error marking all connection as read:', error);
+        console.error('âŒ Error marking all connection as read:', error);
         showNotification('Error updating connection requests', 'error');
     }
 }
@@ -1074,7 +1068,7 @@ function deleteFeaturedAlumni(index) {
         showNotification('Featured alumni removed', 'success');
         loadTabData('featured-tab');
     } catch (error) {
-        console.error('❌ Error deleting featured alumni:', error);
+        console.error('âŒ Error deleting featured alumni:', error);
         showNotification('Error removing featured alumni', 'error');
     }
 }
@@ -1120,7 +1114,7 @@ function exportAlumniData() {
         showNotification('Alumni data exported successfully', 'success');
         
     } catch (error) {
-        console.error('❌ Error exporting alumni data:', error);
+        console.error('âŒ Error exporting alumni data:', error);
         showNotification('Error exporting alumni data', 'error');
     }
 }
@@ -1178,7 +1172,7 @@ function saveFeaturedAlumni() {
         loadTabData('featured-tab');
         
     } catch (error) {
-        console.error('❌ Error saving featured alumni:', error);
+        console.error('âŒ Error saving featured alumni:', error);
         showNotification('Error saving featured alumni', 'error');
     }
 }
@@ -1334,7 +1328,6 @@ function displayPrograms(programs) {
 
 // Setup add program form
 function setupAddProgramForm() {
-    console.log('Setting up add program form');
     // This is now handled by jQuery on submit at bottom of file
 }
 
@@ -1343,7 +1336,6 @@ function editProgram(programId) {
     fetch(getBaseUrl() + 'admin/content/api_load_program?id=' + programId)
         .then(response => response.json())
         .then(program => {
-            console.log('✅ Program loaded:', program);
             
             // Populate form fields
             document.getElementById('editProgramKey').value = program.program_id;
@@ -1375,7 +1367,7 @@ function editProgram(programId) {
             new bootstrap.Modal(document.getElementById('editProgramModal')).show();
         })
         .catch(error => {
-            console.error('❌ Error:', error);
+            console.error('âŒ Error:', error);
             showNotification('Error loading program details', 'error');
         });
 }
@@ -1408,26 +1400,22 @@ function deleteProgram(programId) {
 
 // Setup opportunity handlers
 function setupOpportunityHandlers() {
-    console.log('🔧 Setting up opportunity handlers');
     
     // Add opportunity button for add modal
     $(document).on('click', '#add-opportunity-btn', function(e) {
         e.preventDefault();
-        console.log('✅ Add opportunity button clicked');
         addOpportunityFieldAdd();
     });
     
     // Add opportunity button for edit modal
     $(document).on('click', '#edit-opportunity-btn', function(e) {
         e.preventDefault();
-        console.log('✅ Add opportunity button clicked (edit)');
         addOpportunityFieldEdit();
     });
     
     // Remove opportunity button
     $(document).on('click', '.remove-opportunity', function(e) {
         e.preventDefault();
-        console.log('✅ Remove opportunity button clicked');
         $(this).closest('.opportunity-input-group').remove();
     });
     
@@ -1456,11 +1444,10 @@ function setupOpportunityHandlers() {
 function addOpportunityFieldAdd() {
     const container = $('#add-opportunities-container');
     if (container.length === 0) {
-        console.error('❌ Container not found');
+        console.error('âŒ Container not found');
         return;
     }
     
-    console.log('✅ Adding opportunity field');
     
     const newInput = `
         <div class="opportunity-input-group mb-2">
@@ -1474,18 +1461,16 @@ function addOpportunityFieldAdd() {
     `;
     
     container.append(newInput);
-    console.log('✅ Opportunity field added');
 }
 
 // Add opportunity field for edit modal
 function addOpportunityFieldEdit() {
     const container = $('#edit-opportunities-container');
     if (container.length === 0) {
-        console.error('❌ Container not found');
+        console.error('âŒ Container not found');
         return;
     }
     
-    console.log('✅ Adding opportunity field (edit)');
     
     const newInput = `
         <div class="opportunity-input-group mb-2">
@@ -1499,7 +1484,6 @@ function addOpportunityFieldEdit() {
     `;
     
     container.append(newInput);
-    console.log('✅ Opportunity field added (edit)');
 }
 
 // Reset opportunities
@@ -1521,7 +1505,6 @@ function resetOpportunitiesAdd() {
 
 // Initialize on document ready
 $(document).ready(function() {
-    console.log('✅ Document ready - initializing programs management');
     initializeProgramsManagement();
     
     // Setup form submit handler
@@ -1529,15 +1512,12 @@ $(document).ready(function() {
 });
 
 function setupFormSubmitHandler() {
-    console.log('🔧 Setting up form submit handler');
     
     $(document).on('submit', '#addProgramForm', function(e) {
         e.preventDefault();
-        console.log('✅ Form submitted');
     
     // Collect all opportunity inputs
     const opportunityInputs = document.querySelectorAll('#add-opportunities-container .opportunity-input');
-    console.log('Opportunity inputs found:', opportunityInputs.length);
     
     const opportunities = [];
     opportunityInputs.forEach(input => {
@@ -1547,7 +1527,6 @@ function setupFormSubmitHandler() {
         }
     });
     
-    console.log('Filtered opportunities:', opportunities);
     
     if (opportunities.length === 0) {
         showNotification('Please add at least one career opportunity', 'error');
@@ -1563,12 +1542,6 @@ function setupFormSubmitHandler() {
         return;
     }
     
-    console.log('Submitting:', {
-        program_name: programName,
-        description: description,
-        duration_years: duration,
-        career_opportunities: opportunities.join(',')
-    });
     
     $.ajax({
         type: 'POST',
@@ -1581,9 +1554,8 @@ function setupFormSubmitHandler() {
         },
         dataType: 'json',
         success: function(data) {
-            console.log('✅ Response:', data);
             if (data.success) {
-                showNotification('✅ Program added successfully!', 'success');
+                showNotification('âœ… Program added successfully!', 'success');
                 $('#addProgramForm')[0].reset();
                 resetOpportunitiesAdd();
                 var modal = bootstrap.Modal.getInstance(document.getElementById('addProgramModal'));
@@ -1592,12 +1564,12 @@ function setupFormSubmitHandler() {
                 }
                 loadPrograms();
             } else {
-                showNotification('❌ ' + (data.message || 'Error adding program'), 'error');
+                showNotification('âŒ ' + (data.message || 'Error adding program'), 'error');
             }
         },
         error: function(err) {
-            console.error('❌ Error:', err);
-            showNotification('❌ Error adding program. Please try again.', 'error');
+            console.error('âŒ Error:', err);
+            showNotification('âŒ Error adding program. Please try again.', 'error');
         }
     });
     });
@@ -1606,11 +1578,9 @@ function setupFormSubmitHandler() {
 // Edit Program Form Submit Handler
 $(document).on('submit', '#editProgramForm', function(e) {
     e.preventDefault();
-    console.log('✅ Edit form submitted');
     
     // Collect all opportunity inputs
     const opportunityInputs = document.querySelectorAll('#edit-opportunities-container .opportunity-input');
-    console.log('Opportunity inputs found:', opportunityInputs.length);
     
     const opportunities = [];
     opportunityInputs.forEach(input => {
@@ -1620,7 +1590,6 @@ $(document).on('submit', '#editProgramForm', function(e) {
         }
     });
     
-    console.log('Filtered opportunities:', opportunities);
     
     if (opportunities.length === 0) {
         showNotification('Please add at least one career opportunity', 'error');
@@ -1637,13 +1606,6 @@ $(document).on('submit', '#editProgramForm', function(e) {
         return;
     }
     
-    console.log('Submitting update:', {
-        program_id: programId,
-        program_name: programName,
-        description: description,
-        duration_years: duration,
-        career_opportunities: opportunities.join(',')
-    });
     
     $.ajax({
         type: 'POST',
@@ -1657,21 +1619,20 @@ $(document).on('submit', '#editProgramForm', function(e) {
         },
         dataType: 'json',
         success: function(data) {
-            console.log('✅ Response:', data);
             if (data.success) {
-                showNotification('✅ Program updated successfully!', 'success');
+                showNotification('âœ… Program updated successfully!', 'success');
                 var modal = bootstrap.Modal.getInstance(document.getElementById('editProgramModal'));
                 if (modal) {
                     modal.hide();
                 }
                 loadPrograms();
             } else {
-                showNotification('❌ ' + (data.message || 'Error updating program'), 'error');
+                showNotification('âŒ ' + (data.message || 'Error updating program'), 'error');
             }
         },
         error: function(err) {
-            console.error('❌ Error:', err);
-            showNotification('❌ Error updating program. Please try again.', 'error');
+            console.error('âŒ Error:', err);
+            showNotification('âŒ Error updating program. Please try again.', 'error');
         }
     });
 });

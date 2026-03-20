@@ -1,15 +1,13 @@
 // Super Admin Dashboard - COMPLETE VERSION WITH NOTIFICATION SYSTEM
 $(document).ready(function() {
-    console.log('🔐 Super Admin Dashboard Loading...');
     
     // Enhanced session check for Super Admin
     function checkDashboardSession() {
         const session = window.checkUserSession();
         
-        console.log('Session check result:', session);
         
         if (!session.isValid) {
-            console.warn('❌ No valid session found, redirecting to login');
+            console.warn('âŒ No valid session found, redirecting to login');
             showNotification('Please login to access Super Admin dashboard', 'error');
             setTimeout(() => {
                 window.location.href = window.baseUrl ? window.baseUrl + 'login' : '/login';
@@ -28,7 +26,6 @@ $(document).ready(function() {
         }
         
         // Session is valid and user is superadmin
-        console.log('✅ Super Admin session confirmed:', session.user.name);
         
         // Update UI with admin info
         updateAdminUI(session.user);
@@ -48,7 +45,6 @@ $(document).ready(function() {
         // Setup public site link to store return URL
         setupPublicSiteLink();
 
-        console.log('👤 UI updated for:', user.name);
     }
     
     // Initialize dashboard
@@ -79,7 +75,6 @@ $(document).ready(function() {
         
         // Logout is handled globally by the shared superadmin footer handler.
 
-        console.log('🎯 Super Admin Dashboard initialized successfully');
     }
     
     const NOTIFICATION_API = {
@@ -287,7 +282,7 @@ $(document).ready(function() {
 
             displayNotificationBadges(notifications.length);
         } catch (error) {
-            console.error('❌ Error loading notification counts:', error);
+            console.error('âŒ Error loading notification counts:', error);
         }
     }
 
@@ -364,7 +359,7 @@ $(document).ready(function() {
                 await loadNotificationDropdown();
             });
         } catch (error) {
-            console.error('❌ Error loading notification dropdown:', error);
+            console.error('âŒ Error loading notification dropdown:', error);
             notificationList.html(`
                 <div class="notification-empty">
                     <i class="fas fa-exclamation-triangle"></i>
@@ -376,7 +371,6 @@ $(document).ready(function() {
 
     // Handle Notification Click
     async function handleNotificationClick(notification) {
-        console.log(`📨 Notification clicked: ${notification.kind}, id: ${notification.id}`);
 
         await markSingleNotificationAsRead(notification);
         $('#notification-dropdown').removeClass('show');
@@ -410,7 +404,7 @@ $(document).ready(function() {
             await loadNotificationCounts();
             await loadNotificationDropdown();
         } catch (error) {
-            console.error('❌ Error marking all notifications as read:', error);
+            console.error('âŒ Error marking all notifications as read:', error);
             showNotification('Error marking notifications as read', 'error');
         }
     }
@@ -432,7 +426,7 @@ $(document).ready(function() {
             const response = await apiPost(endpoint, payload);
             return !!(response && response.success);
         } catch (error) {
-            console.error('❌ Error marking single notification as read:', error);
+            console.error('âŒ Error marking single notification as read:', error);
             return false;
         }
     }
@@ -441,7 +435,6 @@ $(document).ready(function() {
     function handleExternalNavigation() {
         const targetSection = sessionStorage.getItem('targetSection');
         if (targetSection) {
-            console.log(`🔄 External navigation to: ${targetSection}`);
             showSection(targetSection);
             sessionStorage.removeItem('targetSection');
         }
@@ -460,7 +453,6 @@ $(document).ready(function() {
                 // Store the current dashboard URL in local storage
                 localStorage.setItem('admin_return_url', dashboardUrl);
                 sessionStorage.setItem('admin_return_url', dashboardUrl);
-                console.log(`🔗 Storing return URL: ${dashboardUrl}`);
             });
         }
     }
@@ -483,7 +475,6 @@ $(document).ready(function() {
         $('.navbar-main .nav-link[data-section]').on('click', function(e) {
             e.preventDefault();
             const targetSection = $(this).data('section');
-            console.log(`🔄 Switching to section: ${targetSection}`);
             showSection(targetSection);
             
             // Update URL hash for browser back button support
@@ -494,7 +485,6 @@ $(document).ready(function() {
         $('.btn[data-section]').on('click', function(e) {
             e.preventDefault();
             const targetSection = $(this).data('section');
-            console.log(`🔄 Overview navigation to: ${targetSection}`);
             showSection(targetSection);
             
             // Update URL hash for browser back button support
@@ -505,7 +495,6 @@ $(document).ready(function() {
         $(window).on('hashchange', function() {
             const hash = window.location.hash.substring(1); // Remove the #
             if (hash && ['dashboard-home', 'content-management', 'user-management'].includes(hash)) {
-                console.log(`🔗 Hash change detected: ${hash}`);
                 showSection(hash);
             }
         });
@@ -513,7 +502,6 @@ $(document).ready(function() {
         // Initialize with correct section based on URL hash or default
         const initialHash = window.location.hash.substring(1);
         if (initialHash && ['dashboard-home', 'content-management', 'user-management'].includes(initialHash)) {
-            console.log(`🔗 Initializing with hash: ${initialHash}`);
             showSection(initialHash);
         } else {
             showSection('dashboard-home');
@@ -531,7 +519,6 @@ $(document).ready(function() {
             const buttonText = isVisible ? 'Hide Additional Cards' : 'View Full Section';
             $(this).text(buttonText);
             
-            console.log(`📊 Overview cards toggled: ${isVisible ? 'visible' : 'hidden'}`);
         });
     }
     
@@ -551,31 +538,26 @@ $(document).ready(function() {
             scrollTop: $('.dashboard-bg').offset().top - 20
         }, 300);
         
-        console.log(`✅ Now showing section: ${sectionId}`);
     }
     
     // FUNCTION TO REMOVE RETURN TO DASHBOARD LINKS
     function removeReturnToDashboard() {
-        console.log('🔍 Searching for Return to Dashboard links...');
         
         // Method 1: Remove by exact text content
         $('a').each(function() {
             const text = $(this).text().trim();
             if (text === 'Return to Dashboard') {
-                console.log('🚫 Removing Return to Dashboard link:', text);
                 $(this).remove();
             }
         });
         
         // Method 2: Remove by partial text match
         $('a:contains("Return to Dashboard")').each(function() {
-            console.log('🚫 Removing Return to Dashboard element');
             $(this).remove();
         });
         
         // Method 3: Remove any quick-links or footer-links containers
         $('.quick-links, .footer-links').each(function() {
-            console.log('🚫 Removing quick-links/footer-links container');
             $(this).remove();
         });
         
@@ -584,7 +566,6 @@ $(document).ready(function() {
             if ($(this).children().length === 0) {
                 const text = $(this).text().trim();
                 if (text.includes('Return to Dashboard')) {
-                    console.log('🚫 Removing element with text:', text);
                     $(this).remove();
                 }
             }
