@@ -173,6 +173,7 @@ function enhanceMobileMenu() {
         $navbarCollapse.collapse('hide');
         $navbarMain.removeClass('mobile-open');
         $('body').removeClass('menu-open');
+        $('html').removeClass('menu-open');
         removeBackdrop();
         $navbarToggler.attr('aria-expanded', 'false');
     }
@@ -186,6 +187,7 @@ function enhanceMobileMenu() {
                 // Opening menu
                 $navbarMain.addClass('mobile-open');
                 $('body').addClass('menu-open');
+                $('html').addClass('menu-open');
                 createBackdrop();
                 $navbarToggler.attr('aria-expanded', 'true');
             } else {

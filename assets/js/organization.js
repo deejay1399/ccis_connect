@@ -644,6 +644,7 @@ document.addEventListener('DOMContentLoaded', function() {
             navbarCollapse?.classList.remove('show');
             navbarMain.classList.remove('mobile-open');
             document.body.classList.remove('menu-open');
+            document.documentElement.classList.remove('menu-open');
             removeBackdrop();
             navbarToggler.setAttribute('aria-expanded', 'false');
         }
@@ -656,6 +657,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!isOpen) {
                     navbarMain.classList.add('mobile-open');
                     document.body.classList.add('menu-open');
+                    document.documentElement.classList.add('menu-open');
                     createBackdrop();
                     navbarToggler.setAttribute('aria-expanded', 'true');
                 } else {

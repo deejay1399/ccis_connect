@@ -436,6 +436,114 @@
             });
         })();
     </script>
+    <script>
+        (function initializeSharedMobileNavLock() {
+            function setup() {
+                var navbarCollapse = document.getElementById('mainNav');
+                var navbarMain = document.querySelector('.navbar-main');
+
+                if (!navbarCollapse) {
+                    return;
+                }
+
+                var storedScrollY = 0;
+                var isLocked = false;
+
+                function lockScroll() {
+                    if (window.innerWidth >= 992 || isLocked) {
+                        return;
+                    }
+
+                    storedScrollY = window.scrollY || window.pageYOffset || 0;
+                    document.documentElement.classList.add('menu-open');
+                    document.body.classList.add('menu-open');
+                    document.body.style.top = '-' + storedScrollY + 'px';
+                    document.body.style.left = '0';
+                    document.body.style.right = '0';
+
+                    if (navbarMain) {
+                        navbarMain.classList.add('mobile-open');
+                    }
+
+                    isLocked = true;
+                }
+
+                function unlockScroll() {
+                    document.documentElement.classList.remove('menu-open');
+                    document.body.classList.remove('menu-open');
+                    document.body.style.removeProperty('top');
+                    document.body.style.removeProperty('left');
+                    document.body.style.removeProperty('right');
+
+                    if (navbarMain) {
+                        navbarMain.classList.remove('mobile-open');
+                    }
+
+                    if (isLocked) {
+                        window.scrollTo(0, storedScrollY);
+                    }
+
+                    storedScrollY = 0;
+                    isLocked = false;
+                }
+
+                function syncMenuState() {
+                    var shouldLock = window.innerWidth < 992 && navbarCollapse.classList.contains('show');
+
+                    if (shouldLock) {
+                        lockScroll();
+                    } else {
+                        unlockScroll();
+                    }
+                }
+
+                if (window.bootstrap && window.bootstrap.Collapse) {
+                    navbarCollapse.addEventListener('show.bs.collapse', function() {
+                        requestAnimationFrame(syncMenuState);
+                    });
+                    navbarCollapse.addEventListener('shown.bs.collapse', syncMenuState);
+                    navbarCollapse.addEventListener('hide.bs.collapse', function() {
+                        requestAnimationFrame(syncMenuState);
+                    });
+                    navbarCollapse.addEventListener('hidden.bs.collapse', syncMenuState);
+                }
+
+                var observer = new MutationObserver(syncMenuState);
+                observer.observe(navbarCollapse, {
+                    attributes: true,
+                    attributeFilter: ['class']
+                });
+
+                window.addEventListener('resize', syncMenuState);
+                window.addEventListener('orientationchange', syncMenuState);
+                window.addEventListener('pageshow', syncMenuState);
+
+                window.CCISCloseMobileMenu = function() {
+                    if (!navbarCollapse.classList.contains('show')) {
+                        syncMenuState();
+                        return;
+                    }
+
+                    if (window.bootstrap && window.bootstrap.Collapse) {
+                        window.bootstrap.Collapse.getOrCreateInstance(navbarCollapse, { toggle: false }).hide();
+                    } else {
+                        navbarCollapse.classList.remove('show');
+                        syncMenuState();
+                    }
+                };
+
+                window.CCISSyncMobileMenuState = syncMenuState;
+                syncMenuState();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', setup);
+                return;
+            }
+
+            setup();
+        })();
+    </script>
     <?php if (!empty($page_type)): ?>
         <?php if ($page_type === 'homepage'): ?>
             <script src="<?php echo base_url('assets/js/homepage.js'); ?>"></script>

@@ -337,6 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
             $navbarCollapse.collapse('hide');
             $navbarMain.removeClass('mobile-open');
             $('body').removeClass('menu-open');
+            $('html').removeClass('menu-open');
             removeBackdrop();
             $navbarToggler.attr('aria-expanded', 'false');
         }
@@ -350,6 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Opening menu
                     $navbarMain.addClass('mobile-open');
                     $('body').addClass('menu-open');
+                    $('html').addClass('menu-open');
                     createBackdrop();
                     $navbarToggler.attr('aria-expanded', 'true');
                 } else {
