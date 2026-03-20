@@ -19,6 +19,7 @@ class Alumni_model extends CI_Model {
         $this->load->dbforge();
         $this->ensure_notification_read_columns();
         $this->ensure_directory_schema();
+        $this->ensure_featured_schema();
     }
 
     private function ensure_notification_read_columns() {
@@ -57,6 +58,57 @@ class Alumni_model extends CI_Model {
                 ]
             ]);
         }
+    }
+
+    private function ensure_featured_schema() {
+        if (!$this->db->table_exists($this->featured_table)) {
+            return;
+        }
+
+        if (!$this->db->field_exists('video', $this->featured_table)) {
+            $this->dbforge->add_column($this->featured_table, [
+                'video' => [
+                    'type' => 'TEXT',
+                    'null' => true,
+                    'after' => 'photo'
+                ]
+            ]);
+        }
+
+        if (!$this->db->field_exists('media_type', $this->featured_table)) {
+            $this->dbforge->add_column($this->featured_table, [
+                'media_type' => [
+                    'type' => 'VARCHAR',
+                    'constraint' => 20,
+                    'null' => true,
+                    'after' => $this->db->field_exists('video', $this->featured_table) ? 'video' : 'photo'
+                ]
+            ]);
+        }
+    }
+
+    private function normalize_featured_row($row) {
+        if (!is_array($row)) {
+            return [];
+        }
+
+        $row['photo'] = !empty($row['photo']) ? trim((string) $row['photo']) : null;
+        $row['video'] = !empty($row['video']) ? trim((string) $row['video']) : null;
+
+        $mediaType = trim((string) ($row['media_type'] ?? ''));
+        if ($mediaType === '') {
+            if (!empty($row['video'])) {
+                $mediaType = 'video';
+            } elseif (!empty($row['photo'])) {
+                $mediaType = 'photo';
+            } else {
+                $mediaType = 'none';
+            }
+        }
+
+        $row['media_type'] = $mediaType;
+
+        return $row;
     }
 
     private function normalize_directory_row($row) {
@@ -268,11 +320,24 @@ class Alumni_model extends CI_Model {
     }
 
     public function get_all_featured() {
-        return $this->db->order_by('created_at', 'DESC')->get($this->featured_table)->result_array();
+        $rows = $this->db->order_by('created_at', 'DESC')->get($this->featured_table)->result_array();
+        return array_map([$this, 'normalize_featured_row'], $rows);
+    }
+
+    public function get_featured_by_id($id) {
+        $row = $this->db->where('id', (int) $id)->get($this->featured_table)->row_array();
+        return $row ? $this->normalize_featured_row($row) : null;
     }
 
     public function insert_featured($data) {
         $data['created_at'] = date('Y-m-d H:i:s');
+        if (empty($data['media_type'])) {
+            if (!empty($data['video'])) {
+                $data['media_type'] = 'video';
+            } elseif (!empty($data['photo'])) {
+                $data['media_type'] = 'photo';
+            }
+        }
         if ($this->db->insert($this->featured_table, $data)) {
             return $this->db->insert_id();
         }

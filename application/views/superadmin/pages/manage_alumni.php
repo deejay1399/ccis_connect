@@ -347,30 +347,71 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <!-- Modals -->
 <!-- Add Featured Alumni Modal -->
-<div class="modal fade" id="addFeaturedModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+<div class="modal fade" id="addFeaturedModal" tabindex="-1" aria-labelledby="addFeaturedModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content featured-form-modal">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-star me-2"></i>Add Featured Alumni</h5>
+                <div>
+                    <h5 class="modal-title" id="addFeaturedModalLabel"><i class="fas fa-star me-2"></i>Add Featured Alumni</h5>
+                    <p class="featured-modal-subtitle mb-0">Highlight a graduate with either a polished photo or a public-facing video.</p>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="addFeaturedForm">
-                    <div class="mb-3">
-                        <label for="featuredName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="featuredName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="featuredPosition" class="form-label">Position/Achievement</label>
-                        <input type="text" class="form-control" id="featuredPosition" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="featuredPhoto" class="form-label">Photo (optional)</label>
-                        <input type="file" class="form-control" id="featuredPhoto" accept="image/*">
-                    </div>
-                    <div class="mb-3">
-                        <label for="featuredBio" class="form-label">Biography</label>
-                        <textarea class="form-control" id="featuredBio" rows="3" required></textarea>
+                    <div class="row g-4 align-items-start">
+                        <div class="col-lg-7">
+                            <div class="mb-3">
+                                <label for="featuredName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="featuredName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="featuredPosition" class="form-label">Position/Achievement</label>
+                                <input type="text" class="form-control" id="featuredPosition" required>
+                            </div>
+                            <div class="mb-0">
+                                <label for="featuredBio" class="form-label">Biography</label>
+                                <textarea class="form-control" id="featuredBio" rows="6" required></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="featured-media-picker">
+                                <div class="featured-media-picker-head">
+                                    <h6 class="mb-1">Feature Media</h6>
+                                    <p class="mb-0">Choose one optional media type. Video is recommended for story-driven highlights.</p>
+                                </div>
+
+                                <label for="featuredPhoto" class="featured-media-option">
+                                    <span class="featured-media-option-icon"><i class="fas fa-image"></i></span>
+                                    <span class="featured-media-option-copy">
+                                        <strong>Upload Photo</strong>
+                                        <small>JPG, PNG, WEBP up to 5 MB</small>
+                                    </span>
+                                </label>
+                                <input type="file" class="form-control featured-media-input" id="featuredPhoto" accept="image/*">
+
+                                <label for="featuredVideo" class="featured-media-option featured-media-option-video">
+                                    <span class="featured-media-option-icon"><i class="fas fa-video"></i></span>
+                                    <span class="featured-media-option-copy">
+                                        <strong>Upload Video</strong>
+                                        <small>MP4, WebM, Ogg, MOV, or M4V up to 100 MB</small>
+                                    </span>
+                                </label>
+                                <input type="file" class="form-control featured-media-input" id="featuredVideo" accept="video/mp4,video/webm,video/ogg,.mov,.m4v">
+
+                                <div class="featured-media-preview" id="featuredMediaPreview">
+                                    <div class="featured-media-preview-empty">
+                                        <i class="fas fa-sparkles"></i>
+                                        <span>No media selected yet. The entry can still be saved without media.</span>
+                                    </div>
+                                </div>
+
+                                <div class="featured-media-note">
+                                    <i class="fas fa-circle-info me-2"></i>
+                                    Leaving while a file is uploading will cancel the upload and clean up unfinished media.
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -378,6 +419,44 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="submit" form="addFeaturedForm" class="btn btn-primary">Add Alumni</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="featured-upload-overlay" id="featuredUploadOverlay" hidden aria-hidden="true">
+    <div class="featured-upload-dialog" role="dialog" aria-modal="true" aria-labelledby="featuredUploadTitle">
+        <div class="featured-upload-orbit" aria-hidden="true">
+            <span class="featured-upload-ring ring-one"></span>
+            <span class="featured-upload-ring ring-two"></span>
+            <span class="featured-upload-ring ring-three"></span>
+            <div class="featured-upload-core">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+        </div>
+
+        <p class="featured-upload-eyebrow">Upload lock active</p>
+        <h5 id="featuredUploadTitle">Saving Featured Alumni Media</h5>
+        <p class="featured-upload-copy" id="featuredUploadDescription">Please keep this page open while we upload and secure the file.</p>
+
+        <div class="featured-upload-file-card">
+            <span class="featured-upload-badge" id="featuredUploadMediaBadge">Media</span>
+            <div class="featured-upload-file-meta">
+                <strong id="featuredUploadFileName">Preparing upload...</strong>
+                <small id="featuredUploadFileSize">0 MB</small>
+            </div>
+        </div>
+
+        <div class="featured-upload-progress-track" aria-hidden="true">
+            <div class="featured-upload-progress-bar" id="featuredUploadProgressBar"></div>
+        </div>
+        <div class="featured-upload-progress-meta">
+            <span id="featuredUploadStage">Preparing upload...</span>
+            <span id="featuredUploadPercent">0%</span>
+        </div>
+
+        <div class="featured-upload-status-card">
+            <i class="fas fa-shield-alt"></i>
+            <p id="featuredUploadStatus">Navigation is temporarily blocked so unfinished uploads can be cancelled and cleaned up safely.</p>
         </div>
     </div>
 </div>

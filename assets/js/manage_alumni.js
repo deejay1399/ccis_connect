@@ -4,6 +4,12 @@ $(document).ready(function () {
     let activeSubmissionContext = null;
     let mentorRequestsCache = [];
     let nextDirectoryEntryIndex = 0;
+    let activeFeaturedUpload = {
+        active: false,
+        xhr: null,
+        uploadToken: '',
+        cleanupRequested: false
+    };
 
     function showNotification(type, message) {
         const notificationModal = `
@@ -105,6 +111,205 @@ $(document).ready(function () {
 
     function formatPhotoCountLabel(count) {
         return `${count} photo${count === 1 ? '' : 's'}`;
+    }
+
+    function formatFileSize(bytes) {
+        const safeBytes = Number(bytes) || 0;
+        if (safeBytes <= 0) {
+            return '0 B';
+        }
+
+        const units = ['B', 'KB', 'MB', 'GB'];
+        const exponent = Math.min(Math.floor(Math.log(safeBytes) / Math.log(1024)), units.length - 1);
+        const value = safeBytes / Math.pow(1024, exponent);
+        return `${value.toFixed(value >= 10 || exponent === 0 ? 0 : 1)} ${units[exponent]}`;
+    }
+
+    function createFeaturedUploadToken() {
+        return `featured_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+    }
+
+    function getFeaturedMediaInfo(row) {
+        const photo = String(row?.photo ?? '').trim();
+        const video = String(row?.video ?? '').trim();
+        const mediaType = String(row?.media_type ?? '').trim().toLowerCase();
+
+        if (mediaType === 'video' || video) {
+            return { type: 'video', path: video, label: 'Video Feature' };
+        }
+
+        if (mediaType === 'photo' || photo) {
+            return { type: 'photo', path: photo, label: 'Photo Feature' };
+        }
+
+        return { type: 'none', path: '', label: 'Text Only' };
+    }
+
+    function getFeaturedSelectedMedia() {
+        const photoFile = document.getElementById('featuredPhoto')?.files?.[0] || null;
+        const videoFile = document.getElementById('featuredVideo')?.files?.[0] || null;
+
+        if (videoFile) {
+            return { type: 'video', file: videoFile, badge: 'Video Feature' };
+        }
+
+        if (photoFile) {
+            return { type: 'photo', file: photoFile, badge: 'Photo Feature' };
+        }
+
+        return null;
+    }
+
+    function renderFeaturedMediaSelection() {
+        const preview = $('#featuredMediaPreview');
+        if (!preview.length) {
+            return;
+        }
+
+        const media = getFeaturedSelectedMedia();
+        if (!media) {
+            preview.html(`
+                <div class="featured-media-preview-empty">
+                    <i class="fas fa-sparkles"></i>
+                    <span>No media selected yet. The entry can still be saved without media.</span>
+                </div>
+            `);
+            return;
+        }
+
+        const iconClass = media.type === 'video' ? 'fa-video' : 'fa-image';
+        const helperCopy = media.type === 'video'
+            ? 'This will play on the public featured alumni section and details modal.'
+            : 'This will appear as the featured alumni hero image on the public page.';
+
+        preview.html(`
+            <div class="featured-media-preview-card">
+                <span class="featured-media-preview-badge">${escapeHtml(media.badge)}</span>
+                <div class="featured-media-preview-file">
+                    <i class="fas ${iconClass}"></i>
+                    <div>
+                        <strong>${escapeHtml(media.file.name)}</strong>
+                        <small>${formatFileSize(media.file.size)}</small>
+                    </div>
+                </div>
+                <p>${helperCopy}</p>
+            </div>
+        `);
+    }
+
+    function parseJsonResponse(xhr) {
+        if (xhr.response && typeof xhr.response === 'object') {
+            return xhr.response;
+        }
+
+        try {
+            return JSON.parse(xhr.responseText || '{}');
+        } catch (error) {
+            return {};
+        }
+    }
+
+    function setFeaturedFormLocked(isLocked) {
+        const modal = $('#addFeaturedModal');
+        modal.toggleClass('featured-form-locked', isLocked);
+        modal.find('input, textarea, button, .btn-close').prop('disabled', isLocked);
+        $('#featuredUploadOverlay').attr('aria-hidden', String(!isLocked));
+        $('body').toggleClass('featured-upload-active', isLocked);
+
+        const submitBtn = modal.find('button[form="addFeaturedForm"]');
+        submitBtn.html(isLocked ? '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...' : 'Add Alumni');
+    }
+
+    function setFeaturedUploadOverlayVisible(isVisible) {
+        const overlay = $('#featuredUploadOverlay');
+        overlay.prop('hidden', !isVisible);
+        overlay.attr('aria-hidden', String(!isVisible));
+    }
+
+    function updateFeaturedUploadOverlay(details = {}) {
+        const percent = Math.max(0, Math.min(100, Number(details.percent ?? 0)));
+        $('#featuredUploadMediaBadge').text(details.badge || 'Media');
+        $('#featuredUploadFileName').text(details.fileName || 'Preparing upload...');
+        $('#featuredUploadFileSize').text(details.fileSize || '0 MB');
+        $('#featuredUploadStage').text(details.stage || 'Preparing upload...');
+        $('#featuredUploadPercent').text(`${percent}%`);
+        $('#featuredUploadStatus').text(details.status || 'Navigation is temporarily blocked so unfinished uploads can be cancelled and cleaned up safely.');
+        $('#featuredUploadDescription').text(details.description || 'Please keep this page open while we upload and secure the file.');
+        $('#featuredUploadProgressBar').css('width', `${percent}%`);
+    }
+
+    function beginFeaturedUpload(media, uploadToken) {
+        activeFeaturedUpload = {
+            active: true,
+            xhr: null,
+            uploadToken,
+            cleanupRequested: false
+        };
+
+        setFeaturedFormLocked(true);
+        setFeaturedUploadOverlayVisible(true);
+        updateFeaturedUploadOverlay({
+            badge: media?.badge || 'Profile Save',
+            fileName: media?.file?.name || 'Featured alumni profile',
+            fileSize: media?.file ? formatFileSize(media.file.size) : 'No media file',
+            stage: media ? 'Preparing upload...' : 'Saving details...',
+            percent: media ? 0 : 20,
+            status: media
+                ? 'Do not close or leave this page while the upload is in progress.'
+                : 'Saving the featured alumni entry now.'
+        });
+    }
+
+    function finishFeaturedUpload() {
+        activeFeaturedUpload = {
+            active: false,
+            xhr: null,
+            uploadToken: '',
+            cleanupRequested: false
+        };
+
+        setFeaturedUploadOverlayVisible(false);
+        setFeaturedFormLocked(false);
+        updateFeaturedUploadOverlay({
+            badge: 'Media',
+            fileName: 'Preparing upload...',
+            fileSize: '0 MB',
+            stage: 'Preparing upload...',
+            percent: 0,
+            status: 'Navigation is temporarily blocked so unfinished uploads can be cancelled and cleaned up safely.'
+        });
+    }
+
+    function requestFeaturedUploadCleanup(uploadToken) {
+        const token = String(uploadToken || '').trim();
+        if (!token || activeFeaturedUpload.cleanupRequested) {
+            return;
+        }
+
+        activeFeaturedUpload.cleanupRequested = true;
+        const cleanupUrl = baseUrl + 'admin/manage/alumni/featured/cancel_upload';
+        const payload = new FormData();
+        payload.append('upload_token', token);
+
+        try {
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon(cleanupUrl, payload);
+                return;
+            }
+        } catch (error) {
+            console.warn('Featured upload cleanup beacon failed', error);
+        }
+
+        try {
+            fetch(cleanupUrl, {
+                method: 'POST',
+                body: payload,
+                credentials: 'same-origin',
+                keepalive: true
+            }).catch(() => {});
+        } catch (error) {
+            console.warn('Featured upload cleanup request failed', error);
+        }
     }
 
     function buildDirectoryEntryMarkup(entryIndex, values = {}) {
@@ -612,20 +817,44 @@ $(document).ready(function () {
             $('#no-featured-data').hide();
 
             data.forEach(row => {
-                const photoHtml = row.photo
-                    ? `<div class="mb-2"><img src="${baseUrl + row.photo}" alt="${escapeHtml(row.name)}" style="width:100%;height:180px;object-fit:cover;border-radius:6px;"></div>`
-                    : '';
+                const media = getFeaturedMediaInfo(row);
+                let mediaHtml = `
+                    <div class="featured-image featured-image-placeholder">
+                        <div class="featured-empty-state">
+                            <i class="fas fa-star"></i>
+                            <span>Text-only Feature</span>
+                        </div>
+                        <span class="featured-media-pill">Text Only</span>
+                    </div>
+                `;
+
+                if (media.type === 'photo' && media.path) {
+                    mediaHtml = `
+                        <div class="featured-image">
+                            <img src="${baseUrl + media.path}" alt="${escapeHtml(row.name)}">
+                            <span class="featured-media-pill"><i class="fas fa-image me-1"></i>Photo</span>
+                        </div>
+                    `;
+                } else if (media.type === 'video' && media.path) {
+                    mediaHtml = `
+                        <div class="featured-image featured-image-video">
+                            <video class="featured-video-preview" src="${baseUrl + media.path}" controls muted playsinline preload="metadata"></video>
+                            <span class="featured-media-pill"><i class="fas fa-video me-1"></i>Video</span>
+                        </div>
+                    `;
+                }
+
                 grid.append(`
-                    <div class="col-md-4">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                ${photoHtml}
+                    <div class="col-md-6 col-xl-4">
+                        <div class="featured-card h-100">
+                            ${mediaHtml}
+                            <div class="featured-content">
                                 <h5 class="card-title">${escapeHtml(row.name)}</h5>
-                                <p class="text-muted mb-2">${escapeHtml(row.position)}</p>
-                                <p class="card-text formatted-paragraph">${escapeHtml(row.bio)}</p>
-                            </div>
-                            <div class="card-footer text-end">
-                                <button class="btn btn-sm btn-outline-danger btn-delete-featured" data-id="${row.id}">Delete</button>
+                                <p class="featured-position">${escapeHtml(row.position)}</p>
+                                <p class="featured-copy formatted-paragraph">${escapeHtml(row.bio)}</p>
+                                <div class="featured-actions justify-content-end">
+                                    <button class="btn btn-sm btn-outline-danger btn-delete-featured" data-id="${row.id}">Delete</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -913,39 +1142,174 @@ $(document).ready(function () {
         performStatusAndCompose('disapprove');
     });
 
-    $(document).on('submit', '#addFeaturedForm', function (e) {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('name', $('#featuredName').val().trim());
-        formData.append('position', $('#featuredPosition').val().trim());
-        formData.append('bio', $('#featuredBio').val().trim());
-        const photoFile = $('#featuredPhoto')[0].files[0];
-        if (photoFile) {
-            formData.append('photo', photoFile);
+    $('#addFeaturedModal').on('hide.bs.modal', function(event) {
+        if (activeFeaturedUpload.active) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return false;
+        }
+        return true;
+    });
+
+    $(document).on('change', '#featuredPhoto', function() {
+        if (this.files && this.files.length) {
+            const videoInput = document.getElementById('featuredVideo');
+            if (videoInput) {
+                videoInput.value = '';
+            }
+        }
+        renderFeaturedMediaSelection();
+    });
+
+    $(document).on('change', '#featuredVideo', function() {
+        if (this.files && this.files.length) {
+            const photoInput = document.getElementById('featuredPhoto');
+            if (photoInput) {
+                photoInput.value = '';
+            }
+        }
+        renderFeaturedMediaSelection();
+    });
+
+    window.addEventListener('beforeunload', function(event) {
+        if (!activeFeaturedUpload.active) {
+            return;
         }
 
-        $.ajax({
-            url: baseUrl + 'admin/manage/alumni/featured/create',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    $('#addFeaturedModal').modal('hide');
-                    $('#addFeaturedForm')[0].reset();
-                    loadFeatured();
-                    showNotification('success', 'Featured alumni added');
-                } else {
-                    showNotification('error', response.message || 'Failed to add featured alumni');
+        event.preventDefault();
+        event.returnValue = '';
+    });
+
+    window.addEventListener('pagehide', function() {
+        if (!activeFeaturedUpload.active) {
+            return;
+        }
+
+        requestFeaturedUploadCleanup(activeFeaturedUpload.uploadToken);
+    });
+
+    $(document).on('submit', '#addFeaturedForm', function (e) {
+        e.preventDefault();
+        if (activeFeaturedUpload.active) {
+            return;
+        }
+
+        const name = $('#featuredName').val().trim();
+        const position = $('#featuredPosition').val().trim();
+        const bio = $('#featuredBio').val().trim();
+        const media = getFeaturedSelectedMedia();
+        const hasPhoto = Boolean(document.getElementById('featuredPhoto')?.files?.length);
+        const hasVideo = Boolean(document.getElementById('featuredVideo')?.files?.length);
+
+        if (!name || !position || !bio) {
+            showNotification('error', 'Name, position/achievement, and biography are required.');
+            return;
+        }
+
+        if (hasPhoto && hasVideo) {
+            showNotification('error', 'Please choose only one media type for the featured alumni entry.');
+            return;
+        }
+
+        const formData = new FormData();
+        const uploadToken = createFeaturedUploadToken();
+        formData.append('name', name);
+        formData.append('position', position);
+        formData.append('bio', bio);
+        formData.append('upload_token', uploadToken);
+
+        if (media?.type === 'photo') {
+            formData.append('photo', media.file);
+        }
+
+        if (media?.type === 'video') {
+            formData.append('video', media.file);
+        }
+
+        beginFeaturedUpload(media, uploadToken);
+
+        const xhr = new XMLHttpRequest();
+        activeFeaturedUpload.xhr = xhr;
+        xhr.open('POST', baseUrl + 'admin/manage/alumni/featured/create', true);
+        xhr.responseType = 'json';
+
+        if (xhr.upload) {
+            xhr.upload.addEventListener('progress', function(event) {
+                if (!activeFeaturedUpload.active || !event.lengthComputable) {
+                    return;
                 }
-            },
-            error: function(xhr) {
-                const msg = xhr.responseJSON?.message || 'Failed to add featured alumni';
-                showNotification('error', msg);
+
+                const percent = Math.min(99, Math.round((event.loaded / event.total) * 100));
+                updateFeaturedUploadOverlay({
+                    badge: media?.badge || 'Profile Save',
+                    fileName: media?.file?.name || 'Featured alumni profile',
+                    fileSize: media?.file ? formatFileSize(media.file.size) : 'No media file',
+                    stage: media ? `Uploading ${media.type}...` : 'Saving details...',
+                    percent,
+                    status: media
+                        ? `${formatFileSize(event.loaded)} of ${formatFileSize(event.total)} uploaded`
+                        : 'Saving the featured alumni entry now.',
+                    description: media
+                        ? 'Please keep this page open while the media is uploading.'
+                        : 'Please wait while the featured alumni details are being saved.'
+                });
+            });
+
+            xhr.upload.addEventListener('load', function() {
+                if (!activeFeaturedUpload.active) {
+                    return;
+                }
+
+                updateFeaturedUploadOverlay({
+                    badge: media?.badge || 'Profile Save',
+                    fileName: media?.file?.name || 'Featured alumni profile',
+                    fileSize: media?.file ? formatFileSize(media.file.size) : 'No media file',
+                    stage: 'Securing upload...',
+                    percent: 100,
+                    status: 'Upload received. Finalizing the featured alumni entry now.',
+                    description: 'We are finishing the save and cleaning temporary upload files.'
+                });
+            });
+        }
+
+        xhr.addEventListener('load', function() {
+            const response = parseJsonResponse(xhr);
+            const succeeded = xhr.status >= 200 && xhr.status < 300 && response.success;
+
+            finishFeaturedUpload();
+
+            if (succeeded) {
+                const modalEl = document.getElementById('addFeaturedModal');
+                if (modalEl && window.bootstrap?.Modal) {
+                    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                }
+
+                document.getElementById('addFeaturedForm')?.reset();
+                renderFeaturedMediaSelection();
+                loadFeatured();
+                showNotification('success', media?.type === 'video' ? 'Featured alumni video uploaded successfully.' : 'Featured alumni added successfully.');
+                return;
             }
+
+            const message = response.message || 'Failed to add featured alumni.';
+            showNotification('error', message);
         });
+
+        xhr.addEventListener('error', function() {
+            finishFeaturedUpload();
+            showNotification('error', 'Upload failed. Please check the file and try again.');
+        });
+
+        xhr.addEventListener('abort', function() {
+            if (!activeFeaturedUpload.active) {
+                return;
+            }
+
+            finishFeaturedUpload();
+            showNotification('error', 'The upload was cancelled before it finished.');
+        });
+
+        xhr.send(formData);
     });
 
     $(document).on('click', '.btn-delete-featured', function () {
@@ -1113,6 +1477,7 @@ $(document).ready(function () {
     loadFeatured();
     loadDirectory();
     loadEvents();
+    renderFeaturedMediaSelection();
     resetDirectoryForm();
     activateRequestedTab();
     autoOpenRequestedSubmission();

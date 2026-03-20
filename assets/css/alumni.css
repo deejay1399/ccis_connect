@@ -703,6 +703,15 @@
     transition: transform 0.5s ease;
 }
 
+.alumni-image video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    background: #170f29;
+    transition: transform 0.5s ease;
+}
+
 .featured-badge {
     position: absolute;
     top: 15px;
@@ -720,7 +729,34 @@
     box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
-.featured-alumni-card:hover .alumni-image img {
+.featured-badge-video {
+    background: rgba(255, 255, 255, 0.92);
+}
+
+.featured-video-indicator {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(24, 11, 46, 0.78);
+    color: white;
+    backdrop-filter: blur(8px);
+    font-size: 0.82rem;
+    font-weight: 600;
+    z-index: 2;
+}
+
+.featured-video-indicator i {
+    color: var(--accent);
+    font-size: 1rem;
+}
+
+.featured-alumni-card:hover .alumni-image img,
+.featured-alumni-card:hover .alumni-image video {
     transform: scale(1.05);
 }
 
@@ -1702,6 +1738,38 @@ body:not(.modal-open) {
     box-shadow: 0 8px 24px rgba(75, 0, 130, 0.12);
 }
 
+.alumni-modal-video-shell {
+    gap: 1rem;
+}
+
+.alumni-modal-video-frame {
+    overflow: hidden;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #25133f 0%, #130a22 100%);
+    box-shadow: 0 14px 30px rgba(22, 11, 38, 0.18);
+}
+
+.alumni-modal-video {
+    width: 100%;
+    min-height: 350px;
+    max-height: 430px;
+    display: block;
+    background: #10091d;
+}
+
+.alumni-modal-video-caption {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: fit-content;
+    padding: 0.55rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(106, 13, 173, 0.08);
+    color: var(--secondary-purple);
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
 .alumni-modal-details {
     min-width: 0;
 }
@@ -2128,6 +2196,10 @@ button:focus-visible,
     .alumni-modal-image-placeholder {
         min-height: 250px;
     }
+
+    .alumni-modal-video {
+        min-height: 250px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -2370,6 +2442,13 @@ button:focus-visible,
 }
 
 @media (max-width: 576px) {
+    .featured-video-indicator {
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        justify-content: center;
+    }
+
     .directory-name-text {
         font-size: 0.92rem;
     }
@@ -2454,6 +2533,10 @@ button:focus-visible,
 
     .alumni-modal-thumb img {
         height: 70px;
+    }
+
+    .alumni-modal-video {
+        min-height: 220px;
     }
 }
 

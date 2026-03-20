@@ -79,6 +79,22 @@ function normalizeAlumniImages(alumni) {
     return [...new Set(images)];
 }
 
+function getFeaturedMedia(alumni) {
+    const photo = String(alumni?.photo ?? '').trim();
+    const video = String(alumni?.video ?? '').trim();
+    const mediaType = String(alumni?.media_type ?? '').trim().toLowerCase();
+
+    if (mediaType === 'video' || video) {
+        return { type: 'video', path: video };
+    }
+
+    if (mediaType === 'photo' || photo) {
+        return { type: 'photo', path: photo };
+    }
+
+    return { type: 'none', path: '' };
+}
+
 function renderDirectoryPhotoThumb(alumni) {
     const images = normalizeAlumniImages(alumni);
     const photoCount = images.length;
@@ -226,16 +242,36 @@ const sectionTemplates = {
             cards = `<p class="text-muted text-center">No featured alumni yet.</p>`;
         } else {
             featured.forEach(alumni => {
-                const photoHtml = alumni.photo
-                    ? `<img src="${baseUrl + alumni.photo}" alt="${alumni.name}">`
-                    : `<div class="alumni-photo-placeholder"><i class="fas fa-user"></i></div>`;
+                const featuredMedia = getFeaturedMedia(alumni);
+                let photoHtml = `<div class="alumni-photo-placeholder"><i class="fas fa-user"></i></div>`;
+                let badgeHtml = `
+                    <div class="featured-badge">
+                        <i class="fas fa-star"></i> Featured
+                    </div>
+                `;
+
+                if (featuredMedia.type === 'photo' && featuredMedia.path) {
+                    photoHtml = `<img src="${baseUrl + featuredMedia.path}" alt="${alumni.name}">`;
+                } else if (featuredMedia.type === 'video' && featuredMedia.path) {
+                    photoHtml = `
+                        <video class="featured-alumni-video" src="${baseUrl + featuredMedia.path}" autoplay muted loop playsinline preload="metadata"></video>
+                        <div class="featured-video-indicator">
+                            <i class="fas fa-play-circle"></i>
+                            <span>Play story</span>
+                        </div>
+                    `;
+                    badgeHtml = `
+                        <div class="featured-badge featured-badge-video">
+                            <i class="fas fa-video"></i> Video Feature
+                        </div>
+                    `;
+                }
+
                 cards += `
                     <div class="featured-alumni-card" data-alumni-id="${alumni.id}" data-alumni-name="${alumni.name}">
                         <div class="alumni-image">
                             ${photoHtml}
-                            <div class="featured-badge">
-                                <i class="fas fa-star"></i> Featured
-                            </div>
+                            ${badgeHtml}
                         </div>
                         <div class="alumni-info">
                             <h3>${alumni.name}</h3>
@@ -704,6 +740,7 @@ function showAlumniDetails(alumniId) {
 
     const safeName = escapeHtml(alumni.name || 'Alumni');
     const images = normalizeAlumniImages(alumni);
+    const featuredMedia = getFeaturedMedia(alumni);
     const title = alumni.position || alumni.company || alumni.program || '';
     const details = [];
     if (alumni.program) details.push(`<p class="mb-1"><strong>Program:</strong> ${escapeHtml(alumni.program)}</p>`);
@@ -713,7 +750,19 @@ function showAlumniDetails(alumniId) {
     if (alumni.email) details.push(`<p class="mb-1"><strong>Email:</strong> ${escapeHtml(alumni.email)}</p>`);
     if (alumni.phone) details.push(`<p class="mb-1"><strong>Phone:</strong> ${escapeHtml(alumni.phone)}</p>`);
     const description = alumni.bio || alumni.achievement || alumni.position || '';
-    const galleryHtml = images.length
+    const galleryHtml = featuredMedia.type === 'video' && featuredMedia.path
+        ? `
+            <div class="alumni-modal-image alumni-modal-video-shell">
+                <div class="alumni-modal-video-frame">
+                    <video class="alumni-modal-video" src="${baseUrl + featuredMedia.path}" controls playsinline preload="metadata"></video>
+                </div>
+                <div class="alumni-modal-video-caption">
+                    <i class="fas fa-video"></i>
+                    <span>Featured alumni video</span>
+                </div>
+            </div>
+        `
+        : images.length
         ? `
             <div class="alumni-modal-image">
                 <div class="alumni-modal-primary-image">

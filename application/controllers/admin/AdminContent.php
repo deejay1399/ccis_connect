@@ -702,11 +702,21 @@ class AdminContent extends CI_Controller {
 	{
 		header('Content-Type: application/json');
 		$this->load->model('Alumni_model');
+		$staged_paths = [];
+		$final_paths = [];
+		$upload_token = '';
 
 		try {
+			ignore_user_abort(true);
+
 			$name = trim((string) $this->input->post('name'));
 			$position = trim((string) $this->input->post('position'));
 			$bio = trim((string) $this->input->post('bio'));
+			$upload_token = $this->_sanitize_featured_upload_token($this->input->post('upload_token'));
+			if ($upload_token === '') {
+				$upload_token = 'featured_' . time() . '_' . random_string('alnum', 8);
+			}
+			$this->_clear_featured_upload_cancelled($upload_token);
 
 			if ($name === '' || $position === '' || $bio === '') {
 				http_response_code(400);
@@ -714,14 +724,13 @@ class AdminContent extends CI_Controller {
 				exit;
 			}
 
-			$photo = null;
-			if (!empty($_FILES['photo']['name'])) {
-				$photo = $this->_upload_file_to('uploads/alumni/featured', 'photo', 'gif|jpg|png|jpeg|jpe', 'featured', 5120);
-				if ($photo === false) {
-					http_response_code(400);
-					echo json_encode(['success' => false, 'message' => 'Failed to upload photo.']);
-					exit;
-				}
+			$has_photo = !empty($_FILES['photo']['name']);
+			$has_video = !empty($_FILES['video']['name']);
+
+			if ($has_photo && $has_video) {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Please upload either a photo or a video, not both.']);
+				exit;
 			}
 
 			$payload = [
@@ -729,13 +738,115 @@ class AdminContent extends CI_Controller {
 				'position' => $position,
 				'bio' => $bio
 			];
-			if ($photo) {
+
+			if ($has_photo) {
+				$staged_photo = $this->_upload_file_to(
+					'uploads/alumni/featured/staging',
+					'photo',
+					'gif|jpg|png|jpeg|jpe|webp',
+					'featured_photo_' . $upload_token,
+					5120
+				);
+				if ($staged_photo === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload photo.']);
+					exit;
+				}
+
+				$staged_paths[] = $staged_photo;
+				if ($this->_should_abort_featured_upload($upload_token)) {
+					$this->_delete_uploaded_public_files($staged_paths);
+					$this->_delete_featured_staging_artifacts($upload_token);
+					http_response_code(409);
+					echo json_encode(['success' => false, 'message' => 'Photo upload was cancelled before it finished saving.']);
+					exit;
+				}
+
+				$photo = $this->_move_uploaded_public_file($staged_photo, 'uploads/alumni/featured', 'featured_photo');
+				if ($photo === false) {
+					throw new RuntimeException('Failed to finalize the featured alumni photo upload.');
+				}
+
+				$final_paths[] = $photo;
 				$payload['photo'] = $photo;
+				$payload['media_type'] = 'photo';
+			}
+
+			if ($has_video) {
+				$staged_video = $this->_upload_file_to(
+					'uploads/alumni/featured/staging',
+					'video',
+					'mp4|webm|ogg|mov|m4v',
+					'featured_video_' . $upload_token,
+					102400
+				);
+				if ($staged_video === false) {
+					http_response_code(400);
+					echo json_encode(['success' => false, 'message' => 'Failed to upload video. Please use MP4, WebM, Ogg, MOV, or M4V up to 100 MB.']);
+					exit;
+				}
+
+				$staged_paths[] = $staged_video;
+				if ($this->_should_abort_featured_upload($upload_token)) {
+					$this->_delete_uploaded_public_files($staged_paths);
+					$this->_delete_featured_staging_artifacts($upload_token);
+					http_response_code(409);
+					echo json_encode(['success' => false, 'message' => 'Video upload was cancelled before it finished saving.']);
+					exit;
+				}
+
+				$video = $this->_move_uploaded_public_file($staged_video, 'uploads/alumni/featured', 'featured_video');
+				if ($video === false) {
+					throw new RuntimeException('Failed to finalize the featured alumni video upload.');
+				}
+
+				$final_paths[] = $video;
+				$payload['video'] = $video;
+				$payload['media_type'] = 'video';
+			}
+
+			if ($this->_should_abort_featured_upload($upload_token)) {
+				$this->_delete_uploaded_public_files($final_paths);
+				$this->_delete_uploaded_public_files($staged_paths);
+				$this->_delete_featured_staging_artifacts($upload_token);
+				http_response_code(409);
+				echo json_encode(['success' => false, 'message' => 'The upload was cancelled before the featured alumni entry was saved.']);
+				exit;
 			}
 
 			$id = $this->Alumni_model->insert_featured($payload);
+			if (!$id) {
+				throw new RuntimeException('Failed to save the featured alumni entry.');
+			}
 
-			echo json_encode(['success' => (bool) $id, 'id' => $id]);
+			$this->_delete_featured_staging_artifacts($upload_token);
+			echo json_encode(['success' => true, 'id' => $id]);
+		} catch (Exception $e) {
+			$this->_delete_uploaded_public_files($final_paths);
+			$this->_delete_uploaded_public_files($staged_paths);
+			$this->_delete_featured_staging_artifacts($upload_token);
+			http_response_code(500);
+			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+		}
+		exit;
+	}
+
+	public function cancel_alumni_featured_upload()
+	{
+		header('Content-Type: application/json');
+
+		try {
+			$upload_token = $this->_sanitize_featured_upload_token($this->input->post('upload_token'));
+			if ($upload_token === '') {
+				http_response_code(400);
+				echo json_encode(['success' => false, 'message' => 'Upload token required']);
+				exit;
+			}
+
+			$this->_mark_featured_upload_cancelled($upload_token);
+			$this->_delete_featured_staging_artifacts($upload_token, false);
+
+			echo json_encode(['success' => true]);
 		} catch (Exception $e) {
 			http_response_code(500);
 			echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
@@ -756,7 +867,14 @@ class AdminContent extends CI_Controller {
 				exit;
 			}
 
+			$row = $this->Alumni_model->get_featured_by_id($id);
 			$result = $this->Alumni_model->delete_featured($id);
+			if ($result && $row) {
+				$this->_delete_uploaded_public_files(array_filter([
+					$row['photo'] ?? null,
+					$row['video'] ?? null,
+				]));
+			}
 			echo json_encode(['success' => (bool) $result]);
 		} catch (Exception $e) {
 			http_response_code(500);
@@ -1451,6 +1569,101 @@ class AdminContent extends CI_Controller {
 			@mkdir($abs_dir, 0755, true);
 		}
 		return $abs_dir;
+	}
+
+	private function _sanitize_featured_upload_token($token)
+	{
+		$token = preg_replace('/[^A-Za-z0-9_-]/', '', trim((string) $token));
+		return substr($token, 0, 80);
+	}
+
+	private function _featured_upload_cancel_marker($token)
+	{
+		$token = $this->_sanitize_featured_upload_token($token);
+		if ($token === '') {
+			return null;
+		}
+
+		$staging_dir = $this->_ensure_upload_dir('uploads/alumni/featured/staging');
+		return rtrim($staging_dir, '/\\') . DIRECTORY_SEPARATOR . $token . '.cancel';
+	}
+
+	private function _mark_featured_upload_cancelled($token)
+	{
+		$marker = $this->_featured_upload_cancel_marker($token);
+		if ($marker !== null) {
+			@file_put_contents($marker, 'cancelled');
+		}
+	}
+
+	private function _clear_featured_upload_cancelled($token)
+	{
+		$marker = $this->_featured_upload_cancel_marker($token);
+		if ($marker !== null && is_file($marker)) {
+			@unlink($marker);
+		}
+	}
+
+	private function _is_featured_upload_cancelled($token)
+	{
+		$marker = $this->_featured_upload_cancel_marker($token);
+		return $marker !== null && is_file($marker);
+	}
+
+	private function _should_abort_featured_upload($token)
+	{
+		return $this->_is_featured_upload_cancelled($token) || connection_aborted();
+	}
+
+	private function _delete_featured_staging_artifacts($token, $clear_cancel_marker = true)
+	{
+		$token = $this->_sanitize_featured_upload_token($token);
+		if ($token === '') {
+			return;
+		}
+
+		$staging_dir = $this->_ensure_upload_dir('uploads/alumni/featured/staging');
+		$pattern = rtrim($staging_dir, '/\\') . DIRECTORY_SEPARATOR . 'featured_*_' . $token . '_*';
+		foreach (glob($pattern) ?: [] as $candidate) {
+			if (is_file($candidate)) {
+				@unlink($candidate);
+			}
+		}
+
+		if ($clear_cancel_marker) {
+			$this->_clear_featured_upload_cancelled($token);
+		}
+	}
+
+	private function _move_uploaded_public_file($relative_path, $target_dir, $prefix)
+	{
+		$relative_path = trim((string) $relative_path);
+		if ($relative_path === '' || strpos($relative_path, 'uploads/') !== 0) {
+			return false;
+		}
+
+		$source_path = FCPATH . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relative_path);
+		if (!is_file($source_path)) {
+			return false;
+		}
+
+		$target_abs_dir = $this->_ensure_upload_dir($target_dir);
+		$extension = strtolower((string) pathinfo($source_path, PATHINFO_EXTENSION));
+		$file_name = $prefix . '_' . time() . '_' . random_string('alnum', 8);
+		if ($extension !== '') {
+			$file_name .= '.' . $extension;
+		}
+
+		$target_path = rtrim($target_abs_dir, '/\\') . DIRECTORY_SEPARATOR . $file_name;
+		$moved = @rename($source_path, $target_path);
+		if (!$moved) {
+			if (!@copy($source_path, $target_path)) {
+				return false;
+			}
+			@unlink($source_path);
+		}
+
+		return trim($target_dir, '/\\') . '/' . $file_name;
 	}
 
 	private function _delete_uploaded_asset_file($relative_path)

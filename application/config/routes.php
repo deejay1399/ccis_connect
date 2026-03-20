@@ -141,6 +141,7 @@ $route['admin/manage/alumni/giveback'] = 'admin/AdminContent/load_alumni_givebac
 $route['admin/manage/alumni/giveback_status'] = 'admin/AdminContent/update_alumni_giveback_status';
 $route['admin/manage/alumni/featured'] = 'admin/AdminContent/load_alumni_featured';
 $route['admin/manage/alumni/featured/create'] = 'admin/AdminContent/create_alumni_featured';
+$route['admin/manage/alumni/featured/cancel_upload'] = 'admin/AdminContent/cancel_alumni_featured_upload';
 $route['admin/manage/alumni/featured/delete'] = 'admin/AdminContent/delete_alumni_featured';
 $route['admin/manage/alumni/directory'] = 'admin/AdminContent/load_alumni_directory';
 $route['admin/manage/alumni/directory/create'] = 'admin/AdminContent/create_alumni_directory';
