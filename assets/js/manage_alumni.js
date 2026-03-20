@@ -203,7 +203,13 @@ $(document).ready(function () {
         }
 
         try {
-            return JSON.parse(xhr.responseText || '{}');
+            return JSON.parse((function() {
+                try {
+                    return xhr.responseText || '{}';
+                } catch (error) {
+                    return '{}';
+                }
+            })());
         } catch (error) {
             return {};
         }
@@ -215,7 +221,13 @@ $(document).ready(function () {
             return response.message;
         }
 
-        const rawResponse = String(xhr?.responseText || '')
+        const rawResponse = String((function() {
+            try {
+                return xhr?.responseText || '';
+            } catch (error) {
+                return '';
+            }
+        })())
             .replace(/<style[\s\S]*?<\/style>/gi, ' ')
             .replace(/<script[\s\S]*?<\/script>/gi, ' ')
             .replace(/<[^>]+>/g, ' ')
@@ -227,6 +239,9 @@ $(document).ready(function () {
         }
 
         if (xhr?.status) {
+            if (Number(xhr.status) === 403) {
+                return 'Request blocked with HTTP 403. Refresh the page and try again.';
+            }
             return `${fallbackMessage} (HTTP ${xhr.status})`;
         }
 
@@ -314,6 +329,9 @@ $(document).ready(function () {
         const cleanupUrl = baseUrl + 'admin/manage/alumni/featured/cancel_upload';
         const payload = new FormData();
         payload.append('upload_token', token);
+        if (window.CSRF_TOKEN_NAME && window.CSRF_TOKEN_VALUE && !payload.has(window.CSRF_TOKEN_NAME)) {
+            payload.append(window.CSRF_TOKEN_NAME, window.CSRF_TOKEN_VALUE);
+        }
 
         try {
             if (navigator.sendBeacon) {
@@ -1241,6 +1259,9 @@ $(document).ready(function () {
         formData.append('position', position);
         formData.append('bio', bio);
         formData.append('upload_token', uploadToken);
+        if (window.CSRF_TOKEN_NAME && window.CSRF_TOKEN_VALUE && !formData.has(window.CSRF_TOKEN_NAME)) {
+            formData.append(window.CSRF_TOKEN_NAME, window.CSRF_TOKEN_VALUE);
+        }
 
         if (media?.type === 'photo') {
             formData.append('photo', media.file);
